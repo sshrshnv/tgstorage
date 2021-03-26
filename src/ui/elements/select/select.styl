@@ -1,0 +1,91 @@
+.root
+  position: relative
+  width: 100%
+  background-color: inherit
+  cursor: pointer
+
+  &::before
+    position: fixed
+    z-index: -1
+    top: 0
+    right: 0
+    bottom: 0
+    left: 0
+    display: block
+    content: ''
+    cursor: default
+    pointer-events: auto
+
+.icon
+  width: 16px
+  height: 16px
+  transition: transform .2s ease-out, fill .2s ease-in
+  fill: var(--color-grey-0)
+
+.options
+  position: absolute
+  z-index: 2
+  left: 0
+  right: 0
+  top: calc(100% + 16px)
+  max-height: 232px
+  pointer-events: auto
+  border: 1px solid var(--default-popup-border)
+  border-radius: 8px
+  background-color: inherit
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12)
+  animation-name: slideIn
+  animation-duration: .2s
+  animation-timing-function: ease-out
+  will-change: transform
+  overflow: auto
+  -webkit-overflow-scrolling: touch
+  scroll-behavior: smooth
+  scrollbar-width: none
+  &::-webkit-scrollbar
+    display: none
+
+.option
+  margin: 0
+  display: flex
+  justify-content: space-between
+  align-items: center
+  height: 40px
+  padding: 0 12px
+  cursor: pointer
+  font-size: 14px
+  font-family: inherit
+
+  > span
+    font-size: 12px
+    color: var(--color-grey-0)
+
+  &:not(:first-child)
+    border-top: 1px solid alpha(black, 0.1)
+
+._focused
+  .icon
+    fill: var(--color-blue)
+
+._expanded
+  z-index: 2
+
+  &::before
+    z-index: 0
+    opacity: 0.75
+
+  .icon
+    transform: rotate(180deg)
+
+._error
+  //
+
+@keyframes slideIn
+  0%
+    transform: translate3d(0,-8px,0)
+    opacity: 0
+  50%
+    opacity: 1
+  100%
+    transform: translate3d(0,0,0)
+    opacity: 1

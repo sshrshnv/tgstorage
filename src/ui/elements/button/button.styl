@@ -1,0 +1,55 @@
+.root
+  display: flex
+  justify-content: center
+  align-items: center
+  flex-shrink: 0
+  width: 100%
+  height: 44px
+  border: none
+  box-shadow: none
+  border-radius: 8px
+  color: var(--color-white)
+  background-color: inherit
+  font-family: inherit
+  font-weight: 500
+  font-size: 16px
+  line-height: 1
+  cursor: pointer
+  user-select: none
+  pointer-events: auto
+  transition: background .2s ease-in
+
+  > svg
+    width: 18px
+    height: 18px
+    fill: var(--default-font-color)
+
+  &:focus
+    outline: none
+
+  &:active
+    background-color: var(--color-black-2)
+
+&._disabled
+  background-color: darken($color-brand, 25%)
+  cursor: not-allowed
+
+&._brand
+  background-color: var(--color-blue)
+
+  &:active
+    background-color: darken($color-brand, 25%)
+
+&._uppercase
+  text-transform: uppercase
+  letter-spacing: 1px
+
+&._round
+  width: 36px
+  height: 36px
+  border-radius: 50%
+
+&._square
+  width: 44px
+  height: 100%
+  border-radius: 0

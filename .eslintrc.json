@@ -1,0 +1,42 @@
+{
+  "env": {
+    "es2020": true,
+    "browser": true,
+    "node": true
+  },
+  "extends": [
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "tsconfig.json",
+    "ecmaVersion":  2020,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "settings": {
+    "react": {
+      "pragma": "h"
+    }
+  },
+  "rules": {
+    "@typescript-eslint/indent": ["warn", 2],
+    "@typescript-eslint/quotes": ["warn", "single"],
+    "@typescript-eslint/semi": ["warn", "never"],
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-unused-vars": ["warn"],
+    "@typescript-eslint/member-delimiter-style": ["warn", {
+      "multiline": { "delimiter": "none", "requireLast": false },
+      "singleline": { "delimiter": "comma", "requireLast": false }
+    }],
+    "@typescript-eslint/ban-types": "off",
+    "@typescript-eslint/no-explicit-any": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/no-unknown-property": ["error", { "ignore": ["class"] }],
+    "react/prop-types": ["off"]
+  }
+}

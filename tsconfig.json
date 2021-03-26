@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "allowUnreachableCode": false,
+    "declaration": false,
+    "strictPropertyInitialization": false,
+    "experimentalDecorators": true,
+    "lib": ["dom", "esnext"],
+    "moduleResolution": "node",
+    "module": "esnext",
+    "target": "esnext",
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitAny": false,
+    "noEmit": true,
+    "allowJs": true,
+    "strict": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "jsx": "react",
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment",
+    "rootDir": "./src",
+    "baseUrl": "./",
+    "paths": {
+      "~/*": ["./src/*/index.ts", "./src/*"],
+    }
+  },
+  "include": ["./src", "*.d.ts"],
+  "exclude": ["./node_modules", "./build"]
+}

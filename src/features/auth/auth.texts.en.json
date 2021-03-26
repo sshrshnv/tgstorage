@@ -1,0 +1,22 @@
+{
+  "title": "Sign in",
+  "phoneDescription": "Please confirm your country and\n enter your Telegram phone number.",
+  "phoneLabel": "Phone Number",
+  "countryLabel": "Country",
+  "codeDescription": "We have sent you an SMS\n with the code.",
+  "codeLabel": "Code",
+  "passwordTitle": "Password",
+  "passwordDescription": "Your account is protected with an\n additional password",
+  "passwordLabel": "Password",
+  "button": "Next",
+  "buttonWait": "Wait",
+  "error": "Something went wrong",
+  "PHONE_NUMBER_BANNED": "Banned phone number",
+  "PHONE_NUMBER_INVALID": "Invalid phone number",
+  "PHONE_NUMBER_FLOOD": "Too many requests",
+  "PHONE_CODE_EMPTY": "Empty code",
+  "PHONE_CODE_EXPIRED": "Expired code",
+  "PHONE_CODE_INVALID": "Invalid code",
+  "PHONE_NUMBER_UNOCCUPIED": "User doesn't exist on Telegram",
+  "PASSWORD_HASH_INVALID": "Invalid password"
+}

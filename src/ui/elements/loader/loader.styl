@@ -1,0 +1,35 @@
+._icon
+  display: flex
+  justify-content: center
+  align-items: center
+
+  > svg
+    fill: var(--color-white)
+
+._text
+  &::after
+    content: '.'
+    animation-name: blink
+    animation-duration: 1.5s
+    animation-timing-function: steps(3, end)
+    animation-iteration-count: infinite
+    animation-delay: .5s
+    text-shadow: 4px 0 0 var(--default-font-color), 8px 0 0 var(--default-font-color)
+
+._uppercase
+  text-transform: uppercase
+  letter-spacing: 1px
+
+@keyframes blink
+  0%, 20%
+    color: transparent
+    text-shadow: 4px 0 0 transparent, 8px 0 0 transparent
+  40%
+    color: var(--default-font-color)
+    text-shadow: 4px 0 0 transparent, 8px 0 0 transparent
+  60%
+    color: var(--default-font-color)
+    text-shadow: 4px 0 0 var(--default-font-color), 8px 0 0 transparent
+  80%, 100%
+    color: var(--default-font-color)
+    text-shadow: 4px 0 0 var(--default-font-color), 8px 0 0 var(--default-font-color)

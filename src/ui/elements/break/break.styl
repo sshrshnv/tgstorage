@@ -1,0 +1,26 @@
+.root
+  width: 100%
+
+for i in range(0px, 40px, 4)
+  ._size-px-{i}
+    height: i
+
+  @media $mobile
+    ._mSize-px-{i}
+        height: i
+
+  @media $desktop
+    ._dSize-px-{i}
+        height: i
+
+for i in range(0vh, 10vh, 1)
+  ._size-vh-{i}
+    height: i
+
+  @media $mobile
+    ._mSize-vh-{i}
+        height: i
+
+  @media $desktop
+    ._dSize-vh-{i}
+        height: i

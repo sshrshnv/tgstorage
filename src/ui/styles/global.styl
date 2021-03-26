@@ -1,0 +1,35 @@
+@import './css-vars.styl'
+
+:global
+  html
+  body
+    margin: 0
+    width: 100vw
+    height: 100%
+    padding: 0
+    //pointer-events: none
+    user-select: none
+    overflow: hidden
+    -moz-osx-font-smoothing: grayscale
+    -webkit-font-smoothing: antialiased
+    -webkit-tap-highlight-color: rgba(0,0,0,0)
+    -webkit-touch-callout: none
+    -webkit-text-size-adjust: none
+    scroll-behavior: smooth
+    scrollbar-width: none
+    &::-webkit-scrollbar
+      display: none
+
+  body
+    //font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif
+    font-family: -apple-system,BlinkMacSystemFont,"Helvetica Neue","Roboto",sans-serif
+    font-size: 16px
+    line-height: 1.25
+    text-rendering: optimizeLegibility
+    color: var(--default-font-color)
+    background-color: var(--default-background-color)
+
+  div
+  input
+  button
+    box-sizing: border-box

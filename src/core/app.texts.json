@@ -1,0 +1,12 @@
+{
+  "en": {
+    "loading": "Loading",
+    "connecting": "Connecting",
+    "sending": "Sending"
+  },
+  "ru": {
+    "loading": "Загрузка",
+    "connecting": "Соединение",
+    "sending": "Отправляется"
+  }
+}

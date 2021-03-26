@@ -1,0 +1,59 @@
+.root
+  position: absolute
+  z-index: 4
+  display: flex
+  flex-direction: column
+  width: 100%
+  height: 100%
+  background-color: inherit
+
+.header
+  display: flex
+  justify-content: space-between
+  align-items: center
+  flex-shrink: 0
+  padding: 0 0 0 16px
+  height: 52px
+  background-color: var(--color-black-3)
+
+.title
+  display: block
+  margin: 0
+  padding: 0
+  font-size: 20px
+  font-weight: 500
+  line-height: 1
+
+.content
+  flex-grow: 1
+  padding: 0 16px
+  background-color: inherit
+  overflow: auto
+  -webkit-overflow-scrolling: touch
+  scroll-behavior: smooth
+  scrollbar-width: none
+  &::-webkit-scrollbar
+    display: none
+
+:global(.animationFallback)
+  .root
+    will-change: transform, opacity
+    animation-name: slideIn
+    animation-duration: .2s
+    animation-timing-function: ease-out
+    animation-fill-mode: forwards
+
+:global(:not(.animationFallback))
+  .root
+    opacity: 0
+    transform: translateX(160px)
+
+@keyframes slideIn
+  0%
+    opacity: 0
+    transform: translateX(160px)
+  10%
+    opacity: 1
+  100%
+    opacity: 1
+    transform: translateX(0)
