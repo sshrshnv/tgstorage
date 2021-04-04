@@ -18,6 +18,7 @@ const Auth: FC = () => {
   const [step, setStep] = useState<Step>('phone')
   const [phone, setPhone] = useState('+')
   const [phoneCodeHash, setPhoneCodeHash] = useState('')
+  const [codeType, setCodeType] = useState({ type: '', nextType: '' })
   const [timeout, setTimeout] = useState(0)
 
   useEffect(() => {
@@ -55,6 +56,7 @@ const Auth: FC = () => {
           setPhone={setPhone}
           setTimeout={setTimeout}
           setPhoneCodeHash={setPhoneCodeHash}
+          setCodeType={setCodeType}
           setStep={setStep}
         />
       )}
@@ -62,6 +64,11 @@ const Auth: FC = () => {
         <AuthCodeForm
           phone={phone}
           phoneCodeHash={phoneCodeHash}
+          timeout={timeout}
+          codeType={codeType}
+          setTimeout={setTimeout}
+          setPhoneCodeHash={setPhoneCodeHash}
+          setCodeType={setCodeType}
           setStep={setStep}
         />
       )}

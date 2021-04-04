@@ -7,18 +7,19 @@ import { moveCursorToEnd } from './input.helpers'
 import styles from './input.styl'
 
 type Props = {
+  name?: string
   label: string
   error?: string | boolean
-  border?: boolean
   value?: string
   forwardedRef?: RefObject<HTMLInputElement>
   icon?: h.JSX.Element | null
   autoComplete?: string
-  name?: string
   type?: string
   disabled?: boolean
   readonly?: boolean
   maxLength?: number
+  fakeFocus?: boolean
+  border?: boolean
   onFocus?: () => void
   onBlur?: () => void
   onInput?: (value: string) => void
@@ -33,6 +34,7 @@ export const Input: FC<Props> = ({
   icon,
   forwardedRef,
   maxLength = 50,
+  fakeFocus,
   onFocus,
   onBlur,
   onInput,
@@ -56,7 +58,7 @@ export const Input: FC<Props> = ({
   }, [setFocused, onBlur])
 
   const handleInput = useCallback(ev => {
-    const value = ev?.target?.value || ''
+    const value = ev?.target?.value.replace('  ', ' ') || ''
     const formattedValue = onInput?.(value)
     setInputData({ value: typeof formattedValue === 'undefined' ? value : formattedValue })
   }, [setInputData, onInput])
@@ -70,7 +72,7 @@ export const Input: FC<Props> = ({
   return (
     <div class={cn(
       styles.root,
-      focused && styles._focused,
+      (focused || fakeFocus) && styles._focused,
       error && styles._error
     )}>
       <input
@@ -80,6 +82,7 @@ export const Input: FC<Props> = ({
           icon && styles._icon
         )}
         ref={forwardedRef || inputRef}
+        autoComplete="off"
         maxLength={maxLength}
         onFocus={handleFocus}
         onBlur={handleBlur}

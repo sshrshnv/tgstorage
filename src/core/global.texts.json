@@ -2,11 +2,13 @@
   "en": {
     "loading": "Loading",
     "connecting": "Connecting",
-    "sending": "Sending"
+    "sending": "Sending",
+    "empty": "Empty"
   },
   "ru": {
     "loading": "Загрузка",
     "connecting": "Соединение",
-    "sending": "Отправляется"
+    "sending": "Отправляется",
+    "empty": "Пусто"
   }
 }

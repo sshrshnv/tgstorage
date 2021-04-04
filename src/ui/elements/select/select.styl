@@ -1,43 +1,28 @@
 .root
   position: relative
+  z-index: 2
   width: 100%
   background-color: inherit
   cursor: pointer
-
-  &::before
-    position: fixed
-    z-index: -1
-    top: 0
-    right: 0
-    bottom: 0
-    left: 0
-    display: block
-    content: ''
-    cursor: default
-    pointer-events: auto
 
 .icon
   width: 16px
   height: 16px
   transition: transform .2s ease-out, fill .2s ease-in
-  fill: var(--color-grey-0)
+  fill: var(--color-light-2)
 
 .options
   position: absolute
   z-index: 2
   left: 0
   right: 0
-  top: calc(100% + 16px)
-  max-height: 232px
-  pointer-events: auto
-  border: 1px solid var(--default-popup-border)
-  border-radius: 8px
+  top: 100%
+  max-height: 30vh
+  border: 1px solid var(--color-light-2)
+  border-top: none
+  border-radius: 0 0 8px 8px
   background-color: inherit
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12)
-  animation-name: slideIn
-  animation-duration: .2s
-  animation-timing-function: ease-out
-  will-change: transform
+  box-shadow: 0 4px 4px 1px rgba(0, 0, 0, 0.12)
   overflow: auto
   -webkit-overflow-scrolling: touch
   scroll-behavior: smooth
@@ -50,29 +35,48 @@
   display: flex
   justify-content: space-between
   align-items: center
+  flex-shrink: 0
   height: 40px
   padding: 0 12px
+  border-top: 1px solid var(--dropdown-item-border)
   cursor: pointer
   font-size: 14px
   font-family: inherit
 
   > span
     font-size: 12px
-    color: var(--color-grey-0)
-
-  &:not(:first-child)
-    border-top: 1px solid alpha(black, 0.1)
+    color: var(--color-light-2)
 
 ._focused
   .icon
-    fill: var(--color-blue)
+    fill: var(--color-brand)
 
 ._expanded
-  z-index: 2
-
   &::before
+    position: fixed
     z-index: 0
-    opacity: 0.75
+    top: 0
+    right: 0
+    bottom: 0
+    left: 0
+    display: block
+    content: ''
+    cursor: default
+
+  &::after
+    position: absolute
+    z-index: 2
+    top: calc(100% - 8px)
+    left: 0
+    right: 0
+    display: block
+    height: 8px
+    background-color: inherit
+    border: 1px solid var(--color-brand)
+    border-top: none
+    border-bottom: none
+    border-radius: 0
+    content: ''
 
   .icon
     transform: rotate(180deg)
@@ -80,12 +84,43 @@
 ._error
   //
 
-@keyframes slideIn
+._empty
+  .option
+    justify-content: center
+    text-transform: uppercase
+    font-size: 10px
+    color: var(--color-light-2)
+    cursor: default
+
+._animation
+  .options
+    transform: translateY(-8px)
+    opacity: 0
+    animation-name: borderColor
+    animation-duration: .3s
+    animation-timing-function: ease-in-out
+    animation-fill-mode: forwards
+
+._animationFallback
+  .options
+    animation-name: slideDown, borderColor
+    animation-duration: .2s
+    animation-timing-function: ease-in-out
+    animation-fill-mode: forwards
+    will-change: transform, opacity
+
+@keyframes slideDown
   0%
-    transform: translate3d(0,-8px,0)
+    transform: translateY(-8px)
     opacity: 0
   50%
     opacity: 1
   100%
-    transform: translate3d(0,0,0)
+    transform: translateY(0)
     opacity: 1
+
+@keyframes borderColor
+  0%
+    border-color: var(--color-light-2)
+  100%
+    border-color: var(--color-brand)

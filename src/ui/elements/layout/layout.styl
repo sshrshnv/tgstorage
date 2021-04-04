@@ -11,14 +11,11 @@
 
 ._sidebar
   position: relative
-  z-index: 2
+  z-index: 4
   flex-shrink: 0
   width: 100%
-  background-color: var(--color-black-2)
+  background-color: var(--sidebar-background-color)
   overflow: hidden
-
-  @media $light
-    background-color: var(--color-white)
 
   @media $desktop
     min-width: 320px
@@ -29,10 +26,7 @@
   z-index: 1
   flex-shrink: 0
   width: 100%
-  background-color: var(--color-black-1)
-
-  @media $light
-    background-color: var(--color-grey-0)
+  background-color: var(--content-background-color)
 
   @media $desktop
     position: relative

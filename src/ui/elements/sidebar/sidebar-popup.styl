@@ -1,6 +1,6 @@
 .root
   position: absolute
-  z-index: 4
+  z-index: 6
   display: flex
   flex-direction: column
   width: 100%
@@ -8,25 +8,27 @@
   background-color: inherit
 
 .header
+  position: relative
   display: flex
   justify-content: space-between
   align-items: center
   flex-shrink: 0
-  padding: 0 0 0 16px
+  padding: 0 0 0 20px
   height: 52px
-  background-color: var(--color-black-3)
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.12)
+  background-color: var(--sidebar-header-background-color)
 
 .title
   display: block
   margin: 0
   padding: 0
-  font-size: 20px
-  font-weight: 500
+  font-size: 17px
+  font-weight: normal
   line-height: 1
 
 .content
   flex-grow: 1
-  padding: 0 16px
+  padding: 0 20px
   background-color: inherit
   overflow: auto
   -webkit-overflow-scrolling: touch
@@ -35,25 +37,23 @@
   &::-webkit-scrollbar
     display: none
 
-:global(.animationFallback)
-  .root
+._animation
+  &.root
+    transform: translateX(80px)
+    opacity: 0
+
+._animationFallback
+  &.root
     will-change: transform, opacity
     animation-name: slideIn
     animation-duration: .2s
-    animation-timing-function: ease-out
+    animation-timing-function: ease-in-out
     animation-fill-mode: forwards
-
-:global(:not(.animationFallback))
-  .root
-    opacity: 0
-    transform: translateX(160px)
 
 @keyframes slideIn
   0%
+    transform: translateX(80px)
     opacity: 0
-    transform: translateX(160px)
-  10%
-    opacity: 1
   100%
-    opacity: 1
     transform: translateX(0)
+    opacity: 1

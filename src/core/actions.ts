@@ -1,55 +1,89 @@
 import { api } from '~/api'
 
-import { store, storeWorker } from './store'
+import { database } from './database'
+import { store } from './store'
+import type { User, Folders, Locales, Texts } from './store'
 
-export const setTexts = (texts) => {
+export const getLocale = () =>
+  store.getState().settings.locale
+
+export const setTexts = (
+  locale: Locales,
+  texts: Texts[Locales]
+) => {
+  const storeTexts = store.getState().texts
   store.setState({
     texts: {
-      ...store.getState().texts,
-      ...texts
+      ...storeTexts,
+      [locale]: {
+        ...storeTexts[locale],
+        ...texts
+      }
     }
   })
 }
 
-export const setUser = (user) => {
+export const setUser = (
+  user: User
+) => {
   store.setState({
     user,
     userLoading: false
   })
-  storeWorker.persistUser(user)
+  database.setUser(user)
 }
 
-export const setFolders = (folders) => {
+export const setFolders = (
+  folders: Folders
+) => {
   store.setState({
     folders,
     foldersLoading: false
   })
-  storeWorker.persistUser(folders)
+  database.setFolders(folders)
 }
 
 export const loadUser = async () => {
   const user = await api.getUser()
     .catch(({ error_code }) => {
       if (error_code === 401) {
-        //logOut()
+        return null
       }
-      return null
     })
-  setUser(user)
+
+  if (user) {
+    setUser(user)
+  }
 }
 
 export const logOut = async () => {
   await api.logOut()
   setUser(null)
+  setFolders([])
 }
 
 export const loadFolders = async () => {
   const folders = await api.getFolders()
-    .catch(({ error_code }) => {
-      if (error_code === 401) {
+    .catch((err) => {
+      if (err.error_code === 401) {
         logOut()
       }
-      return []
+      return null
     })
-  setFolders(folders)
+
+  if (folders) {
+    setFolders(folders)
+  }
+}
+
+export const createFolder = async (
+  title: string
+) => {
+  return api.createFolder(
+    title,
+    store.getState().folders
+  ).then(folders => {
+    setFolders(folders)
+    return true
+  })
 }

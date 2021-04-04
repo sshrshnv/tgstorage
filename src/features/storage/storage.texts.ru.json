@@ -1,3 +1,6 @@
 {
-
+  "generalCategoryTitle": "Главное",
+  "generalFolderTitle": "Закладки",
+  "categoryExistingValue": "Текущая категория",
+  "categoryNewValue": "Новая категория"
 }

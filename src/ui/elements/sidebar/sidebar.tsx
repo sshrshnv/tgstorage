@@ -12,7 +12,9 @@ export const Sidebar: FC<Props> = ({
 }) => {
   return (
     <div class={styles.root}>
-      {children}
+      <div>
+        {children}
+      </div>
     </div>
   )
 }

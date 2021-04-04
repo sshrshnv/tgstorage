@@ -2,26 +2,38 @@ import createStore from 'unistore'
 import devtools from 'unistore/devtools'
 
 import { detectLocale } from '~/tools/detect-locale'
+import type { AvailableLocales } from '~/tools/detect-locale'
 
-import StoreWorker from './store.worker.ts'
-import texts from './app.texts.json'
+import { database } from './database'
+import texts from './global.texts.json'
+
+export type Locales = AvailableLocales
 
 export type Texts = {
-  [k: string]: string
+  [key in Locales]: {
+    [k: string]: string
+  }
+}
+
+export type Settings = {
+  locale: Locales
 }
 
 export type User = {
   id: number
   access_hash: string
-  photo: {
+  first_name: string
+  photo?: {
     bytes: Uint8Array
     type: string
   } | null
 } | null
 
 export type Folders = {
-  id: string
+  id: number
+  access_hash: string
   title: string
+  category: string
 }[]
 
 export type Folder = {
@@ -30,31 +42,34 @@ export type Folder = {
   items: string[]
 }
 
+const [user, folders, settings]: [User, Folders, Settings] = await Promise.all([
+  database.getUser(),
+  database.getFolders(),
+  database.getSettings()
+])
+
 export type State = {
   user: User
   userLoading: boolean
   folders: Folders
   foldersLoading: boolean
+  settings: Settings
   texts: Texts
 }
-
-const storeWorker = new StoreWorker()
-
-const [user, folders]: [User, Folders] = await Promise.all([
-  storeWorker.rehydrateUser(),
-  storeWorker.rehydrateFolders()
-])
 
 const state: State = {
   user,
   userLoading: true,
   folders,
   foldersLoading: true,
-  texts: texts[detectLocale()]
+  settings: settings || {
+    locale: detectLocale()
+  },
+  texts
 }
 
 const store = process.env.NODE_ENV === 'production' ?
   createStore(state) :
   devtools(createStore(state))
 
-export { store, storeWorker }
+export { store }

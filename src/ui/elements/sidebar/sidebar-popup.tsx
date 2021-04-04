@@ -1,9 +1,11 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
 import { useEffect, useRef, useCallback } from 'preact/hooks'
+import cn from 'classnames'
 
 import { Button } from '~/ui/elements/button'
 import { CloseIcon } from '~/ui/icons'
+import { animationClassName } from '~/ui/styles/animation'
 
 import styles from './sidebar-popup.styl'
 
@@ -37,14 +39,13 @@ export const SidebarPopup: FC<Props> = ({
   useEffect(() => {
     history.pushState(history.state, document.title, location.href)
 
-    animation = sidebarPopupRef?.current?.animate([
-      { transform: 'translateX(160px)', opacity: 0 },
-      { opacity: 1.0, offset: 0.1 },
-      { transform: 'translateX(0)', opacity: 1.0 },
+    animation = sidebarPopupRef?.current?.animate?.([
+      { transform: 'translateX(80px)', opacity: 0 },
+      { transform: 'translateX(0)', opacity: 1 },
     ], {
       duration: 200,
       fill: 'forwards',
-      easing: 'ease-out'
+      easing: 'ease-in-out'
     })
   }, [])
 
@@ -55,7 +56,10 @@ export const SidebarPopup: FC<Props> = ({
 
   return (
     <div
-      class={styles.root}
+      class={cn(
+        styles.root,
+        styles[animationClassName]
+      )}
       ref={sidebarPopupRef}
     >
       <div class={styles.header}>

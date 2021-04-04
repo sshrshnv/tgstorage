@@ -15,17 +15,16 @@ import { handleUpdates } from './updates'
 import { loadUser } from './actions'
 import { useUser } from './hooks'
 
+console.log(AuthLazy)
+
 const App: FC = () => {
   const { user } = useUser()
 
   useEffect(() => {
-    loadUser()
+    //loadUser()
   }, [])
 
-  console.log(user)
-
-  return <StorageLazy/>
-
+  console.log(`==> app user:`, user)
   return user ? (
     <StorageLazy/>
   ) : (

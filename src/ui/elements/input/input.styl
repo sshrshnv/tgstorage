@@ -1,7 +1,7 @@
 .root
   position: relative
   width: 100%
-  color: var(--color-grey-0)
+  color: var(--color-light-2)
   background-color: inherit
 
 .input
@@ -10,12 +10,11 @@
   height: 44px
   padding: 0 12px
   border: none
-  background: transparent
+  background-color: inherit
   box-shadow: none
   font-family: inherit
   font-size: 16px
   color: var(--default-font-color)
-  pointer-events: auto
   appearance: none
   outline: none
 
@@ -25,11 +24,11 @@
   &:-webkit-autofill
   &:-internal-autofill-previewed
   &:-internal-autofill-selected
-    background-color: inherit !important
-    box-shadow: 0 0 0 1000px white inset !important
+    background-color: var(--color-dark-2) !important
+    box-shadow: 0 0 0 1000px var(--color-dark-2) inset !important
 
   &._border
-    border: 1px solid var(--color-grey-0)
+    border: 1px solid var(--color-light-2)
     border-radius: 8px
     transition: border-color .2s ease-in
 
@@ -50,7 +49,7 @@
   > svg
     width: 16px
     height: 16px
-    fill: var(--color-grey-0)
+    fill: var(--color-light-2)
 
 
 .label
@@ -72,10 +71,10 @@
 
 &._focused
   .input._border
-    border-color: var(--color-blue)
+    border-color: var(--color-brand)
 
   .label
-    color: var(--color-blue)
+    color: var(--color-brand)
 
 &._error
   .input._border

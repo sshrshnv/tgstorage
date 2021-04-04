@@ -1,6 +1,7 @@
 import vars from './vars.json'
 
 export const COLORS = [
+  vars['color-brand'],
   '#e57373','#69f0ae','#f06292','#eeff41','#4dd0e1','#ba68c8','#00e676',
   '#536dfe','#d4e157','#64ffda','#7c4dff','#00e5ff','#ff8a80','#1de9b6',
   '#81c784','#7986cb','#b2ff59','#ffd54f','#9575cd','#ffb74d','#ff7043',

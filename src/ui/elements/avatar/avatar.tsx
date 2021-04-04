@@ -1,6 +1,7 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
 import { useMemo } from 'preact/hooks'
+import cn from 'classnames'
 
 import { UserIcon } from '~/ui/icons'
 
@@ -20,9 +21,8 @@ export const Avatar: FC<Props> = ({
 }) => {
   const src = useMemo(() => {
     if (!image) return ''
-
     const blob = new Blob(
-      [image.bytes.buffer],
+      [new Uint8Array(image.bytes)],
       { type: `image/${image.type}` }
     )
     return window.URL.createObjectURL(blob)
@@ -36,7 +36,10 @@ export const Avatar: FC<Props> = ({
     />
   ) : (
     <div
-      class={styles.root}
+      class={cn(
+        styles.root,
+        styles._icon
+      )}
       onClick={onClick}
     >
       <UserIcon/>

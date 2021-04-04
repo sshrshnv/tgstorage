@@ -2,16 +2,16 @@ import { h } from 'preact'
 import { Suspense, lazy } from 'preact/compat'
 import type { FunctionComponent as FC } from 'preact'
 
-import { setTexts } from '~/core/actions'
-import { detectLocale } from '~/tools/detect-locale'
+import {  getLocale, setTexts } from '~/core/actions'
 import { Fallback } from '~/ui/elements/fallback'
 
 const Storage = lazy(async () => {
+  const locale = getLocale()
   const [module, texts] = await Promise.all([
     import('./storage'),
-    import(`./storage.texts.${detectLocale()}.json`)
+    import(`./storage.texts.${locale}.json`)
   ])
-  setTexts({ storage: texts.default })
+  setTexts(locale, { storage: texts.default })
   return module
 })
 

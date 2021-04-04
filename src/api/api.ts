@@ -1,5 +1,7 @@
-import { proxy } from 'comlink'
+import { wrap, proxy } from 'comlink'
 import type { ProxyMarked } from 'comlink'
+
+import type { User, Folders } from '~/core/store'
 
 import ApiWorker from './api.worker.ts'
 
@@ -9,6 +11,7 @@ export type Country = {
 
 export type Countries = {
   countries: {
+    name?: string
     default_name: string
     hidden: boolean
     iso2: string
@@ -20,29 +23,36 @@ export type Countries = {
   }[]
 }
 
-export type User = {
-  id: number
-  access_hash: string
-  photo: {
-    bytes: Uint8Array
-    type: string
-  } | null
-}
-
 export type Api = {
+  init: () => Promise<void>
+
   listenUpdates: (
     arg: ProxyMarked
   ) => void
 
   getCountry: () => Promise<Country>
 
-  getCountries: () => Promise<Countries>
+  getCountries: (
+    locale: string
+  ) => Promise<Countries>
 
   sendCode: (
     phone: string
   ) => Promise<{
     phone_code_hash: string
     timeout: number
+    type: { _: string }
+    next_type?: { _: string }
+  }>
+
+  resendCode: (
+    phone: string,
+    phoneCodeHash: string
+  ) => Promise<{
+    phone_code_hash: string
+    timeout: number
+    type: { _: string }
+    next_type?: { _: string }
   }>
 
   signIn: (
@@ -59,38 +69,44 @@ export type Api = {
     phoneCodeHash: string,
     name
   ) => Promise<{
-    user?: User
+    user: User
     terms_of_service?: any
   }>
 
   checkPassword: (
     password: string
   ) => Promise<{
-    user?: User
+    user: User
     terms_of_service?: any
   }>
 
   logOut: () => Promise<boolean>
 
-  getUser: () => Promise<{
-    id: number
-    access_hash: string
-  }>
+  getUser: () => Promise<User>
 
   getSavedMessages: () => Promise<any>
 
-  getFolders: () => Promise<{
-    id: number
-    access_hash: string
-    title: string
-    group: string
-  }[]>
+  getFolders: () => Promise<Folders>
+
+  createFolder: (
+    title: string,
+    folders: Folders
+  ) => Promise<Folders>
 }
 
-const apiWorker = new ApiWorker()
-const api: Api = await new apiWorker.Api()
+const apiWorker = new ApiWorker();
+(self as any)._aw = apiWorker
 
-const listenUpdates = (handler: (message: any) => void) =>
-  api.listenUpdates(proxy(handler))
+const Api: any = wrap(apiWorker)
+const api: Api = await new Api()
+
+await api.init()
+
+//const listenUpdates = (handler: (message: any) => void) =>
+//  api.listenUpdates(proxy(handler))
+
+const listenUpdates = () => {
+  //
+}
 
 export { api, listenUpdates }

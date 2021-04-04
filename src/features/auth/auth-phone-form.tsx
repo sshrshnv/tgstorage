@@ -3,7 +3,7 @@ import type { FunctionComponent as FC } from 'preact'
 import { useCallback, useEffect, useState } from 'preact/hooks'
 import type { StateUpdater } from 'preact/hooks'
 
-import { useTexts } from '~/core/hooks'
+import { useTexts, useSettings } from '~/core/hooks'
 import { api } from '~/api'
 import type { Countries } from '~/api'
 import { formatPhone } from '~/tools/format-phone'
@@ -27,6 +27,7 @@ type Props = {
   setPhone: StateUpdater<string>
   setPhoneCodeHash: StateUpdater<string>
   setTimeout: StateUpdater<number>
+  setCodeType: StateUpdater<{ type: string, nextType: string }>
   setStep: StateUpdater<Step>
 }
 
@@ -51,8 +52,10 @@ export const AuthPhoneForm: FC<Props> = ({
   setPhone,
   setPhoneCodeHash,
   setTimeout,
+  setCodeType,
   setStep
 }) => {
+  const { locale } = useSettings()
   const { texts } = useTexts('auth')
   const [ready, setReady] = useState(false)
   const [countries, setCountries] = useState<Countries['countries']>([])
@@ -96,12 +99,13 @@ export const AuthPhoneForm: FC<Props> = ({
     if (loading) return
     setLoading(true)
 
-    api.sendCode(phone).then(({ phone_code_hash, timeout }) => {
+    api.sendCode(phone).then(({ phone_code_hash, timeout, type, next_type }) => {
       setPhoneCodeHash(phone_code_hash)
       setStep('code')
       setTimeout(timeout)
-    }).catch(({ error_message }) => {
-      setError(error_message)
+      setCodeType({ type: type._, nextType: next_type?._ || '' })
+    }).catch(({ message }) => {
+      setError(message)
       setLoading(false)
     })
   }, [phone, loading, setPhoneCodeHash, setStep, setTimeout, setError])
@@ -109,7 +113,7 @@ export const AuthPhoneForm: FC<Props> = ({
   useEffect(() => {
     Promise.all([
       api.getCountry().then(({ country: value }) => setCountry({ ...country, value })),
-      api.getCountries().then(({ countries }) => setCountries(countries))
+      api.getCountries(locale).then(({ countries }) => setCountries(countries))
     ]).then(() => setReady(true))
   }, [])
 
@@ -126,7 +130,9 @@ export const AuthPhoneForm: FC<Props> = ({
 
   return (
     <Form onSubmit={handleSubmit} center>
-      <Text uppercase>{texts.title}</Text>
+      <Text uppercase bold>
+        {texts.title}
+      </Text>
       <Break size={20} px/>
 
       <Text center>
@@ -135,19 +141,20 @@ export const AuthPhoneForm: FC<Props> = ({
       <Break size={32} px/>
 
       <Select
+        name={texts.countryLabel}
         label={texts.countryLabel}
         value={country.value || country.foundValue}
         options={countries.map(country => country.hidden ? null : ({
-          text: country.default_name,
+          text: country.name || country.default_name,
           subText: `+${country.country_codes[0].country_code}`,
           value: country.iso2
         }))}
-        search
         onSelect={handleCountryValueSelect}
       />
       <Break size={28} px/>
 
       <Input
+        name={texts.phoneLabel}
         type="tel"
         label={texts.phoneLabel}
         value={phone}
@@ -160,7 +167,7 @@ export const AuthPhoneForm: FC<Props> = ({
       <Button
         type="submit"
         loading={loading}
-        disabled={!!timeout || !!error}
+        disabled={!!timeout}
         uppercase
         brand
       >

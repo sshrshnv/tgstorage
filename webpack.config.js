@@ -61,16 +61,16 @@ const makeConfig = (mode) => ({
   module: {
     rules: [{
         test: /\.worker\.ts?$/,
-        exclude: /node_modules\/.*/,
+        exclude: /node_modules\/(?!(idb-keyval|pako)\/).*/,
         use: [{
-          loader: 'comlink-loader'
+          loader: 'worker-loader'
         }, {
           loader: 'babel-loader',
           options: babelConfig.env[mode]
         }]
       } ,{
         test: /\.m?[jt]sx?$/,
-        exclude: /node_modules\/(?!(wouter-preact|@shelacek\/formica)\/).*/,
+        exclude: /node_modules\/(?!(comlink)\/).*/,
         resolve: { mainFields: mode === 'modern' ?
           ['esm2017', 'module', 'jsnext:main', 'browser', 'main'] :
           ['module', 'jsnext:main', 'browser', 'main']

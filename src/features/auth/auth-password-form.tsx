@@ -45,15 +45,17 @@ export const AuthPasswordForm: FC<Props> = () => {
 
     api.checkPassword(password).then(({ user }) => {
       setUser(user)
-    }).catch(({ error_message }) => {
-      setError(error_message)
+    }).catch(({ message }) => {
+      setError(message)
       setLoading(false)
     })
   }, [password, loading, setError])
 
   return (
     <Form onSubmit={handleSubmit} center>
-      <Text uppercase>{texts.passwordTitle}</Text>
+      <Text uppercase bold>
+        {texts.passwordTitle}
+      </Text>
       <Break size={20} px/>
 
       <Text center>
@@ -62,6 +64,7 @@ export const AuthPasswordForm: FC<Props> = () => {
       <Break size={32} px/>
 
       <Input
+        name={texts.passwordLabel}
         type={passwordVisible ? 'text' : 'password'}
         label={texts.passwordLabel}
         value={password}

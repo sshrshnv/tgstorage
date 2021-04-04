@@ -3,8 +3,10 @@ import type { FunctionComponent as FC } from 'preact'
 import { useState, useCallback, useRef, useEffect, useMemo } from 'preact/hooks'
 import cn from 'classnames'
 
+import { useTexts } from '~/core/hooks'
 import { Input } from '~/ui/elements/input'
 import { ArrowIcon } from '~/ui/icons'
+import { animationClassName } from '~/ui/styles/animation'
 
 import styles from './select.styl'
 
@@ -15,9 +17,9 @@ type Option = {
 } | null
 
 type Props = {
+  name?: string
   label: string
   options: Option[]
-  name?: string
   value?: string
   error?: string | boolean
   disabled?: boolean
@@ -35,7 +37,9 @@ export const Select: FC<Props> = ({
   search = false,
   onSelect
 }) => {
+  const { texts } = useTexts()
   const inputRef = useRef<HTMLInputElement>(null)
+  const optionsRef = useRef<HTMLDivElement>(null)
   const [expanded, setExpanded] = useState(false)
   const [focused, setFocused] = useState(false)
   const [selected, setSelected] = useState(false)
@@ -54,11 +58,12 @@ export const Select: FC<Props> = ({
   ), [searchValue, filteredOptions])
 
   const expand = useCallback(() => {
+    if (disabled) return
     if (!focused) {
       inputRef?.current?.focus()
     }
     setExpanded(true)
-  }, [focused, inputRef, setExpanded])
+  }, [disabled, focused, inputRef, setExpanded])
 
   const collapse = useCallback(() => {
     if (focused) {
@@ -68,11 +73,7 @@ export const Select: FC<Props> = ({
   }, [focused, inputRef, setExpanded])
 
   const toggle = useCallback(() => {
-    if (expanded) {
-      collapse()
-    } else {
-      expand()
-    }
+    expanded ? collapse() : expand()
   }, [expanded, collapse, expand])
 
   const handleSearch = useCallback(value => {
@@ -98,6 +99,20 @@ export const Select: FC<Props> = ({
   }, [search, selected, filteredOptions.length, select, setFocused])
 
   useEffect(() => {
+    if (!expanded) return
+
+    optionsRef?.current?.animate?.([
+      { transform: 'translateY(-8px)', opacity: 0 },
+      { opacity: 1, offset: 0.5 },
+      { transform: 'translateY(0)', opacity: 1 }
+    ], {
+      duration: 200,
+      fill: 'forwards',
+      easing: 'ease-in-out'
+    })
+  }, [expanded])
+
+  useEffect(() => {
     const selectedOption = options.find(option => option && option.value === value)
     setSearchValue(selectedOption?.text || '')
     selectedOption && setSelected(true)
@@ -105,7 +120,7 @@ export const Select: FC<Props> = ({
 
   useEffect(() => {
     const handleKey = ({ code }) => {
-      if (!focused) return
+      if (!focused && !expanded) return
       switch (code.toLowerCase()) {
         case 'enter':
           expanded ? collapse() : expand()
@@ -123,8 +138,10 @@ export const Select: FC<Props> = ({
     <div
       class={cn(
         styles.root,
+        styles[animationClassName],
         focused && styles._focused,
         expanded && styles._expanded,
+        (!search && !filteredOptions.length) && styles._empty,
         error && styles._error,
         disabled && styles._disabled
       )}
@@ -136,15 +153,19 @@ export const Select: FC<Props> = ({
         name={name}
         error={error}
         disabled={disabled}
-        readonly={!search}
+        readonly={!search || disabled}
         icon={<ArrowIcon class={styles.icon}/>}
         forwardedRef={inputRef}
+        fakeFocus={expanded}
         onInput={handleSearch}
         onFocus={handleFocus}
         onBlur={handleBlur}
       />
       { expanded && (
-        <div class={styles.options}>
+        <div
+          class={styles.options}
+          ref={optionsRef}
+        >
           { isFullSearchValue && (
             <div
               class={styles.option}
@@ -171,6 +192,11 @@ export const Select: FC<Props> = ({
                 )}
               </div>
             )
+          )}
+          { !search && !filteredOptions.length && (
+            <div class={styles.option}>
+              { texts.empty }
+            </div>
           )}
         </div>
       )}

@@ -1,4 +1,4 @@
-import { h } from 'preact'
+import { Fragment, h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
 import { useCallback, useState } from 'preact/hooks'
 import type { StateUpdater } from 'preact/hooks'
@@ -19,12 +19,25 @@ import type { Step } from './auth'
 type Props = {
   phone: string
   phoneCodeHash: string
+  timeout: number
+  codeType: {
+    type: string
+    nextType: string
+  }
+  setPhoneCodeHash: StateUpdater<string>
+  setTimeout: StateUpdater<number>
+  setCodeType: StateUpdater<{ type: string, nextType: string }>
   setStep: StateUpdater<Step>
 }
 
 export const AuthCodeForm: FC<Props> = ({
   phone,
   phoneCodeHash,
+  timeout,
+  codeType,
+  setPhoneCodeHash,
+  setTimeout,
+  setCodeType,
   setStep
 }) => {
   const { texts } = useTexts('auth')
@@ -46,45 +59,55 @@ export const AuthCodeForm: FC<Props> = ({
     setStep('phone')
   }, [setStep])
 
+  const handleResend = useCallback(() => {
+    api.resendCode(phone, phoneCodeHash).then(({ phone_code_hash, timeout, type, next_type }) => {
+      setPhoneCodeHash(phone_code_hash)
+      setTimeout(timeout)
+      setCodeType({ type: type._, nextType: next_type?._ || '' })
+    }).catch(({ message }) => {
+      setError(message)
+    })
+  }, [phone, phoneCodeHash, codeType, setTimeout, setError])
+
   const handleSubmit = useCallback(() => {
     if (loading) return
     setLoading(true)
 
     api.signIn(phone, code, phoneCodeHash).then(({ user }) => {
       if (!user) {
-        /*api.signUp(phone, phoneCodeHash, 'Tom').then(({ user }) => {
-          setUser(user)
-        })
-        return*/
         setError('PHONE_NUMBER_UNOCCUPIED')
         setLoading(false)
         return
       }
-
       setUser(user)
-    }).catch(({ error_message }) => {
-      if (error_message === 'SESSION_PASSWORD_NEEDED') {
+    }).catch(({ message }) => {
+      if (message === 'SESSION_PASSWORD_NEEDED') {
         setStep('password')
         return
       }
-      setError(error_message)
+      setError(message)
       setLoading(false)
     })
   }, [phone, phoneCodeHash, code, loading, setStep, setError])
 
   return (
     <Form onSubmit={handleSubmit} center>
-      <Text uppercase icon={<EditIcon onClick={handlePhoneChange}/>}>
+      <Text
+        icon={<EditIcon onClick={handlePhoneChange}/>}
+        uppercase
+        bold
+      >
         {phone}
       </Text>
       <Break size={20} px/>
 
       <Text center>
-        {texts.codeDescription}
+        {texts[`codeDescription:${codeType.type}`]}
       </Text>
       <Break size={32} px/>
 
       <Input
+        name={texts.codeLabel}
         type="tel"
         label={texts.codeLabel}
         value={code}
@@ -97,12 +120,24 @@ export const AuthCodeForm: FC<Props> = ({
       <Button
         type="submit"
         loading={loading}
-        disabled={!!error}
         uppercase
         brand
       >
         {texts.button}
       </Button>
+
+      {!timeout && !loading && codeType.nextType && (
+        <Fragment>
+          <Break size={28} px/>
+          <Button
+            type="button"
+            onClick={handleResend}
+            inline
+          >
+            {texts[`button:${codeType.nextType}`]}
+          </Button>
+        </Fragment>
+      )}
     </Form>
   )
 }

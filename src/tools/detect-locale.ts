@@ -1,7 +1,9 @@
-const AVALIABLE_LOCALES = ['en', 'ru']
-const FALLBACK_LOCALE = 'en'
+export const AVALIABLE_LOCALES = ['en', 'ru'] as const
+export const FALLBACK_LOCALE= 'en' as const
 
-export const detectLocale = (): string => {
-  const locale = window.navigator.language.slice(0,2)
+export type AvailableLocales = typeof AVALIABLE_LOCALES[number]
+
+export const detectLocale = (): AvailableLocales => {
+  const locale = window.navigator.language.slice(0,2) as AvailableLocales
   return AVALIABLE_LOCALES.includes(locale) ? locale : FALLBACK_LOCALE
 }

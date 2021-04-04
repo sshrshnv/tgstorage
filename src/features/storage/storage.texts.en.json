@@ -1,12 +1,21 @@
 {
-  "generalGroupTitle": "General",
+  "generalCategoryTitle": "General",
   "generalFolderTitle": "Saved Messages",
-  "folderFormTitle": "New folder",
-  "categoryTitle": "Edit category",
+  "folderFormTitle": "New Folder",
+  "categoryTitle": "Edit Category",
   "settingsTitle": "Settings",
   "notificationsTitle": "Notifications",
   "profileTitle": "Profile",
   "categoryLabel": "Category",
-  "categoryNameLabel": "Category Name",
-  "folderNameLabel": "Folder Name"
+  "categoryExistingValue": "Existing Category",
+  "categoryNewValue": "New Category",
+  "categoryTypeLabel": "Category type",
+  "categoryNameLabel": "Category name",
+  "folderNameLabel": "Folder name",
+  "saveButton": "Save",
+  "logOutButton": "Log out",
+  "errorCategoryNameEmpty": "Invalid Category name",
+  "errorCategoryNameExist": "Category already exists",
+  "errorFolderNameEmpty": "Invalid Folder name",
+  "errorFolderNameExist": "Folder already exists"
 }
