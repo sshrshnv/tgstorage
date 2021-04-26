@@ -8,8 +8,9 @@
 .icon
   width: 16px
   height: 16px
-  transition: transform .2s ease-out, fill .2s ease-in
+  transition: transform .2s ease-out, fill .2s ease-in, opacity .2s ease-in
   fill: var(--color-light-2)
+  cursor: pointer
 
 .options
   position: absolute
@@ -81,9 +82,6 @@
   .icon
     transform: rotate(180deg)
 
-._error
-  //
-
 ._empty
   .option
     justify-content: center
@@ -92,12 +90,19 @@
     color: var(--color-light-2)
     cursor: default
 
+._disabled
+  opacity: .5
+  cursor: not-allowed
+
+  .icon
+    cursor: not-allowed
+
 ._animation
   .options
     transform: translateY(-8px)
     opacity: 0
     animation-name: borderColor
-    animation-duration: .3s
+    animation-duration: .2s
     animation-timing-function: ease-in-out
     animation-fill-mode: forwards
 

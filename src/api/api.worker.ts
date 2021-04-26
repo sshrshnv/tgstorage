@@ -8,7 +8,8 @@ const API_ID = +(process.env.API_ID || '')
 const API_HASH = `${process.env.API_HASH || ''}`
 const IS_TEST = `${process.env.API_TEST || ''}` !== 'false'
 const META_KEY = IS_TEST ? 'metatest' : 'meta'
-const FOLDER_POSTFIX = '::tgs'
+const SEPARATOR = '::'
+const FOLDER_POSTFIX = `${SEPARATOR}tgs`
 
 const initialMeta = {
   pfs: false,
@@ -19,7 +20,14 @@ const initialMeta = {
 
 class Api {
   private client: Client
-  private call: <K extends keyof MethodDeclMap>(method: K, data?: MethodDeclMap[K]['req'], dc?: number) => Promise<any>
+  private call: <K extends keyof MethodDeclMap>(
+    method: K,
+    data?: MethodDeclMap[K]['req'],
+    params?: {
+      dc?: number
+      timeout?: number
+    }
+  ) => Promise<any>
 
   public async init() {
     const meta = await get(META_KEY) || initialMeta
@@ -36,7 +44,11 @@ class Api {
 
     this.client.on('metaChanged', meta => set(META_KEY, meta))
 
-    this.call = (method, data = {}, dc) => {
+    this.call = async (method, data = {}, { dc, timeout } = {}) => {
+      if (timeout) {
+        await wait(timeout)
+      }
+
       return new Promise((resolve, reject) => this.client.call(method, data, { dc }, async (err, res) => {
         if (!err) {
           resolve(res)
@@ -47,11 +59,9 @@ class Api {
 
         if (code === 420) {
           const [, delay] = message.split('FLOOD_WAIT_')
-          console.info(`!! FLOOD WAIT ${delay}`)
-
-          await wait(+delay * 1000)
-
-          return this.call(method, data, dc)
+          console.error(`!! FLOOD WAIT ${delay}`)
+          resolve(this.call(method, data, { dc, timeout: +delay * 1000 }))
+          return
         }
 
         if (code === 303) {
@@ -62,7 +72,8 @@ class Api {
             this.client.dc.setBaseDC(dc)
           }
 
-          return this.call(method, data, dc)
+          resolve(this.call(method, data, { dc }))
+          return
         }
 
         reject(err)
@@ -169,7 +180,9 @@ class Api {
       cdn_supported: false,
       limit: 1048576, // 1MB
       offset: 0
-    }, dcId)
+    }, {
+      dc: dcId
+    })
     const type = file.type._.replace('storage.file', '').toLowerCase()
     return {
       bytes: file.bytes,
@@ -232,6 +245,7 @@ class Api {
         !left
       ))
       .map(chat => convertChatToFolder(chat))
+
     return sortFolders(filteredFolders)
   }
 
@@ -245,11 +259,12 @@ class Api {
       broadcast: true,
       megagroup: false
     })
-    const folder = convertChatToFolder(chats[0])
-    await this.archiveFolder(folder)
+    const newFolder = convertChatToFolder(chats[0])
+    await this.archiveFolder(newFolder)
+
     return sortFolders([
       ...folders,
-      folder
+      newFolder
     ])
   }
 
@@ -272,6 +287,87 @@ class Api {
     })
   }
 
+  public async editFolder(
+    newTitle: string,
+    title: string,
+    category: string,
+    folders
+  ) {
+    let editableFolder: any = null
+    const otherFolders: any[] = []
+
+    folders.forEach(folder => {
+      if (folder.title === title && folder.category === category) {
+        editableFolder = folder
+      } else {
+        otherFolders.push(folder)
+      }
+    })
+
+    const { chats } = await this.call('channels.editTitle', {
+      channel: {
+        _: 'inputChannel',
+        channel_id: editableFolder.id,
+        access_hash: editableFolder.access_hash
+      },
+      title: `${newTitle}${FOLDER_POSTFIX}`
+    })
+    const newFolder = convertChatToFolder(chats[0])
+
+    return sortFolders([
+      ...otherFolders,
+      newFolder
+    ])
+  }
+
+  public async editCategory(
+    newCategory: string,
+    category: string,
+    folders
+  ) {
+    const editableFolders: any[] = []
+    const otherFolders: any[] = []
+
+    folders.forEach(folder => {
+      (folder.category === category ? editableFolders : otherFolders).push(folder)
+    })
+
+    const updates = await Promise.all(editableFolders.map((folder, index) => this.call('channels.editTitle', {
+      channel: {
+        _: 'inputChannel',
+        channel_id: folder.id,
+        access_hash: folder.access_hash
+      },
+      title: `${folder.title}${SEPARATOR}${newCategory}${FOLDER_POSTFIX}`
+    }, {
+      timeout: (index % 2 ? index -1 : index) * 1500
+    })))
+    const newFolders = updates.map(({ chats }) => convertChatToFolder(chats[0]))
+
+    return sortFolders([
+      ...otherFolders,
+      ...newFolders
+    ])
+  }
+
+  public async deleteFolder(
+    folder: {
+      id: number
+      access_hash: string
+    },
+    folders
+  ) {
+    await this.call('channels.deleteChannel', {
+      channel: {
+        _: 'inputChannel',
+        channel_id: folder.id,
+        access_hash: folder.access_hash
+      }
+    })
+
+    return folders.filter(({ id }) => id !== folder.id)
+  }
+
   public getMessages() {
     return 'test'
   }
@@ -282,7 +378,7 @@ const wait = delay => new Promise(resolve => setTimeout(resolve, delay))
 const convertChatToFolder = chat => {
   const [title, category] = chat.title
     .replace(FOLDER_POSTFIX, '')
-    .split('::')
+    .split(SEPARATOR)
     .slice(0, 2)
 
   return {

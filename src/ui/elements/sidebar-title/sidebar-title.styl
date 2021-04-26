@@ -1,0 +1,21 @@
+.root
+  position: relative
+  display: flex
+  flex-shrink: 0
+  padding: 8px 0 8px 20px
+  background-color: inherit
+
+  &:not(:nth-child(3))
+    margin-top: 20px
+
+.title
+  flex-shrink: 0
+  display: block
+  margin: 0
+  padding: 0
+  width: calc(100% - 42px)
+  overflow: hidden
+  text-overflow: ellipsis
+  white-space: nowrap
+  font-size: 22px
+  font-weight: 700

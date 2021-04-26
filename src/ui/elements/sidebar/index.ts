@@ -1,6 +1,1 @@
 export * from './sidebar'
-export * from './sidebar-header'
-export * from './sidebar-title'
-export * from './sidebar-item'
-export * from './sidebar-action-button'
-export * from './sidebar-popup'

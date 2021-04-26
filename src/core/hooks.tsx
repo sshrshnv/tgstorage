@@ -1,7 +1,7 @@
 import { useMemo } from 'preact/hooks'
 import { useStoreState } from 'unistore-hooks'
 
-import type { State, Locales } from './store'
+import type { State, Locales, Folders } from './store'
 
 export const useTexts = (feature?: 'auth'|'storage') => {
   const {
@@ -84,8 +84,34 @@ export const useFolders = () => {
   }), [folders, foldersLoading])
 }
 
-export const useFolder = () => {
-  return useMemo(() => ({
+export const useFolder = (id = 0) => {
+  const { folderContent }: {
+    folderContent: State['folderContent'][0]
+  } = useStoreState(state => ({
+    folderContent: state.folderContent[id],
+  }))
+  const { folders } = useFolders()
+  const folder = folders.find(folder => folder.id === id) as Folders[0]
 
-  }), [])
+  return useMemo(() => ({
+    folder: {
+      ...folder,
+      ...folderContent
+    }
+  }), [folder, folderContent])
+}
+
+export const useActiveFolder = () => {
+  const {
+    activeFolderId
+  }: {
+    activeFolderId: State['activeFolderId']
+  } = useStoreState(state => ({
+    activeFolderId: state.activeFolderId
+  }))
+  const { folder } = useFolder(activeFolderId)
+
+  return useMemo(() => ({
+    folder
+  }), [folder])
 }

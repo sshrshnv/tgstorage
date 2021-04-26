@@ -1,0 +1,23 @@
+.root
+  display: flex
+  align-items: center
+  width: 100%
+  height: 48px
+  padding: 0 20px 0 0
+  background-color: var(--sidebar-header-background-color)
+  box-shadow: 1px 1px 2px 0 rgba(0, 0, 0, 0.12)
+
+.title
+  display: block
+  margin: 0
+  padding: 0 0 2px
+  font-size: 17px
+  font-weight: normal
+  line-height: 1
+
+._withTitle
+  @media $desktop
+    padding-left: 20px
+
+    .backButton
+      display: none

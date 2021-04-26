@@ -3,7 +3,6 @@ const path = require('path')
 const webpack = require('webpack')
 const dotenv = require('dotenv')
 const HtmlPlugin = require('html-webpack-plugin')
-//const ModuleNomodulePlugin = require('webpack-module-nomodule-plugin')
 const WorkboxPlugin = require('workbox-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 //const CopyPlugin = require('copy-webpack-plugin')
@@ -26,7 +25,7 @@ const isDev = () => !isProd()
 const isStage = () => process.env.BUILD_ENV === 'stage'
 const isBundleAnalyzer = () => !!process.env.BUNDLE_ANALYZER
 
-const makeConfig = (mode) => ({
+module.exports = {
   mode: isDev() ? 'development' : 'production',
 
   entry: {
@@ -35,8 +34,8 @@ const makeConfig = (mode) => ({
 
   output: {
     path: path.resolve('./build'),
-    filename: isDev() ? `[name].${mode}.build.js` : `[name].${mode}.build.[contenthash:8].js`,
-    chunkFilename: isDev() ? `[name].${mode}.build.js` : `[name].${mode}.build.[contenthash:8].js`,
+    filename: isDev() ? `[name].build.js` : `[name].build.[contenthash:8].js`,
+    chunkFilename: isDev() ? `[name].build.js` : `[name].build.[contenthash:8].js`,
     publicPath: process.env.ASSETS_HOST || '/'
   },
 
@@ -51,10 +50,7 @@ const makeConfig = (mode) => ({
     ],
     alias: {
       '~': path.resolve('./src'),
-      'react': 'preact/compat',
-      'react-dom': 'preact/compat',
-      'core-js-pure': 'core-js',
-      ...(mode === 'modern' ? { 'url': 'native-url' } : {})
+      'url': 'native-url'
     }
   },
 
@@ -66,18 +62,15 @@ const makeConfig = (mode) => ({
           loader: 'worker-loader'
         }, {
           loader: 'babel-loader',
-          options: babelConfig.env[mode]
+          options: babelConfig
         }]
       } ,{
         test: /\.m?[jt]sx?$/,
         exclude: /node_modules\/(?!(comlink)\/).*/,
-        resolve: { mainFields: mode === 'modern' ?
-          ['esm2017', 'module', 'jsnext:main', 'browser', 'main'] :
-          ['module', 'jsnext:main', 'browser', 'main']
-        },
+        resolve: { mainFields: ['esm2017', 'module', 'jsnext:main', 'browser', 'main'] },
         use: [{
           loader: 'babel-loader',
-          options: babelConfig.env[mode]
+          options: babelConfig
         }]
       }, {
         test: /\.styl$/,
@@ -146,10 +139,6 @@ const makeConfig = (mode) => ({
       path: `./.env.${process.env.BUILD_ENV}`
     }),
 
-    new webpack.DefinePlugin({
-      'process.env.MODE': mode
-    }),
-
     new HtmlPlugin({
       template: './src/core/app.html',
       filename: 'index.html',
@@ -163,21 +152,19 @@ const makeConfig = (mode) => ({
       }
     }),
 
-    //new ModuleNomodulePlugin(mode),
-
     isProd() ? new MiniCssExtractPlugin({
       filename: '[name].build.[contenthash:8].css',
       chunkFilename: '[name].build.[contenthash:8].css'
     }) : () => {},
 
-    /*(isProd() && mode === 'modern') ? new CopyPlugin({
+    /*isProd() ? new CopyPlugin({
       patterns: [
         { from: './src/app.webmanifest', to: './app-v1.webmanifest' },
         { from: './src/ui/images/*', to: './[name]-v1[ext]' },
       ]
     }) : () => {},*/
 
-    (isProd() && mode === 'modern') ? new WorkboxPlugin.GenerateSW({
+    isProd() ? new WorkboxPlugin.GenerateSW({
       cacheId: 'tgstorage',
       navigateFallback: '/index.html',
       navigateFallbackAllowlist: [/^(?!\/__)/],
@@ -218,17 +205,13 @@ const makeConfig = (mode) => ({
       new TerserPlugin({
         terserOptions: {
           compress: {
-            ecma: mode === 'modern' ? 2019 : 5
-          },
-          mangle: {
-            safari10: true
+            ecma: 2019
           },
           output: {
-            ecma: mode === 'modern' ? 2019 : 5,
+            ecma: 2019,
             beautify: false,
             comments: false,
-            ascii_only: true,
-            safari10: true
+            ascii_only: true
           }
         }
       }),
@@ -263,10 +246,4 @@ const makeConfig = (mode) => ({
     children: isBundleAnalyzer(),
     modules: isBundleAnalyzer()
   }
-})
-
-module.exports =
-  isDev() ? makeConfig('modern') :
-  isBundleAnalyzer() ? makeConfig(process.env.BUNDLE_ANALYZER) :
-  makeConfig('legacy')
-  //[makeConfig('modern'), makeConfig('legacy')]
+}

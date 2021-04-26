@@ -1,22 +1,113 @@
 .root
-  position: relative
-  top: 0
-  right: 18px
+  position: absolute
+  z-index: 4
+  top: 17px
+  right: 6px
   display: flex
   align-items: center
+  background-color: inherit
+
+  &::before
+    position: fixed
+    z-index: -1
+    top: 0
+    right: 0
+    bottom: 0
+    left: 0
+    display: none
+    content: ''
+    cursor: default
 
 .button
   width: 32px
   height: 32px
 
   > svg
-    fill: var(--color-dark-3)
-
-  &:active
-    background-color: var(--color-dark-1)
+    fill: var(--menu-icon-color)
 
   &::after
     position: absolute
     width: 100%
     height: 100%
     content: ''
+
+.dropdown
+  position: absolute
+  z-index: 5
+  top: 8px
+  right: 8px
+  width: 120px
+  border: 1px solid var(--dropdown-border)
+  border-radius: 8px
+  box-shadow: 0 2px 4px 1px rgba(0, 0, 0, 0.12)
+  background-color: inherit
+
+.item
+  margin: 0
+  display: flex
+  justify-content: space-between
+  align-items: center
+  flex-shrink: 0
+  height: 40px
+  padding: 0 12px
+  border-top: 1px solid var(--dropdown-item-border)
+  cursor: pointer
+  font-size: 14px
+  font-family: inherit
+  background-color: inherit
+  transition: .2s ease-in
+  transition-property: background, color
+
+  &:first-child
+    border-top-left-radius: 8px
+    border-top-right-radius: 8px
+    border-top: none
+
+  &:last-child
+    border-bottom-left-radius: 8px
+    border-bottom-right-radius: 8px
+
+  &._warning
+    color: var(--color-red)
+
+  &._danger
+    background-color: var(--color-red)
+    color: var(--color-white)
+
+._horizontal
+  top: 6px
+  right: 11px
+
+  .button > svg
+    transform: rotate(90deg)
+
+._expanded
+  z-index: 5
+
+  &::before
+    display: block
+
+._animation
+  .dropdown
+    transform-origin: 100% 20%
+    transform: scale(0)
+    opacity: 0
+
+._animationFallback
+  .dropdown
+    animation-name: scaleLeft
+    animation-duration: .2s
+    animation-timing-function: ease-in-out
+    animation-fill-mode: forwards
+    transform-origin: 100% 20%
+    will-change: transform, opacity
+
+@keyframes scaleLeft
+  0%
+    transform: scale(0)
+    opacity: 0
+  50%
+    opacity: 1
+  100%
+    transform: scale(1)
+    opacity: 1

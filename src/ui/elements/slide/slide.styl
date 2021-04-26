@@ -1,0 +1,20 @@
+._animation
+  &.root
+    transform: translateX(80px)
+    opacity: 0
+
+._animationFallback
+  &.root
+    will-change: transform, opacity
+    animation-name: slideIn
+    animation-duration: .2s
+    animation-timing-function: ease-in-out
+    animation-fill-mode: forwards
+
+@keyframes slideIn
+  0%
+    transform: translateX(80px)
+    opacity: 0
+  100%
+    transform: translateX(0)
+    opacity: 1

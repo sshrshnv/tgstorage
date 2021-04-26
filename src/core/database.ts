@@ -1,7 +1,6 @@
 import { wrap } from 'comlink'
 
 import type { User, Settings, Folders, Folder } from './store'
-
 import DatabaseWorker from './database.worker.ts'
 
 export type Database = {

@@ -92,6 +92,24 @@ export type Api = {
     title: string,
     folders: Folders
   ) => Promise<Folders>
+
+  editFolder: (
+    newTitle: string,
+    title: string,
+    category: string,
+    folders: Folders
+  ) => Promise<Folders>
+
+  editCategory: (
+    newCategory: string,
+    category: string,
+    folders: Folders
+  ) => Promise<Folders>
+
+  deleteFolder: (
+    folder: Folders[0],
+    folders: Folders
+  ) => Promise<Folders>
 }
 
 const apiWorker = new ApiWorker();

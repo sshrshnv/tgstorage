@@ -1,16 +1,18 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC, RefObject } from 'preact'
-import { useCallback, useRef, useState, useEffect, useMemo } from 'preact/hooks'
+import { useCallback, useRef, useState, useEffect } from 'preact/hooks'
 import cn from 'classnames'
 
 import { moveCursorToEnd } from './input.helpers'
 import styles from './input.styl'
 
 type Props = {
+  class?: string
   name?: string
-  label: string
+  label?: string
   error?: string | boolean
   value?: string
+  placeholder?: string
   forwardedRef?: RefObject<HTMLInputElement>
   icon?: h.JSX.Element | null
   autoComplete?: string
@@ -27,6 +29,7 @@ type Props = {
 }
 
 export const Input: FC<Props> = ({
+  class: className,
   label,
   value,
   error,
@@ -72,6 +75,7 @@ export const Input: FC<Props> = ({
   return (
     <div class={cn(
       styles.root,
+      className,
       (focused || fakeFocus) && styles._focused,
       error && styles._error
     )}>

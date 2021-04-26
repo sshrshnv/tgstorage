@@ -1,45 +1,42 @@
 import { expose } from 'comlink'
 import { get, set } from 'idb-keyval'
 
-const setData = (key: string, data) =>
-  set(key, data).catch(() => {/*nothing*/})
-
-const getData = async (key: string, fallback: any = null) => {
-  const data = await get(key).catch(() => fallback)
-  return data || fallback
-}
-
 class Database {
-  constructor() {
-    //
+  async set(key: string, data) {
+    return set(key, data).catch(() => {/*nothing*/})
+  }
+
+  async get(key: string, fallback: any = null) {
+    const data = await get(key).catch(() => fallback)
+    return data || fallback
   }
 
   setUser(user) {
-    return setData('user', user)
+    return this.set('user', user)
   }
   getUser() {
-    return getData('user', null)
+    return this.get('user', null)
   }
 
   setSettings(settings) {
-    return setData('settings', settings)
+    return this.set('settings', settings)
   }
   getSettings() {
-    return getData('settings', null)
+    return this.get('settings', null)
   }
 
   setFolders(folders) {
-    return set('folders', folders)
+    return this.set('folders', folders)
   }
   getFolders() {
-    return getData('folders', [])
+    return this.get('folders', [])
   }
 
   setFolder(folder) {
-    return setData(`folder-${folder.id}`, folder)
+    return this.set(`folder-${folder.id}`, folder)
   }
   getFolder(folder) {
-    return getData(`folder-${folder.id}`, { ...folder })
+    return this.get(`folder-${folder.id}`, { ...folder })
   }
 }
 
