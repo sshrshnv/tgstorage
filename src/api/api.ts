@@ -1,7 +1,7 @@
 import { wrap, proxy } from 'comlink'
 import type { ProxyMarked } from 'comlink'
 
-import type { User, Folders } from '~/core/store'
+import type { User, Folders, Folder, FoldersMessages } from '~/core/store'
 
 import ApiWorker from './api.worker.ts'
 
@@ -23,6 +23,11 @@ export type Countries = {
   }[]
 }
 
+export type Updates = {
+  folders?: Folders
+  foldersMessages?: FoldersMessages
+}
+
 export type Api = {
   init: () => Promise<void>
 
@@ -37,7 +42,8 @@ export type Api = {
   ) => Promise<Countries>
 
   sendCode: (
-    phone: string
+    phone: string,
+    country: string
   ) => Promise<{
     phone_code_hash: string
     timeout: number
@@ -58,23 +64,16 @@ export type Api = {
   signIn: (
     phone: string,
     code: string,
-    phoneCodeHash: string
+    phoneCodeHash: string,
+    country: string
   ) => Promise<{
     user?: User
     terms_of_service?: any
   }>
 
-  signUp: (
-    phone: string,
-    phoneCodeHash: string,
-    name
-  ) => Promise<{
-    user: User
-    terms_of_service?: any
-  }>
-
   checkPassword: (
-    password: string
+    password: string,
+    country: string
   ) => Promise<{
     user: User
     terms_of_service?: any
@@ -82,34 +81,35 @@ export type Api = {
 
   logOut: () => Promise<boolean>
 
-  getUser: () => Promise<User>
-
-  getSavedMessages: () => Promise<any>
-
-  getFolders: () => Promise<Folders>
+  getFolders: () => Promise<Updates>
 
   createFolder: (
-    title: string,
-    folders: Folders
-  ) => Promise<Folders>
+    name: string
+  ) => Promise<Updates>
 
   editFolder: (
-    newTitle: string,
-    title: string,
-    category: string,
-    folders: Folders
-  ) => Promise<Folders>
+    name: string,
+    folder: Folder
+  ) => Promise<Updates>
 
   editCategory: (
     newCategory: string,
     category: string,
-    folders: Folders
-  ) => Promise<Folders>
+  ) => Promise<Updates>
 
   deleteFolder: (
-    folder: Folders[0],
-    folders: Folders
-  ) => Promise<Folders>
+    folder: Folder
+  ) => Promise<Updates>
+
+  getMessages: (
+    folder: Folder,
+    offsetId?: number
+  ) => Promise<Updates>
+
+  sendMessage: (
+    note: string,
+    folder: Folder
+  ) => Promise<Updates>
 }
 
 const apiWorker = new ApiWorker();

@@ -14,8 +14,8 @@ type Props = {
   title: string
   description: string
   index?: number
-  disabled?: boolean
   menu?: MenuProps | null
+  disabled?: boolean
   onClick?: () => void
 }
 
@@ -39,14 +39,17 @@ export const SidebarItem: FC<Props> = ({
       ref={parentRef}
       onClick={onClick}
     >
-      <div class={styles.icon} style={{ borderColor: color }}>
+      <div
+        class={styles.icon}
+        style={{ borderColor: color }}
+      >
         <FolderIcon style={{ fill: color }}/>
       </div>
       <div class={styles.content}>
         <div class={styles.title}>{title}</div>
         <div class={styles.description}>{description || 'Empty'}</div>
       </div>
-      { menu && (
+      {(menu && !disabled) && (
         <Menu {...menu} parentRef={parentRef}/>
       )}
     </div>

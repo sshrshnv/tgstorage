@@ -37,20 +37,6 @@
   opacity: .5
   cursor: not-allowed
 
-&._brand
-  color: var(--color-white)
-  background-color: var(--color-brand)
-
-  &:active
-    opacity: .75
-
-&._light
-  color: var(--color-white)
-  background-color: var(--color-dark-4)
-
-  &:active
-    opacity: .75
-
 &._uppercase
   text-transform: uppercase
   font-size: 14px
@@ -76,3 +62,22 @@
   width: auto
   height: auto
   color: var(--color-light-2)
+
+&._brand
+  color: var(--color-white)
+  background-color: var(--color-brand)
+
+  &:active
+    opacity: .75
+
+  &._outline
+    color: var(--color-brand)
+    border: 1px solid var(--color-brand)
+    background-color: inherit
+
+&._light
+  color: var(--color-white)
+  background-color: var(--color-dark-4)
+
+  &:active
+    opacity: .75

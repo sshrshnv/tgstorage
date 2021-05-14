@@ -20,7 +20,7 @@ export const Layout: FC<Props> = ({
         center && styles._center
       )}
     >
-      { children }
+      {children}
     </div>
   )
 }

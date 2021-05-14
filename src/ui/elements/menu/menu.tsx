@@ -12,6 +12,7 @@ import styles from './menu.styl'
 export type Props = {
   items: ({
     title: string
+    icon?: h.JSX.Element | null
     warning?: boolean
     danger?: boolean
     onClick?: (ev?: MouseEvent) => void
@@ -30,7 +31,8 @@ export const Menu: FC<Props> = ({
   const dropdownRef = useRef<HTMLDivElement>(null)
   const [expanded, setExpanded] = useState(false)
 
-  const toggle = useCallback(() => {
+  const toggle = useCallback((ev?) => {
+    ev?.stopPropagation()
     if (expanded) {
       onClose?.()
     }
@@ -68,7 +70,6 @@ export const Menu: FC<Props> = ({
     parentRef?.current?.addEventListener('touchmove', handleTouchEnd, { passive: true })
     parentRef?.current?.addEventListener('touchend', handleTouchEnd, { passive: true })
     return () => {
-      console.log('unsubscribe')
       parentRef?.current?.removeEventListener('contextmenu', handleContextMenu)
       parentRef?.current?.removeEventListener('touchstart', handleTouchStart)
       parentRef?.current?.removeEventListener('touchmove', handleTouchEnd)
@@ -110,6 +111,7 @@ export const Menu: FC<Props> = ({
               )}
               onClick={item.onClick}
             >
+              {item.icon}
               {item.title}
             </div>
           ))}

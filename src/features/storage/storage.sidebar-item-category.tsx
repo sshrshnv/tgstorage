@@ -2,19 +2,22 @@ import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
 import { useCallback, useMemo } from 'preact/hooks'
 
-import type { Folders } from '~/core/store'
+import type { Folder } from '~/core/store'
 import { useTexts } from '~/core/hooks'
 import { SidebarTitle } from '~/ui/elements/sidebar-title'
+import { EditIcon, FolderPlusIcon } from '~/ui/icons'
 
 type Props = {
-  folder: Folders[0]
+  folder: Folder
   index: number
+  disabled?: boolean
   toggleSidebarsVisibility?: (sidebar: 'folder', params: object) => void
 }
 
-export const StorageSidebarCategory: FC<Props> = ({
+export const StorageSidebarItemCategory: FC<Props> = ({
   folder,
   index,
+  disabled,
   toggleSidebarsVisibility
 }) => {
   const { texts } = useTexts('storage')
@@ -35,9 +38,11 @@ export const StorageSidebarCategory: FC<Props> = ({
   const menu = useMemo(() => ({
     items: [index ? {
       title: texts.categoryEditTitle,
+      icon: <EditIcon/>,
       onClick: editCategory
     } : null, {
       title: texts.folderAddTitle,
+      icon: <FolderPlusIcon/>,
       onClick: addFolder
     }]
   }), [index, editCategory, addFolder])
@@ -45,6 +50,7 @@ export const StorageSidebarCategory: FC<Props> = ({
   return (
     <SidebarTitle
       menu={menu}
+      disabled={disabled}
     >
       {folder.category || texts.generalCategoryTitle}
     </SidebarTitle>

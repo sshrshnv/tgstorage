@@ -1,23 +1,38 @@
 .root
   display: flex
   align-items: center
+  flex-shrink: 0
   width: 100%
   height: 48px
-  padding: 0 20px 0 0
+  padding: 0
   background-color: var(--sidebar-header-background-color)
   box-shadow: 1px 1px 2px 0 rgba(0, 0, 0, 0.12)
+
+  > button:last-child
+    margin-left: auto
 
 .title
   display: block
   margin: 0
-  padding: 0 0 2px
+  padding: 0
   font-size: 17px
   font-weight: normal
   line-height: 1
 
-._withTitle
+.input
+  height: 100%
+  padding-right: 52px
+
+  > input
+    height: 100%
+    padding: 0
+
+  > div
+    width: 52px
+    cursor: pointer
+
+._withoutDesktopBack
   @media $desktop
     padding-left: 20px
-
     .backButton
       display: none

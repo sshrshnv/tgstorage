@@ -3,6 +3,8 @@ import type { FunctionComponent as FC, RefObject } from 'preact'
 import { useCallback, useRef, useState, useEffect } from 'preact/hooks'
 import cn from 'classnames'
 
+import { CloseIcon } from '~/ui/icons'
+
 import { moveCursorToEnd } from './input.helpers'
 import styles from './input.styl'
 
@@ -20,8 +22,10 @@ type Props = {
   disabled?: boolean
   readonly?: boolean
   maxLength?: number
+  autoFocus?: boolean
   fakeFocus?: boolean
   border?: boolean
+  clear?: boolean
   onFocus?: () => void
   onBlur?: () => void
   onInput?: (value: string) => void
@@ -32,12 +36,16 @@ export const Input: FC<Props> = ({
   class: className,
   label,
   value,
+  placeholder,
   error,
+  disabled,
   border = true,
   icon,
   forwardedRef,
   maxLength = 50,
+  autoFocus,
   fakeFocus,
+  clear,
   onFocus,
   onBlur,
   onInput,
@@ -47,18 +55,23 @@ export const Input: FC<Props> = ({
   const [inputData, setInputData] = useState({ value })
   const [focused, setFocused] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
-  const inputEl = forwardedRef?.current || inputRef?.current
 
   const handleFocus = useCallback(() => {
-    moveCursorToEnd(inputEl)
+    moveCursorToEnd((forwardedRef || inputRef)?.current)
     setFocused(true)
     onFocus?.()
-  }, [inputEl, setFocused, onFocus])
+  }, [forwardedRef, inputRef, setFocused, onFocus])
 
   const handleBlur = useCallback(() => {
     setFocused(false)
     onBlur?.()
   }, [setFocused, onBlur])
+
+  const handleClear = useCallback(() => {
+    const formattedValue = onInput?.('')
+    setInputData({ value: typeof formattedValue === 'undefined' ? '' : formattedValue });
+    (forwardedRef || inputRef)?.current?.focus()
+  }, [setInputData])
 
   const handleInput = useCallback(ev => {
     const value = ev?.target?.value.replace('  ', ' ') || ''
@@ -72,11 +85,19 @@ export const Input: FC<Props> = ({
     }
   }, [value])
 
+  useEffect(() => {
+    if (!autoFocus) return
+    setTimeout(() => {
+      (forwardedRef || inputRef)?.current?.focus()
+    }, 300)
+  }, [])
+
   return (
     <div class={cn(
       styles.root,
       className,
       (focused || fakeFocus) && styles._focused,
+      disabled && styles._disabled,
       error && styles._error
     )}>
       <input
@@ -85,6 +106,8 @@ export const Input: FC<Props> = ({
           border && styles._border,
           icon && styles._icon
         )}
+        placeholder={placeholder ? `${placeholder}…` : ''}
+        disabled={disabled}
         ref={forwardedRef || inputRef}
         autoComplete="off"
         maxLength={maxLength}
@@ -94,14 +117,16 @@ export const Input: FC<Props> = ({
         {...inputData}
         {...inputProps}
       />
-      { icon && (
-        <div class={styles.icon} onClick={onIconClick}>
-          {icon}
+      {(icon || (clear && inputData.value)) && (
+        <div class={styles.icon} onClick={icon ? onIconClick : handleClear}>
+          {icon || <CloseIcon/>}
         </div>
       )}
-      <div class={styles.label}>
-        { error && typeof error === 'string' ? error : label }
-      </div>
+      {(label || error) && (
+        <div class={styles.label}>
+          {error && typeof error === 'string' ? error : label}
+        </div>
+      )}
     </div>
   )
 }

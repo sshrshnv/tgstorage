@@ -1,36 +1,20 @@
-._icon
-  display: flex
-  justify-content: center
-  align-items: center
+.root
+  position: relative
+  width: 22px
+  height: 22px
+  border: 2px solid var(--icon-border-color)
+  border-left-color: var(--icon-second-border-color)
+  border-radius: 50%
+  will-change: transform
+  animation: rotate 1.1s infinite linear
 
-  > svg
-    fill: var(--color-white)
+._brand
+  border-top-color: var(--color-brand)
+  border-right-color: var(--color-brand)
+  border-bottom-color: var(--color-brand)
 
-._text
-  &::after
-    content: '.'
-    animation-name: blink
-    animation-duration: 1.5s
-    animation-timing-function: steps(3, end)
-    animation-iteration-count: infinite
-    animation-delay: .5s
-    text-shadow: 4px 0 0 var(--default-font-color), 8px 0 0 var(--default-font-color)
-
-._uppercase
-  text-transform: uppercase
-  letter-spacing: 1px
-  font-weight: 500
-
-@keyframes blink
-  0%, 20%
-    color: transparent
-    text-shadow: 4px 0 0 transparent, 8px 0 0 transparent
-  40%
-    color: var(--default-font-color)
-    text-shadow: 4px 0 0 transparent, 8px 0 0 transparent
-  60%
-    color: var(--default-font-color)
-    text-shadow: 4px 0 0 var(--default-font-color), 8px 0 0 transparent
-  80%, 100%
-    color: var(--default-font-color)
-    text-shadow: 4px 0 0 var(--default-font-color), 8px 0 0 var(--default-font-color)
+@keyframes rotate
+  0%
+    transform: rotate(0deg)
+  100%
+    transform: rotate(360deg)

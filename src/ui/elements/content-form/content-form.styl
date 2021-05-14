@@ -1,12 +1,13 @@
 .root
-  position: absolute
-  bottom: 0
-  width: $content-width
-  max-width: calc(100% - 40px)
+  position: relative
+  flex-shrink: 0
+  width: $content-width + 40px
+  max-width: 100%
+
+  @media $desktop
+    max-width: calc(100% - 40px)
 
 .form
-  display: flex
-  width: 100%
   height: 48px
   max-height: 240px
   background-color: var(--content-form-background-color)

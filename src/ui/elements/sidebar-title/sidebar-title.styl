@@ -4,6 +4,9 @@
   flex-shrink: 0
   padding: 8px 0 8px 20px
   background-color: inherit
+  opacity: 1
+  //will-change: opacity
+  transition: opacity .2s ease-in
 
   &:not(:nth-child(3))
     margin-top: 20px
@@ -19,3 +22,8 @@
   white-space: nowrap
   font-size: 22px
   font-weight: 700
+
+._disabled
+  pointer-events: none
+  cursor: default
+  opacity: .5

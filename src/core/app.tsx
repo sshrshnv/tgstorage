@@ -17,7 +17,6 @@ import { useUser } from './hooks'
 const App: FC = () => {
   const { user } = useUser()
 
-  console.log(`==> app user:`, user)
   return (
     <Fragment>
       {user ? (

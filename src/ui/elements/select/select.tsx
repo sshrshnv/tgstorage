@@ -5,6 +5,7 @@ import cn from 'classnames'
 
 import { useTexts } from '~/core/hooks'
 import { Input } from '~/ui/elements/input'
+import { Loader } from '~/ui/elements/loader'
 import { ArrowIcon } from '~/ui/icons'
 import { animationClassName } from '~/ui/styles/animation'
 
@@ -23,6 +24,7 @@ type Props = {
   value?: string
   error?: string | boolean
   disabled?: boolean
+  loading?: boolean
   search?: boolean
   onSelect?: (value: string) => void
 }
@@ -34,6 +36,7 @@ export const Select: FC<Props> = ({
   value,
   error,
   disabled,
+  loading,
   search = false,
   onSelect
 }) => {
@@ -58,12 +61,12 @@ export const Select: FC<Props> = ({
   ), [searchValue, filteredOptions])
 
   const expand = useCallback(() => {
-    if (disabled) return
+    if (disabled || loading) return
     if (!focused) {
       inputRef?.current?.focus()
     }
     setExpanded(true)
-  }, [disabled, focused, inputRef, setExpanded])
+  }, [disabled, loading, focused, inputRef, setExpanded])
 
   const collapse = useCallback(() => {
     if (focused) {
@@ -143,7 +146,7 @@ export const Select: FC<Props> = ({
         expanded && styles._expanded,
         (!search && !filteredOptions.length) && styles._empty,
         error && styles._error,
-        disabled && styles._disabled
+        (disabled || loading) && styles._disabled
       )}
       onClick={toggle}
     >
@@ -152,32 +155,32 @@ export const Select: FC<Props> = ({
         value={searchValue}
         name={name}
         error={error}
-        disabled={disabled}
-        readonly={!search || disabled}
-        icon={<ArrowIcon class={styles.icon}/>}
+        disabled={disabled || loading}
+        readonly={!search || disabled || loading}
+        icon={loading ? <Loader class={styles.icon}/> : <ArrowIcon class={styles.icon}/>}
         forwardedRef={inputRef}
         fakeFocus={expanded}
         onInput={handleSearch}
         onFocus={handleFocus}
         onBlur={handleBlur}
       />
-      { expanded && (
+      {expanded && (
         <div
           class={styles.options}
           ref={optionsRef}
         >
-          { isFullSearchValue && (
+          {isFullSearchValue && (
             <div
               class={styles.option}
               onClick={() => select(filteredOptions[0])}
             >
-              { filteredOptions[0]?.text }
-              { filteredOptions[0]?.subText && (
+              {filteredOptions[0]?.text}
+              {filteredOptions[0]?.subText && (
                 <span>{filteredOptions[0]?.subText}</span>
               )}
             </div>
           )}
-          { (isFullSearchValue ? options : filteredOptions).map(option => (
+          {(isFullSearchValue ? options : filteredOptions).map(option => (
             !option ||
             (isFullSearchValue && option.text.toLowerCase() === searchValue.toLowerCase())
           ) ? null : (
@@ -186,16 +189,16 @@ export const Select: FC<Props> = ({
                 class={styles.option}
                 onClick={() => select(option)}
               >
-                { option.text }
-                { option.subText && (
+                {option.text}
+                {option.subText && (
                   <span>{option.subText}</span>
                 )}
               </div>
             )
           )}
-          { !search && !filteredOptions.length && (
+          {!search && !filteredOptions.length && (
             <div class={styles.option}>
-              { texts.empty }
+              {texts.empty}
             </div>
           )}
         </div>

@@ -1,10 +1,10 @@
 import createStore from 'unistore'
 import devtools from 'unistore/devtools'
 
+import { apiCache } from '~/api'
 import { detectLocale } from '~/tools/detect-locale'
 import type { AvailableLocales } from '~/tools/detect-locale'
 
-import { database } from './database'
 import en from './app.texts.en.json'
 import ru from './app.texts.ru.json'
 
@@ -14,6 +14,10 @@ export type Texts = {
   [key in Locales]: {
     [k: string]: string
   }
+}
+
+export type Viewport = {
+  height: number
 }
 
 export type Settings = {
@@ -28,25 +32,50 @@ export type User = {
     bytes: Uint8Array
     type: string
   } | null
+  country: string
 } | null
 
-export type Folders = {
+export type Folder = {
   id: number
   access_hash: string
   title: string
   category: string
-}[]
-
-export type FolderContent = {
-  [id: number]: {
-    items: any[]
-  }
+  general?: boolean
 }
 
-const [user, folders, settings]: [User, Folders, Settings] = await Promise.all([
-  database.getUser(),
-  database.getFolders(),
-  database.getSettings()
+export type Folders =
+  Map<number, Folder>
+
+export type Message = {
+  id: number
+  text: string
+  date: string
+  media?: any
+  views?: number
+  editDate?: number
+}
+
+export type FolderMessages =
+  Message[]
+
+export type FoldersMessages =
+  Map<number, FolderMessages>
+
+const [
+  user,
+  folders,
+  foldersMessages,
+  settings
+]: [
+  User,
+  Folders,
+  FoldersMessages,
+  Settings
+] = await Promise.all([
+  apiCache.getUser(),
+  apiCache.getFolders(),
+  apiCache.getFoldersMessages(),
+  apiCache.getSettings()
 ])
 
 export type State = {
@@ -54,8 +83,10 @@ export type State = {
   userLoading: boolean
   folders: Folders
   foldersLoading: boolean
-  folderContent: FolderContent
+  foldersMessages: FoldersMessages
   activeFolderId: number
+  editingFolderId: number
+  editingCategory: string
   settings: Settings
   texts: Texts
 }
@@ -65,8 +96,10 @@ const state: State = {
   userLoading: true,
   folders,
   foldersLoading: true,
-  folderContent: {},
+  foldersMessages,
   activeFolderId: 0,
+  editingFolderId: 0,
+  editingCategory: '',
   settings: settings || {
     locale: detectLocale()
   },

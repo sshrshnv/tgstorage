@@ -9,7 +9,7 @@ export const SidebarWrapper: FC = ({
 
   return (
     <div class={styles.root}>
-      { children }
+      {children}
     </div>
   )
 }

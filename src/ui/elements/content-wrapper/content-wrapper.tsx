@@ -17,7 +17,7 @@ export const ContentWrapper: FC<Props> = ({
       styles.root,
       active && styles._active
     )}>
-      { children }
+      {children}
     </div>
   )
 }

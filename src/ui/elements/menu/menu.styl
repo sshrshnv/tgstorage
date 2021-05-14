@@ -36,8 +36,7 @@
   z-index: 5
   top: 8px
   right: 8px
-  width: 120px
-  border: 1px solid var(--dropdown-border)
+  border: 1px solid var(--dropdown-border-color)
   border-radius: 8px
   box-shadow: 0 2px 4px 1px rgba(0, 0, 0, 0.12)
   background-color: inherit
@@ -45,18 +44,25 @@
 .item
   margin: 0
   display: flex
-  justify-content: space-between
   align-items: center
   flex-shrink: 0
   height: 40px
-  padding: 0 12px
-  border-top: 1px solid var(--dropdown-item-border)
+  padding: 0 16px
+  border-top: 1px solid var(--dropdown-item-border-color)
   cursor: pointer
   font-size: 14px
   font-family: inherit
+  white-space: nowrap
   background-color: inherit
   transition: .2s ease-in
   transition-property: background, color
+
+  > svg
+    margin: 0 14px 1px 0
+    width: 16px
+    height: 16px
+    fill: var(--color-light-2)
+    transition: fill .2s ease-in
 
   &:first-child
     border-top-left-radius: 8px
@@ -70,9 +76,15 @@
   &._warning
     color: var(--color-red)
 
+    > svg
+      fill: var(--color-red)
+
   &._danger
     background-color: var(--color-red)
     color: var(--color-white)
+
+    > svg
+      fill: var(--color-white)
 
 ._horizontal
   top: 6px

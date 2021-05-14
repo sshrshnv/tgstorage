@@ -4,6 +4,8 @@ import { useCallback, useMemo, useState } from 'preact/hooks'
 
 import { createFolder, editFolder, editCategory } from '~/core/actions'
 import { useTexts, useFolders } from '~/core/hooks'
+import type { Folder } from '~/core/store'
+import { generateFolderName, normalizeCategoryName } from '~/api'
 import { SidebarPopup } from '~/ui/elements/sidebar-popup'
 import { Form } from '~/ui/elements/form'
 import { Select } from '~/ui/elements/select'
@@ -14,8 +16,7 @@ import { Break } from '~/ui/elements/break'
 
 type Props = {
   params: boolean | {
-    title: string
-    category: string
+    folder: Folder
     isEditFolder?: boolean
     isEditCatgory?: boolean
   }
@@ -32,11 +33,11 @@ export const StorageSidebarPopupFolder: FC<Props> = ({
   const { texts } = useTexts('storage')
   const { folders, categories } = useFolders()
   const [categoryRadioValue, setCategoryRadioValue] = useState<'select'|'new'>('select')
-  const [categorySelectValue, setCategorySelectValue] = useState(initialCategory)
+  const [categorySelectValue, setCategorySelectValue] = useState(initialFolder?.category || '')
   const [categoryNameValue, setCategoryNameValue] = useState(isEditCategory ? initialCategory : '')
-  const [folderNameValue, setFolderNameValue] = useState(initialFolder)
+  const [folderTitleValue, setFolderTitleValue] = useState(initialFolder?.title || '')
   const [categoryNameError, setCategoryNameError] = useState('')
-  const [folderNameError, setFolderNameError] = useState('')
+  const [folderTitleError, setFolderTitleError] = useState('')
   const [loading, setLoading] = useState(false)
 
   const categoryOptions = useMemo(() => categories.map(category => ({
@@ -65,14 +66,14 @@ export const StorageSidebarPopupFolder: FC<Props> = ({
     return value
   }, [categoryNameError, setCategoryNameValue])
 
-  const handleChangeFolderNameValue = useCallback(value => {
-    if (folderNameError) {
-      setFolderNameError('')
+  const handleChangeFolderTitleValue = useCallback(value => {
+    if (folderTitleError) {
+      setFolderTitleError('')
     }
     value = value.replaceAll(':', '')
-    setFolderNameValue(value)
+    setFolderTitleValue(value)
     return value
-  }, [folderNameError, setFolderNameValue])
+  }, [folderTitleError, setFolderTitleValue])
 
   const validate = useCallback(({
     folderValue,
@@ -85,12 +86,12 @@ export const StorageSidebarPopupFolder: FC<Props> = ({
 
     if (isNewFolder || isEditFolder) {
       if (!folderValue) {
-        setFolderNameError(texts.errorFolderNameEmpty)
+        setFolderTitleError(texts.errorFolderNameEmpty)
         errors = true
       } else if (
         folderNames.includes(folderName.toLowerCase())
       ) {
-        setFolderNameError(texts.errorFolderNameExist)
+        setFolderTitleError(texts.errorFolderNameExist)
         errors = true
       }
     }
@@ -110,15 +111,15 @@ export const StorageSidebarPopupFolder: FC<Props> = ({
     categories,
     folderNames,
     setCategoryNameError,
-    setFolderNameError
+    setFolderTitleError
   ])
 
   const handleSubmit = useCallback(async () => {
     const isNewCategory = categoryRadioValue === 'new'
-    const folderValue = folderNameValue.trim()
+    const folderValue = folderTitleValue.trim()
     const categoryValue = ((isNewCategory || isEditCategory) ? categoryNameValue : categorySelectValue).trim()
     const categoryName = normalizeCategoryName(categoryValue, texts)
-    const folderName = generateFolderName(folderNameValue, categoryName)
+    const folderName = generateFolderName(folderTitleValue, categoryName)
 
     const errors = validate({
       categoryValue, categoryName, isNewCategory,
@@ -133,8 +134,7 @@ export const StorageSidebarPopupFolder: FC<Props> = ({
       console.log(err)
     }) : (isEditFolder && typeof params === 'object') ? await editFolder(
       folderName,
-      initialFolder,
-      initialCategory
+      initialFolder
     ) : isEditCategory ? await editCategory(
       categoryName,
       initialCategory
@@ -148,7 +148,7 @@ export const StorageSidebarPopupFolder: FC<Props> = ({
     categoryRadioValue,
     categorySelectValue,
     categoryNameValue,
-    folderNameValue,
+    folderTitleValue,
     validate
   ])
 
@@ -209,10 +209,10 @@ export const StorageSidebarPopupFolder: FC<Props> = ({
             <Input
               name={texts.folderNameLabel}
               label={texts.folderNameLabel}
-              value={folderNameValue}
-              error={folderNameError}
+              value={folderTitleValue}
+              error={folderTitleError}
               readonly={loading}
-              onInput={handleChangeFolderNameValue}
+              onInput={handleChangeFolderTitleValue}
             />
             <Break size={28} px/>
           </Fragment>
@@ -222,7 +222,8 @@ export const StorageSidebarPopupFolder: FC<Props> = ({
           type="submit"
           loading={loading}
           uppercase
-          light
+          brand
+          outline
         >
           {texts.saveButton}
         </Button>
@@ -235,7 +236,10 @@ export const StorageSidebarPopupFolder: FC<Props> = ({
 const parseParams = (params) => {
   if (typeof params === 'boolean') {
     return {
-      initialFolder: '',
+      initialFolder: {
+        title: '',
+        category: ''
+      },
       initialCategory: '',
       isNewFolder: true,
       isEditFolder: false,
@@ -244,24 +248,18 @@ const parseParams = (params) => {
   }
 
   const {
-    title,
+    folder,
     category,
     isEditFolder,
     isEditCategory
   } = params
 
   return {
-    initialFolder: title || '',
-    initialCategory: category || '',
+    initialFolder: folder,
+    initialCategory: isEditCategory ? category : folder.category,
     isNewFolder: !isEditFolder && !isEditCategory,
     isEditFolder,
     isEditCategory,
-    isReadonlyCategory: !isEditFolder && !isEditCategory && typeof category !== 'undefined'
+    isReadonlyCategory: !isEditFolder && !isEditCategory && typeof folder.category !== 'undefined'
   }
 }
-
-const normalizeCategoryName = (categoryValue: string, texts) =>
-  categoryValue.toLowerCase() === texts.generalCategoryTitle.toLowerCase() ? '' : categoryValue
-
-const generateFolderName = (folderValue: string, categoryName: string) =>
-  `${folderValue}${categoryName ? `::${categoryName}` : ''}`

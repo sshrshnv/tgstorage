@@ -1,45 +1,40 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
-import { useCallback } from 'preact/hooks'
+import { useState, useCallback } from 'preact/hooks'
 
-import { setActiveFolder } from '~/core/actions'
 import { useTexts, useActiveFolder } from '~/core/hooks'
 import { Text } from '~/ui/elements/text'
 import { ContentWrapper } from '~/ui/elements/content-wrapper'
-import { Content } from '~/ui/elements/content'
-import { ContentHeader } from '~/ui/elements/content-header'
-import { ContentForm } from '~/ui/elements/content-form'
+
+import { StorageContentListFolder } from './storage.content-list-folder'
+import { StorageContentListSearch } from './storage.content-list-search'
 
 export const StorageContent: FC = () => {
   const { texts } = useTexts('storage')
   const { folder } = useActiveFolder()
+  const [search, setSearch] = useState(false)
 
-  const handleClose = useCallback(() => {
-    setActiveFolder(0)
-  }, [])
-
-  const handleAddFiles = useCallback(files => {
-    console.log(files)
-  }, [])
+  const toggleSearch = useCallback(() => {
+    setSearch(!search)
+  }, [search])
 
   return (
     <ContentWrapper active={!!folder.id}>
-      { folder.id ? (
-        <Content
-          name="content-list"
-          onClose={handleClose}
-          onAddFiles={handleAddFiles}
-        >
-          <ContentHeader title={folder.title}/>
-          <ContentForm
-            placeholder={texts.contentPlaceholder}
-            onAddFiles={handleAddFiles}
-          />
-        </Content>
-      ) : (
+      {!folder.id && (
         <Text grey>
           {texts.emptyActiveFolder}
         </Text>
+      )}
+      {!!folder.id && (
+        <StorageContentListFolder
+          toggleSearch={toggleSearch}
+          dropAvailable={!search}
+        />
+      )}
+      {!!folder.id && search && (
+        <StorageContentListSearch
+          toggleSearch={toggleSearch}
+        />
       )}
     </ContentWrapper>
   )

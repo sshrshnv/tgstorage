@@ -57,10 +57,10 @@ export const Button: FC<Props> = ({
       disabled={disabled}
       onClick={onClick}
     >
-      { icon }
-      { loading ? (
-        <Loader icon/>
-      ) : children }
+      {icon}
+      {loading ? (
+        <Loader brand={brand}/>
+      ) : children}
     </button>
   )
 }

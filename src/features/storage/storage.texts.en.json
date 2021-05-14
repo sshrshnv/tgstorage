@@ -1,6 +1,6 @@
 {
-  "generalCategoryTitle": "General",
-  "generalFolderTitle": "Shared messages",
+  "generalCategoryTitle": "Pinned",
+  "generalFolderTitle": "General",
   "folderNewTitle": "New folder",
   "folderEditTitle": "Edit folder",
   "folderAddTitle": "Add folder",
@@ -10,8 +10,8 @@
   "notificationsTitle": "Notifications",
   "profileTitle": "Profile",
   "categoryLabel": "Category",
-  "categoryExistingValue": "Existing category",
-  "categoryNewValue": "New category",
+  "categoryExistingValue": "Select category",
+  "categoryNewValue": "Create category",
   "categoryTypeLabel": "Category type",
   "categoryNameLabel": "Category name",
   "folderNameLabel": "Folder name",
@@ -24,5 +24,6 @@
   "errorFolderNameEmpty": "Invalid folder name",
   "errorFolderNameExist": "Folder already exists",
   "emptyActiveFolder": "Select a folder",
-  "contentPlaceholder": "Write a note…"
+  "notePlaceholder": "Note",
+  "searchPlaceholder": "Search in"
 }

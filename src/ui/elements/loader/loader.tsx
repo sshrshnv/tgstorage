@@ -2,33 +2,23 @@ import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
 import cn from 'classnames'
 
-import { useTexts } from '~/core/hooks'
-import { LoaderIcon } from '~/ui/icons'
-
 import styles from './loader.styl'
 
 type Props = {
-  icon?: boolean
-  text?: 'loading'|'connecting'|'sending'
-  uppercase?: boolean
+  class?: string
+  brand?: boolean
 }
 
 export const Loader: FC<Props> = ({
-  icon,
-  text,
-  uppercase = true
+  class: className,
+  brand
 }) => {
-  const { texts } = useTexts()
 
   return (
     <div class={cn(
+      className,
       styles.root,
-      icon && styles._icon,
-      text && styles._text,
-      uppercase && styles._uppercase
-    )}>
-      {icon && <LoaderIcon/>}
-      {text && texts[text]}
-    </div>
+      brand && styles._brand
+    )}/>
   )
 }

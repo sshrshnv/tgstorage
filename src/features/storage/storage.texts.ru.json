@@ -1,6 +1,6 @@
 {
-  "generalCategoryTitle": "Главное",
-  "generalFolderTitle": "Закладки",
-  "categoryExistingValue": "Текущая категория",
-  "categoryNewValue": "Новая категория"
+  "generalCategoryTitle": "Важное",
+  "generalFolderTitle": "Telegram",
+  "categoryExistingValue": "Выбрать категорию",
+  "categoryNewValue": "Создать категорию"
 }

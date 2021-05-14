@@ -24,7 +24,11 @@ export const StorageSidebarPopupProfile: FC<Props> = ({
     >
       <Form center>
         <Break size={28} px/>
-        <Button onClick={logOut} light>
+        <Button
+          brand
+          outline
+          onClick={logOut}
+        >
           {texts.logOutButton}
         </Button>
       </Form>

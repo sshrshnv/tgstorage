@@ -39,7 +39,7 @@ export const Textarea: FC<Props> = ({
     )}>
       <textarea
         class={styles.textarea}
-        placeholder={placeholder}
+        placeholder={placeholder ? `${placeholder}…` : ''}
         ref={forwardedRef}
         onInput={handleInput}
         onPaste={handlePaste}

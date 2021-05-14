@@ -16,8 +16,8 @@ export const Logo: FC<Props> = ({
 }) => {
   return (
     <div class={styles.root}>
-      { icon && <div class={styles.icon}><FolderLogoIcon/></div> }
-      { text && <h1 class={styles.text}>TgStorage</h1> }
+      {icon && <div class={styles.icon}><FolderLogoIcon/></div>}
+      {text && <h1 class={styles.text}>TgStorage</h1>}
     </div>
   )
 }

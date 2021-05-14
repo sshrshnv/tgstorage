@@ -12,10 +12,26 @@ import { AuthPasswordForm } from './auth-password-form'
 
 export type Step = 'phone'|'code'|'password'
 
+export type Country = {
+  value: string
+  foundValue: string
+  code: string
+  mask: string
+  patterns?: string[]
+}
+
+const initialCountry: Country = ({
+  value: '',
+  foundValue: '',
+  code: '',
+  mask: ''
+})
+
 let timeoutId = 0
 
 const Auth: FC = () => {
   const [step, setStep] = useState<Step>('phone')
+  const [country, setCountry] = useState<Country>(initialCountry)
   const [phone, setPhone] = useState('+')
   const [phoneCodeHash, setPhoneCodeHash] = useState('')
   const [codeType, setCodeType] = useState({ type: '', nextType: '' })
@@ -53,6 +69,9 @@ const Auth: FC = () => {
         <AuthPhoneForm
           phone={phone}
           timeout={timeout}
+          country={country}
+          initialCountry={initialCountry}
+          setCountry={setCountry}
           setPhone={setPhone}
           setTimeout={setTimeout}
           setPhoneCodeHash={setPhoneCodeHash}
@@ -62,6 +81,7 @@ const Auth: FC = () => {
       )}
       { step === 'code' && (
         <AuthCodeForm
+          country={country}
           phone={phone}
           phoneCodeHash={phoneCodeHash}
           timeout={timeout}
@@ -74,6 +94,7 @@ const Auth: FC = () => {
       )}
       { step === 'password' && (
         <AuthPasswordForm
+          country={country}
           setStep={setStep}
         />
       )}

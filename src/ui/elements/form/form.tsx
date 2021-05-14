@@ -1,18 +1,22 @@
 import { h } from 'preact'
-import type { FunctionComponent as FC } from 'preact'
+import type { FunctionComponent as FC, RefObject } from 'preact'
 import { useCallback } from 'preact/hooks'
 import cn from 'classnames'
 
 import styles from './form.styl'
 
 type Props = {
+  class?: string
   center?: boolean
+  forwardedRef?: RefObject<HTMLFormElement>
   onSubmit?: () => void
 }
 
 export const Form: FC<Props> = ({
   children,
+  class: className,
   center,
+  forwardedRef,
   onSubmit
 }) => {
   const handleSubmit = useCallback((ev) => {
@@ -23,13 +27,15 @@ export const Form: FC<Props> = ({
   return (
     <form
       class={cn(
+        className,
         styles.root,
         center && styles._center
       )}
       autoComplete="off"
+      ref={forwardedRef}
       onSubmit={handleSubmit}
     >
-      { children }
+      {children}
     </form>
   )
 }

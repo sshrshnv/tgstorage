@@ -13,13 +13,16 @@ import { Input } from '~/ui/elements/input'
 import { Button } from '~/ui/elements/button'
 import { EyeOpenedIcon, EyeClosedIcon } from '~/ui/icons'
 
-import type { Step } from './auth'
+import type { Step, Country } from './auth'
 
 type Props = {
+  country: Country
   setStep: StateUpdater<Step>
 }
 
-export const AuthPasswordForm: FC<Props> = () => {
+export const AuthPasswordForm: FC<Props> = ({
+  country
+}) => {
   const { texts } = useTexts('auth')
   const [password, setPassword] = useState('')
   const [passwordVisible, setPasswordVisible] = useState(false)
@@ -39,16 +42,20 @@ export const AuthPasswordForm: FC<Props> = () => {
     return password
   }, [error, setPassword])
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     if (loading) return
     setLoading(true)
 
-    api.checkPassword(password).then(({ user }) => {
+    const response = await api.checkPassword(password, country.value || country.foundValue)
+      .catch(({ message }) => {
+        setError(message)
+        setLoading(false)
+      })
+
+    if (response) {
+      const { user } = response
       setUser(user)
-    }).catch(({ message }) => {
-      setError(message)
-      setLoading(false)
-    })
+    }
   }, [password, loading, setError])
 
   return (

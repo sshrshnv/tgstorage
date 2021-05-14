@@ -2,11 +2,11 @@ import { h, Fragment } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
 import { useMemo } from 'preact/hooks'
 
-import type { Folders } from '~/core/store'
+import type { Folder } from '~/core/store'
 import { useFolders } from '~/core/hooks'
 
-import { StorageSidebarCategory } from './storage.sidebar-category'
-import { StorageSidebarFolder } from './storage.sidebar-folder'
+import { StorageSidebarItemCategory } from './storage.sidebar-item-category'
+import { StorageSidebarItemFolder } from './storage.sidebar-item-folder'
 
 type Props = {
   toggleSidebarsVisibility?: (sidebar: 'folder', params: object) => void
@@ -22,14 +22,14 @@ export const StorageSidebarList: FC<Props> = ({
       {folders.map((folder, index) => (
         <Fragment key={folder.id}>
           {(!index || folder.category !== folders[index - 1].category) && (
-            <StorageSidebarCategory
-              folder={folder as Folders[0]}
+            <StorageSidebarItemCategory
+              folder={folder as Folder}
               index={index}
               toggleSidebarsVisibility={toggleSidebarsVisibility}
             />
           )}
 
-          <StorageSidebarFolder
+          <StorageSidebarItemFolder
             id={folder.id as number}
             index={index}
             toggleSidebarsVisibility={toggleSidebarsVisibility}
@@ -37,5 +37,5 @@ export const StorageSidebarList: FC<Props> = ({
         </Fragment>
       ))}
     </Fragment>
-  ), [folders])
+  ), [folders, toggleSidebarsVisibility])
 }

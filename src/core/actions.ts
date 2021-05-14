@@ -1,11 +1,14 @@
 import { api } from '~/api'
+import type { Updates } from '~/api'
 
-import { database } from './database'
-import { store } from './store'
-import type { User, Folders, Locales, Texts } from './store'
+import { FoldersMessages, store } from './store'
+import type { User, Folder, Folders, Locales, Texts } from './store'
 
 export const getLocale = () =>
   store.getState().settings.locale
+
+export const getUser = () =>
+  store.getState().user
 
 export const setTexts = (
   locale: Locales,
@@ -30,7 +33,14 @@ export const setUser = (
     user,
     userLoading: false
   })
-  database.setUser(user)
+}
+
+export const waitFolders = (
+  foldersLoading: boolean
+) => {
+  store.setState({
+    foldersLoading
+  })
 }
 
 export const setFolders = (
@@ -40,7 +50,6 @@ export const setFolders = (
     folders,
     foldersLoading: false
   })
-  database.setFolders(folders)
 }
 
 export const setActiveFolder = (
@@ -51,27 +60,34 @@ export const setActiveFolder = (
   })
 }
 
-export const loadUser = async () => {
-  const user = await api.getUser()
-    .catch(({ code }) => {
-      if (code === 401) {
-        return null
-      }
-    })
+export const setFoldersMessages = (
+  foldersMessages: FoldersMessages
+) => {
+  store.setState({
+    foldersMessages
+  })
+}
 
-  if (user) {
-    setUser(user)
+export const setUpdates = ({
+  folders,
+  foldersMessages
+}: Updates) => {
+  if (folders) {
+    setFolders(folders)
+  }
+  if (foldersMessages) {
+    setFoldersMessages(foldersMessages)
   }
 }
 
 export const logOut = async () => {
   await api.logOut()
-  setUser(null)
-  setFolders([])
 }
 
 export const loadFolders = async () => {
-  const folders = await api.getFolders()
+  waitFolders(true)
+
+  const updates = await api.getFolders()
     .catch(({ code }) => {
       if (code === 401) {
         logOut()
@@ -79,61 +95,91 @@ export const loadFolders = async () => {
       return null
     })
 
-  if (folders) {
-    setFolders(folders)
+  if (updates?.folders) {
+    setUpdates(updates)
+  } else {
+    waitFolders(false)
   }
 }
 
 export const createFolder = async (
-  title: string
+  name: string
 ) => {
-  return api.createFolder(
-    title,
-    store.getState().folders
-  ).then(folders => {
-    setFolders(folders)
-    return true
-  })
+  waitFolders(true)
+
+  const updates = await api.createFolder(
+    name
+  )
+
+  setUpdates(updates)
+  return true
 }
 
 export const editFolder = async (
-  newTitle: string,
-  title: string,
-  category: string
+  name: string,
+  folder: Folder
 ) => {
-  return api.editFolder(
-    newTitle,
-    title,
-    category,
-    store.getState().folders
-  ).then(folders => {
-    setFolders(folders)
-    return true
-  })
+  waitFolders(true)
+
+  const updates = await api.editFolder(
+    name,
+    folder
+  )
+
+  setUpdates(updates)
+  return true
 }
 
 export const editCategory = async (
   newCategory: string,
   category: string
 ) => {
-  return api.editCategory(
+  waitFolders(true)
+
+  const updates = await api.editCategory(
     newCategory,
-    category,
-    store.getState().folders
-  ).then(folders => {
-    setFolders(folders)
-    return true
-  })
+    category
+  )
+
+  setUpdates(updates)
+  return true
 }
 
 export const deleteFolder = async (
-  folder: Folders[0]
+  folder: Folder
 ) => {
-  return api.deleteFolder(
+  waitFolders(true)
+
+  const updates = await api.deleteFolder(
+    folder
+  )
+
+  setUpdates(updates)
+  return true
+}
+
+export const loadFolderMessages = async (
+  folder: Folder,
+  offsetId?: number
+) => {
+  const updates = await api.getMessages(
     folder,
-    store.getState().folders
-  ).then(folders => {
-    setFolders(folders)
-    return true
-  })
+    offsetId
+  )
+
+  setUpdates(updates)
+  return true
+}
+
+export const sendMessage = async (
+  note: string,
+  folder: Folder
+) => {
+  const updates = await api.sendMessage(
+    note,
+    folder
+  )
+
+  setUpdates(updates)
+  return true
 }

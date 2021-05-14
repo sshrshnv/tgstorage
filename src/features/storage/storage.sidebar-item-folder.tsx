@@ -1,26 +1,28 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
-import { useCallback, useState, useMemo } from 'preact/hooks'
+import { useCallback, useState, useMemo, useEffect } from 'preact/hooks'
 
-import { deleteFolder, setActiveFolder } from '~/core/actions'
+import { deleteFolder, setActiveFolder, loadFolderMessages } from '~/core/actions'
 import { useTexts, useFolder } from '~/core/hooks'
 import { SidebarItem } from '~/ui/elements/sidebar-item'
+import { EditIcon, DeleteIcon } from '~/ui/icons'
 
 type Props = {
   id: number
   index?: number
+  disabled?: boolean
   toggleSidebarsVisibility?: (sidebar: 'folder', params: object) => void
 }
 
-export const StorageSidebarFolder: FC<Props> = ({
+export const StorageSidebarItemFolder: FC<Props> = ({
   id,
   index,
+  disabled,
   toggleSidebarsVisibility
 }) => {
   const { texts } = useTexts('storage')
-  const { folder } = useFolder(id)
+  const { folder, messages } = useFolder(id)
   const [confirmation, setConfirmation] = useState(false)
-  const [loading, setLoading] = useState(false)
 
   const handleClick = useCallback(() => {
     setActiveFolder(id)
@@ -28,23 +30,19 @@ export const StorageSidebarFolder: FC<Props> = ({
 
   const handleEdit = useCallback(() => {
     toggleSidebarsVisibility?.('folder', {
-      title: folder.title,
-      category: folder.category,
+      folder: folder,
       isEditFolder: true
     })
   }, [folder, toggleSidebarsVisibility])
 
   const handleDelete = useCallback((ev) => {
     if (confirmation) {
-      setLoading(true)
-      deleteFolder(folder).catch(() => {
-        setLoading(false)
-      })
+      deleteFolder(folder).catch()
       return
     }
     ev.stopPropagation()
     setConfirmation(true)
-  }, [confirmation, setLoading])
+  }, [confirmation])
 
   const resetConfirmation = useCallback(() => {
     setConfirmation(false)
@@ -53,9 +51,11 @@ export const StorageSidebarFolder: FC<Props> = ({
   const menu = useMemo(() => ({
     items: index ? [{
       title: texts.folderEditTitle,
+      icon: <EditIcon/>,
       onClick: handleEdit
     }, {
       title: confirmation ? texts.confirmDeleteButton : texts.folderDeleteTitle,
+      icon: <DeleteIcon/>,
       warning: !confirmation,
       danger: confirmation,
       onClick: handleDelete
@@ -63,12 +63,16 @@ export const StorageSidebarFolder: FC<Props> = ({
     onClose: resetConfirmation
   }), [index, confirmation, handleEdit, handleDelete, resetConfirmation])
 
+  useEffect(() => {
+    loadFolderMessages(folder, 0)
+  }, [])
+
   return (
     <SidebarItem
       title={folder.title}
-      description=""
+      description={messages?.[0]?.text}
       index={index}
-      disabled={loading}
+      disabled={disabled}
       menu={menu}
       onClick={handleClick}
     />

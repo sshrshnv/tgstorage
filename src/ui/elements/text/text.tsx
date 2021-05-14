@@ -34,8 +34,8 @@ export const Text: FC<Props> = ({
       center && styles._center,
       grey && styles._grey
     )}>
-      { children }
-      { icon }
+      {children}
+      {icon}
     </span>
   )
 }

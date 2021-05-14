@@ -1,7 +1,7 @@
 import { useMemo } from 'preact/hooks'
 import { useStoreState } from 'unistore-hooks'
 
-import type { State, Locales, Folders } from './store'
+import type { State, Locales, Folder, FolderMessages } from './store'
 
 export const useTexts = (feature?: 'auth'|'storage') => {
   const {
@@ -48,29 +48,19 @@ export const useUser = () => {
 
 export const useFolders = () => {
   const {
-    folders: loadedFolders = [],
+    folders: foldersMap = new Map(),
     foldersLoading,
-    user,
-    texts,
   }: {
     folders: State['folders']
     foldersLoading: State['foldersLoading']
-    user: State['user']
-    locale: State['settings']['locale']
-    texts: State['texts'][Locales]
   } = useStoreState(state => ({
     folders: state.folders,
     foldersLoading: state.foldersLoading,
-    user: state.user,
-    texts: state.texts[state.settings.locale].storage
   }))
 
-  const folders = useMemo(() => [{
-    id: user?.id,
-    title: texts.generalFolderTitle,
-    category: ''
-  }, ...loadedFolders],
-  [loadedFolders])
+  const folders = useMemo(() =>
+    [...foldersMap.values()],
+  [foldersMap])
 
   const categories = useMemo(() => [
     ...new Set(folders.map(folder => folder.category))
@@ -85,20 +75,30 @@ export const useFolders = () => {
 }
 
 export const useFolder = (id = 0) => {
-  const { folderContent }: {
-    folderContent: State['folderContent'][0]
+  const {
+    folders,
+    foldersMessages,
+    texts
+  }: {
+    folders: State['folders']
+    foldersMessages: State['foldersMessages']
+    texts: State['texts'][Locales]
   } = useStoreState(state => ({
-    folderContent: state.folderContent[id],
+    folders: state.folders,
+    foldersMessages: state.foldersMessages,
+    texts: state.texts[state.settings.locale].storage
   }))
-  const { folders } = useFolders()
-  const folder = folders.find(folder => folder.id === id) as Folders[0]
+
+  const folder = folders.get(id) as Folder
+  const folderMessages = foldersMessages.get(id) as FolderMessages
 
   return useMemo(() => ({
     folder: {
       ...folder,
-      ...folderContent
-    }
-  }), [folder, folderContent])
+      title: folder?.general ? texts.generalFolderTitle : folder?.title
+    },
+    messages: folderMessages
+  }), [folder, folderMessages])
 }
 
 export const useActiveFolder = () => {
@@ -109,9 +109,10 @@ export const useActiveFolder = () => {
   } = useStoreState(state => ({
     activeFolderId: state.activeFolderId
   }))
-  const { folder } = useFolder(activeFolderId)
+  const { folder, messages } = useFolder(activeFolderId)
 
   return useMemo(() => ({
-    folder
-  }), [folder])
+    folder,
+    messages
+  }), [folder, messages])
 }

@@ -12,7 +12,7 @@ export const Fallback: FC = () => {
       <Break size={10} vh/>
       <Logo/>
       <Break size={10} vh/>
-      <Loader text="loading"/>
+      <Loader/>
     </Layout>
   )
 }

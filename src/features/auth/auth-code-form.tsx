@@ -14,9 +14,10 @@ import { Input } from '~/ui/elements/input'
 import { Button } from '~/ui/elements/button'
 import { EditIcon } from '~/ui/icons'
 
-import type { Step } from './auth'
+import type { Step, Country } from './auth'
 
 type Props = {
+  country: Country
   phone: string
   phoneCodeHash: string
   timeout: number
@@ -31,6 +32,7 @@ type Props = {
 }
 
 export const AuthCodeForm: FC<Props> = ({
+  country,
   phone,
   phoneCodeHash,
   timeout,
@@ -59,35 +61,43 @@ export const AuthCodeForm: FC<Props> = ({
     setStep('phone')
   }, [setStep])
 
-  const handleResend = useCallback(() => {
-    api.resendCode(phone, phoneCodeHash).then(({ phone_code_hash, timeout, type, next_type }) => {
+  const handleResend = useCallback(async () => {
+    const response = await api.resendCode(phone, phoneCodeHash)
+      .catch(({ message }) => {
+        setError(message)
+      })
+
+    if (response) {
+      const { phone_code_hash, timeout, type, next_type } = response
       setPhoneCodeHash(phone_code_hash)
       setTimeout(timeout)
       setCodeType({ type: type._, nextType: next_type?._ || '' })
-    }).catch(({ message }) => {
-      setError(message)
-    })
+    }
   }, [phone, phoneCodeHash, codeType, setTimeout, setError])
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     if (loading) return
     setLoading(true)
 
-    api.signIn(phone, code, phoneCodeHash).then(({ user }) => {
+    const response = await api.signIn(phone, code, phoneCodeHash, country.value || country.foundValue)
+      .catch(({ message }) => {
+        if (message === 'SESSION_PASSWORD_NEEDED') {
+          setStep('password')
+          return
+        }
+        setError(message)
+        setLoading(false)
+      })
+
+    if (response) {
+      const { user } = response
       if (!user) {
         setError('PHONE_NUMBER_UNOCCUPIED')
         setLoading(false)
         return
       }
       setUser(user)
-    }).catch(({ message }) => {
-      if (message === 'SESSION_PASSWORD_NEEDED') {
-        setStep('password')
-        return
-      }
-      setError(message)
-      setLoading(false)
-    })
+    }
   }, [phone, phoneCodeHash, code, loading, setStep, setError])
 
   return (

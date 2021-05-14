@@ -7,12 +7,10 @@ const WorkboxPlugin = require('workbox-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 //const CopyPlugin = require('copy-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const DotenvPlugin = require('dotenv-webpack')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
-const RobotstxtPlugin = require('robotstxt-webpack-plugin')
 const autoprefixer = require('autoprefixer')
-const postcssSafeParser = require('postcss-safe-parser')
 
 const babelConfig = require('./.babelrc.json')
 
@@ -49,8 +47,7 @@ module.exports = {
       '.wasm', '.css', '.styl', '.html', '.svg', '.jpg', '.png'
     ],
     alias: {
-      '~': path.resolve('./src'),
-      'url': 'native-url'
+      '~': path.resolve('./src')
     }
   },
 
@@ -164,7 +161,7 @@ module.exports = {
       ]
     }) : () => {},*/
 
-    isProd() ? new WorkboxPlugin.GenerateSW({
+    /*isProd() ? new WorkboxPlugin.GenerateSW({
       cacheId: 'tgstorage',
       navigateFallback: '/index.html',
       navigateFallbackAllowlist: [/^(?!\/__)/],
@@ -177,14 +174,7 @@ module.exports = {
         urlPattern: /\.(?:jpe?g|png|svg|css|js)$/,
         handler: 'NetworkFirst'
       }]
-    }) : () => {},
-
-    isProd() ? new RobotstxtPlugin({
-      policy: [{
-        userAgent: '*',
-        [isStage() ? 'disallow' : 'allow']: '/'
-      }]
-    }) : () => {},
+    }) : () => {},*/
 
     isDev() ? new webpack.HotModuleReplacementPlugin() : () => {},
 
@@ -201,6 +191,7 @@ module.exports = {
       chunks: 'all'
     },
     concatenateModules: false,
+    minimize: isProd(),
     minimizer: isProd() ? [
       new TerserPlugin({
         terserOptions: {
@@ -215,11 +206,7 @@ module.exports = {
           }
         }
       }),
-      new OptimizeCSSAssetsPlugin({
-        cssProcessorOptions: {
-          parser: postcssSafeParser
-        }
-      })
+      new CssMinimizerPlugin()
     ] : []
   },
 

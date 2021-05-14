@@ -13,17 +13,19 @@ import { Break } from '~/ui/elements/break'
 import { Select } from '~/ui/elements/select'
 import { Input } from '~/ui/elements/input'
 import { Button } from '~/ui/elements/button'
-import { Loader } from '~/ui/elements/loader'
 
 import {
   findCountryByPhone,
   findCountryByCountryValue
 } from './auth.helpers'
-import type { Step } from './auth'
+import type { Step, Country } from './auth'
 
 type Props = {
   phone: string
   timeout: number
+  country: Country
+  initialCountry: Country
+  setCountry: StateUpdater<Country>
   setPhone: StateUpdater<string>
   setPhoneCodeHash: StateUpdater<string>
   setTimeout: StateUpdater<number>
@@ -31,24 +33,12 @@ type Props = {
   setStep: StateUpdater<Step>
 }
 
-export type Country = {
-  value: string
-  foundValue: string
-  code: string
-  mask: string
-  patterns?: string[]
-}
-
-const initialCountry: Country = ({
-  value: '',
-  foundValue: '',
-  code: '',
-  mask: ''
-})
-
 export const AuthPhoneForm: FC<Props> = ({
   phone,
   timeout,
+  country,
+  initialCountry,
+  setCountry,
   setPhone,
   setPhoneCodeHash,
   setTimeout,
@@ -59,7 +49,6 @@ export const AuthPhoneForm: FC<Props> = ({
   const { texts } = useTexts('auth')
   const [ready, setReady] = useState(false)
   const [countries, setCountries] = useState<Countries['countries']>([])
-  const [country, setCountry] = useState<Country>(initialCountry)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string|false>(false)
 
@@ -95,19 +84,23 @@ export const AuthPhoneForm: FC<Props> = ({
     return validValue
   }, [country, error, setPhone])
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     if (loading) return
     setLoading(true)
 
-    api.sendCode(phone).then(({ phone_code_hash, timeout, type, next_type }) => {
+    const response = await api.sendCode(phone, country.value || country.foundValue)
+      .catch(({ message }) => {
+        setError(message)
+        setLoading(false)
+      })
+
+    if (response) {
+      const { phone_code_hash, timeout, type, next_type } = response
       setPhoneCodeHash(phone_code_hash)
       setStep('code')
       setTimeout(timeout)
       setCodeType({ type: type._, nextType: next_type?._ || '' })
-    }).catch(({ message }) => {
-      setError(message)
-      setLoading(false)
-    })
+    }
   }, [phone, loading, setPhoneCodeHash, setStep, setTimeout, setError])
 
   useEffect(() => {
@@ -123,10 +116,6 @@ export const AuthPhoneForm: FC<Props> = ({
     setCountry(foundCountry || { ...initialCountry, value: country.value })
     setPhone(formatPhone(validPhone, foundCountry).value)
   }, [country.value, countries, setPhone, setCountry])
-
-  if (!ready) {
-    return <Loader text="connecting"/>
-  }
 
   return (
     <Form onSubmit={handleSubmit} center>
@@ -149,6 +138,8 @@ export const AuthPhoneForm: FC<Props> = ({
           subText: `+${country.country_codes[0].country_code}`,
           value: country.iso2
         }))}
+        loading={!ready}
+        search
         onSelect={handleCountryValueSelect}
       />
       <Break size={28} px/>
@@ -159,7 +150,8 @@ export const AuthPhoneForm: FC<Props> = ({
         label={texts.phoneLabel}
         value={phone}
         error={error && (texts[error] || texts.error)}
-        readonly={loading}
+        readonly={loading || !ready}
+        disabled={!ready}
         onInput={handlePhoneChange}
       />
       <Break size={28} px/>
@@ -167,7 +159,7 @@ export const AuthPhoneForm: FC<Props> = ({
       <Button
         type="submit"
         loading={loading}
-        disabled={!!timeout}
+        disabled={!!timeout || !ready}
         uppercase
         brand
       >
