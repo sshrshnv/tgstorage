@@ -3,6 +3,7 @@ const path = require('path')
 const webpack = require('webpack')
 const dotenv = require('dotenv')
 const HtmlPlugin = require('html-webpack-plugin')
+const HtmlInjectPreloadPlugin = require('@principalstudio/html-webpack-inject-preload')
 const WorkboxPlugin = require('workbox-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 //const CopyPlugin = require('copy-webpack-plugin')
@@ -149,6 +150,13 @@ module.exports = {
       }
     }),
 
+    new HtmlInjectPreloadPlugin({
+      files: [{
+        match: /app*\.css$/,
+        attributes: { as: 'style' }
+      }]
+    }),
+
     isProd() ? new MiniCssExtractPlugin({
       filename: '[name].build.[contenthash:8].css',
       chunkFilename: '[name].build.[contenthash:8].css'
@@ -161,7 +169,7 @@ module.exports = {
       ]
     }) : () => {},*/
 
-    /*isProd() ? new WorkboxPlugin.GenerateSW({
+    isProd() ? new WorkboxPlugin.GenerateSW({
       cacheId: 'tgstorage',
       navigateFallback: '/index.html',
       navigateFallbackAllowlist: [/^(?!\/__)/],
@@ -169,12 +177,9 @@ module.exports = {
       clientsClaim: true,
       skipWaiting: true,
       cleanupOutdatedCaches: true,
-      exclude: [/\.mp4$/, /\.map$/, /\.cache$/],
-      runtimeCaching: [{
-        urlPattern: /\.(?:jpe?g|png|svg|css|js)$/,
-        handler: 'NetworkFirst'
-      }]
-    }) : () => {},*/
+      exclude: [/\.map$/, /\.cache$/],
+      maximumFileSizeToCacheInBytes: 10 * 1024 * 1024
+    }) : () => {},
 
     isDev() ? new webpack.HotModuleReplacementPlugin() : () => {},
 

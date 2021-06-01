@@ -1,4 +1,4 @@
-import { get, set } from 'idb-keyval'
+import { get, set, update, del } from 'idb-keyval'
 
 import type { User, Folders, FolderMessages, FoldersMessages, Settings } from '~/core/store'
 
@@ -7,8 +7,12 @@ import { META_KEY } from './api.helpers'
 const cache = {}
 
 const setData = async (key: string, data, dbData?) => {
+  if (cache[key]) {
+    update(key, () => dbData || data).catch(() => {/*nothing*/})
+  } else {
+    set(key, dbData || data).catch(() => {/*nothing*/})
+  }
   cache[key] = data
-  set(key, dbData || data).catch(() => {/*nothing*/})
   return data
 }
 const getData = async (key: string, fallback: any = null) => {
@@ -23,7 +27,7 @@ export const apiCache = {
   getQueryTime: (queryName: string) => getData(`query-${queryName}`, 0),
 
   setMeta: (meta) => setData(META_KEY, meta),
-  getMeta: () => getData(META_KEY),
+  getMeta: (initialMeta) => getData(META_KEY, initialMeta),
   resetMeta: () => apiCache.setMeta(null),
 
   setUser: (user: User) => setData('user', user),
@@ -37,9 +41,9 @@ export const apiCache = {
   getFolders: (): Promise<Folders> => getData('folders', new Map()),
   resetFolders: () => apiCache.setFolders(new Map()),
 
-  setFolderMessages: (folderId, messages) => setData(`messages-${folderId}`, messages, messages.slice(0, 20)),
+  setFolderMessages: (folderId, messages) => setData(`messages-${folderId}`, messages, new Map([...messages].slice(0, 20))),
   getFolderMessages: (folderId): Promise<FolderMessages> => getData(`messages-${folderId}`, []),
-  resetFolderMessages: (folderId) => apiCache.setFolderMessages(folderId, []),
+  resetFolderMessages: (folderId) => apiCache.setFolderMessages(folderId, new Map()),
 
   getFoldersMessages: async (): Promise<FoldersMessages> => {
     const cachedFolders = await apiCache.getFolders()
@@ -57,5 +61,63 @@ export const apiCache = {
     return Promise.all([...cachedFolders.values()].map(({ id }) =>
       apiCache.resetFolderMessages(id)
     ))
+  },
+
+  setUploadingFile: (
+    fileId: string,
+    fileSize: number,
+    file: ArrayBuffer,
+    lastUploadedPart: number,
+    totalParts: number
+  ) => {
+    const key = `uploadingFile-${fileId}`
+    if (lastUploadedPart === totalParts - 1) {
+      del(key)
+    } else {
+      setData(key, { lastUploadedPart, totalParts })
+    }
+    if (!lastUploadedPart) {
+      apiCache.setFile(fileId, file)
+    }
+  },
+
+  setDownloadingFile: (
+    fileId: string,
+    fileSize: number,
+    file: ArrayBuffer,
+    lastDownloadedPart: number,
+    totalParts: number
+  ) => {
+    const key = `downloadingFile-${fileId}`
+    if (lastDownloadedPart === totalParts - 1) {
+      del(key)
+    } else {
+      setData(key, { lastDownloadedPart, totalParts })
+    }
+    apiCache.setFile(fileId, file)
+  },
+
+  setFile: (
+    fileId: string,
+    file: ArrayBuffer
+  ) => {
+    setData(`file-${fileId}`, file)
+  },
+  removeFile: (
+    fileId: string
+  ) => {
+    del(`file-${fileId}`)
   }
+}
+
+export const checkIsQueryAvailableByTime = async (queryTimeKey: string, time = 60) => {
+  const queryTime = await apiCache.getQueryTime(queryTimeKey)
+
+  if ((Date.now() - queryTime) < time * 1000) {
+    return false
+  }
+
+  await apiCache.setQueryTime(queryTimeKey)
+
+  return true
 }

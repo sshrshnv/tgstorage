@@ -9,7 +9,7 @@ type Props = {
   toggleSearch: () => void
 }
 
-export const StorageContentListSearch: FC<Props> = ({
+export const StorageContentPopupSearch: FC<Props> = ({
   toggleSearch
 }) => {
   const { texts } = useTexts('storage')

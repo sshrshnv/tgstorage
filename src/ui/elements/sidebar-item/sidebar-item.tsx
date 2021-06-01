@@ -27,7 +27,7 @@ export const SidebarItem: FC<Props> = ({
   menu,
   onClick
 }) => {
-  const parentRef = useRef(null)
+  const elRef = useRef(null)
   const color = getColor(index)
 
   return (
@@ -36,7 +36,7 @@ export const SidebarItem: FC<Props> = ({
         styles.root,
         disabled && styles._disabled
       )}
-      ref={parentRef}
+      ref={elRef}
       onClick={onClick}
     >
       <div
@@ -50,7 +50,11 @@ export const SidebarItem: FC<Props> = ({
         <div class={styles.description}>{description || 'Empty'}</div>
       </div>
       {(menu && !disabled) && (
-        <Menu {...menu} parentRef={parentRef}/>
+        <Menu
+          {...menu}
+          class={styles.menu}
+          parentRef={elRef}
+        />
       )}
     </div>
   )

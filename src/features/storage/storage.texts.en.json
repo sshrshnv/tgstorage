@@ -1,5 +1,5 @@
 {
-  "generalCategoryTitle": "Pinned",
+  "generalCategoryTitle": "Important",
   "generalFolderTitle": "General",
   "folderNewTitle": "New folder",
   "folderEditTitle": "Edit folder",
@@ -24,6 +24,17 @@
   "errorFolderNameEmpty": "Invalid folder name",
   "errorFolderNameExist": "Folder already exists",
   "emptyActiveFolder": "Select a folder",
-  "notePlaceholder": "Note",
-  "searchPlaceholder": "Search in"
+  "noteTitle": "New note",
+  "noteEditTitle": "Edit note",
+  "notePlaceholder": "Text",
+  "checklistTitle": "New checklist",
+  "checklistEditTitle": "Edit checklist",
+  "checklistTitlePlaceholder": "Title",
+  "checklistItemPlaceholder": "Item",
+  "searchPlaceholder": "Search in",
+  "messageEditTitle": "Edit message",
+  "messageDeleteTitle": "Delete message",
+  "messageMoveTitle": "Move message",
+  "messageCopyTitle": "Copy text",
+  "messageShareTitle": "Share text"
 }

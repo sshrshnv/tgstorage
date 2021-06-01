@@ -1,105 +1,102 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
-import { useCallback, useRef } from 'preact/hooks'
-import rafSchedule from 'raf-schd'
+import { useMemo, useCallback, useRef } from 'preact/hooks'
+import cn from 'classnames'
 
+import type { Texts } from '~/core/store'
+import {
+  CHECKLIST_UNCHECKED_MARK,
+  checkIsChecklist,
+  stringifyChecklist
+} from '~/tools/handle-checklist'
 import { Form } from '~/ui/elements/form'
 import { Button } from '~/ui/elements/button'
-import { Textarea } from '~/ui/elements/textarea'
-import { FileInput } from '~/ui/elements/file-input'
-import { SendIcon, CheckboxIcon, PlusIcon } from '~/ui/icons'
+import { CrossIcon } from '~/ui/icons'
 
+import { ContentFormNote } from './content-form-note'
+import { ContentFormChecklist } from './content-form-checklist'
 import styles from './content-form.styl'
 
-const FORM_HEIGHT = 48
-const TEXTAREA_HEIGHT = 22
-
 type Props = {
-  text?: string
-  files?: File[]
-  checklist?: {
+  message: {
+    id?: number
     text: string
-    checked: boolean
-  }[]
-  placeholder?: string
+  }
+  texts: Texts['en']
+  loading?: boolean
   onSubmit?: () => void
   onAddFiles?: (files: File[]) => void
   onChangeText?: (note: string) => void
+  onCancelEdit?: () => void
 }
 
 export const ContentForm: FC<Props> = ({
-  text,
-  files,
-  checklist,
-  placeholder,
+  message,
+  texts,
+  loading,
   onSubmit,
   onAddFiles,
-  onChangeText
+  onChangeText,
+  onCancelEdit
 }) => {
-  const formRef = useRef<HTMLFormElement>(null)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const isChecklist = useMemo(() => {
+    return checkIsChecklist(message.text)
+  }, [message.text])
 
-  const handleInput = useCallback(value => {
-    onChangeText?.(value)
-    rafSchedule(() => {
-      const formEl = formRef?.current
-      const textareaEl = textareaRef?.current
+  const elRef = useRef<HTMLDivElement>(null)
 
-      if (!formEl || !textareaEl) return
+  const scrollToBottom = useCallback(() => {
+    elRef?.current?.scrollTo(0, elRef.current.offsetHeight)
+  }, [elRef])
 
-      formRef.current.style.height = `${FORM_HEIGHT}px`
-      formRef.current.style.height = `${FORM_HEIGHT - TEXTAREA_HEIGHT + textareaRef.current.scrollHeight}px`
-    })()
-  }, [formRef, textareaRef, onChangeText])
-
-  const addFiles = useCallback((files: File[]) => {
-    if (files?.length) {
-      onAddFiles?.(Array.from(files))
-    }
-  }, [onAddFiles])
-
-  /*const addChecklistItem = useCallback(() => {
-    setChecklist([...checklist, {
-      text: '',
-      checked: false
-    }])
-  }, [checklist])*/
+  const enableChecklist = useCallback(() => {
+    onChangeText?.(stringifyChecklist('', [CHECKLIST_UNCHECKED_MARK]))
+  }, [onChangeText])
 
   return (
-    <div class={styles.root}>
+    <div
+      class={styles.root}
+      ref={elRef}
+    >
+      {message.text && (
+        <div class={styles.header}>
+          {isChecklist ?
+            message.id ? texts.checklistEditTitle : texts.checklistTitle :
+            message.id ? texts.noteEditTitle : texts.noteTitle
+          }
+          <Button
+            class={cn(
+              styles.button,
+              styles._header,
+              styles._small
+            )}
+            icon={<CrossIcon/>}
+            onClick={onCancelEdit}
+          />
+        </div>
+      )}
       <Form
         class={styles.form}
-        forwardedRef={formRef}
         onSubmit={onSubmit}
       >
-        {checklist?.length ? (
-          <Button
-            class={styles.button}
-            icon={<PlusIcon/>}
+        { isChecklist ? (
+          <ContentFormChecklist
+            text={message.text}
+            titlePlaceholder={texts.checklistTitlePlaceholder}
+            itemPlaceholder={texts.checklistItemPlaceholder}
+            loading={loading}
+            onChangeText={onChangeText}
+            onSubmit={onSubmit}
+            scrollToBottom={scrollToBottom}
           />
         ) : (
-          <FileInput
-            class={styles.button}
-            onChange={addFiles}
-          />
-        )}
-        <Textarea
-          class={styles.textarea}
-          value={text}
-          placeholder={placeholder}
-          forwardedRef={textareaRef}
-          onInput={handleInput}
-        />
-        {(checklist?.length || files?.length || text) ? (
-          <Button
-            type="submit"
-            class={styles.button}
-            icon={<SendIcon/>}
-          />
-        ) : (
-          <Button
-            class={styles.button}
-            icon={<CheckboxIcon/>}
+          <ContentFormNote
+            message={message}
+            placeholder={texts.notePlaceholder}
+            loading={loading}
+            enableChecklist={enableChecklist}
+            onChangeText={onChangeText}
+            onAddFiles={onAddFiles}
           />
         )}
       </Form>

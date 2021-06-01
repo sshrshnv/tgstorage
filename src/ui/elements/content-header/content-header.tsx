@@ -5,6 +5,7 @@ import cn from 'classnames'
 import { Button } from '~/ui/elements/button'
 import { Input } from '~/ui/elements/input'
 import { useSlide } from '~/ui/elements/slide'
+import { Loader } from '~/ui/elements/loader'
 import { BackIcon } from '~/ui/icons'
 
 import styles from './content-header.styl'
@@ -13,6 +14,7 @@ type Props = {
   title?: string
   placeholder?: string
   button?: h.JSX.Element | null
+  loading?: boolean
   withoutDesktopBack?: boolean
 }
 
@@ -20,6 +22,7 @@ export const ContentHeader: FC<Props> = ({
   title,
   placeholder,
   button,
+  loading,
   withoutDesktopBack
 }) => {
   const { closeSlide } = useSlide()
@@ -49,7 +52,9 @@ export const ContentHeader: FC<Props> = ({
           />
         </Fragment>
       )}
-      {button}
+      {loading ? (
+        <Loader class={styles.loader}/>
+      ) : button}
     </header>
   )
 }

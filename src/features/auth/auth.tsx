@@ -6,9 +6,9 @@ import { Layout } from '~/ui/elements/layout'
 import { Logo } from '~/ui/elements/logo'
 import { Break } from '~/ui/elements/break'
 
-import { AuthPhoneForm } from './auth-phone-form'
-import { AuthCodeForm } from './auth-code-form'
-import { AuthPasswordForm } from './auth-password-form'
+import { AuthFormPhone } from './auth.form-phone'
+import { AuthFormCode } from './auth.form-code'
+import { AuthFormPassword } from './auth.form-password'
 
 export type Step = 'phone'|'code'|'password'
 
@@ -66,7 +66,7 @@ const Auth: FC = () => {
       <Break size={10} vh/>
 
       { step === 'phone' && (
-        <AuthPhoneForm
+        <AuthFormPhone
           phone={phone}
           timeout={timeout}
           country={country}
@@ -80,7 +80,7 @@ const Auth: FC = () => {
         />
       )}
       { step === 'code' && (
-        <AuthCodeForm
+        <AuthFormCode
           country={country}
           phone={phone}
           phoneCodeHash={phoneCodeHash}
@@ -93,7 +93,7 @@ const Auth: FC = () => {
         />
       )}
       { step === 'password' && (
-        <AuthPasswordForm
+        <AuthFormPassword
           country={country}
           setStep={setStep}
         />

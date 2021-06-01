@@ -3,7 +3,6 @@ import { Suspense, lazy } from 'preact/compat'
 import type { FunctionComponent as FC } from 'preact'
 
 import { getLocale, setTexts } from '~/core/actions'
-import { Fallback } from '~/ui/elements/fallback'
 
 const Storage = lazy(async () => {
   const locale = getLocale()
@@ -17,7 +16,7 @@ const Storage = lazy(async () => {
 
 export const StorageLazy: FC = () => {
   return (
-    <Suspense fallback={<Fallback/>}>
+    <Suspense fallback={<div/>}>
       <Storage/>
     </Suspense>
   )

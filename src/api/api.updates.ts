@@ -1,11 +1,12 @@
 import createSyncTaskQueue from 'sync-task-queue'
 
-import type { Folder, Folders, FolderMessages, FoldersMessages } from '~/core/store'
+import type { Folder, Folders, FolderMessages } from '~/core/store'
 
 import {
   FOLDER_POSTFIX,
   convertChatToFolder,
   sortFolders,
+  sortMessages,
   normalizeMessage
 } from './api.helpers'
 import { apiCache } from './api.cache'
@@ -106,108 +107,48 @@ const handleMessages = async (
   }
 ) => {
   const user = await apiCache.getUser()
-  const [cachedFolders, cachedFoldersMessages] = await Promise.all([
+  const [folders, foldersMessages] = await Promise.all([
     apiCache.getFolders(),
     apiCache.getFoldersMessages()
   ])
-  const newFoldersMessages: FoldersMessages = new Map()
-  const editedFoldersMessages: FoldersMessages = new Map()
-  const addedFoldersMessages: FoldersMessages = new Map()
-  const deletedFoldersMessageIds: Map<number, number[]> = new Map()
-  const updatedFolderIds: number[] = []
+  const updates: Map<number, FolderMessages> = new Map()
 
   messages.forEach(async (message) => {
     const { _, peer_id } = message
     const { channel_id, user_id, chat_id } = peer_id
     const folderId: number = channel_id || user_id || chat_id
 
-    if (_ === 'message' && cachedFolders.has(folderId)) {
-      message = normalizeMessage(message, user)
-      updatedFolderIds.push(folderId)
+    let folderMessages: FolderMessages = foldersMessages.get(folderId) || new Map()
+    let isUpdated = false
 
-      if (options?.new) {
-        newFoldersMessages.set(folderId, [message, ...(newFoldersMessages.get(folderId) || [])])
-      }
+    if (_ === 'message' && folders.has(folderId)) {
+      message = !options?.deleted ? normalizeMessage(message, user) : message
 
-      if (options?.edited) {
-        editedFoldersMessages.set(folderId, [...(editedFoldersMessages.get(folderId) || []), message])
+      if (options?.deleted && folderMessages.has(message.id)) {
+        folderMessages.delete(message.id)
+        isUpdated = true
+      } else if (options?.edited && folderMessages.has(message.id)) {
+        folderMessages.set(message.id, message)
+        isUpdated = true
+      } else if (typeof options?.offsetId === 'number') {
+        folderMessages.set(message.id, message)
+        isUpdated = true
+      } else if (options?.new) {
+        folderMessages.set(message.id, message)
+        folderMessages = new Map(sortMessages([...folderMessages]))
+        isUpdated = true
       }
+    }
 
-      if (typeof options?.offsetId === 'number') {
-        addedFoldersMessages.set(folderId, [...(addedFoldersMessages.get(folderId) || []), message])
-      }
-
-      if (options?.deleted) {
-        deletedFoldersMessageIds.set(folderId, [...(deletedFoldersMessageIds.get(folderId) || []), message.id])
-      }
+    if (isUpdated) {
+      foldersMessages.set(folderId, folderMessages)
+      updates.set(folderId, folderMessages)
     }
   })
 
-  let foldersMessages: FoldersMessages = new Map()
+  if (!updates.size) return
 
-  if (newFoldersMessages.size) {
-    foldersMessages = new Map([
-      ...[...cachedFoldersMessages.entries()].filter(([folderId]) =>
-        !updatedFolderIds.includes(folderId)
-      ),
-      ...[...newFoldersMessages.entries()].map(([folderId, newMessages]) =>
-        <[number, FolderMessages]>[
-          folderId,
-          [...newMessages, ...(cachedFoldersMessages.get(folderId) || [])]
-        ]
-      )
-    ])
-  }
-
-  if (editedFoldersMessages.size) {
-    foldersMessages = new Map([
-      ...[...cachedFoldersMessages.entries()].filter(([folderId]) =>
-        !updatedFolderIds.includes(folderId)
-      ),
-      ...[...editedFoldersMessages.entries()].map(([folderId, editedMessages]) =>
-        <[number, FolderMessages]>[
-          folderId,
-          [...(cachedFoldersMessages.get(folderId) || []).map(message =>
-            editedMessages.find(({ id }) => id === message.id) || message
-          )]
-        ]
-      )
-    ])
-  }
-
-  if (deletedFoldersMessageIds.size) {
-    foldersMessages = new Map([
-      ...[...cachedFoldersMessages.entries()].filter(([folderId]) =>
-        !updatedFolderIds.includes(folderId)
-      ),
-      ...[...deletedFoldersMessageIds.entries()].map(([folderId, deletedMessageIds]) =>
-        <[number, FolderMessages]>[
-          folderId,
-          [...(cachedFoldersMessages.get(folderId) || []).filter(message =>
-            !deletedMessageIds.includes(message.id)
-          )]
-        ]
-      )
-    ])
-  }
-
-  if (addedFoldersMessages.size) {
-    foldersMessages = new Map([
-      ...[...cachedFoldersMessages.entries()].filter(([folderId]) =>
-        !updatedFolderIds.includes(folderId)
-      ),
-      ...[...addedFoldersMessages.entries()].map(([folderId, addedMessages]) =>
-      <[number, FolderMessages]>[
-        folderId,
-        !options?.offsetId ? addedMessages : [...(cachedFoldersMessages.get(folderId) || []), ...addedMessages]
-      ]
-      )
-    ])
-  }
-
-  if (!foldersMessages.size) return
-
-  await Promise.all([...foldersMessages.entries()].map(([folderId, folderMessages]) =>
+  await Promise.all([...updates].map(([folderId, folderMessages]) =>
     apiCache.setFolderMessages(folderId, folderMessages)
   ))
 

@@ -7,13 +7,14 @@ import { useFolders } from '~/core/hooks'
 
 import { StorageSidebarItemCategory } from './storage.sidebar-item-category'
 import { StorageSidebarItemFolder } from './storage.sidebar-item-folder'
+import type { FolderPopupParams } from './storage.sidebar'
 
 type Props = {
-  toggleSidebarsVisibility?: (sidebar: 'folder', params: object) => void
+  setFolderPopupParams?: (params: FolderPopupParams) => void
 }
 
-export const StorageSidebarList: FC<Props> = ({
-  toggleSidebarsVisibility
+export const StorageSidebarListFolders: FC<Props> = ({
+  setFolderPopupParams
 }) => {
   const { folders } = useFolders()
 
@@ -25,17 +26,17 @@ export const StorageSidebarList: FC<Props> = ({
             <StorageSidebarItemCategory
               folder={folder as Folder}
               index={index}
-              toggleSidebarsVisibility={toggleSidebarsVisibility}
+              setFolderPopupParams={setFolderPopupParams}
             />
           )}
 
           <StorageSidebarItemFolder
             id={folder.id as number}
             index={index}
-            toggleSidebarsVisibility={toggleSidebarsVisibility}
+            setFolderPopupParams={setFolderPopupParams}
           />
         </Fragment>
       ))}
     </Fragment>
-  ), [folders, toggleSidebarsVisibility])
+  ), [folders, setFolderPopupParams])
 }

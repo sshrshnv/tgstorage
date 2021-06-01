@@ -1,8 +1,8 @@
 import { api } from '~/api'
-import type { Updates } from '~/api'
+import type { InputMessage, Updates } from '~/api'
 
 import { FoldersMessages, store } from './store'
-import type { User, Folder, Folders, Locales, Texts } from './store'
+import type { User, Folder, Folders, Locales, Texts, Message } from './store'
 
 export const getLocale = () =>
   store.getState().settings.locale
@@ -57,6 +57,17 @@ export const setActiveFolder = (
 ) => {
   store.setState({
     activeFolderId: id
+  })
+}
+
+export const setLoadingFolderIds = (
+  id: number,
+  value: boolean
+) => {
+  const loadingFolderIds = new Map(store.getState().loadingFolderIds)
+  loadingFolderIds.set(id, value)
+  store.setState({
+    loadingFolderIds
   })
 }
 
@@ -162,23 +173,63 @@ export const loadFolderMessages = async (
   folder: Folder,
   offsetId?: number
 ) => {
+  setLoadingFolderIds(folder.id, true)
   const updates = await api.getMessages(
     folder,
     offsetId
   )
 
+  if (!updates) {
+    setLoadingFolderIds(folder.id, false)
+    return false
+  }
+
+  setUpdates(updates)
+  setLoadingFolderIds(folder.id, false)
+  return true
+}
+
+export const createMessage = async (
+  message: InputMessage,
+  folder: Folder
+) => {
+  const updates = await api.createMessage(
+    message,
+    folder
+  ).catch(() => null)
+
+  if (!updates) return false
+
   setUpdates(updates)
   return true
 }
 
-export const sendMessage = async (
-  note: string,
+export const editMessage = async (
+  message: InputMessage,
   folder: Folder
 ) => {
-  const updates = await api.sendMessage(
-    note,
+  const updates = await api.editMessage(
+    message,
     folder
-  )
+  ).catch(() => null)
+  //MESSAGE_NOT_MODIFIED
+
+  if (!updates) return false
+
+  setUpdates(updates)
+  return true
+}
+
+export const deleteMessage = async (
+  message: Message,
+  folder: Folder
+) => {
+  const updates = await api.deleteMessage(
+    message,
+    folder
+  ).catch(() => null)
+
+  if (!updates) return false
 
   setUpdates(updates)
   return true

@@ -7,33 +7,35 @@ import { useTexts } from '~/core/hooks'
 import { SidebarTitle } from '~/ui/elements/sidebar-title'
 import { EditIcon, FolderPlusIcon } from '~/ui/icons'
 
+import type { FolderPopupParams } from './storage.sidebar'
+
 type Props = {
   folder: Folder
   index: number
   disabled?: boolean
-  toggleSidebarsVisibility?: (sidebar: 'folder', params: object) => void
+  setFolderPopupParams?: (params: FolderPopupParams) => void
 }
 
 export const StorageSidebarItemCategory: FC<Props> = ({
   folder,
   index,
   disabled,
-  toggleSidebarsVisibility
+  setFolderPopupParams
 }) => {
   const { texts } = useTexts('storage')
 
   const editCategory = useCallback(() => {
-    toggleSidebarsVisibility?.('folder', {
+    setFolderPopupParams?.({
       category: folder.category,
       isEditCategory: true
     })
-  }, [folder, toggleSidebarsVisibility])
+  }, [folder, setFolderPopupParams])
 
   const addFolder = useCallback(() => {
-    toggleSidebarsVisibility?.('folder', {
+    setFolderPopupParams?.({
       category: folder.category,
     })
-  }, [folder, toggleSidebarsVisibility])
+  }, [folder, setFolderPopupParams])
 
   const menu = useMemo(() => ({
     items: [index ? {

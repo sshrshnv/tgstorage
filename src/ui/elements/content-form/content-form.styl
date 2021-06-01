@@ -1,29 +1,119 @@
 .root
-  position: relative
+  position: absolute
+  z-index: 6
+  bottom: 0
   flex-shrink: 0
-  width: $content-width + 40px
+  width: 100%
   max-width: 100%
-
-  @media $desktop
-    max-width: calc(100% - 40px)
-
-.form
-  height: 48px
-  max-height: 240px
+  max-height: 100%
+  padding: 0 6px 0 16px
   background-color: var(--content-form-background-color)
-  border-radius: 8px 8px 0 0
   box-shadow: 0 -1px 2px 0 rgba(0, 0, 0, 0.12)
 
+  overflow: auto
+  -webkit-overflow-scrolling: touch
+  scroll-behavior: smooth
+  scrollbar-width: none
+  &::-webkit-scrollbar
+    display: none
+
+  @media screen and (min-width: $sidebar-width + $content-width + 64px)
+    min-width: $content-width + 32px
+    max-width: $content-width + 32px
+    border-radius: 8px 8px 0 0
+
+.header
+  display: flex
+  align-items: center
+  width: calc(100% - 40px)
+  height: 36px
+  font-size: 12px
+  border-bottom: 1px solid var(--form-border-color)
+  color: var(--color-light-2)
+
+.form
+  min-height: 48px
+
+  > div:first-child
+    flex-grow: 1
+
+  @media screen and (min-width: $sidebar-width + $content-width + 64px)
+    border-radius: 8px 8px 0 0
+
 .button
-  width: 48px
+  width: 40px
   height: 48px
   flex-shrink: 0
   align-self: flex-end
 
   > svg
-    width: 22px
-    height: 22px
-    fill: var(--color-dark-4)
+    width: 20px
+    height: 20px
+    fill: var(--color-light-2)
+
+  &._primary > svg
+    fill: var(--color-brand)
+
+  &._header
+    position: absolute
+    top: 0
+    right: 0
+    width: 42px
+    height: 36px
+
+  &._small
+    > svg
+      width: 18px
+      height: 18px
+
+
+.loader
+  margin: 0 8px 15px
+  width: 18px
+  height: 18px
+  align-self: flex-end
 
 .textarea
   flex-grow: 1
+  height: 48px
+  max-height: 240px
+  padding-right: 6px
+
+.input
+  flex-grow: 1
+
+  > input
+    height: 44px
+    width: 100%
+    padding: 0
+
+  &._border
+    border-bottom: 1px solid var(--form-item-border-color)
+
+.checklistItem
+  display: flex
+  height: 44px
+
+  &._dragging
+    opacity: 0.1
+
+.fakeChecklistItem
+  display: flex
+  align-items: center
+  height: 44px
+  padding-left: 36px
+  opacity: 0.5
+  overflow: hidden
+
+.checklistItemIcon
+  display: flex
+  align-items: center
+  flex-shrink: 0
+  width: 36px
+  height: 44px
+  cursor: ns-resize
+
+  > svg
+    width: 20px
+    height: 20px
+    fill: var(--color-light-2)

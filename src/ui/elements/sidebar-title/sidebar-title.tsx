@@ -32,7 +32,12 @@ export const SidebarTitle: FC<Props> = ({
         {children}
       </h2>
       {(menu && !disabled) && (
-        <Menu {...menu} parentRef={parentRef} horizontal/>
+        <Menu
+          {...menu}
+          class={styles.menu}
+          parentRef={parentRef}
+          horizontal
+        />
       )}
     </div>
   )

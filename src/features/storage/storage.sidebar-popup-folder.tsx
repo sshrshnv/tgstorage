@@ -4,7 +4,6 @@ import { useCallback, useMemo, useState } from 'preact/hooks'
 
 import { createFolder, editFolder, editCategory } from '~/core/actions'
 import { useTexts, useFolders } from '~/core/hooks'
-import type { Folder } from '~/core/store'
 import { generateFolderName, normalizeCategoryName } from '~/api'
 import { SidebarPopup } from '~/ui/elements/sidebar-popup'
 import { Form } from '~/ui/elements/form'
@@ -14,12 +13,10 @@ import { Radio } from '~/ui/elements/radio'
 import { Button } from '~/ui/elements/button'
 import { Break } from '~/ui/elements/break'
 
+import type { FolderPopupParams } from './storage.sidebar'
+
 type Props = {
-  params: boolean | {
-    folder: Folder
-    isEditFolder?: boolean
-    isEditCatgory?: boolean
-  }
+  params: FolderPopupParams
   onClose: () => void
 }
 
@@ -234,7 +231,15 @@ export const StorageSidebarPopupFolder: FC<Props> = ({
 }
 
 const parseParams = (params) => {
-  if (typeof params === 'boolean') {
+  const {
+    folder,
+    category,
+    isInitialFolder,
+    isEditFolder,
+    isEditCategory
+  } = params
+
+  if (isInitialFolder) {
     return {
       initialFolder: {
         title: '',
@@ -247,19 +252,11 @@ const parseParams = (params) => {
     }
   }
 
-  const {
-    folder,
-    category,
-    isEditFolder,
-    isEditCategory
-  } = params
-
   return {
     initialFolder: folder,
-    initialCategory: isEditCategory ? category : folder.category,
+    initialCategory: category || folder?.category || '',
     isNewFolder: !isEditFolder && !isEditCategory,
     isEditFolder,
-    isEditCategory,
-    isReadonlyCategory: !isEditFolder && !isEditCategory && typeof folder.category !== 'undefined'
+    isEditCategory
   }
 }

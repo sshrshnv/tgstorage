@@ -10,6 +10,7 @@ import { animationClassName } from '~/ui/styles/animation'
 import styles from './menu.styl'
 
 export type Props = {
+  class?: string
   items: ({
     title: string
     icon?: h.JSX.Element | null
@@ -18,13 +19,16 @@ export type Props = {
     onClick?: (ev?: MouseEvent) => void
   } | null)[]
   horizontal?: boolean
+  position?: 'top'|'bottom'
   parentRef?: RefObject<HTMLDivElement>
   onClose?: () => void
 }
 
 export const Menu: FC<Props> = ({
+  class: className,
   items,
   horizontal,
+  position = 'top',
   parentRef,
   onClose
 }) => {
@@ -84,8 +88,10 @@ export const Menu: FC<Props> = ({
   return (
     <div
       class={cn(
+        className,
         styles.root,
         styles[animationClassName],
+        position && styles[`_position-${position}`],
         horizontal && styles._horizontal,
         expanded && styles._expanded
       )}
@@ -94,7 +100,7 @@ export const Menu: FC<Props> = ({
       <Button
         class={styles.button}
         icon={<MenuIcon/>}
-        round
+        inline
       />
       {expanded && (
         <div

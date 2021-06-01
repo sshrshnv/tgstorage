@@ -56,7 +56,7 @@ export type Message = {
 }
 
 export type FolderMessages =
-  Message[]
+  Map<number, Message>
 
 export type FoldersMessages =
   Map<number, FolderMessages>
@@ -85,8 +85,7 @@ export type State = {
   foldersLoading: boolean
   foldersMessages: FoldersMessages
   activeFolderId: number
-  editingFolderId: number
-  editingCategory: string
+  loadingFolderIds: Map<number, boolean>
   settings: Settings
   texts: Texts
 }
@@ -98,8 +97,7 @@ const state: State = {
   foldersLoading: true,
   foldersMessages,
   activeFolderId: 0,
-  editingFolderId: 0,
-  editingCategory: '',
+  loadingFolderIds: new Map(),
   settings: settings || {
     locale: detectLocale()
   },

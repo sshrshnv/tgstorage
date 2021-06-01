@@ -20,7 +20,7 @@ type Props = {
   setStep: StateUpdater<Step>
 }
 
-export const AuthPasswordForm: FC<Props> = ({
+export const AuthFormPassword: FC<Props> = ({
   country
 }) => {
   const { texts } = useTexts('auth')

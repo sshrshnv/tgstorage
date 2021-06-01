@@ -1,13 +1,13 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
-import { useState, useCallback } from 'preact/hooks'
+import { useState, useCallback, useEffect } from 'preact/hooks'
 
 import { useTexts, useActiveFolder } from '~/core/hooks'
 import { Text } from '~/ui/elements/text'
 import { ContentWrapper } from '~/ui/elements/content-wrapper'
 
-import { StorageContentListFolder } from './storage.content-list-folder'
-import { StorageContentListSearch } from './storage.content-list-search'
+import { StorageContentBlockFolder } from './storage.content-block-folder'
+import { StorageContentPopupSearch } from './storage.content-popup-search'
 
 export const StorageContent: FC = () => {
   const { texts } = useTexts('storage')
@@ -18,6 +18,12 @@ export const StorageContent: FC = () => {
     setSearch(!search)
   }, [search])
 
+  useEffect(() => {
+    if (search) {
+      toggleSearch()
+    }
+  }, [folder.id])
+
   return (
     <ContentWrapper active={!!folder.id}>
       {!folder.id && (
@@ -26,13 +32,13 @@ export const StorageContent: FC = () => {
         </Text>
       )}
       {!!folder.id && (
-        <StorageContentListFolder
+        <StorageContentBlockFolder
           toggleSearch={toggleSearch}
           dropAvailable={!search}
         />
       )}
       {!!folder.id && search && (
-        <StorageContentListSearch
+        <StorageContentPopupSearch
           toggleSearch={toggleSearch}
         />
       )}

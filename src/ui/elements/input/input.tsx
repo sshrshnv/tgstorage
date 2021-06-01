@@ -3,7 +3,7 @@ import type { FunctionComponent as FC, RefObject } from 'preact'
 import { useCallback, useRef, useState, useEffect } from 'preact/hooks'
 import cn from 'classnames'
 
-import { CloseIcon } from '~/ui/icons'
+import { CrossIcon } from '~/ui/icons'
 
 import { moveCursorToEnd } from './input.helpers'
 import styles from './input.styl'
@@ -119,7 +119,7 @@ export const Input: FC<Props> = ({
       />
       {(icon || (clear && inputData.value)) && (
         <div class={styles.icon} onClick={icon ? onIconClick : handleClear}>
-          {icon || <CloseIcon/>}
+          {icon || <CrossIcon/>}
         </div>
       )}
       {(label || error) && (

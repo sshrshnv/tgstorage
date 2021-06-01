@@ -7,18 +7,20 @@ import { useTexts, useFolder } from '~/core/hooks'
 import { SidebarItem } from '~/ui/elements/sidebar-item'
 import { EditIcon, DeleteIcon } from '~/ui/icons'
 
+import type { FolderPopupParams } from './storage.sidebar'
+
 type Props = {
   id: number
   index?: number
   disabled?: boolean
-  toggleSidebarsVisibility?: (sidebar: 'folder', params: object) => void
+  setFolderPopupParams?: (params: FolderPopupParams) => void
 }
 
 export const StorageSidebarItemFolder: FC<Props> = ({
   id,
   index,
   disabled,
-  toggleSidebarsVisibility
+  setFolderPopupParams
 }) => {
   const { texts } = useTexts('storage')
   const { folder, messages } = useFolder(id)
@@ -29,11 +31,11 @@ export const StorageSidebarItemFolder: FC<Props> = ({
   }, [folder])
 
   const handleEdit = useCallback(() => {
-    toggleSidebarsVisibility?.('folder', {
+    setFolderPopupParams?.({
       folder: folder,
       isEditFolder: true
     })
-  }, [folder, toggleSidebarsVisibility])
+  }, [folder, setFolderPopupParams])
 
   const handleDelete = useCallback((ev) => {
     if (confirmation) {

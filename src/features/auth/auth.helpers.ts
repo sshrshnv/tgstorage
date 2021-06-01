@@ -1,6 +1,6 @@
 import type { Countries } from '~/api'
 
-import type { Country } from './auth-phone-form'
+import type { Country } from './auth'
 
 export const findCountryByPhone = (countries: Countries['countries'], phone: string): Country | null => {
   phone = phone.replace('+', '')

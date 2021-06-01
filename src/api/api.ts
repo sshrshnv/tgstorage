@@ -1,7 +1,7 @@
 import { wrap, proxy } from 'comlink'
 import type { ProxyMarked } from 'comlink'
 
-import type { User, Folders, Folder, FoldersMessages } from '~/core/store'
+import type { User, Folders, Folder, FoldersMessages, Message } from '~/core/store'
 
 import ApiWorker from './api.worker.ts'
 
@@ -21,6 +21,10 @@ export type Countries = {
       patterns?: string[]
     }[]
   }[]
+}
+
+export type InputMessage = {
+  text: string
 }
 
 export type Updates = {
@@ -106,8 +110,18 @@ export type Api = {
     offsetId?: number
   ) => Promise<Updates>
 
-  sendMessage: (
-    note: string,
+  createMessage: (
+    message: InputMessage,
+    folder: Folder
+  ) => Promise<Updates>
+
+  editMessage: (
+    message: InputMessage,
+    folder: Folder
+  ) => Promise<Updates>
+
+  deleteMessage: (
+    message: Message,
     folder: Folder
   ) => Promise<Updates>
 }

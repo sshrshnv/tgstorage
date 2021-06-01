@@ -2,16 +2,18 @@ import { expose } from 'comlink'
 
 import { Client } from './mtproto'
 import type { MethodDeclMap, InputFileLocation, InputCheckPasswordSRP } from './mtproto'
-import { apiCache } from './api.cache'
+import { apiCache, checkIsQueryAvailableByTime } from './api.cache'
 import { handleUpdates } from './api.updates'
 import {
   API_ID,
   API_HASH,
   IS_TEST,
   FOLDER_POSTFIX,
+  FILE_SIZE,
   wait,
   generateRandomId,
-  generateFolderName
+  generateFolderName,
+  getFilePartSize
 } from './api.helpers'
 
 const initialMeta = {
@@ -33,7 +35,7 @@ class Api {
   ) => Promise<any>
 
   public async init() {
-    const meta = await apiCache.getMeta() || initialMeta
+    const meta = await apiCache.getMeta(initialMeta)
 
     this.client = new Client({
       APIID: API_ID,
@@ -62,7 +64,7 @@ class Api {
 
         if (code === 420) {
           const [, delay] = message.split('FLOOD_WAIT_')
-          console.error(`!! FLOOD WAIT ${delay}`)
+          console.error(`==> FLOOD WAIT ${delay}: ${method}`)
           resolve(this.call(method, data, { dc, timeout: +delay * 1000 }))
           return
         }
@@ -196,13 +198,11 @@ class Api {
   }
 
   public async getFolders(loadedChats: any[] = []) {
-    const queryTime = await apiCache.getQueryTime('getFolders')
+    const isQueryAvailable = await checkIsQueryAvailableByTime('getFolders')
 
-    if (Date.now() - queryTime < 60 * 1000) {
+    if (!isQueryAvailable) {
       return null
     }
-
-    await apiCache.setQueryTime('getFolders')
 
     const { _, chats } = await this.call('messages.getAllChats', {
       except_ids: loadedChats.map(chat => chat.id)
@@ -335,6 +335,12 @@ class Api {
     },
     offsetId = 0
   ) {
+    const isQueryAvailable = !!offsetId || await checkIsQueryAvailableByTime(`getMessages-${folder.id}`, 30)
+
+    if (!isQueryAvailable) {
+      return null
+    }
+
     const user = await apiCache.getUser()
     const { messages } = await this.call('messages.getHistory', {
       peer: folder.id === user?.id ? {
@@ -356,15 +362,59 @@ class Api {
     return handleUpdates({ messages }, { offsetId })
   }
 
-  public async sendMessage(
-    note: string,
+  public async createMessage(
+    message: {
+      text: string
+      media?: any
+    },
     folder: {
       id: number
       access_hash: string
     }
   ) {
     const user = await apiCache.getUser()
-    const updates = await this.call('messages.sendMessage', {
+    const updates = await this.call(
+      message.media ?
+        'messages.sendMedia' :
+        'messages.sendMessage',
+      {
+        peer: folder.id === user?.id ? {
+          _: 'inputPeerSelf'
+        } : {
+          _: 'inputPeerChannel',
+          channel_id: folder.id,
+          access_hash: folder.access_hash
+        },
+        media: message.media,
+        message: message.text,
+        random_id: generateRandomId(),
+        no_webpage: false,
+        silent: true
+      }
+    )
+
+    // 400 	MESSAGE_EMPTY
+    // 400 	MESSAGE_TOO_LONG
+
+    // 400 	WEBPAGE_CURL_FAILED
+    // 400 	WEBPAGE_MEDIA_EMPTY
+
+    return handleUpdates(updates)
+  }
+
+  public async editMessage(
+    message: {
+      id: number
+      text: string
+      media?: any
+    },
+    folder: {
+      id: number
+      access_hash: string
+    }
+  ) {
+    const user = await apiCache.getUser()
+    const updates = await this.call('messages.editMessage', {
       peer: folder.id === user?.id ? {
         _: 'inputPeerSelf'
       } : {
@@ -372,13 +422,105 @@ class Api {
         channel_id: folder.id,
         access_hash: folder.access_hash
       },
-      message: note,
-      random_id: generateRandomId(),
-      no_webpage: false,
-      silent: true
+      id: message.id,
+      message: message.text || undefined,
+      media: message.media,
+      no_webpage: false
     })
 
     return handleUpdates(updates)
+  }
+
+  public async deleteMessage(
+    message: {
+      id: number
+    },
+    folder: {
+      id: number
+      access_hash: string
+    }
+  ) {
+    const user = await apiCache.getUser()
+    await this.call(
+      folder.id === user?.id ?
+        'messages.deleteMessages' :
+        'channels.deleteMessages',
+      folder.id === user?.id ? {
+        id: [message.id]
+      } : {
+        channel: {
+          _: 'inputChannel',
+          channel_id: folder.id,
+          access_hash: folder.access_hash
+        },
+        id: [message.id]
+      }
+    )
+
+    return handleUpdates({ messages: [{
+      _: 'message',
+      id: message.id,
+      peer_id: folder.id === user?.id ? {
+        user_id: folder.id
+      } : {
+        channel_id: folder.id
+      }
+    }]}, {
+      deleted: true
+    })
+  }
+
+  public async uploadFile(
+    file: File,
+    onUploadPart: () => void
+  ) {
+    const { size: fileSize } = file
+    const fileId = generateRandomId()
+    const isLarge = fileSize > FILE_SIZE.MB10
+    const partSize = getFilePartSize(fileSize)
+    const lastPartSize = fileSize % partSize
+    const partsCount = Math.ceil(fileSize / partSize)
+
+    const fileData: Uint8Array = await new Promise(resolve => {
+      const reader = new FileReader()
+      reader.readAsArrayBuffer(file)
+      reader.onload = () => {
+        resolve(new Uint8Array(reader.result as ArrayBuffer))
+      }
+    })
+
+    for (let part = 0; part < partsCount; part++) {
+      const uploaded = part * partSize
+      const uploading = part === partsCount - 1 ? lastPartSize : partSize
+
+      await this.uploadFilePart(
+        isLarge,
+        fileId,
+        part,
+        fileData.subarray(uploaded, uploaded + uploading),
+        partsCount
+      )
+    }
+  }
+
+  private async uploadFilePart(
+    isLarge: boolean,
+    file_id: string,
+    file_part: number,
+    bytes: ArrayBuffer,
+    file_total_parts?: number
+  ) {
+    return await this.call(
+      isLarge ?
+        'upload.saveBigFilePart' :
+        'upload.saveFilePart',
+      {
+        file_id,
+        file_part,
+        file_total_parts,
+        bytes
+      }
+    )
   }
 
   public async getFile(

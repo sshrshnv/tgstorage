@@ -7,18 +7,21 @@ import styles from './loader.styl'
 type Props = {
   class?: string
   brand?: boolean
+  grey?: boolean
 }
 
 export const Loader: FC<Props> = ({
   class: className,
-  brand
+  brand,
+  grey
 }) => {
 
   return (
     <div class={cn(
       className,
       styles.root,
-      brand && styles._brand
+      brand && styles._brand,
+      grey && styles._grey
     )}/>
   )
 }

@@ -31,7 +31,7 @@ type Props = {
   setStep: StateUpdater<Step>
 }
 
-export const AuthCodeForm: FC<Props> = ({
+export const AuthFormCode: FC<Props> = ({
   country,
   phone,
   phoneCodeHash,

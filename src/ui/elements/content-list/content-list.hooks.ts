@@ -1,3 +1,4 @@
+import type { RefObject } from 'preact'
 import { useCallback, useMemo, useRef, useState } from 'preact/hooks'
 
 import { useResizeObserver } from '~/ui/hooks/use-resize-observer'
@@ -19,16 +20,20 @@ export const useVirtualList = () => {
   const offsetsRef = useRef<number[]>([])
   const intersectingsRef = useRef<boolean[]>([])
   const visibilityRef = useRef(initialVisibility)
+  const firstHeightIdRef = useRef(0)
+  const secondHeightIdRef = useRef(0)
+  const firstIntersectingIdRef = useRef(0)
+  const secondIntersectingIdRef = useRef(0)
 
-  const setHeight = useCallback((value: number, index: number) => {
-    if (!value || heightsRef.current[index] === value) return
-    heightsRef.current[index] = value
-    const offsets = offsetsRef.current
-    const newOffsets = calcOffsets()
-    if (offsets.length !== newOffsets.length || newOffsets.some((value, index) => value !== offsets[index])) {
-      offsetsRef.current = newOffsets
-      setOffsets(newOffsets)
+  const setHeight = useCallback((value: number, id: number, index: number) => {
+    const isUnshift = checkIsUnshift(id, index, firstHeightIdRef, secondHeightIdRef)
+    if (!value || (!isUnshift && heightsRef.current[index] === value)) return
+    if (isUnshift) {
+      unshift(heightsRef, value)
+    } else {
+      heightsRef.current[index] = value
     }
+    resetOffsets()
   }, [])
 
   const calcOffsets = useCallback(() => {
@@ -40,9 +45,49 @@ export const useVirtualList = () => {
     })
   }, [])
 
-  const setIntersecting = useCallback((value: boolean, index: number) => {
-    if (intersectingsRef.current[index] === value) return
-    intersectingsRef.current[index] = value
+  const resetOffsets = useCallback(() => {
+    const offsets = offsetsRef.current
+    const newOffsets = calcOffsets()
+    if (offsets.length !== newOffsets.length || newOffsets.some((value, index) => value !== offsets[index])) {
+      offsetsRef.current = newOffsets
+      setOffsets(newOffsets)
+    }
+  }, [])
+
+  const setIntersecting = useCallback((value: boolean, id: number, index: number) => {
+    if (value) {
+      const firstTrueIndex = intersectingsRef.current.indexOf(true)
+      const firstFalseIndex = intersectingsRef.current.indexOf(false)
+
+      if (
+        firstTrueIndex >=0 &&
+        firstFalseIndex >=0 &&
+        firstTrueIndex < firstFalseIndex &&
+        index > firstFalseIndex
+      ) {
+        value = false
+      }
+    }
+    const isUnshift = checkIsUnshift(id, index, firstIntersectingIdRef, secondIntersectingIdRef)
+    if (!isUnshift && intersectingsRef.current[index] === value) return
+    if (isUnshift) {
+      unshift(intersectingsRef, value)
+    } else {
+      intersectingsRef.current[index] = value
+    }
+    resetVisibility()
+  }, [])
+
+  const calcVisibility = useCallback(() => {
+    const firstIntersectingIndex = intersectingsRef.current.indexOf(true)
+    const lastIntersectingIndex = intersectingsRef.current.lastIndexOf(true)
+    return {
+      firstIndex: Math.max(0, firstIntersectingIndex - PREVISIBILE_COUNT),
+      lastIndex: Math.min(lastIntersectingIndex + PREVISIBILE_COUNT, countRef.current - 1)
+    }
+  }, [])
+
+  const resetVisibility = useCallback(() => {
     const visibility = visibilityRef.current
     const newVisibility = calcVisibility()
     if (visibility.firstIndex !== newVisibility.firstIndex || visibility.lastIndex !== newVisibility.lastIndex) {
@@ -51,32 +96,65 @@ export const useVirtualList = () => {
     }
   }, [])
 
-  const calcVisibility = useCallback(() => {
-    const firstIntersectingIndex = intersectingsRef.current.indexOf(true)
-    const lastIntersectingIndex = intersectingsRef.current.lastIndexOf(true)
-    return {
-      firstIndex: Math.max(0, firstIntersectingIndex - PREVISIBILE_COUNT),
-      lastIndex: Math.min(lastIntersectingIndex + PREVISIBILE_COUNT, countRef.current)
-    }
+  const onDeleteMessage = useCallback((index: number) => {
+    heightsRef.current.splice(index, 1)
+    resetOffsets()
+
+    intersectingsRef.current.splice(index, 1)
+    resetVisibility()
   }, [])
 
   const { resizeObserver } = useResizeObserver((el: ResizeObserverEntry) => {
     const height = (el.contentBoxSize?.[0] || el.contentBoxSize)?.blockSize || el.contentRect.height
-    const index = +(el.target.getAttribute('data-index') || '')
-    setHeight(height, index)
+    const [id, index] = (el.target.getAttribute('data-id-index') || '').split('-')
+    setHeight(height, +id, +index)
   })
 
   const { intersectionObserver, intersectionElRef } = useIntersectionObserver((el: IntersectionObserverEntry) => {
-    const index = +(el.target.getAttribute('data-index') || '')
-    setIntersecting(el.isIntersecting, index)
+    const [id, index] = (el.target.getAttribute('data-id-index') || '').split('-')
+    setIntersecting(el.isIntersecting, +id, +index)
   })
 
   return useMemo(() => ({
     offsets,
+    heights: heightsRef.current,
     visibility,
     resizeObserver,
     intersectionObserver,
     intersectionElRef,
-    countRef
-  }), [offsets, visibility, resizeObserver, intersectionObserver])
+    countRef,
+    onDeleteMessage
+  }), [offsets, visibility, resizeObserver, intersectionObserver, onDeleteMessage])
+}
+
+const checkIsUnshift = (
+  id: number,
+  index: number,
+  ref0: RefObject<number>,
+  ref1: RefObject<number>
+) => {
+  const isUnshift =
+    !!ref0.current &&
+    index === 0 &&
+    ref0.current !== id &&
+    ref1.current !== id
+
+  if (index === 0 && ref0.current !== id) {
+    ref0.current = id
+  }
+  if (index === 1 && ref1.current !== id) {
+    ref1.current = id
+  }
+
+  return isUnshift
+}
+
+const unshift = (ref: RefObject<number[]|boolean[]>, value: number|boolean) => {
+  const array = ref.current || []
+
+  for (let i = array.length; i > 0; i--) {
+    array[i] = array[i - 1]
+  }
+
+  array[0] = value
 }

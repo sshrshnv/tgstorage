@@ -4,7 +4,7 @@
   display: flex
   align-items: center
   flex-shrink: 0
-  padding: 0 20px
+  padding: 0 20px 0 9px
   height: 48px
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.12)
   background-color: var(--sidebar-header-background-color)
@@ -34,17 +34,7 @@
 
   > button
     position: relative
-    margin-left: 4px
-
-    &::after
-      position: absolute
-      top: -8px
-      bottom: -8px
-      width: 100%
-      content: ''
-
-    &:first-of-type
-      margin-left: 12px
+    width: 40px
 
   @media $desktop
     position: sticky

@@ -1,46 +1,40 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
-import { useEffect, useState, useCallback } from 'preact/hooks'
+import { useEffect, useState, useCallback, useMemo } from 'preact/hooks'
 
 import { loadFolders } from '~/core/actions'
-import { useUser, useFolders } from '~/core/hooks'
-import { Avatar } from '~/ui/elements/avatar'
-import { Button } from '~/ui/elements/button'
+import type { Folder } from '~/core/store'
 import { SidebarWrapper } from '~/ui/elements/sidebar-wrapper'
-import { Sidebar } from '~/ui/elements/sidebar'
-import { SidebarHeader } from '~/ui/elements/sidebar-header'
-import { SidebarActionButton } from '~/ui/elements/sidebar-action-button'
-import { Loader } from '~/ui/elements/loader'
-import { BellIcon, SettingsIcon, FolderPlusIcon } from '~/ui/icons'
 
-import { StorageSidebarList } from './storage.sidebar-list'
+import { StorageSidebarBlockFolders } from './storage.sidebar-block-folders'
 import { StorageSidebarPopupFolder } from './storage.sidebar-popup-folder'
 import { StorageSidebarPopupSettings } from './storage.sidebar-popup-settings'
-import { StorageSidebarPopupNotifications } from './storage.sidebar-popup-notifications'
 import { StorageSidebarPopupProfile } from './storage.sidebar-popup-profile'
 
-const sidebarsVisibilityInitialState = {
-  folder: false,
-  category: false,
-  settings: false,
-  notifications: false,
-  profile: false
-}
+export type FolderPopupParams = {
+  folder?: Folder
+  category?: string
+  isInitialFolder?: boolean
+  isEditFolder?: boolean
+  isEditCategory?: boolean
+} | null
 
 export const StorageSidebar: FC = () => {
-  const { user } = useUser()
-  const { foldersLoading } = useFolders()
-  const [sidebarsVisibility, setSidebarsVisibility] = useState(sidebarsVisibilityInitialState)
+  const [folderPopupParams, setFolderPopupParams] = useState<FolderPopupParams>(null)
+  const [profilePopupVisible, setProfilePopupVisible] = useState(false)
+  const [settingsPopupVisible, setSettingsPopupVisible] = useState(false)
 
-  const toggleSidebarsVisibility = useCallback((
-    sidebar: keyof typeof sidebarsVisibilityInitialState,
-    params?: object
-  ) => {
-    setSidebarsVisibility({
-      ...sidebarsVisibility,
-      [sidebar]: params || !sidebarsVisibility[sidebar]
-    })
-  }, [sidebarsVisibility])
+  const closeFolderPopup = useCallback(() => {
+    setFolderPopupParams(null)
+  }, [setFolderPopupParams])
+
+  const closeProfilePopup = useCallback(() => {
+    setProfilePopupVisible(false)
+  }, [setProfilePopupVisible])
+
+  const closeSettingsPopup = useCallback(() => {
+    setSettingsPopupVisible(false)
+  }, [setSettingsPopupVisible])
 
   useEffect(() => {
     loadFolders()
@@ -48,55 +42,28 @@ export const StorageSidebar: FC = () => {
 
   return (
     <SidebarWrapper>
-      <Sidebar
-        disabled={foldersLoading}
-      >
-        <SidebarHeader>
-          <Avatar
-            image={user?.photo}
-            onClick={() => toggleSidebarsVisibility('profile')}
-          />
-          <Button
-            icon={<SettingsIcon/>}
-            round
-            onClick={() => toggleSidebarsVisibility('settings')}
-          />
-          <Button
-            icon={<BellIcon/>}
-            round
-            onClick={() => toggleSidebarsVisibility('notifications')}
-          />
-        </SidebarHeader>
+      <StorageSidebarBlockFolders
+        setFolderPopupParams={setFolderPopupParams}
+        setProfilePopupVisible={setProfilePopupVisible}
+        setSettingsPopupVisible={setSettingsPopupVisible}
+      />
 
-        <SidebarActionButton
-          icon={foldersLoading ? <Loader/> : <FolderPlusIcon/>}
-          onClick={() => !foldersLoading && toggleSidebarsVisibility('folder')}
-        />
-
-        <StorageSidebarList
-          toggleSidebarsVisibility={toggleSidebarsVisibility}
-        />
-      </Sidebar>
-
-      {sidebarsVisibility.folder && (
+      {!!folderPopupParams && (
         <StorageSidebarPopupFolder
-          params={sidebarsVisibility.folder}
-          onClose={() => toggleSidebarsVisibility('folder')}
+          params={folderPopupParams}
+          onClose={closeFolderPopup}
         />
       )}
-      {sidebarsVisibility.settings && (
-        <StorageSidebarPopupSettings
-          onClose={() => toggleSidebarsVisibility('settings')}
-        />
-      )}
-      {sidebarsVisibility.notifications && (
-        <StorageSidebarPopupNotifications
-          onClose={() => toggleSidebarsVisibility('notifications')}
-        />
-      )}
-      {sidebarsVisibility.profile && (
+
+      {profilePopupVisible && (
         <StorageSidebarPopupProfile
-          onClose={() => toggleSidebarsVisibility('profile')}
+          onClose={closeProfilePopup}
+        />
+      )}
+
+      {settingsPopupVisible && (
+        <StorageSidebarPopupSettings
+          onClose={closeSettingsPopup}
         />
       )}
     </SidebarWrapper>

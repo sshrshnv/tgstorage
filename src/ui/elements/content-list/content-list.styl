@@ -1,14 +1,36 @@
 .root
   position: relative
-  flex-grow: 1
   display: flex
   flex-direction: column-reverse
   align-items: center
   width: 100%
+  height: calc(100% - 96px)
 
-  overflow: auto
+  overflow-y: scroll
+  overflow-y: overlay
   -webkit-overflow-scrolling: touch
   scroll-behavior: smooth
-  scrollbar-width: none
+  scrollbar-width: thin
+  scrollbar-color: var(--scrollbar-color) var(--scrollbar-background-color)
+
   &::-webkit-scrollbar
+    position: absolute
+    background-color: var(--scrollbar-background-color)
+    width: 4px
+
+  &::-webkit-scrollbar-track
+    background-color: var(--scrollbar-background-color)
+
+  &::-webkit-scrollbar-thumb
+    background-color: var(--scrollbar-color)
+    border-radius: 4px
+
+  &::-webkit-scrollbar-button
     display: none
+
+  @media screen and (min-width: $sidebar-width + $content-width + 40px)
+    &::-webkit-scrollbar
+      width: 8px
+
+    &::-webkit-scrollbar-thumb
+      border-radius: 8px

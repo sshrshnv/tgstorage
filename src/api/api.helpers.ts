@@ -7,6 +7,16 @@ export const META_KEY = IS_TEST ? 'metatest' : 'meta'
 export const SEPARATOR = '::'
 export const FOLDER_POSTFIX = `${SEPARATOR}tgs`
 
+export const FILE_SIZE = {
+  MB10: 10485760,
+  MB100: 104857600,
+  MB750: 786432000,
+  MB1500: 1572864000
+}
+
+export const getFilePartSize = (fileSize) =>
+  fileSize <= FILE_SIZE.MB100 ? 128 : fileSize <= FILE_SIZE.MB750 ? 256 : fileSize <= FILE_SIZE.MB1500 ? 512 : 0
+
 export const convertChatToFolder = chat => {
   const [title, category] = chat.title
     .replace(FOLDER_POSTFIX, '')
@@ -27,6 +37,10 @@ export const sortFolders = folders => {
     new Intl.Collator(undefined, { sensitivity: 'base' }).compare(a.category, b.category) ||
     new Intl.Collator(undefined, { sensitivity: 'base' }).compare(a.title, b.title)
   )
+}
+
+export const sortMessages = (messages) => {
+  return messages.sort((a, b) => b[0] - a[0])
 }
 
 export const normalizeMessage = (message, user) => {
@@ -56,7 +70,7 @@ export const wait = delay => {
 }
 
 export const generateRandomId = () => {
-  return Math.ceil(Math.random() * 0xFFFFFF).toString(16) + Math.ceil(Math.random() * 0xFFFFFF).toString(16)
+  return `${Math.floor(Math.random() * 0xFFFFFFFF) + Math.floor(Math.random() * 0xFFFFFF)}`
 }
 
 export const normalizeCategoryName = (categoryValue: string, texts) =>

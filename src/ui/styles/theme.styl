@@ -8,10 +8,13 @@
   --color-light-1: #707579
   --color-light-2: #8e9295
   --color-light-3: #c8c7cc
-  --color-light-3-5: darken(#f4f4f5, 5%)
+  --color-light-4-l5: lighten(#f4f4f5, 5%)
   --color-light-4: #f4f4f5
+  --color-light-4-d5: darken(#f4f4f5, 5%)
   --color-dark-1: #191b1d
   --color-dark-2: #212427
+  --color-dark-3-l5: lighten(#26292c, 5%)
+  --color-dark-3-l1: lighten(#26292c, 1%)
   --color-dark-3: #26292c
   --color-dark-4: #81909f
 
@@ -29,9 +32,15 @@
   --icon-second-border-color: var(--color-black-01)
   --avatar-background-color: var(--color-light-4)
   --item-border-color: var(--color-light-4)
-  --menu-icon-color: var(--color-light-3-5)
+  --form-border-color: var(--color-light-4)
+  --form-item-border-color: var(--color-light-4-l5)
+  --menu-icon-color: var(--color-light-4-d5)
+  --scrollbar-background-color: var(--color-light-4)
+  --scrollbar-color: var(--color-light-1)
 
   @media $dark
+    color-scheme: dark
+
     --default-font-color: var(--color-white)
     --default-background-color: var(--color-dark-1)
     --sidebar-background-color: var(--color-dark-2)
@@ -46,4 +55,8 @@
     --icon-second-border-color: var(--color-white-01)
     --avatar-background-color: var(--color-dark-2)
     --item-border-color: var(--color-dark-3)
-    --menu-icon-color: var(--color-dark-3)
+    --form-border-color: var(--color-dark-3-l5)
+    --form-item-border-color: var(--color-dark-3-l1)
+    --menu-icon-color: var(--color-dark-3-l5)
+    --scrollbar-background-color: var(--color-dark-1)
+    --scrollbar-color: var(--color-dark-2)

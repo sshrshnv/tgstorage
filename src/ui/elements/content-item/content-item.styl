@@ -2,10 +2,18 @@
   position: absolute
   flex-shrink: 0
   width: $content-width
-  max-width: calc(100% - 40px)
+  max-width: calc(100% - 32px)
   padding: 20px 0
+  will-change: bottom
+
+  &._hidden:not(:last-child)
+    display: none
+
+  @media screen and (min-width: $sidebar-width + $content-width + 40px)
+    max-width: calc(100% - 40px)
 
 .content
+  position: relative
   width: 100%
   padding: 0 16px
   background-color: var(--content-item-background-color)
@@ -14,10 +22,50 @@
 .header
   display: flex
   align-items: center
-  height: 28px
+  width: calc(100% - 16px)
+  height: 32px
   font-size: 12px
   border-bottom: 1px solid var(--item-border-color)
   color: var(--color-light-2)
 
 .text
   padding: 12px 0 16px
+  white-space: pre-line
+
+.loader
+  position: absolute
+  top: 8px
+  right: 8px
+  width: 16px
+  height: 16px
+
+.menu
+  top: 0
+  right: 0
+  width: 32px
+  height: 32px
+  border-radius: 0 8px 0 0
+
+.checklistItem
+  display: flex
+  align-items: center
+  padding-left: 28px
+  cursor: pointer
+
+  > svg
+    margin-right: 12px
+    width: 16px
+    height: 16px
+    flex-shrink: 0
+    fill: var(--default-font-color)
+
+  > span
+    text-overflow: ellipsis
+    white-space: nowrap
+    overflow: hidden
+
+  &:not(:last-child)
+    margin-bottom: 8px
+
+  &._checked
+    padding-left: 0
