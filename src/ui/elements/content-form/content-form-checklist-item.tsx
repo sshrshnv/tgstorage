@@ -1,11 +1,11 @@
 import { Fragment, h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
-import { useCallback, useMemo, useEffect, useRef } from 'preact/hooks'
+import { useCallback, useMemo, useEffect } from 'preact/hooks'
 import cn from 'classnames'
 
 import {
   CHECKLIST_CHECK_MARK_LENGTH,
-} from '~/tools/handle-checklist'
+} from '~/tools/handle-content'
 import { Input } from '~/ui/elements/input'
 import { Button } from '~/ui/elements/button'
 import { DragIcon, CrossIcon } from '~/ui/icons/'
@@ -86,7 +86,10 @@ export const ContentFormChecklistItem: FC<Props> = ({
 
   return (
     <Fragment>
-      {isEntering && (draggingIndex! > enteringIndex! || enteringIndex === length - 1) && (
+      {isEntering && (
+        ((draggingIndex as number) > (enteringIndex as number)) ||
+        (enteringIndex === length - 1)
+      ) && (
         <div class={styles.fakeChecklistItem}>
           {draggingValue?.slice(CHECKLIST_CHECK_MARK_LENGTH)}
         </div>
@@ -121,6 +124,7 @@ export const ContentFormChecklistItem: FC<Props> = ({
           <Button
             class={cn(
               styles.button,
+              styles._content,
               styles._small
             )}
             icon={<CrossIcon/>}
@@ -128,7 +132,10 @@ export const ContentFormChecklistItem: FC<Props> = ({
           />
         )}
       </div>
-      {isEntering && draggingIndex! < enteringIndex! && enteringIndex !== length - 1 && (
+      {isEntering && (
+        ((draggingIndex as number) < (enteringIndex as number)) &&
+        (enteringIndex !== length - 1)
+      ) && (
         <div class={styles.fakeChecklistItem}>
           {draggingValue?.slice(CHECKLIST_CHECK_MARK_LENGTH)}
         </div>

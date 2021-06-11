@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useMemo } from 'preact/hooks'
 import rafSchedule from 'raf-schd'
 import cn from 'classnames'
 
+import type { InputFile } from '~/core/store'
 import { Textarea } from '~/ui/elements/textarea'
 import { FileInput } from '~/ui/elements/file-input'
 import { Loader } from '~/ui/elements/loader'
@@ -11,16 +12,19 @@ import { Button } from '~/ui/elements/button'
 import { SendIcon, CheckboxIcon } from '~/ui/icons'
 
 import styles from './content-form.styl'
+import { ContentFormNoteItem } from './content-form-note-item'
 
 type Props = {
   message: {
     text: string
+    files?: InputFile[]
   }
   placeholder?: string
   loading?: boolean
   enableChecklist: () => void
   onChangeText?: (note: string) => void
   onAddFiles?: (files: File[]) => void
+  onRemoveFile?: (file: InputFile) => void
 }
 
 const TEXTAREA_PARENT_HEIGHT = 48
@@ -32,16 +36,20 @@ export const ContentFormNote: FC<Props> = ({
   loading,
   enableChecklist,
   onChangeText,
-  onAddFiles
+  onAddFiles,
+  onRemoveFile
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const isSubmitAvailable = useMemo(() => {
-    return !!message.text
-      .replaceAll(' ', '')
-      .replaceAll('\n', '')
-      .length
-  }, [message.text])
+    return (
+      !!message.text
+        .replaceAll(' ', '')
+        .replaceAll('\n', '')
+        .length ||
+      !!message.files?.length
+    )
+  }, [message.text, message.files])
 
   const handleInput = useCallback(value => {
     onChangeText?.(value)
@@ -67,17 +75,27 @@ export const ContentFormNote: FC<Props> = ({
 
   return (
     <Fragment>
-      <Textarea
-        class={styles.textarea}
-        value={message.text}
-        placeholder={placeholder}
-        forwardedRef={textareaRef}
-        onInput={handleInput}
-      />
+      <div>
+        <Textarea
+          class={styles.textarea}
+          value={message.text}
+          placeholder={placeholder}
+          forwardedRef={textareaRef}
+          onInput={handleInput}
+        />
+        {message.files?.map(file => (
+          <ContentFormNoteItem
+            key={file.key}
+            inputFile={file}
+            onRemoveFile={onRemoveFile}
+          />
+        ))}
+      </div>
+
       {loading ? (
-        <Loader class={styles.loader}/>
+        <Loader class={styles.loader} brand/>
       ) : (
-        <Fragment>
+        <div class={styles.buttons}>
           <FileInput
             class={styles.button}
             onChange={addFiles}
@@ -98,7 +116,7 @@ export const ContentFormNote: FC<Props> = ({
               onClick={enableChecklist}
             />
           )}
-        </Fragment>
+        </div>
       )}
     </Fragment>
   )

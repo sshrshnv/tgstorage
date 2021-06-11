@@ -1,18 +1,21 @@
 import { expose } from 'comlink'
 
+import {
+  FOLDER_POSTFIX,
+  generateFolderName
+} from '~/tools/handle-content'
+
 import { Client } from './mtproto'
 import type { MethodDeclMap, InputFileLocation, InputCheckPasswordSRP } from './mtproto'
-import { apiCache, checkIsQueryAvailableByTime } from './api.cache'
+import { apiCache } from './api.cache'
 import { handleUpdates } from './api.updates'
 import {
   API_ID,
   API_HASH,
   IS_TEST,
-  FOLDER_POSTFIX,
   FILE_SIZE,
   wait,
   generateRandomId,
-  generateFolderName,
   getFilePartSize
 } from './api.helpers'
 
@@ -30,6 +33,7 @@ class Api {
     data?: MethodDeclMap[K]['req'],
     params?: {
       dc?: number
+      thread?: number
       timeout?: number
     }
   ) => Promise<any>
@@ -49,12 +53,12 @@ class Api {
 
     this.client.on('metaChanged', meta => apiCache.setMeta(meta))
 
-    this.call = async (method, data = {}, { dc, timeout } = {}) => {
+    this.call = async (method, data = {}, { dc, thread, timeout } = {}) => {
       if (timeout) {
         await wait(timeout)
       }
 
-      return new Promise((resolve, reject) => this.client.call(method, data, { dc }, async (err, res) => {
+      return new Promise((resolve, reject) => this.client.call(method, data, { dc, thread }, async (err, res) => {
         if (!err) {
           resolve(res)
           return
@@ -65,7 +69,7 @@ class Api {
         if (code === 420) {
           const [, delay] = message.split('FLOOD_WAIT_')
           console.error(`==> FLOOD WAIT ${delay}: ${method}`)
-          resolve(this.call(method, data, { dc, timeout: +delay * 1000 }))
+          resolve(this.call(method, data, { dc, thread, timeout: +delay * 1000 }))
           return
         }
 
@@ -365,7 +369,13 @@ class Api {
   public async createMessage(
     message: {
       text: string
-      media?: any
+      inputMedia?: {
+        fileId: string
+        fileName: string
+        fileType: string
+        isLarge: boolean
+        partsCount: number
+      }
     },
     folder: {
       id: number
@@ -374,7 +384,7 @@ class Api {
   ) {
     const user = await apiCache.getUser()
     const updates = await this.call(
-      message.media ?
+      message.inputMedia ?
         'messages.sendMedia' :
         'messages.sendMessage',
       {
@@ -385,11 +395,28 @@ class Api {
           channel_id: folder.id,
           access_hash: folder.access_hash
         },
-        media: message.media,
         message: message.text,
         random_id: generateRandomId(),
         no_webpage: false,
-        silent: true
+        silent: true,
+        ...(message.inputMedia ? { media: {
+          _: 'inputMediaUploadedDocument',
+          file: {
+            _: message.inputMedia.isLarge ? 'inputFileBig' : 'inputFile',
+            id: message.inputMedia.fileId,
+            parts: message.inputMedia.partsCount,
+            name: message.inputMedia.fileName,
+            md5_checksum: message.inputMedia.isLarge ? undefined : ''
+          },
+          attributes: [{
+            _: 'documentAttributeFilename',
+            file_name: message.inputMedia.fileName
+          }, ...(message.inputMedia.fileType.endsWith('gif') ? [{
+            _: 'documentAttributeAnimated'
+          }] : [])],
+          mime_type: message.inputMedia.fileType,
+          nosound_video: message.inputMedia.fileType.endsWith('gif')
+        }} : {})
       }
     )
 
@@ -470,11 +497,10 @@ class Api {
     })
   }
 
-  public async uploadFile(
-    file: File,
-    onUploadPart: () => void
+  public async parseFile(
+    file: File
   ) {
-    const { size: fileSize } = file
+    const { size: fileSize, name: fileName, type: fileType } = file
     const fileId = generateRandomId()
     const isLarge = fileSize > FILE_SIZE.MB10
     const partSize = getFilePartSize(fileSize)
@@ -489,36 +515,49 @@ class Api {
       }
     })
 
-    for (let part = 0; part < partsCount; part++) {
-      const uploaded = part * partSize
-      const uploading = part === partsCount - 1 ? lastPartSize : partSize
-
-      await this.uploadFilePart(
-        isLarge,
-        fileId,
-        part,
-        fileData.subarray(uploaded, uploaded + uploading),
-        partsCount
-      )
+    return {
+      fileId,
+      fileData,
+      fileName,
+      fileType,
+      isLarge,
+      partSize,
+      lastPartSize,
+      partsCount
     }
   }
 
-  private async uploadFilePart(
-    isLarge: boolean,
-    file_id: string,
-    file_part: number,
-    bytes: ArrayBuffer,
-    file_total_parts?: number
-  ) {
+  public async uploadFilePart({
+    fileId,
+    fileData,
+    isLarge,
+    part,
+    partSize,
+    lastPartSize,
+    partsCount
+  }: {
+    fileId: string
+    fileData: Uint8Array
+    isLarge: boolean
+    part: number
+    partSize: number
+    lastPartSize: number
+    partsCount: number
+  }) {
+    const uploaded = part * partSize
+    const uploading = part === partsCount - 1 ? lastPartSize : partSize
+
     return await this.call(
       isLarge ?
         'upload.saveBigFilePart' :
         'upload.saveFilePart',
       {
-        file_id,
-        file_part,
-        file_total_parts,
-        bytes
+        file_id: fileId,
+        file_part: part,
+        file_total_parts: partsCount,
+        bytes: fileData.subarray(uploaded, uploaded + uploading)
+      }, {
+        thread: 3
       }
     )
   }
@@ -533,7 +572,8 @@ class Api {
       limit: 1048576, // 1MB
       offset: 0
     }, {
-      dc: dcId
+      dc: dcId,
+      thread: 2
     })
     const type = file.type._.replace('storage.file', '').toLowerCase()
     return {
@@ -542,5 +582,18 @@ class Api {
     }
   }
 }
+
+const checkIsQueryAvailableByTime = async (queryTimeKey: string, time = 60) => {
+  const queryTime = await apiCache.getQueryTime(queryTimeKey)
+
+  if ((Date.now() - queryTime) < time * 1000) {
+    return false
+  }
+
+  await apiCache.setQueryTime(queryTimeKey)
+
+  return true
+}
+
 
 expose(Api)

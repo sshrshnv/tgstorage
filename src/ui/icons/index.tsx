@@ -91,3 +91,6 @@ export const CheckIcon: FC<Props> = () => <Fallback><CheckSVG/></Fallback>
 
 const DragSVG: FC = lazy(() => import('./drag.svg'))
 export const DragIcon: FC<Props> = () => <Fallback><DragSVG/></Fallback>
+
+const FileSVG: FC = lazy(() => import('./file.svg'))
+export const FileIcon: FC<Props> = () => <Fallback><FileSVG/></Fallback>

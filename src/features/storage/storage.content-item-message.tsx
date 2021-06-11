@@ -8,35 +8,35 @@ import type { Folder, Message } from '~/core/store'
 import { ContentItem } from '~/ui/elements/content-item'
 import { EditIcon, MoveIcon, CopyIcon, ShareIcon, DeleteIcon } from '~/ui/icons'
 
-import { useEditMessage } from './storage.content.hooks'
+import { useQuickEditMessage } from './hooks'
 
 type Props = {
   folder: Folder
   message: Message
-  index: number
-  offset: number
-  height: number
+  offset: number | undefined
+  height: number | undefined
   visible: boolean
+  mediaLoadAvailable: boolean
   resizeObserver: ResizeObserver
   intersectionObserver: IntersectionObserver | undefined
   onEdit?: (message: Message) => void
-  onDelete?: (index: number) => void
+  onDelete?: (id: number) => void
 }
 
 export const StorageContentItemMessage: FC<Props> = ({
   folder,
   message,
-  index,
   offset,
   height,
   visible,
+  mediaLoadAvailable,
   resizeObserver,
   intersectionObserver,
   onEdit,
   onDelete
 }) => {
   const { texts } = useTexts('storage')
-  const { editing, editText } = useEditMessage(message)
+  const { editing, editText } = useQuickEditMessage(message)
   const [confirmation, setConfirmation] = useState(false)
   const [loading, setLoading] = useState(false)
 
@@ -111,10 +111,10 @@ export const StorageContentItemMessage: FC<Props> = ({
   return (
     <ContentItem
       message={message}
-      index={index}
       offset={offset}
       height={height}
       visible={visible}
+      mediaLoadAvailable={mediaLoadAvailable}
       resizeObserver={resizeObserver}
       intersectionObserver={intersectionObserver}
       loading={loading || editing}

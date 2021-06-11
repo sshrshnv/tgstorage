@@ -8,6 +8,7 @@ type Props = {
   large?: boolean
   small?: boolean
   uppercase?: boolean
+  ellipsis?: boolean
   bold?: boolean
   center?: boolean
   grey?: boolean
@@ -19,6 +20,7 @@ export const Text: FC<Props> = ({
   large,
   small,
   uppercase,
+  ellipsis,
   bold,
   center,
   grey,
@@ -30,6 +32,7 @@ export const Text: FC<Props> = ({
       large && styles._large,
       small && styles._small,
       uppercase && styles._uppercase,
+      ellipsis && styles._ellipsis,
       bold && styles._bold,
       center && styles._center,
       grey && styles._grey

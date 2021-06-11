@@ -5,9 +5,9 @@ import cn from 'classnames'
 
 import {
   CHECKLIST_CHECK_MARK_LENGTH,
-  parseChecklist,
-  stringifyChecklist
-} from '~/tools/handle-checklist'
+  parseChecklistMessage,
+  stringifyChecklistMessage
+} from '~/tools/handle-content'
 import { useDragReorder } from '~/ui/hooks/use-drag-reoder'
 import { Input } from '~/ui/elements/input'
 import { Loader } from '~/ui/elements/loader'
@@ -37,7 +37,7 @@ export const ContentFormChecklist: FC<Props> = ({
   scrollToBottom
 }) => {
   const parsedChecklist = useMemo(() => {
-    return parseChecklist(text, { empty: true })
+    return parseChecklistMessage(text, { empty: true })
   }, [text])
 
   const isSubmitAvailable = useMemo(() => {
@@ -46,21 +46,21 @@ export const ContentFormChecklist: FC<Props> = ({
   }, [parsedChecklist])
 
   const handleReorder = useCallback((items) => {
-    onChangeText?.(stringifyChecklist(
+    onChangeText?.(stringifyChecklistMessage(
       parsedChecklist.title,
       items
     ))
   }, [parsedChecklist.title, onChangeText])
 
   const handleInputTitle = useCallback((value) => {
-    onChangeText?.(stringifyChecklist(
+    onChangeText?.(stringifyChecklistMessage(
       value,
       parsedChecklist.items
     ))
   }, [parsedChecklist, onChangeText])
 
   const handleInputItem = useCallback((value, index) => {
-    onChangeText?.(stringifyChecklist(
+    onChangeText?.(stringifyChecklistMessage(
       parsedChecklist.title,
       parsedChecklist.items.map((item, i) => i === index ?
         `${item.slice(0, CHECKLIST_CHECK_MARK_LENGTH)}${value}` :
@@ -70,16 +70,16 @@ export const ContentFormChecklist: FC<Props> = ({
   }, [parsedChecklist, onChangeText])
 
   const handleDeleteItem = useCallback(index => {
-    onChangeText?.(stringifyChecklist(
+    onChangeText?.(stringifyChecklistMessage(
       parsedChecklist.title,
       [...parsedChecklist.items.slice(0, index), ...parsedChecklist.items.slice(index + 1)]
     ))
   }, [parsedChecklist, onChangeText])
 
   const handleSubmit = useCallback(() => {
-    const parsedChecklist = parseChecklist(text, { empty: false })
+    const parsedChecklist = parseChecklistMessage(text, { empty: false })
 
-    onChangeText?.(stringifyChecklist(
+    onChangeText?.(stringifyChecklistMessage(
       parsedChecklist.title,
       parsedChecklist.items
     ))
@@ -135,7 +135,7 @@ export const ContentFormChecklist: FC<Props> = ({
         ))}
       </div>
       {loading ? (
-        <Loader class={styles.loader}/>
+        <Loader class={styles.loader} brand/>
       ) : (
         <Button
           class={cn(

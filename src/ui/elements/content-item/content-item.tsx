@@ -3,38 +3,36 @@ import type { FunctionComponent as FC } from 'preact'
 import { useEffect, useRef, useMemo } from 'preact/hooks'
 import cn from 'classnames'
 
-import { checkIsChecklist } from '~/tools/handle-checklist'
+import type { Message } from '~/core/store'
+import { checkIsChecklistMessage } from '~/tools/handle-content'
 import { Menu } from '~/ui/elements/menu'
 import type { Props as MenuProps } from '~/ui/elements/menu'
 import { Loader } from '~/ui/elements/loader'
 
 import { ContentItemChecklist } from './content-item-checklist'
+import { ContentItemMedia } from './content-item-media'
 import styles from './content-item.styl'
 
 type Props = {
-  message: {
-    id: number
-    text: string
-    date: string
-  }
-  index: number
-  offset: number
-  height: number
+  message: Message
+  offset: number | undefined
+  height: number | undefined
   visible: boolean
+  mediaLoadAvailable: boolean
   resizeObserver: ResizeObserver
   intersectionObserver: IntersectionObserver | undefined
   loading?: boolean
   menu?: MenuProps | null
-  onDelete?: (index: number) => void
+  onDelete?: (id: number) => void
   editText: (text: string) => Promise<void>
 }
 
 export const ContentItem: FC<Props> = ({
   message,
-  index,
   offset,
   height,
   visible = true,
+  mediaLoadAvailable,
   resizeObserver,
   intersectionObserver,
   loading,
@@ -45,7 +43,7 @@ export const ContentItem: FC<Props> = ({
   const elRef = useRef<HTMLDivElement>(null)
 
   const isChecklist = useMemo(() => {
-    return checkIsChecklist(message.text)
+    return checkIsChecklistMessage(message.text)
   }, [message.text])
 
   useEffect(() => {
@@ -63,20 +61,20 @@ export const ContentItem: FC<Props> = ({
   }, [intersectionObserver])
 
   useEffect(() => {
-    return () => onDelete?.(index)
+    return () => onDelete?.(message.id)
   }, [])
 
   return useMemo(() => (
     <div
+      id={`${message.id}`}
       class={cn(
         styles.root,
         !visible && styles._hidden
       )}
-      style={{
+      style={typeof offset === 'number' ? {
         bottom: `${offset}px`
-      }}
+      } : undefined}
       ref={elRef}
-      data-id-index={`${message.id}-${index}`}
     >
       <div class={styles.content}>
         <div class={styles.header}>
@@ -84,7 +82,7 @@ export const ContentItem: FC<Props> = ({
         </div>
 
         <div class={styles.text}>
-          { isChecklist ? (
+          {isChecklist ? (
             <ContentItemChecklist
               text={message.text}
               loading={loading}
@@ -92,6 +90,13 @@ export const ContentItem: FC<Props> = ({
             />
           ) : message.text}
         </div>
+
+        {(message.media || message.fileMessages?.length) && (
+          <ContentItemMedia
+            message={message}
+            mediaLoadAvailable={mediaLoadAvailable}
+          />
+        )}
 
         {loading && (
           <Loader class={styles.loader} grey/>
@@ -101,7 +106,7 @@ export const ContentItem: FC<Props> = ({
           <Menu
             {...menu}
             class={styles.menu}
-            position={offset + height > 240 ? 'top' : 'bottom'}
+            position={(offset || 0) + (height || 0) > 240 ? 'top' : 'bottom'}
             parentRef={elRef}
           />
         )}
@@ -110,7 +115,6 @@ export const ContentItem: FC<Props> = ({
   ), [
     message.text,
     menu,
-    index,
     loading,
     height,
     offset,

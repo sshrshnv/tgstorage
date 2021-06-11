@@ -1,13 +1,13 @@
 import createSyncTaskQueue from 'sync-task-queue'
 
 import type { Folder, Folders, FolderMessages } from '~/core/store'
+import { FOLDER_POSTFIX } from '~/tools/handle-content'
 
 import {
-  FOLDER_POSTFIX,
-  convertChatToFolder,
+  transformFolder,
   sortFolders,
   sortMessages,
-  normalizeMessage
+  transformMessage
 } from './api.helpers'
 import { apiCache } from './api.cache'
 
@@ -79,7 +79,7 @@ const handleChats = async (chats): Promise<Folders> => {
       updatedFolderIds.push(chat.id)
 
       if (!left && !_?.endsWith('Forbidden')) {
-        updatedFolders.push(convertChatToFolder(chat))
+        updatedFolders.push(transformFolder(chat))
       }
     }
   })
@@ -111,18 +111,19 @@ const handleMessages = async (
     apiCache.getFolders(),
     apiCache.getFoldersMessages()
   ])
-  const updates: Map<number, FolderMessages> = new Map()
+  const updates: Map<number, { folderMessages: FolderMessages, isSorted: boolean }> = new Map()
 
   messages.forEach(async (message) => {
     const { _, peer_id } = message
     const { channel_id, user_id, chat_id } = peer_id
     const folderId: number = channel_id || user_id || chat_id
 
-    let folderMessages: FolderMessages = foldersMessages.get(folderId) || new Map()
+    const folderMessages: FolderMessages = foldersMessages.get(folderId) || new Map()
     let isUpdated = false
+    let isSorted = true
 
     if (_ === 'message' && folders.has(folderId)) {
-      message = !options?.deleted ? normalizeMessage(message, user) : message
+      message = !options?.deleted ? transformMessage(message, user) : message
 
       if (options?.deleted && folderMessages.has(message.id)) {
         folderMessages.delete(message.id)
@@ -133,24 +134,32 @@ const handleMessages = async (
       } else if (typeof options?.offsetId === 'number') {
         folderMessages.set(message.id, message)
         isUpdated = true
+        isSorted = false
       } else if (options?.new) {
         folderMessages.set(message.id, message)
-        folderMessages = new Map(sortMessages([...folderMessages]))
         isUpdated = true
+        isSorted = false
       }
     }
 
     if (isUpdated) {
       foldersMessages.set(folderId, folderMessages)
-      updates.set(folderId, folderMessages)
+      updates.set(folderId, {
+        folderMessages,
+        isSorted: isSorted ? (updates.get(folderId)?.isSorted ?? true) : false
+      })
     }
   })
 
   if (!updates.size) return
 
-  await Promise.all([...updates].map(([folderId, folderMessages]) =>
-    apiCache.setFolderMessages(folderId, folderMessages)
-  ))
+  await Promise.all([...updates].map(([folderId, { folderMessages, isSorted }]) => {
+    if (!isSorted) {
+      folderMessages = new Map(sortMessages([...folderMessages]))
+      foldersMessages.set(folderId, folderMessages)
+    }
+    return apiCache.setFolderMessages(folderId, folderMessages)
+  }))
 
   return foldersMessages
 }

@@ -6,7 +6,7 @@
       "corejs": 3,
       "useBuiltIns": "entry",
       "targets": {
-        "safari": "12"
+        "safari": "12.2"
       }
      }],
     ["@babel/typescript", { "jsxPragma": "h" }]

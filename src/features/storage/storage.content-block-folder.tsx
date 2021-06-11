@@ -11,7 +11,7 @@ import { Button } from '~/ui/elements/button'
 import { SearchIcon } from '~/ui/icons'
 
 import { StorageContentListMessages } from './storage.content-list-messages'
-import { useMessageForm } from './storage.content.hooks'
+import { useMessageForm } from './hooks'
 
 type Props = {
   dropAvailable: boolean
@@ -31,7 +31,8 @@ export const StorageContentBlockFolder: FC<Props> = ({
     handleEditMessage,
     handleCancelEditMessage,
     handleChangeText,
-    handleAddFiles
+    handleAddFiles,
+    handleRemoveFile
   } = useMessageForm()
 
   const loadMessages = useCallback((offsetId) => {
@@ -78,6 +79,7 @@ export const StorageContentBlockFolder: FC<Props> = ({
         onSubmit={handleSubmit}
         onChangeText={handleChangeText}
         onAddFiles={handleAddFiles}
+        onRemoveFile={handleRemoveFile}
         onCancelEdit={handleCancelEditMessage}
       />
     </Content>

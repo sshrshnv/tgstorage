@@ -2,7 +2,7 @@ import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
 import { useEffect, useMemo, useRef } from 'preact/hooks'
 
-import type { Folder, FolderMessages, Message } from '~/core/store'
+import type { Folder, Message } from '~/core/store'
 import { ContentList, useVirtualList } from '~/ui/elements/content-list'
 
 import { StorageContentItemMessage } from './storage.content-item-message'
@@ -25,8 +25,9 @@ export const StorageContentListMessages: FC<Props> = ({
   const {
     offsets,
     heights,
-    visibility,
     resizeObserver,
+    visibility,
+    intersectings,
     intersectionObserver,
     intersectionElRef,
     countRef,
@@ -56,20 +57,28 @@ export const StorageContentListMessages: FC<Props> = ({
       forwardedRef={intersectionElRef}
     >
       {messages.map((message, index) => {
+        const prevMessage = messages[index - 1]
         const count = messages?.length || 0
-        const offset = offsets[index]
-        const height = heights[index]
-        const visible = index >= visibility.firstIndex && index <= visibility.lastIndex
+        const offset = offsets.get(message.id)
+        const height = heights.get(message.id)
+        const mediaLoadAvailable = !!(
+          (message.media || message.fileMessages?.length) &&
+          intersectings.get(message.id)
+        )
+        const visible = (
+          (index >= visibility.firstIndex && index <= visibility.lastIndex) ||
+          index === offsets.size - 1
+        )
 
         return useMemo(() => (
           <StorageContentItemMessage
             key={message.id}
             folder={folder}
             message={message}
-            index={index}
             offset={offset}
             height={height}
             visible={visible}
+            mediaLoadAvailable={mediaLoadAvailable}
             resizeObserver={resizeObserver}
             intersectionObserver={intersectionObserver}
             onEdit={onEditMessage}
@@ -81,8 +90,10 @@ export const StorageContentListMessages: FC<Props> = ({
           count,
           offset,
           visible,
+          mediaLoadAvailable,
           resizeObserver,
           intersectionObserver,
+          prevMessage?.parentId,
           onEditMessage,
           onDeleteMessage
         ])

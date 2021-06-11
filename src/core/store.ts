@@ -46,13 +46,42 @@ export type Folder = {
 export type Folders =
   Map<number, Folder>
 
+export type MessageMedia = {
+  id: string
+  access_hash: string
+  file_reference: ArrayBuffer
+  name?: string
+  type: string
+  size?: number
+  dc_id: number
+  attributes?: any
+  thumbSUrl?: string
+  thumbM?: {
+    size: number
+    location: {
+      local_id: number
+      volume_id: string
+    }
+  }
+  thumbMUrl?: string
+  thumbVideo?: {
+    size: number
+    location: {
+      local_id: number
+      volume_id: string
+    }
+  }
+}
+
 export type Message = {
   id: number
+  parentId?: number
   text: string
   date: string
-  media?: any
+  media?: MessageMedia
   views?: number
   editDate?: number
+  fileMessages?: Message[]
 }
 
 export type FolderMessages =
@@ -60,6 +89,30 @@ export type FolderMessages =
 
 export type FoldersMessages =
   Map<number, FolderMessages>
+
+export type InputFile = {
+  id: string
+  key: string
+  progress: number
+  data?: Uint8Array
+  file?: File
+}
+
+export type InputMessage = {
+  id?: number
+  text: string
+  inputMedia?: {
+    fileId: string
+    fileName: string
+    fileType: string
+    isLarge: boolean
+    partsCount: number
+  }
+  files?: InputFile[]
+}
+
+export type SendingMessages =
+  Map<number, InputMessage | undefined>
 
 const [
   user,
@@ -86,6 +139,7 @@ export type State = {
   foldersMessages: FoldersMessages
   activeFolderId: number
   loadingFolderIds: Map<number, boolean>
+  sendingMessages: SendingMessages
   settings: Settings
   texts: Texts
 }
@@ -98,6 +152,7 @@ const state: State = {
   foldersMessages,
   activeFolderId: 0,
   loadingFolderIds: new Map(),
+  sendingMessages: new Map(),
   settings: settings || {
     locale: detectLocale()
   },

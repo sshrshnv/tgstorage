@@ -1,7 +1,14 @@
 import { wrap, proxy } from 'comlink'
 import type { ProxyMarked } from 'comlink'
 
-import type { User, Folders, Folder, FoldersMessages, Message } from '~/core/store'
+import type {
+  User,
+  Folders,
+  Folder,
+  FoldersMessages,
+  Message,
+  InputMessage
+} from '~/core/store'
 
 import ApiWorker from './api.worker.ts'
 
@@ -23,8 +30,9 @@ export type Countries = {
   }[]
 }
 
-export type InputMessage = {
-  text: string
+export type UploadedFile = {
+  fileId: string
+  isLarge: boolean
 }
 
 export type Updates = {
@@ -124,6 +132,29 @@ export type Api = {
     message: Message,
     folder: Folder
   ) => Promise<Updates>
+
+  parseFile: (
+    file: File
+  ) => Promise<{
+    fileId: string
+    fileData: Uint8Array
+    fileName: string
+    fileType: string
+    isLarge: boolean
+    partSize: number
+    lastPartSize: number
+    partsCount: number
+  }>
+
+  uploadFilePart: (fileParams: {
+    fileId: string
+    fileData: Uint8Array
+    isLarge: boolean
+    part: number
+    partSize: number
+    lastPartSize: number
+    partsCount: number
+  }) => Promise<boolean>
 }
 
 const apiWorker = new ApiWorker();

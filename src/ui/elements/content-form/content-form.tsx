@@ -3,12 +3,12 @@ import type { FunctionComponent as FC } from 'preact'
 import { useMemo, useCallback, useRef } from 'preact/hooks'
 import cn from 'classnames'
 
-import type { Texts } from '~/core/store'
+import type { Texts, InputFile } from '~/core/store'
 import {
   CHECKLIST_UNCHECKED_MARK,
-  checkIsChecklist,
-  stringifyChecklist
-} from '~/tools/handle-checklist'
+  checkIsChecklistMessage,
+  stringifyChecklistMessage
+} from '~/tools/handle-content'
 import { Form } from '~/ui/elements/form'
 import { Button } from '~/ui/elements/button'
 import { CrossIcon } from '~/ui/icons'
@@ -21,11 +21,13 @@ type Props = {
   message: {
     id?: number
     text: string
+    files?: InputFile[]
   }
   texts: Texts['en']
   loading?: boolean
   onSubmit?: () => void
   onAddFiles?: (files: File[]) => void
+  onRemoveFile?: (file: InputFile) => void
   onChangeText?: (note: string) => void
   onCancelEdit?: () => void
 }
@@ -36,12 +38,17 @@ export const ContentForm: FC<Props> = ({
   loading,
   onSubmit,
   onAddFiles,
+  onRemoveFile,
   onChangeText,
   onCancelEdit
 }) => {
   const isChecklist = useMemo(() => {
-    return checkIsChecklist(message.text)
+    return checkIsChecklistMessage(message.text)
   }, [message.text])
+
+  const isFilled = useMemo(() => {
+    return !!message.text || !!message.files?.length
+  }, [message.text, message.files?.length])
 
   const elRef = useRef<HTMLDivElement>(null)
 
@@ -50,7 +57,7 @@ export const ContentForm: FC<Props> = ({
   }, [elRef])
 
   const enableChecklist = useCallback(() => {
-    onChangeText?.(stringifyChecklist('', [CHECKLIST_UNCHECKED_MARK]))
+    onChangeText?.(stringifyChecklistMessage('', [CHECKLIST_UNCHECKED_MARK]))
   }, [onChangeText])
 
   return (
@@ -58,7 +65,7 @@ export const ContentForm: FC<Props> = ({
       class={styles.root}
       ref={elRef}
     >
-      {message.text && (
+      {isFilled && (
         <div class={styles.header}>
           {isChecklist ?
             message.id ? texts.checklistEditTitle : texts.checklistTitle :
@@ -76,7 +83,10 @@ export const ContentForm: FC<Props> = ({
         </div>
       )}
       <Form
-        class={styles.form}
+        class={cn(
+          styles.form,
+          !isChecklist && isFilled && styles._vertical
+        )}
         onSubmit={onSubmit}
       >
         { isChecklist ? (
@@ -97,6 +107,7 @@ export const ContentForm: FC<Props> = ({
             enableChecklist={enableChecklist}
             onChangeText={onChangeText}
             onAddFiles={onAddFiles}
+            onRemoveFile={onRemoveFile}
           />
         )}
       </Form>

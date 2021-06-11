@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from 'preact/hooks'
 
 import { createFolder, editFolder, editCategory } from '~/core/actions'
 import { useTexts, useFolders } from '~/core/hooks'
-import { generateFolderName, normalizeCategoryName } from '~/api'
+import { generateFolderName, normalizeCategoryName } from '~/tools/handle-content'
 import { SidebarPopup } from '~/ui/elements/sidebar-popup'
 import { Form } from '~/ui/elements/form'
 import { Select } from '~/ui/elements/select'

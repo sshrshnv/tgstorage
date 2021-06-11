@@ -6,10 +6,10 @@ import cn from 'classnames'
 import {
   CHECKLIST_CHECK_MARK_LENGTH,
   CHECKLIST_CHECKED_MARK
-} from '~/tools/handle-checklist'
-import { CheckIcon, CheckboxEmptyIcon } from '~/ui/icons'
+} from '~/tools/handle-content'
+import { CheckIcon } from '~/ui/icons'
 
-import styles from './content-item.styl'
+import styles from './content-item-checklist.styl'
 
 type Props = {
   item: string

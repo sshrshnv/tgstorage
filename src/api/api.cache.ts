@@ -42,7 +42,7 @@ export const apiCache = {
   resetFolders: () => apiCache.setFolders(new Map()),
 
   setFolderMessages: (folderId, messages) => setData(`messages-${folderId}`, messages, new Map([...messages].slice(0, 20))),
-  getFolderMessages: (folderId): Promise<FolderMessages> => getData(`messages-${folderId}`, []),
+  getFolderMessages: (folderId): Promise<FolderMessages> => getData(`messages-${folderId}`, new Map()),
   resetFolderMessages: (folderId) => apiCache.setFolderMessages(folderId, new Map()),
 
   getFoldersMessages: async (): Promise<FoldersMessages> => {
@@ -81,22 +81,6 @@ export const apiCache = {
     }
   },
 
-  setDownloadingFile: (
-    fileId: string,
-    fileSize: number,
-    file: ArrayBuffer,
-    lastDownloadedPart: number,
-    totalParts: number
-  ) => {
-    const key = `downloadingFile-${fileId}`
-    if (lastDownloadedPart === totalParts - 1) {
-      del(key)
-    } else {
-      setData(key, { lastDownloadedPart, totalParts })
-    }
-    apiCache.setFile(fileId, file)
-  },
-
   setFile: (
     fileId: string,
     file: ArrayBuffer
@@ -108,16 +92,4 @@ export const apiCache = {
   ) => {
     del(`file-${fileId}`)
   }
-}
-
-export const checkIsQueryAvailableByTime = async (queryTimeKey: string, time = 60) => {
-  const queryTime = await apiCache.getQueryTime(queryTimeKey)
-
-  if ((Date.now() - queryTime) < time * 1000) {
-    return false
-  }
-
-  await apiCache.setQueryTime(queryTimeKey)
-
-  return true
 }

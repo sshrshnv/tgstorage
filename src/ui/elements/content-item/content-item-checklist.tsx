@@ -6,9 +6,9 @@ import {
   CHECKLIST_CHECK_MARK_LENGTH,
   CHECKLIST_CHECKED_MARK,
   CHECKLIST_UNCHECKED_MARK,
-  parseChecklist,
-  stringifyChecklist
-} from '~/tools/handle-checklist'
+  parseChecklistMessage,
+  stringifyChecklistMessage
+} from '~/tools/handle-content'
 import { Break } from '~/ui/elements/break'
 
 import { ContentItemChecklistItem } from './content-item-checklist-item'
@@ -25,11 +25,11 @@ export const ContentItemChecklist: FC<Props> = ({
   editText
 }) => {
   const parsedChecklist = useMemo(() => {
-    return parseChecklist(text)
+    return parseChecklistMessage(text)
   }, [text])
 
   const toggleItem = useCallback((index) => {
-    editText(stringifyChecklist(
+    editText(stringifyChecklistMessage(
       parsedChecklist.title,
       parsedChecklist.items.map((item, i) => {
         if (i !== index) {
