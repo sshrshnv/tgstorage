@@ -1,6 +1,6 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
-import { useEffect, useState, useCallback, useMemo } from 'preact/hooks'
+import { useEffect, useState, useCallback } from 'preact/hooks'
 
 import { loadFolders } from '~/core/actions'
 import type { Folder } from '~/core/store'

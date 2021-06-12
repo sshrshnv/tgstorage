@@ -47,13 +47,13 @@ const Auth: FC = () => {
       return
     }
 
-    timeoutId = window.setTimeout(() => {
+    timeoutId = self.setTimeout(() => {
       setTimeout(timeout - 1)
     }, 1000)
 
     return () => {
       if (timeoutId) {
-        window.clearTimeout(timeoutId)
+        self.clearTimeout(timeoutId)
         timeoutId = 0
       }
     }

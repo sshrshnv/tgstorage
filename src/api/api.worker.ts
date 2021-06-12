@@ -1,12 +1,9 @@
 import { expose } from 'comlink'
 
-import {
-  FOLDER_POSTFIX,
-  generateFolderName
-} from '~/tools/handle-content'
+import { FOLDER_POSTFIX, generateFolderName } from '~/tools/handle-content'
 
+import type { MethodDeclMap, InputCheckPasswordSRP } from './mtproto'
 import { Client } from './mtproto'
-import type { MethodDeclMap, InputFileLocation, InputCheckPasswordSRP } from './mtproto'
 import { apiCache } from './api.cache'
 import { handleUpdates } from './api.updates'
 import {
@@ -15,6 +12,7 @@ import {
   IS_TEST,
   FILE_SIZE,
   wait,
+  transformUser,
   generateRandomId,
   getFilePartSize
 } from './api.helpers'
@@ -48,7 +46,7 @@ class Api {
       dc: meta.baseDC,
       autoConnect: true,
       meta,
-      debug: true
+      debug: IS_TEST
     })
 
     this.client.on('metaChanged', meta => apiCache.setMeta(meta))
@@ -143,7 +141,7 @@ class Api {
       phone_code,
       phone_code_hash
     })
-    const normalizedUser = await this.normalizeUser(user, country)
+    const normalizedUser = await transformUser(user, country)
     apiCache.setUser(normalizedUser)
     return { user: normalizedUser }
   }
@@ -159,7 +157,7 @@ class Api {
     const { user } = await this.call('auth.checkPassword', {
       password: hash as InputCheckPasswordSRP
     })
-    const normalizedUser = await this.normalizeUser(user, country)
+    const normalizedUser = await transformUser(user, country)
     apiCache.setUser(normalizedUser)
     return { user: normalizedUser }
   }
@@ -171,34 +169,6 @@ class Api {
     apiCache.resetFolders()
     apiCache.resetFoldersMessages()
     return true
-  }
-
-  private async normalizeUser(user, country) {
-    if (!user) return null
-
-    let photo: {
-      bytes: Uint8Array
-      type: string
-    } | null = null
-
-    if (user.photo?.photo_id) {
-      photo = await this.getFile({
-        _: 'inputPeerPhotoFileLocation',
-        peer: { _: 'inputPeerSelf' },
-        volume_id: user.photo.photo_small.volume_id,
-        local_id: user.photo.photo_small.local_id
-      },
-      user.photo.dc_id
-      )
-    }
-
-    return {
-      id: user.id,
-      access_hash: user.access_hash,
-      first_name: user.first_name,
-      photo,
-      country
-    }
   }
 
   public async getFolders(loadedChats: any[] = []) {
@@ -366,6 +336,36 @@ class Api {
     return handleUpdates({ messages }, { offsetId })
   }
 
+  public async refreshMessages(
+    folder: {
+      id: number
+      access_hash: string
+    },
+    ids: number[]
+  ) {
+    const user = await apiCache.getUser()
+    const { messages } = await this.call(
+      folder.id === user?.id ?
+        'messages.getMessages' :
+        'channels.getMessages',
+      {
+        id: ids.map(id => ({
+          _: ('inputMessageID' as 'inputMessageID'),
+          id
+        })),
+        ...(folder.id === user?.id ? {} : {
+          channel: {
+            _: 'inputChannel',
+            channel_id: folder.id,
+            access_hash: folder.access_hash
+          }
+        })
+      }
+    )
+
+    return handleUpdates({ messages }, { edited: true })
+  }
+
   public async createMessage(
     message: {
       text: string
@@ -497,7 +497,7 @@ class Api {
     })
   }
 
-  public async parseFile(
+  public async parseUploadingFile(
     file: File
   ) {
     const { size: fileSize, name: fileName, type: fileType } = file
@@ -562,23 +562,70 @@ class Api {
     )
   }
 
-  public async getFile(
-    location: InputFileLocation,
-    dcId: number
+  public async parseDownloadingFile(
+    fileSize: number
   ) {
+    const partSize = FILE_SIZE.MB1
+    const partsCount = Math.ceil(fileSize / partSize)
+
+    return {
+      partSize,
+      partsCount
+    }
+  }
+
+  public async downloadFilePart({
+    id,
+    partSize,
+    offsetSize,
+    precise,
+    //location,
+    dc_id,
+    access_hash,
+    file_reference,
+    thumb_size = '',
+    isPhoto
+  }: {
+    id: string
+    partSize: number
+    offsetSize: number
+    precise: boolean
+    location?: {
+      local_id: number
+      volume_id: string
+    }
+    dc_id: number
+    access_hash: string
+    file_reference: ArrayBuffer
+    thumb_size: string
+    isPhoto: boolean
+  }) {
+    // FILE_REFERENCE_EXPIRED
+
     const file = await this.call('upload.getFile', {
-      location,
+      location: {
+        _: isPhoto ? 'inputPhotoFileLocation' : 'inputDocumentFileLocation',
+        //local_id: location.local_id,
+        //volume_id: location.volume_id,
+        id,
+        access_hash,
+        file_reference,
+        thumb_size
+      },
       cdn_supported: false,
-      limit: 1048576, // 1MB
-      offset: 0
+      limit: partSize,
+      offset: offsetSize,
+      precise
     }, {
-      dc: dcId,
+      dc: dc_id,
       thread: 2
     })
-    const type = file.type._.replace('storage.file', '').toLowerCase()
+    const bytes = new Uint8Array(file.bytes)
+    const ext = file.type._.replace('storage.file', '').toLowerCase()
+
     return {
-      bytes: file.bytes,
-      type
+      bytes,
+      ext
     }
   }
 }

@@ -55,8 +55,8 @@ export const Slide: FC<Props> = ({
   }, [])
 
   useEffect(() => {
-    window.addEventListener('popstate', handlePopState)
-    return () => window.removeEventListener('popstate', handlePopState)
+    self.addEventListener('popstate', handlePopState)
+    return () => self.removeEventListener('popstate', handlePopState)
   }, [handlePopState])
 
   return (

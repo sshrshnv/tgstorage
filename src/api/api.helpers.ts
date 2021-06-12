@@ -19,18 +19,51 @@ export const IS_TEST = `${process.env.API_TEST || ''}` !== 'false'
 export const META_KEY = IS_TEST ? 'metatest' : 'meta'
 
 export const FILE_SIZE = {
+  KB64: 65536,
+  KB128: 131072,
+  KB512: 524288,
+  MB1: 1048576,
   MB10: 10485760,
   MB100: 104857600,
   MB750: 786432000,
   MB1500: 1572864000
 }
 
-export const getFilePartSize = (fileSize) =>  (
+export const getFilePartSize = (fileSize) => (
   fileSize <= FILE_SIZE.MB100 ? 128 :
     fileSize <= FILE_SIZE.MB750 ? 256 :
       fileSize <= FILE_SIZE.MB1500 ? 512 :
         0
 ) * 1024
+
+export const transformUser = (user, country) => {
+  if (!user) return null
+
+  /*
+    let photo: {
+      bytes: Uint8Array
+      type: string
+    } | null = null
+
+    if (user.photo?.photo_id) {
+      photo = await this.getFile({
+        _: 'inputPeerPhotoFileLocation',
+        peer: { _: 'inputPeerSelf' },
+        volume_id: user.photo.photo_small.volume_id,
+        local_id: user.photo.photo_small.local_id
+      },
+      user.photo.dc_id
+      )
+    }
+    */
+
+  return {
+    id: user.id,
+    access_hash: user.access_hash,
+    first_name: user.first_name,
+    country
+  }
+}
 
 export const transformFolder = chat => {
   const [title, category] = chat.title
@@ -93,17 +126,19 @@ export const transformMedia = (media) => {
       access_hash,
       file_reference,
       name,
-      type: type || 'image/jpeg',
+      type: type || 'image',
       size,
       attributes,
       dc_id,
       thumbSUrl,
       thumbM: {
         size: thumbM.size,
-        location: thumbM.location
+        location: thumbM.location,
+        thumb_size: thumbM.type
       },
       thumbMUrl,
-      thumbVideo
+      thumbVideo,
+      isPhoto: !!media.photo
     }
   }
 
@@ -129,7 +164,7 @@ export const sortMessages = (messages: [number, Message][]) => {
 
     if (parentId) {
       const fileMessages = [
-        ...(mainMessages[parentId]?.fileMessages || []),
+        ...(mainMessage?.fileMessages || []),
         message
       ].sort((a, b) => b.id - a.id)
 

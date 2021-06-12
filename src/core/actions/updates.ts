@@ -1,7 +1,7 @@
 import type { Updates } from '~/api'
 
-import { setFolders } from './set-folders'
-import { setFoldersMessages } from './set-folders-messages'
+import { setFolders } from './folders'
+import { setFoldersMessages } from './messages'
 
 export const setUpdates = ({
   folders,

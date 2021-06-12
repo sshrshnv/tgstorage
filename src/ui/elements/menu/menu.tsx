@@ -60,11 +60,11 @@ export const Menu: FC<Props> = ({
   useEffect(() => {
     let touchStartTimeoutId = 0
     const handleTouchStart = () => {
-      touchStartTimeoutId = window.setTimeout(toggle, 500)
+      touchStartTimeoutId = self.setTimeout(toggle, 500)
     }
     const handleTouchEnd = () => {
       if (!touchStartTimeoutId) return
-      window.clearTimeout(touchStartTimeoutId)
+      self.clearTimeout(touchStartTimeoutId)
       touchStartTimeoutId = 0
     }
     const handleContextMenu = () => toggle()

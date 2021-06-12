@@ -66,7 +66,7 @@ export const StorageSidebarItemFolder: FC<Props> = ({
   }), [index, confirmation, handleEdit, handleDelete, resetConfirmation])
 
   useEffect(() => {
-    loadFolderMessages(folder, 0)
+    //loadFolderMessages(folder, 0)
   }, [])
 
   return (

@@ -124,6 +124,11 @@ const handleMessages = async (
 
     if (_ === 'message' && folders.has(folderId)) {
       message = !options?.deleted ? transformMessage(message, user) : message
+      const folderMessage = folderMessages.get(message.parentId || message.id)
+
+      if (message.parentId) {
+
+      }
 
       if (options?.deleted && folderMessages.has(message.id)) {
         folderMessages.delete(message.id)

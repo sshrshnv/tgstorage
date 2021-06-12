@@ -1,18 +1,21 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
-import { useMemo, useEffect } from 'preact/hooks'
+import { useMemo } from 'preact/hooks'
 import cn from 'classnames'
 
 import type { MessageMedia } from '~/core/store'
+import { FilePreview } from '~/ui/elements/file-preview'
 
 import styles from './content-item-media.styl'
 
 type Props = {
+  messageId: number
   media: MessageMedia
   mediaLoadAvailable: boolean
 }
 
 export const ContentItemMediaItem: FC<Props> = ({
+  messageId,
   media,
   mediaLoadAvailable
 }) => {
@@ -22,18 +25,32 @@ export const ContentItemMediaItem: FC<Props> = ({
     return media.type.startsWith('image')
   }, [media.type])
 
-  useEffect(() => {
-    //
-  }, [mediaLoadAvailable])
+  const isVideo = useMemo(() => {
+    return media.type.startsWith('video')
+  }, [media.type])
+
+  const thumbFile = useMemo(() => {
+    return media.thumbM ? { ...media, ...media.thumbM } : null
+  }, [media.thumbM])
 
   return (
     <div class={cn(
       styles.mediaItem,
-      isImage && styles._image
+      isImage && styles._image,
+      isVideo && styles._image
     )}>
-      {previewUrl && (
-        <img src={previewUrl}/>
-      )}
+      <div class={styles.preview}>
+        {previewUrl && (
+          <img src={previewUrl}/>
+        )}
+        {!!thumbFile && (
+          <FilePreview
+            messageId={messageId}
+            file={thumbFile}
+            mediaLoadAvailable={mediaLoadAvailable}
+          />
+        )}
+      </div>
     </div>
   )
 }

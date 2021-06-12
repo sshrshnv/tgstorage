@@ -3,8 +3,28 @@
   flex-wrap: wrap
 
 .mediaItem
+  margin: 0 0 16px 0
+
   &._image
     width: 80px
     height: 80px
-    object-fit: cover
     border-radius: 8px
+
+.preview
+  position: relative
+  width: 100%
+  height: 100%
+  border-radius: 8px
+  overflow: hidden
+
+  > img
+    position: absolute
+    width: 100%
+    height: 100%
+    object-fit: cover
+
+    &:first-child
+      filter: blur(4px)
+
+      &:not(:last-child)
+        display: none

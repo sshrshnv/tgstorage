@@ -37,6 +37,7 @@
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-namespace": "off",
     "@typescript-eslint/no-non-null-assertion": "off",
+    "@typescript-eslint/prefer-as-const": "off",
     "react/react-in-jsx-scope": "off",
     "react/no-unknown-property": ["error", { "ignore": ["class"] }],
     "react/prop-types": ["off"]

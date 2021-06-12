@@ -27,7 +27,6 @@ export const StorageContentListMessages: FC<Props> = ({
     heights,
     resizeObserver,
     visibility,
-    intersectings,
     intersectionObserver,
     intersectionElRef,
     countRef,
@@ -61,10 +60,6 @@ export const StorageContentListMessages: FC<Props> = ({
         const count = messages?.length || 0
         const offset = offsets.get(message.id)
         const height = heights.get(message.id)
-        const mediaLoadAvailable = !!(
-          (message.media || message.fileMessages?.length) &&
-          intersectings.get(message.id)
-        )
         const visible = (
           (index >= visibility.firstIndex && index <= visibility.lastIndex) ||
           index === offsets.size - 1
@@ -78,7 +73,6 @@ export const StorageContentListMessages: FC<Props> = ({
             offset={offset}
             height={height}
             visible={visible}
-            mediaLoadAvailable={mediaLoadAvailable}
             resizeObserver={resizeObserver}
             intersectionObserver={intersectionObserver}
             onEdit={onEditMessage}
@@ -90,7 +84,6 @@ export const StorageContentListMessages: FC<Props> = ({
           count,
           offset,
           visible,
-          mediaLoadAvailable,
           resizeObserver,
           intersectionObserver,
           prevMessage?.parentId,

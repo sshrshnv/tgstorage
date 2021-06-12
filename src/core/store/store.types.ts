@@ -1,12 +1,4 @@
-import createStore from 'unistore'
-import devtools from 'unistore/devtools'
-
-import { apiCache } from '~/api'
-import { detectLocale } from '~/tools/detect-locale'
 import type { AvailableLocales } from '~/tools/detect-locale'
-
-import en from './app.texts.en.json'
-import ru from './app.texts.ru.json'
 
 export type Locales = AvailableLocales
 
@@ -62,6 +54,7 @@ export type MessageMedia = {
       local_id: number
       volume_id: string
     }
+    thumb_size: string
   }
   thumbMUrl?: string
   thumbVideo?: {
@@ -71,6 +64,7 @@ export type MessageMedia = {
       volume_id: string
     }
   }
+  isPhoto: boolean
 }
 
 export type Message = {
@@ -114,22 +108,35 @@ export type InputMessage = {
 export type SendingMessages =
   Map<number, InputMessage | undefined>
 
-const [
-  user,
-  folders,
-  foldersMessages,
-  settings
-]: [
-  User,
-  Folders,
-  FoldersMessages,
-  Settings
-] = await Promise.all([
-  apiCache.getUser(),
-  apiCache.getFolders(),
-  apiCache.getFoldersMessages(),
-  apiCache.getSettings()
-])
+export type DownloadingFile = {
+  id: string
+  url?: string
+  blob?: Blob
+  bytes?: Uint8Array
+  partSize?: number
+  lastPartSize?: number
+  partsCount?: number
+  lastPart?: number
+  name?: string
+  size: number
+  type: string
+  ext?: string
+  dc_id: number
+  access_hash: string
+  file_reference: ArrayBuffer
+  location?: {
+    local_id: number
+    volume_id: string
+  }
+  photo?: boolean
+  thumb?: boolean
+  thumb_size: string
+  downloading?: boolean
+  isPhoto: boolean
+}
+
+export type DownloadingFiles =
+  Map<string, DownloadingFile>
 
 export type State = {
   user: User
@@ -140,30 +147,7 @@ export type State = {
   activeFolderId: number
   loadingFolderIds: Map<number, boolean>
   sendingMessages: SendingMessages
+  downloadingFiles: DownloadingFiles
   settings: Settings
   texts: Texts
 }
-
-const state: State = {
-  user,
-  userLoading: true,
-  folders,
-  foldersLoading: true,
-  foldersMessages,
-  activeFolderId: 0,
-  loadingFolderIds: new Map(),
-  sendingMessages: new Map(),
-  settings: settings || {
-    locale: detectLocale()
-  },
-  texts: {
-    en,
-    ru
-  }
-}
-
-const store = process.env.NODE_ENV === 'production' ?
-  createStore(state) :
-  devtools(createStore(state))
-
-export { store }

@@ -20,6 +20,7 @@ export const ContentItemMedia: FC<Props> = ({
       {message.fileMessages?.map(fileMessage => !fileMessage.media ? null : (
         <ContentItemMediaItem
           key={fileMessage.id}
+          messageId={fileMessage.id}
           media={fileMessage.media}
           mediaLoadAvailable={mediaLoadAvailable}
         />

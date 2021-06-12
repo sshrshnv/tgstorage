@@ -18,7 +18,6 @@ type Props = {
   offset: number | undefined
   height: number | undefined
   visible: boolean
-  mediaLoadAvailable: boolean
   resizeObserver: ResizeObserver
   intersectionObserver: IntersectionObserver | undefined
   loading?: boolean
@@ -32,7 +31,6 @@ export const ContentItem: FC<Props> = ({
   offset,
   height,
   visible = true,
-  mediaLoadAvailable,
   resizeObserver,
   intersectionObserver,
   loading,
@@ -64,6 +62,10 @@ export const ContentItem: FC<Props> = ({
     return () => onDelete?.(message.id)
   }, [])
 
+  if (message.fileMessages?.length) {
+    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', message.fileMessages)
+  }
+
   return useMemo(() => (
     <div
       id={`${message.id}`}
@@ -94,7 +96,7 @@ export const ContentItem: FC<Props> = ({
         {(message.media || message.fileMessages?.length) && (
           <ContentItemMedia
             message={message}
-            mediaLoadAvailable={mediaLoadAvailable}
+            mediaLoadAvailable={visible}
           />
         )}
 
@@ -114,6 +116,7 @@ export const ContentItem: FC<Props> = ({
     </div>
   ), [
     message.text,
+    message.fileMessages,
     menu,
     loading,
     height,

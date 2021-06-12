@@ -3,12 +3,10 @@ import type { FunctionComponent as FC } from 'preact'
 import { useMemo, useState, useCallback } from 'preact/hooks'
 
 import { deleteMessage } from '~/core/actions'
-import { useTexts } from '~/core/hooks'
+import { useTexts, useQuickEditMessage } from '~/core/hooks'
 import type { Folder, Message } from '~/core/store'
 import { ContentItem } from '~/ui/elements/content-item'
 import { EditIcon, MoveIcon, CopyIcon, ShareIcon, DeleteIcon } from '~/ui/icons'
-
-import { useQuickEditMessage } from './hooks'
 
 type Props = {
   folder: Folder
@@ -16,7 +14,6 @@ type Props = {
   offset: number | undefined
   height: number | undefined
   visible: boolean
-  mediaLoadAvailable: boolean
   resizeObserver: ResizeObserver
   intersectionObserver: IntersectionObserver | undefined
   onEdit?: (message: Message) => void
@@ -29,7 +26,6 @@ export const StorageContentItemMessage: FC<Props> = ({
   offset,
   height,
   visible,
-  mediaLoadAvailable,
   resizeObserver,
   intersectionObserver,
   onEdit,
@@ -108,13 +104,16 @@ export const StorageContentItemMessage: FC<Props> = ({
     resetConfirmation
   ])
 
+  if (message.fileMessages) {
+    console.log(message.fileMessages)
+  }
+
   return (
     <ContentItem
       message={message}
       offset={offset}
       height={height}
       visible={visible}
-      mediaLoadAvailable={mediaLoadAvailable}
       resizeObserver={resizeObserver}
       intersectionObserver={intersectionObserver}
       loading={loading || editing}

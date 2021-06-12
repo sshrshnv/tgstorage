@@ -133,8 +133,8 @@ export const Select: FC<Props> = ({
           break
       }
     }
-    window.addEventListener('keydown', handleKey)
-    return () => window.removeEventListener('keydown', handleKey)
+    self.addEventListener('keydown', handleKey)
+    return () => self.removeEventListener('keydown', handleKey)
   }, [focused, expanded])
 
   return (

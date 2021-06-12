@@ -1,3 +1,3 @@
 export const measureViewport = () => ({
-  height: window.innerHeight
+  height: self.innerHeight
 })
