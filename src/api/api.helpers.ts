@@ -156,35 +156,10 @@ export const sortFolders = folders => {
 }
 
 export const sortMessages = (messages: [number, Message][]) => {
-  const mainMessages: Map<number, Message> = new Map()
-
-  messages.forEach(([, message]) => {
-    const { id, parentId } = message
-    const mainMessage = mainMessages.get(parentId || id)
-
-    if (parentId) {
-      const fileMessages = [
-        ...(mainMessage?.fileMessages || []),
-        message
-      ].sort((a, b) => b.id - a.id)
-
-      mainMessages.set(parentId, {
-        ...(mainMessage || {
-          id: parentId,
-          text: '',
-          date: message.date
-        }),
-        fileMessages
-      })
-    } else {
-      mainMessages.set(id, {
-        ...mainMessage,
-        ...message
-      })
-    }
-  })
-
-  return [...mainMessages].sort((a, b) => b[1].id - a[1].id)
+  return messages.sort((a, b) =>
+    ((b[1].parentId || b[1].id) - (a[1].parentId || a[1].id)) ||
+    (b[1].id - a[1].id)
+  )
 }
 
 export const wait = delay => {

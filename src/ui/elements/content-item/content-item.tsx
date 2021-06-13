@@ -1,6 +1,7 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
-import { useEffect, useRef, useMemo } from 'preact/hooks'
+import { useEffect, useRef, useMemo, useCallback } from 'preact/hooks'
+import rafSchedule from 'raf-schd'
 import cn from 'classnames'
 
 import type { Message } from '~/core/store'
@@ -26,11 +27,13 @@ type Props = {
   editText: (text: string) => Promise<void>
 }
 
+const TRANSPARENT_CLASS = 'transparent'
+
 export const ContentItem: FC<Props> = ({
   message,
   offset,
   height,
-  visible = true,
+  visible,
   resizeObserver,
   intersectionObserver,
   loading,
@@ -39,10 +42,22 @@ export const ContentItem: FC<Props> = ({
   editText
 }) => {
   const elRef = useRef<HTMLDivElement>(null)
+  const isVisibleRef = useRef(false)
 
   const isChecklist = useMemo(() => {
     return checkIsChecklistMessage(message.text)
   }, [message.text])
+
+  const setStyles = useCallback(rafSchedule((elRef, isVisibleRef, offset) => {
+    const el = elRef.current as HTMLDivElement
+    if (!el || typeof offset !== 'number') return
+
+    el.style.bottom = `${offset}px`
+    if (!isVisibleRef.current) {
+      isVisibleRef.current = true
+      el.classList.remove(TRANSPARENT_CLASS)
+    }
+  }), [])
 
   useEffect(() => {
     if (!resizeObserver) return
@@ -59,23 +74,22 @@ export const ContentItem: FC<Props> = ({
   }, [intersectionObserver])
 
   useEffect(() => {
-    return () => onDelete?.(message.id)
-  }, [])
+    setStyles(elRef, isVisibleRef, offset)
+  }, [offset])
 
-  if (message.fileMessages?.length) {
-    console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!', message.fileMessages)
-  }
+  useEffect(() => () => {
+    setStyles.cancel()
+    onDelete?.(message.id)
+  }, [])
 
   return useMemo(() => (
     <div
       id={`${message.id}`}
       class={cn(
         styles.root,
+        !isVisibleRef.current && TRANSPARENT_CLASS,
         !visible && styles._hidden
       )}
-      style={typeof offset === 'number' ? {
-        bottom: `${offset}px`
-      } : undefined}
       ref={elRef}
     >
       <div class={styles.content}>
@@ -93,7 +107,7 @@ export const ContentItem: FC<Props> = ({
           ) : message.text}
         </div>
 
-        {(message.media || message.fileMessages?.length) && (
+        {(message.media || message.mediaMessages?.length) && (
           <ContentItemMedia
             message={message}
             mediaLoadAvailable={visible}
@@ -116,7 +130,7 @@ export const ContentItem: FC<Props> = ({
     </div>
   ), [
     message.text,
-    message.fileMessages,
+    message.media,
     menu,
     loading,
     height,

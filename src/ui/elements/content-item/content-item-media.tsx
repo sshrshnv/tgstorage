@@ -17,11 +17,11 @@ export const ContentItemMedia: FC<Props> = ({
 }) => {
   return (
     <div class={styles.mediaWrapper}>
-      {message.fileMessages?.map(fileMessage => !fileMessage.media ? null : (
+      {message.mediaMessages?.map(mediaMessage => !mediaMessage.media ? null : (
         <ContentItemMediaItem
-          key={fileMessage.id}
-          messageId={fileMessage.id}
-          media={fileMessage.media}
+          key={mediaMessage.id}
+          messageId={mediaMessage.id}
+          media={mediaMessage.media}
           mediaLoadAvailable={mediaLoadAvailable}
         />
       ))}

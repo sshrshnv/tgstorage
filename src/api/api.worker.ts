@@ -600,8 +600,6 @@ class Api {
     thumb_size: string
     isPhoto: boolean
   }) {
-    // FILE_REFERENCE_EXPIRED
-
     const file = await this.call('upload.getFile', {
       location: {
         _: isPhoto ? 'inputPhotoFileLocation' : 'inputDocumentFileLocation',

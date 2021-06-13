@@ -1,3 +1,5 @@
+import type { FolderMessages, Message } from '~/core/store'
+
 export const SEPARATOR = '::'
 export const POSTFIX = 'tgs'
 
@@ -67,3 +69,35 @@ export const stringifyFileMessage = (text: string, parentId: number) =>
 
 export const generateFileMessageMark = (parentId: number) =>
   `${parentId}${SEPARATOR}${FILE_MESSAGE_MARK}`
+
+export const groupMessages = (messages: Message[]) => {
+  const groupedMessages: FolderMessages = new Map()
+
+  messages.forEach((message) => {
+    const { id, parentId } = message
+    const groupedMessage = groupedMessages.get(parentId || id)
+
+    if (parentId) {
+      const mediaMessages = [
+        ...(groupedMessage?.mediaMessages || []),
+        message
+      ]
+
+      groupedMessages.set(parentId, {
+        ...(groupedMessage || {
+          id: parentId,
+          text: '',
+          date: message.date
+        }),
+        mediaMessages
+      })
+    } else {
+      groupedMessages.set(id, {
+        ...groupedMessage,
+        ...message
+      })
+    }
+  })
+
+  return [...groupedMessages.values()]
+}

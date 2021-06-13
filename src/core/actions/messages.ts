@@ -152,7 +152,6 @@ export const refreshMessage = (
     )
 
     if (updates) {
-      console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! updates', updates)
       setUpdates(updates)
     }
 

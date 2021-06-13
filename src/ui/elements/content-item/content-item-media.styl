@@ -1,14 +1,18 @@
 .mediaWrapper
+  margin-left: -16px
   display: flex
   flex-wrap: wrap
 
 .mediaItem
-  margin: 0 0 16px 0
+  margin: 0 0 16px 16px
+  height: 80px
+  border-radius: 8px
 
   &._image
     width: 80px
-    height: 80px
-    border-radius: 8px
+
+  &._video
+    width: 142px
 
 .preview
   position: relative
@@ -25,6 +29,3 @@
 
     &:first-child
       filter: blur(4px)
-
-      &:not(:last-child)
-        display: none

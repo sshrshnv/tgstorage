@@ -113,22 +113,20 @@ const handleMessages = async (
   ])
   const updates: Map<number, { folderMessages: FolderMessages, isSorted: boolean }> = new Map()
 
-  messages.forEach(async (message) => {
+  messages.forEach(async (message, index) => {
     const { _, peer_id } = message
     const { channel_id, user_id, chat_id } = peer_id
     const folderId: number = channel_id || user_id || chat_id
 
-    const folderMessages: FolderMessages = foldersMessages.get(folderId) || new Map()
+    const folderMessages: FolderMessages =
+      (options?.offsetId === 0 && index === 0) ? new Map() :
+        (foldersMessages.get(folderId) || new Map())
+
     let isUpdated = false
     let isSorted = true
 
     if (_ === 'message' && folders.has(folderId)) {
       message = !options?.deleted ? transformMessage(message, user) : message
-      const folderMessage = folderMessages.get(message.parentId || message.id)
-
-      if (message.parentId) {
-
-      }
 
       if (options?.deleted && folderMessages.has(message.id)) {
         folderMessages.delete(message.id)

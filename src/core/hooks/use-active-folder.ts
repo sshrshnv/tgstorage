@@ -15,7 +15,7 @@ export const useActiveFolder = () => {
     activeFolderId: state.activeFolderId,
     loadingFolderIds: state.loadingFolderIds
   }))
-  const { folder, messages } = useFolder(activeFolderId)
+  const { folder, messages, lastMessageId } = useFolder(activeFolderId)
   const messagesLoading = useMemo(() => {
     return loadingFolderIds.get(activeFolderId) || false
   }, [activeFolderId, loadingFolderIds])
@@ -23,6 +23,7 @@ export const useActiveFolder = () => {
   return useMemo(() => ({
     folder,
     messages,
-    messagesLoading
-  }), [folder, messages, messagesLoading])
+    messagesLoading,
+    lastMessageId
+  }), [folder, messages, messagesLoading, lastMessageId])
 }

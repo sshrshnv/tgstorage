@@ -61,17 +61,22 @@ export const ContentFormNote: FC<Props> = ({
     }
   }, [onAddFiles])
 
+  const setStyles = useCallback(rafSchedule((textareaRef) => {
+    const textareaEl = textareaRef?.current
+    const textareaParentEl = textareaEl?.parentElement
+    if (!textareaParentEl) return
+
+    textareaParentEl.style.height = `${TEXTAREA_PARENT_HEIGHT}px`
+    textareaParentEl.style.height = `${TEXTAREA_PARENT_HEIGHT - TEXTAREA_HEIGHT + textareaEl.scrollHeight}px`
+  }), [])
+
   useEffect(() => {
-    rafSchedule(() => {
-      const textareaEl = textareaRef?.current
-      const textareaParentEl = textareaEl?.parentElement
-
-      if (!textareaParentEl) return
-
-      textareaParentEl.style.height = `${TEXTAREA_PARENT_HEIGHT}px`
-      textareaParentEl.style.height = `${TEXTAREA_PARENT_HEIGHT - TEXTAREA_HEIGHT + textareaEl.scrollHeight}px`
-    })()
+    setStyles(textareaRef)
   }, [message.text])
+
+  useEffect(() => () => {
+    setStyles.cancel()
+  }, [])
 
   return (
     <Fragment>

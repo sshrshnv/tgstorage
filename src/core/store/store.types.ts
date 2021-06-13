@@ -75,7 +75,7 @@ export type Message = {
   media?: MessageMedia
   views?: number
   editDate?: number
-  fileMessages?: Message[]
+  mediaMessages?: Message[]
 }
 
 export type FolderMessages =

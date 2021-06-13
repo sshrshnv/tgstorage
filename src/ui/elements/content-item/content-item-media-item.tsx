@@ -31,13 +31,13 @@ export const ContentItemMediaItem: FC<Props> = ({
 
   const thumbFile = useMemo(() => {
     return media.thumbM ? { ...media, ...media.thumbM } : null
-  }, [media.thumbM])
+  }, [media.file_reference, media.thumbM])
 
   return (
     <div class={cn(
       styles.mediaItem,
       isImage && styles._image,
-      isVideo && styles._image
+      isVideo && styles._video
     )}>
       <div class={styles.preview}>
         {previewUrl && (

@@ -104,10 +104,6 @@ export const StorageContentItemMessage: FC<Props> = ({
     resetConfirmation
   ])
 
-  if (message.fileMessages) {
-    console.log(message.fileMessages)
-  }
-
   return (
     <ContentItem
       message={message}

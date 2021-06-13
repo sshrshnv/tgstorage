@@ -4,7 +4,13 @@
   width: $content-width
   max-width: calc(100% - 32px)
   padding: 20px 0
+  opacity: 1
+  transition: bottom 0.1s ease-out, opacity 0.4s ease-out
   will-change: bottom
+
+  &:global(.transparent)
+    opacity: 0
+    will-change: bottom, opacity
 
   &._hidden
     display: none

@@ -29,6 +29,7 @@ export const FileInput: FC<Props> = ({
       <input
         class={styles.input}
         type="file"
+        multiple
         onChange={handleChange}
       />
       <AttachIcon/>

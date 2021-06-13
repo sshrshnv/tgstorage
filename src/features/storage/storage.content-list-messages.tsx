@@ -1,6 +1,6 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
-import { useEffect, useMemo, useRef } from 'preact/hooks'
+import { useEffect, useMemo, useRef, useState } from 'preact/hooks'
 
 import type { Folder, Message } from '~/core/store'
 import { ContentList, useVirtualList } from '~/ui/elements/content-list'
@@ -11,6 +11,7 @@ type Props = {
   folder: Folder
   messages: Message[]
   messagesLoading: boolean
+  lastMessageId: number
   loadMessages?: (offsetId: number) => void
   onEditMessage?: (message: Message) => void
 }
@@ -19,6 +20,7 @@ export const StorageContentListMessages: FC<Props> = ({
   folder,
   messages,
   messagesLoading,
+  lastMessageId,
   loadMessages,
   onEditMessage
 }) => {
@@ -39,27 +41,28 @@ export const StorageContentListMessages: FC<Props> = ({
   }, [messages.length])
 
   useEffect(() => {
-    const offsetId = messages[messages.length - 1]?.id
     if (
       !messagesLoading &&
-      typeof offsetId !== 'undefined' &&
-      lastOffsetIdRef.current !== offsetId &&
+      typeof lastMessageId !== 'undefined' &&
+      lastOffsetIdRef.current !== lastMessageId &&
       visibility.lastIndex === messages.length - 1
     ) {
-      lastOffsetIdRef.current = offsetId
-      loadMessages?.(offsetId)
+      lastOffsetIdRef.current = lastMessageId
+      loadMessages?.(lastMessageId)
     }
   }, [visibility.lastIndex])
 
-  return (
+  return useMemo(() => (
     <ContentList
       forwardedRef={intersectionElRef}
     >
       {messages.map((message, index) => {
-        const prevMessage = messages[index - 1]
-        const count = messages?.length || 0
-        const offset = offsets.get(message.id)
-        const height = heights.get(message.id)
+        const offset = useMemo(() => {
+          return offsets.get(message.id)
+        }, [offsets, message.id])
+        const height = useMemo(() => {
+          return heights.get(message.id)
+        }, [heights, message.id])
         const visible = (
           (index >= visibility.firstIndex && index <= visibility.lastIndex) ||
           index === offsets.size - 1
@@ -67,7 +70,7 @@ export const StorageContentListMessages: FC<Props> = ({
 
         return useMemo(() => (
           <StorageContentItemMessage
-            key={message.id}
+            key={`${message.id}-${message.parentId}`}
             folder={folder}
             message={message}
             offset={offset}
@@ -81,16 +84,25 @@ export const StorageContentListMessages: FC<Props> = ({
         ), [
           message,
           index,
-          count,
           offset,
           visible,
           resizeObserver,
           intersectionObserver,
-          prevMessage?.parentId,
           onEditMessage,
           onDeleteMessage
         ])
       })}
     </ContentList>
-  )
+  ), [
+    messages,
+    heights,
+    offsets,
+    visibility.firstIndex,
+    visibility.lastIndex,
+    resizeObserver,
+    intersectionObserver,
+    intersectionElRef,
+    onEditMessage,
+    onDeleteMessage
+  ])
 }

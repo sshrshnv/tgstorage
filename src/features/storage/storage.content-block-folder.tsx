@@ -23,7 +23,12 @@ export const StorageContentBlockFolder: FC<Props> = ({
   toggleSearch
 }) => {
   const { texts } = useTexts('storage')
-  const { folder, messages, messagesLoading } = useActiveFolder()
+  const {
+    folder,
+    messages,
+    messagesLoading,
+    lastMessageId
+  } = useActiveFolder()
   const {
     message,
     loading,
@@ -70,6 +75,7 @@ export const StorageContentBlockFolder: FC<Props> = ({
         messagesLoading={messagesLoading}
         loadMessages={loadMessages}
         onEditMessage={handleEditMessage}
+        lastMessageId={lastMessageId}
       />
       <ContentForm
         key={message.key}

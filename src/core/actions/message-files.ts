@@ -119,6 +119,15 @@ export const downloadFile = async (
   const folder = getActiveFolder() as Folder
   let downloadingFile = getDownloadingFile(file) || file
 
+  downloadingFile = {
+    ...downloadingFile,
+    file_reference: file.file_reference,
+    dc_id: file.dc_id,
+    access_hash: file.access_hash,
+    thumb_size: file.thumb_size,
+    downloading: true
+  }
+
   if (!downloadingFile.lastPart) {
     const fileParams = await api.parseDownloadingFile(file.size)
     downloadingFile = {
@@ -127,10 +136,7 @@ export const downloadFile = async (
     }
   }
 
-  setDownloadingFile({
-    ...downloadingFile,
-    downloading: true
-  })
+  setDownloadingFile(downloadingFile)
 
   const {
     id,
@@ -162,6 +168,7 @@ export const downloadFile = async (
       isPhoto
     }).catch(({ message }) => {
       if (message === 'FILE_REFERENCE_EXPIRED') {
+        pauseDownloadingFile(downloadingFile)
         refreshMessage(folder, messageId)
       }
     })

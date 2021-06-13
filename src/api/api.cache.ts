@@ -1,4 +1,4 @@
-import { get, set, update, del } from 'idb-keyval'
+import { get, set, update } from 'idb-keyval'
 
 import type { User, Folders, FolderMessages, FoldersMessages, Settings } from '~/core/store'
 
@@ -61,35 +61,5 @@ export const apiCache = {
     return Promise.all([...cachedFolders.values()].map(({ id }) =>
       apiCache.resetFolderMessages(id)
     ))
-  },
-
-  setUploadingFile: (
-    fileId: string,
-    fileSize: number,
-    file: ArrayBuffer,
-    lastUploadedPart: number,
-    totalParts: number
-  ) => {
-    const key = `uploadingFile-${fileId}`
-    if (lastUploadedPart === totalParts - 1) {
-      del(key)
-    } else {
-      setData(key, { lastUploadedPart, totalParts })
-    }
-    if (!lastUploadedPart) {
-      apiCache.setFile(fileId, file)
-    }
-  },
-
-  setFile: (
-    fileId: string,
-    file: ArrayBuffer
-  ) => {
-    setData(`file-${fileId}`, file)
-  },
-  removeFile: (
-    fileId: string
-  ) => {
-    del(`file-${fileId}`)
   }
 }
