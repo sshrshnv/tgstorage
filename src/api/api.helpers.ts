@@ -9,7 +9,7 @@ import {
 import {
   convertStrippedImageBytesToUrl,
   convertImageBytesToUrl
-} from '~/tools/handle-content-files'
+} from '~/tools/handle-content-media'
 
 import type { MessageMedia } from './mtproto'
 
@@ -127,15 +127,15 @@ export const transformMedia = (media) => {
       file_reference,
       name,
       type: type || 'image',
-      size,
+      originalSize: size,
       attributes,
       dc_id,
       thumbSUrl,
-      thumbM: {
+      thumbM: thumbM ? {
         size: thumbM.size,
         location: thumbM.location,
         thumb_size: thumbM.type
-      },
+      } : undefined,
       thumbMUrl,
       thumbVideo,
       isPhoto: !!media.photo
@@ -160,10 +160,6 @@ export const sortMessages = (messages: [number, Message][]) => {
     ((b[1].parentId || b[1].id) - (a[1].parentId || a[1].id)) ||
     (b[1].id - a[1].id)
   )
-}
-
-export const wait = delay => {
-  return new Promise(resolve => setTimeout(resolve, delay))
 }
 
 export const generateRandomId = () => {

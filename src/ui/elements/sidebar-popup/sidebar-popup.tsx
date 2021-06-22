@@ -1,5 +1,6 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { memo } from 'preact/compat'
 
 import { Slide, useSlide } from '~/ui/elements/slide'
 import { Button } from '~/ui/elements/button'
@@ -12,7 +13,7 @@ type Props = {
   onClose: () => void
 }
 
-export const SidebarPopup: FC<Props> = ({
+export const SidebarPopup: FC<Props> = memo(({
   children,
   title,
   onClose
@@ -41,4 +42,4 @@ export const SidebarPopup: FC<Props> = ({
       </div>
     </Slide>
   )
-}
+})

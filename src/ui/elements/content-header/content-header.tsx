@@ -1,5 +1,6 @@
 import { Fragment, h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { memo } from 'preact/compat'
 import cn from 'classnames'
 
 import { Button } from '~/ui/elements/button'
@@ -18,7 +19,7 @@ type Props = {
   withoutDesktopBack?: boolean
 }
 
-export const ContentHeader: FC<Props> = ({
+export const ContentHeader: FC<Props> = memo(({
   title,
   placeholder,
   button,
@@ -57,4 +58,4 @@ export const ContentHeader: FC<Props> = ({
       ) : button}
     </header>
   )
-}
+})

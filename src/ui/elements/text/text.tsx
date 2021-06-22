@@ -5,6 +5,7 @@ import cn from 'classnames'
 import styles from './text.styl'
 
 type Props = {
+  class?: string
   large?: boolean
   small?: boolean
   uppercase?: boolean
@@ -17,6 +18,7 @@ type Props = {
 
 export const Text: FC<Props> = ({
   children,
+  class: className,
   large,
   small,
   uppercase,
@@ -28,6 +30,7 @@ export const Text: FC<Props> = ({
 }) => {
   return (
     <span class={cn(
+      className,
       styles.root,
       large && styles._large,
       small && styles._small,

@@ -1,9 +1,9 @@
 import { useMemo, useCallback, useState, useRef, useEffect } from 'preact/hooks'
 
-import type { InputFile } from '~/core/store'
+import type { InputFile, Message } from '~/core/store'
 import { createMessage, editMessage, setSendingMessage, resetSendingMessage } from '~/core/actions'
 import { useActiveFolder, useSendingMessage } from '~/core/hooks'
-import type { Message } from '~/core/store'
+import { stringifyParentFilesMessage } from '~/tools/handle-content'
 
 const initialMessage = {
   key: 0,
@@ -18,6 +18,7 @@ export const useMessageForm = () => {
   const [loading, setLoading] = useState(!!sendingMessage)
   const [message, setMessage] = useState({ ...initialMessage, ...sendingMessage})
   const messageKeyRef = useRef(0)
+  const initialEditingMessage = useRef<Message | null>(null)
 
   const updateForm = useCallback((message) => {
     messageKeyRef.current += 1
@@ -27,9 +28,22 @@ export const useMessageForm = () => {
   const handleSubmit = useCallback(async () => {
     setLoading(true)
     setSendingMessage(folder.id, message)
+
+    const sendingMessage = message.files ? {
+      ...message,
+      text: stringifyParentFilesMessage(message.text)
+    } : message
+
     const success = message.id ?
-      await editMessage(message, folder) :
-      await createMessage(message, folder)
+      await editMessage(
+        sendingMessage,
+        folder,
+        initialEditingMessage.current?.text !== sendingMessage.text
+      ) :
+      await createMessage(
+        sendingMessage,
+        folder
+      )
 
     setLoading(false)
     if (success) {
@@ -38,13 +52,14 @@ export const useMessageForm = () => {
   }, [message, setLoading, updateForm])
 
   const handleEditMessage = useCallback((message: Message) => {
+    initialEditingMessage.current = message
     updateForm(message)
   }, [updateForm])
 
   const handleCancelEditMessage = useCallback(() => {
     updateForm(initialMessage)
     resetSendingMessage(folder.id)
-  }, [updateForm])
+  }, [updateForm, folder.id])
 
   const handleChangeText = useCallback((text: string) => {
     setMessage({ ...message, text })
@@ -53,7 +68,7 @@ export const useMessageForm = () => {
   const handleAddFiles = useCallback((files: File[]) => {
     const uniqFiles = files
       .map(file => ({ key: `${file.name}${file.type}${file.lastModified}${file.size}`, file }))
-      .filter(file => message.files?.every(({ key }) => key !== file.key))
+      .filter(file => (message.files || []).every(({ key }) => key !== file.key))
 
     setMessage({
       ...message,
@@ -64,14 +79,14 @@ export const useMessageForm = () => {
     })
   }, [message])
 
-  const handleRemoveFile = useCallback((file: InputFile) => {
+  const handleRemoveFile = useCallback((inputFile: InputFile) => {
     const updatedMessage = {
       ...message,
-      files: message.files?.filter(({ key }) => key !== file.key)
+      files: (sendingMessage || message).files?.filter(({ key }) => key !== inputFile.key) || []
     }
     setMessage(updatedMessage)
     setSendingMessage(folder.id, updatedMessage)
-  }, [message])
+  }, [message, sendingMessage, folder.id])
 
   useEffect(() => {
     if (sendingMessage) {

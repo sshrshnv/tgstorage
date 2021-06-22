@@ -1,5 +1,6 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { memo } from 'preact/compat'
 import { useMemo, useCallback, useRef } from 'preact/hooks'
 import cn from 'classnames'
 
@@ -32,7 +33,7 @@ type Props = {
   onCancelEdit?: () => void
 }
 
-export const ContentForm: FC<Props> = ({
+export const ContentForm: FC<Props> = memo(({
   message,
   texts,
   loading,
@@ -69,7 +70,7 @@ export const ContentForm: FC<Props> = ({
         <div class={styles.header}>
           {isChecklist ?
             message.id ? texts.checklistEditTitle : texts.checklistTitle :
-            message.id ? texts.noteEditTitle : texts.noteTitle
+            message.id ? texts.messageEditTitle : texts.messageTitle
           }
           <Button
             class={cn(
@@ -102,8 +103,9 @@ export const ContentForm: FC<Props> = ({
         ) : (
           <ContentFormNote
             message={message}
-            placeholder={texts.notePlaceholder}
+            placeholder={texts.messagePlaceholder}
             loading={loading}
+            isOpened={isFilled}
             enableChecklist={enableChecklist}
             onChangeText={onChangeText}
             onAddFiles={onAddFiles}
@@ -113,4 +115,4 @@ export const ContentForm: FC<Props> = ({
       </Form>
     </div>
   )
-}
+})

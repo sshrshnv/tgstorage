@@ -6,10 +6,10 @@ import { loadFolders } from '~/core/actions'
 import type { Folder } from '~/core/store'
 import { SidebarWrapper } from '~/ui/elements/sidebar-wrapper'
 
-import { StorageSidebarBlockFolders } from './storage.sidebar-block-folders'
-import { StorageSidebarPopupFolder } from './storage.sidebar-popup-folder'
-import { StorageSidebarPopupSettings } from './storage.sidebar-popup-settings'
-import { StorageSidebarPopupProfile } from './storage.sidebar-popup-profile'
+import { StorageSidebarFoldersBlock } from './storage.sidebar-folders-block'
+import { StorageSidebarFolderPopup } from './storage.sidebar-folder-popup'
+import { StorageSidebarSettingsPopup } from './storage.sidebar-settings-popup'
+import { StorageSidebarProfilePopup } from './storage.sidebar-profile-popup'
 
 export type FolderPopupParams = {
   folder?: Folder
@@ -42,27 +42,27 @@ export const StorageSidebar: FC = () => {
 
   return (
     <SidebarWrapper>
-      <StorageSidebarBlockFolders
+      <StorageSidebarFoldersBlock
         setFolderPopupParams={setFolderPopupParams}
         setProfilePopupVisible={setProfilePopupVisible}
         setSettingsPopupVisible={setSettingsPopupVisible}
       />
 
       {!!folderPopupParams && (
-        <StorageSidebarPopupFolder
+        <StorageSidebarFolderPopup
           params={folderPopupParams}
           onClose={closeFolderPopup}
         />
       )}
 
       {profilePopupVisible && (
-        <StorageSidebarPopupProfile
+        <StorageSidebarProfilePopup
           onClose={closeProfilePopup}
         />
       )}
 
       {settingsPopupVisible && (
-        <StorageSidebarPopupSettings
+        <StorageSidebarSettingsPopup
           onClose={closeSettingsPopup}
         />
       )}

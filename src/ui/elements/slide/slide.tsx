@@ -1,5 +1,6 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { memo } from 'preact/compat'
 import { useEffect, useCallback, useRef } from 'preact/hooks'
 import cn from 'classnames'
 
@@ -15,7 +16,7 @@ type Props = {
 
 const slides: string[] = []
 
-export const Slide: FC<Props> = ({
+export const Slide: FC<Props> = memo(({
   children,
   name,
   class: className,
@@ -71,4 +72,4 @@ export const Slide: FC<Props> = ({
       {children}
     </div>
   )
-}
+})

@@ -9,7 +9,7 @@ type Props = {
 }
 
 const Fallback: FC = ({ children }) => (
-  <Suspense fallback={null}>
+  <Suspense fallback={<svg/>}>
     {children}
   </Suspense>
 )
@@ -94,3 +94,6 @@ export const DragIcon: FC<Props> = () => <Fallback><DragSVG/></Fallback>
 
 const FileSVG: FC = lazy(() => import('./file.svg'))
 export const FileIcon: FC<Props> = () => <Fallback><FileSVG/></Fallback>
+
+const DownloadSVG: FC = lazy(() => import('./download.svg'))
+export const DownloadIcon: FC<Props> = () => <Fallback><DownloadSVG/></Fallback>

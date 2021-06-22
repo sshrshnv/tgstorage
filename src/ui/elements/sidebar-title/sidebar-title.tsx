@@ -1,5 +1,6 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { memo } from 'preact/compat'
 import { useRef } from 'preact/hooks'
 import cn from 'classnames'
 
@@ -13,7 +14,7 @@ type Props = {
   disabled?: boolean
 }
 
-export const SidebarTitle: FC<Props> = ({
+export const SidebarTitle: FC<Props> = memo(({
   children,
   menu,
   disabled
@@ -41,4 +42,4 @@ export const SidebarTitle: FC<Props> = ({
       )}
     </div>
   )
-}
+})

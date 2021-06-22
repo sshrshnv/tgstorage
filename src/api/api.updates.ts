@@ -23,28 +23,26 @@ export const handleUpdates = async (
   options?
 ): Promise<{
   folders?: Folders
-}> => {
-  return updatesQueue.enqueue(async () => {
-    const { chats, messages, update, updates } = data
-    let folders
-    let foldersMessages
+}> => updatesQueue.enqueue(async () => {
+  const { chats, messages, update, updates } = data
+  let folders
+  let foldersMessages
 
-    if (chats?.length) {
-      folders = await handleChats(chats)
-    }
-    if (messages?.length) {
-      foldersMessages = await handleMessages(messages, options)
-    }
-    if (update) {
-      foldersMessages = await handleMessagesUpdates([update])
-    }
-    if (updates?.length) {
-      foldersMessages = await handleMessagesUpdates(updates)
-    }
+  if (chats?.length) {
+    folders = await handleChats(chats)
+  }
+  if (messages?.length) {
+    foldersMessages = await handleMessages(messages, options)
+  }
+  if (update) {
+    foldersMessages = await handleMessagesUpdates([update])
+  }
+  if (updates?.length) {
+    foldersMessages = await handleMessagesUpdates(updates)
+  }
 
-    return { folders, foldersMessages }
-  })
-}
+  return { folders, foldersMessages }
+})
 
 const handleMessagesUpdates = async (messagesUpdates) => {
   let foldersMessages

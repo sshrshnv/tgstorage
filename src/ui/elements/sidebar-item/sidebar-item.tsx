@@ -1,5 +1,6 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { memo } from 'preact/compat'
 import { useRef } from 'preact/hooks'
 import cn from 'classnames'
 
@@ -19,7 +20,7 @@ type Props = {
   onClick?: () => void
 }
 
-export const SidebarItem: FC<Props> = ({
+export const SidebarItem: FC<Props> = memo(({
   title,
   description,
   index,
@@ -58,4 +59,4 @@ export const SidebarItem: FC<Props> = ({
       )}
     </div>
   )
-}
+})

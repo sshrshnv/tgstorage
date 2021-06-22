@@ -8,7 +8,7 @@
   transition: bottom 0.1s ease-out, opacity 0.4s ease-out
   will-change: bottom
 
-  &:global(.transparent)
+  &:global(.TRNSPRNT)
     opacity: 0
     will-change: bottom, opacity
 
@@ -24,19 +24,6 @@
   padding: 0 16px
   background-color: var(--content-item-background-color)
   border-radius: 8px
-
-.header
-  display: flex
-  align-items: center
-  width: calc(100% - 16px)
-  height: 32px
-  font-size: 12px
-  border-bottom: 1px solid var(--item-border-color)
-  color: var(--color-light-2)
-
-.text
-  padding: 12px 0 16px
-  white-space: pre-line
 
 .loader
   position: absolute

@@ -1,22 +1,28 @@
-import { Fragment, h } from 'preact'
+import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { memo } from 'preact/compat'
 import { useMemo, useCallback } from 'preact/hooks'
 import cn from 'classnames'
 
 import type { InputFile } from '~/core/store'
 import { Text } from '~/ui/elements/text'
 import { Button } from '~/ui/elements/button'
-import { CrossIcon, FileIcon } from '~/ui/icons/'
+import { FilePreviewIcon } from '~/ui/elements/file-preview-icon'
+import { CrossIcon } from '~/ui/icons/'
 
 import styles from './content-form.styl'
 
 type Props = {
   inputFile?: InputFile
+  index: number
+  loading?: boolean
   onRemoveFile?: (file: InputFile) => void
 }
 
-export const ContentFormNoteItem: FC<Props> = ({
+export const ContentFormNoteItem: FC<Props> = memo(({
   inputFile,
+  index,
+  loading,
   onRemoveFile
 }) => {
   const previewUrl = useMemo(() => {
@@ -26,10 +32,6 @@ export const ContentFormNoteItem: FC<Props> = ({
     return ''
   }, [inputFile?.file])
 
-  const fileExtention = useMemo(() => {
-    return inputFile?.file?.name?.split('.').pop() || ''
-  }, [inputFile?.file?.name])
-
   const removeFile = useCallback(() => {
     if (inputFile) {
       onRemoveFile?.(inputFile)
@@ -38,22 +40,30 @@ export const ContentFormNoteItem: FC<Props> = ({
 
   return (
     <div class={styles.noteItem}>
-      <div class={cn(
-        styles.noteItemPreview,
-        !previewUrl && styles._icon
-      )}>
+      <div class={styles.noteItemPreview}>
         {previewUrl ? (
           <img src={previewUrl}/>
         ) : (
-          <Fragment>
-            <FileIcon/>
-            {fileExtention}
-          </Fragment>
+          <FilePreviewIcon
+            name={inputFile?.file?.name}
+          />
         )}
       </div>
       <div class={styles.noteItemContent}>
-        <Text small grey ellipsis>{inputFile?.file?.name}</Text>
-        <Text small grey ellipsis>{inputFile?.progress}%</Text>
+        <Text small grey ellipsis>
+          {inputFile?.file?.name}
+        </Text>
+        <Text
+          class={cn(
+            styles.noteItemContentProgress,
+            (loading && index === 0) && styles._active
+          )}
+          small
+          grey
+          ellipsis
+        >
+          {inputFile?.progress}%
+        </Text>
       </div>
       <Button
         class={cn(
@@ -66,4 +76,4 @@ export const ContentFormNoteItem: FC<Props> = ({
       />
     </div>
   )
-}
+})

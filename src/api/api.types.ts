@@ -131,7 +131,10 @@ export type Api = {
   ) => Promise<Updates>
 
   deleteMessage: (
-    message: Message,
+    message: {
+      id: number
+      mediaMessages?: { id: number }[]
+    },
     folder: Folder
   ) => Promise<Updates>
 

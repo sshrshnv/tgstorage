@@ -1,5 +1,6 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { memo } from 'preact/compat'
 import { useCallback, useEffect } from 'preact/hooks'
 
 import { Slide } from '~/ui/elements/slide'
@@ -14,7 +15,7 @@ type Props = {
   onAddMessage?: (text: string) => void
 }
 
-export const Content: FC<Props> = ({
+export const Content: FC<Props> = memo(({
   children,
   name,
   dropAvailable,
@@ -76,4 +77,4 @@ export const Content: FC<Props> = ({
       </div>
     </Slide>
   )
-}
+})

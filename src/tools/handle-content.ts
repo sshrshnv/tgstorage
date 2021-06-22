@@ -3,7 +3,6 @@ import type { FolderMessages, Message } from '~/core/store'
 export const SEPARATOR = '::'
 export const POSTFIX = 'tgs'
 
-// FOLDERS
 
 export const FOLDER_POSTFIX = `${SEPARATOR}${POSTFIX}`
 
@@ -13,7 +12,6 @@ export const normalizeCategoryName = (categoryValue: string, texts) =>
 export const generateFolderName = (folderValue: string, categoryName: string) =>
   `${folderValue}${categoryName ? `${SEPARATOR}${categoryName}` : ''}`
 
-// CHECKLIST MESSAGES
 
 export const CHECKLIST_MESSAGE_MARK = `checklist${SEPARATOR}${POSTFIX}`
 
@@ -48,7 +46,23 @@ export const parseChecklistMessage = (text: string, { empty = false } = {}): Par
 export const stringifyChecklistMessage = (title: string, items: string[]) =>
   `${[title, ...items].join('\n')}\n${CHECKLIST_MESSAGE_MARK}`
 
-// FILE MESSAGES
+
+export const PARENT_FILES_MESSAGE_MARK = `files${SEPARATOR}${POSTFIX}`
+
+export const checkIsParentFilesMessage = (text: string) =>
+  text.endsWith(PARENT_FILES_MESSAGE_MARK)
+
+export const parseParentFilesMessage = (text: string) => {
+  const parts = text.split('\n')
+  return {
+    text: parts.slice(0, parts.length - 1).join('\n')
+  }
+}
+
+export const stringifyParentFilesMessage = (text: string) =>
+  text.endsWith(PARENT_FILES_MESSAGE_MARK) ? text :
+    `${text ? `${text}\n` : ''}${PARENT_FILES_MESSAGE_MARK}`
+
 
 export const FILE_MESSAGE_MARK = `file${SEPARATOR}${POSTFIX}`
 

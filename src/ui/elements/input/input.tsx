@@ -1,5 +1,6 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC, RefObject } from 'preact'
+import { memo } from 'preact/compat'
 import { useCallback, useRef, useState, useEffect } from 'preact/hooks'
 import cn from 'classnames'
 
@@ -32,7 +33,7 @@ type Props = {
   onIconClick?: () => void
 }
 
-export const Input: FC<Props> = ({
+export const Input: FC<Props> = memo(({
   class: className,
   label,
   value,
@@ -129,4 +130,4 @@ export const Input: FC<Props> = ({
       )}
     </div>
   )
-}
+})

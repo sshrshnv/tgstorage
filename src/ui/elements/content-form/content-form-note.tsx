@@ -1,10 +1,15 @@
 import { h, Fragment } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { memo } from 'preact/compat'
 import { useCallback, useEffect, useRef, useMemo } from 'preact/hooks'
 import rafSchedule from 'raf-schd'
 import cn from 'classnames'
 
 import type { InputFile } from '~/core/store'
+import {
+  checkIsParentFilesMessage,
+  parseParentFilesMessage
+} from '~/tools/handle-content'
 import { Textarea } from '~/ui/elements/textarea'
 import { FileInput } from '~/ui/elements/file-input'
 import { Loader } from '~/ui/elements/loader'
@@ -21,6 +26,7 @@ type Props = {
   }
   placeholder?: string
   loading?: boolean
+  isOpened?: boolean
   enableChecklist: () => void
   onChangeText?: (note: string) => void
   onAddFiles?: (files: File[]) => void
@@ -30,16 +36,25 @@ type Props = {
 const TEXTAREA_PARENT_HEIGHT = 48
 const TEXTAREA_HEIGHT = 22
 
-export const ContentFormNote: FC<Props> = ({
+export const ContentFormNote: FC<Props> = memo(({
   message,
   placeholder,
   loading,
+  isOpened,
   enableChecklist,
   onChangeText,
   onAddFiles,
   onRemoveFile
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  const isParentFiles = useMemo(() => {
+    return checkIsParentFilesMessage(message.text)
+  }, [message.text])
+
+  const normalizedText = useMemo(() => {
+    return isParentFiles ? parseParentFilesMessage(message.text).text : message.text
+  }, [message.text, isParentFiles])
 
   const isSubmitAvailable = useMemo(() => {
     return (
@@ -74,6 +89,11 @@ export const ContentFormNote: FC<Props> = ({
     setStyles(textareaRef)
   }, [message.text])
 
+  useEffect(() => {
+    if (!isOpened) return
+    textareaRef.current?.focus()
+  }, [isOpened])
+
   useEffect(() => () => {
     setStyles.cancel()
   }, [])
@@ -83,15 +103,17 @@ export const ContentFormNote: FC<Props> = ({
       <div>
         <Textarea
           class={styles.textarea}
-          value={message.text}
+          value={normalizedText}
           placeholder={placeholder}
           forwardedRef={textareaRef}
           onInput={handleInput}
         />
-        {message.files?.map(file => (
+        {message.files?.map((file, index) => (
           <ContentFormNoteItem
             key={file.key}
+            index={index}
             inputFile={file}
+            loading={loading}
             onRemoveFile={onRemoveFile}
           />
         ))}
@@ -125,4 +147,4 @@ export const ContentFormNote: FC<Props> = ({
       )}
     </Fragment>
   )
-}
+})

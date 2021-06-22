@@ -3,7 +3,7 @@ import { store } from '~/core/store'
 import { api } from '~/api'
 
 import { setLoadingFolderId } from './folders'
-import { uploadFiles } from './message-files'
+import { uploadFiles } from './message-media'
 import { setUpdates } from './updates'
 
 export const loadFolderMessages = async (
@@ -47,7 +47,9 @@ export const createMessage = async (
 
   if (message.files) {
     const [[parentId]] = updates.foldersMessages?.get(folder.id) || new Map()
-    await uploadFiles(message, folder, parentId)
+    if (parentId) {
+      await uploadFiles(message, folder, parentId)
+    }
   }
 
   if (final && !message.files?.length) {
@@ -60,30 +62,30 @@ export const createMessage = async (
 export const editMessage = async (
   message: InputMessage,
   folder: Folder,
-  final = true
+  updated = true
 ) => {
-  if (message.files) {
-    //message = await uploadFiles(message, folder)
-  }
-  const updates = await api.editMessage(message, folder)
+  const updates = updated ? await api.editMessage(message, folder)
     .catch(({ message }) => {
       return message === 'MESSAGE_NOT_MODIFIED'
-    })
+    }) : true
 
-  if (final) {
-    resetSendingMessage(folder.id)
+  if (updates && typeof updates !== 'boolean') {
+    setUpdates(updates)
   }
 
-  if (typeof updates === 'boolean') {
-    return updates
+  if (message.files && message.id) {
+    await uploadFiles(message, folder, message.id)
   }
 
-  setUpdates(updates)
-  return true
+  resetSendingMessage(folder.id)
+  return !!updates
 }
 
 export const deleteMessage = async (
-  message: Message,
+  message: {
+    id: number
+    mediaMessages?: { id: number }[]
+  },
   folder: Folder
 ) => {
   const updates = await api.deleteMessage(message, folder)

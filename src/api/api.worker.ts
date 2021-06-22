@@ -1,5 +1,6 @@
 import { expose } from 'comlink'
 
+import { wait } from '~/tools/wait'
 import { FOLDER_POSTFIX, generateFolderName } from '~/tools/handle-content'
 
 import type { MethodDeclMap, InputCheckPasswordSRP } from './mtproto'
@@ -11,7 +12,6 @@ import {
   API_HASH,
   IS_TEST,
   FILE_SIZE,
-  wait,
   transformUser,
   generateRandomId,
   getFilePartSize
@@ -461,6 +461,7 @@ class Api {
   public async deleteMessage(
     message: {
       id: number
+      mediaMessages?: { id: number }[]
     },
     folder: {
       id: number
@@ -468,31 +469,33 @@ class Api {
     }
   ) {
     const user = await apiCache.getUser()
+    const ids = [message.id, ...(message.mediaMessages || []).map(({ id }) => id)]
+
     await this.call(
       folder.id === user?.id ?
         'messages.deleteMessages' :
         'channels.deleteMessages',
       folder.id === user?.id ? {
-        id: [message.id]
+        id: ids
       } : {
         channel: {
           _: 'inputChannel',
           channel_id: folder.id,
           access_hash: folder.access_hash
         },
-        id: [message.id]
+        id: ids
       }
     )
 
-    return handleUpdates({ messages: [{
+    return handleUpdates({ messages: ids.map((id) => ({
       _: 'message',
-      id: message.id,
+      id,
       peer_id: folder.id === user?.id ? {
         user_id: folder.id
       } : {
         channel_id: folder.id
       }
-    }]}, {
+    }))}, {
       deleted: true
     })
   }

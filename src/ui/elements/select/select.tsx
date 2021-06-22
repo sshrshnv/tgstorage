@@ -1,5 +1,6 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { memo } from 'preact/compat'
 import { useState, useCallback, useRef, useEffect, useMemo } from 'preact/hooks'
 import cn from 'classnames'
 
@@ -29,7 +30,7 @@ type Props = {
   onSelect?: (value: string) => void
 }
 
-export const Select: FC<Props> = ({
+export const Select: FC<Props> = memo(({
   label,
   options,
   name,
@@ -205,4 +206,4 @@ export const Select: FC<Props> = ({
       )}
     </div>
   )
-}
+})

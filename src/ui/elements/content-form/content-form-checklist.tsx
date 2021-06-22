@@ -1,5 +1,6 @@
 import { h, Fragment } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { memo } from 'preact/compat'
 import { useCallback, useMemo } from 'preact/hooks'
 import cn from 'classnames'
 
@@ -27,7 +28,7 @@ type Props = {
   scrollToBottom?: () => void
 }
 
-export const ContentFormChecklist: FC<Props> = ({
+export const ContentFormChecklist: FC<Props> = memo(({
   text,
   titlePlaceholder,
   itemPlaceholder,
@@ -149,4 +150,4 @@ export const ContentFormChecklist: FC<Props> = ({
       )}
     </Fragment>
   )
-}
+})

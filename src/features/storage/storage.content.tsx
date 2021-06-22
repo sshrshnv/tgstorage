@@ -6,8 +6,8 @@ import { useTexts, useActiveFolder } from '~/core/hooks'
 import { Text } from '~/ui/elements/text'
 import { ContentWrapper } from '~/ui/elements/content-wrapper'
 
-import { StorageContentBlockFolder } from './storage.content-block-folder'
-import { StorageContentPopupSearch } from './storage.content-popup-search'
+import { StorageContentFolderBlock } from './storage.content-folder-block'
+import { StorageContentSearchPopup } from './storage.content-search-popup'
 
 export const StorageContent: FC = () => {
   const { texts } = useTexts('storage')
@@ -32,13 +32,13 @@ export const StorageContent: FC = () => {
         </Text>
       )}
       {!!folder.id && (
-        <StorageContentBlockFolder
+        <StorageContentFolderBlock
           toggleSearch={toggleSearch}
           dropAvailable={!search}
         />
       )}
       {!!folder.id && search && (
-        <StorageContentPopupSearch
+        <StorageContentSearchPopup
           toggleSearch={toggleSearch}
         />
       )}

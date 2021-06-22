@@ -1,5 +1,6 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC, RefObject } from 'preact'
+import { memo } from 'preact/compat'
 import { useState, useCallback, useEffect, useRef } from 'preact/hooks'
 import cn from 'classnames'
 
@@ -19,16 +20,18 @@ export type Props = {
     onClick?: (ev?: MouseEvent) => void
   } | null)[]
   horizontal?: boolean
-  position?: 'top'|'bottom'
+  positionX?: 'left'|'right'
+  positionY?: 'top'|'bottom'
   parentRef?: RefObject<HTMLDivElement>
   onClose?: () => void
 }
 
-export const Menu: FC<Props> = ({
+export const Menu: FC<Props> = memo(({
   class: className,
   items,
   horizontal,
-  position = 'top',
+  positionX = 'right',
+  positionY = 'top',
   parentRef,
   onClose
 }) => {
@@ -36,12 +39,13 @@ export const Menu: FC<Props> = ({
   const [expanded, setExpanded] = useState(false)
 
   const toggle = useCallback((ev?) => {
+    ev?.preventDefault()
     ev?.stopPropagation()
     if (expanded) {
       onClose?.()
     }
     setExpanded(!expanded)
-  }, [expanded])
+  }, [expanded, onClose])
 
   useEffect(() => {
     if (!expanded) return
@@ -58,6 +62,9 @@ export const Menu: FC<Props> = ({
   }, [expanded])
 
   useEffect(() => {
+    const parentEl = parentRef?.current
+    if (!parentEl) return
+
     let touchStartTimeoutId = 0
     const handleTouchStart = () => {
       touchStartTimeoutId = self.setTimeout(toggle, 500)
@@ -67,31 +74,28 @@ export const Menu: FC<Props> = ({
       self.clearTimeout(touchStartTimeoutId)
       touchStartTimeoutId = 0
     }
-    const handleContextMenu = () => toggle()
+    const handleContextMenu = (ev) => toggle(ev)
 
-    parentRef?.current?.addEventListener('contextmenu', handleContextMenu, { passive: true })
-    parentRef?.current?.addEventListener('touchstart', handleTouchStart, { passive: true })
-    parentRef?.current?.addEventListener('touchmove', handleTouchEnd, { passive: true })
-    parentRef?.current?.addEventListener('touchend', handleTouchEnd, { passive: true })
+    parentEl.addEventListener('contextmenu', handleContextMenu, { passive: false })
+    parentEl.addEventListener('touchstart', handleTouchStart, { passive: true })
+    parentEl.addEventListener('touchmove', handleTouchEnd, { passive: true })
+    parentEl.addEventListener('touchend', handleTouchEnd, { passive: true })
     return () => {
-      parentRef?.current?.removeEventListener('contextmenu', handleContextMenu)
-      parentRef?.current?.removeEventListener('touchstart', handleTouchStart)
-      parentRef?.current?.removeEventListener('touchmove', handleTouchEnd)
-      parentRef?.current?.removeEventListener('touchend', handleTouchEnd)
+      parentEl.removeEventListener('contextmenu', handleContextMenu)
+      parentEl.removeEventListener('touchstart', handleTouchStart)
+      parentEl.removeEventListener('touchmove', handleTouchEnd)
+      parentEl.removeEventListener('touchend', handleTouchEnd)
     }
-  }, [parentRef])
+  }, [])
 
-  if (!items.length) {
-    return null
-  }
-
-  return (
+  return !items.length ? null : (
     <div
       class={cn(
         className,
         styles.root,
         styles[animationClassName],
-        position && styles[`_position-${position}`],
+        positionX && styles[`_position-${positionX}`],
+        positionY && styles[`_position-${positionY}`],
         horizontal && styles._horizontal,
         expanded && styles._expanded
       )}
@@ -125,4 +129,4 @@ export const Menu: FC<Props> = ({
       )}
     </div>
   )
-}
+})

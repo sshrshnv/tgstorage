@@ -1,60 +1,35 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { memo } from 'preact/compat'
 import { useEffect, useState } from 'preact/hooks'
 import cn from 'classnames'
-
-import type { DownloadingFile } from '~/core/store'
-import { useDownloadingFile } from '~/core/hooks'
 
 import styles from './file-preview.styl'
 
 type Props = {
-  messageId: number
-  file: DownloadingFile
-  mediaLoadAvailable: boolean
+  class?: string
+  url?: string
 }
 
-export const FilePreview: FC<Props> = ({
-  messageId,
-  file,
-  mediaLoadAvailable
+export const FilePreview: FC<Props> = memo(({
+  class: className,
+  url
 }) => {
-  const {
-    downloadingFile,
-    downloadFile,
-    pauseDownloadingFile
-  } = useDownloadingFile(file)
-  const [ready, setReady] = useState(!!downloadingFile?.url)
+  const [ready, setReady] = useState(!!url)
 
   useEffect(() => {
-    if (downloadingFile?.url) return
-
-    if (mediaLoadAvailable) {
-      if (downloadingFile?.downloading) return
-      downloadFile(messageId, file)
-    } else {
-      if (!downloadingFile?.downloading) return
-      pauseDownloadingFile(file)
-    }
-  }, [mediaLoadAvailable])
-
-  useEffect(() => {
-    if (!downloadingFile?.url || ready) return
+    if (!url || ready) return
     setReady(true)
-  }, [downloadingFile?.url])
+  }, [url])
 
-  useEffect(() => () => {
-    if (downloadingFile?.url || !downloadingFile?.downloading) return
-    pauseDownloadingFile(file)
-  }, [])
-
-  return !!downloadingFile?.url ? (
+  return !url ? null : (
     <img
       class={cn(
+        className,
         styles.root,
         ready && styles._visible
       )}
-      src={downloadingFile.url}
+      src={url}
     />
-  ) : null
-}
+  )
+})

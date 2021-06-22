@@ -44,7 +44,7 @@ export type MessageMedia = {
   file_reference: ArrayBuffer
   name?: string
   type: string
-  size?: number
+  originalSize?: number
   dc_id: number
   attributes?: any
   thumbSUrl?: string
@@ -132,6 +132,7 @@ export type DownloadingFile = {
   thumb?: boolean
   thumb_size: string
   downloading?: boolean
+  progress?: number
   isPhoto: boolean
 }
 
