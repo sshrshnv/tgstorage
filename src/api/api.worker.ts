@@ -1,7 +1,7 @@
 import { expose } from 'comlink'
 
 import { wait } from '~/tools/wait'
-import { FOLDER_POSTFIX, generateFolderName } from '~/tools/handle-content'
+import { FOLDER_POSTFIX, generateFolderName, stringifyFileMessage } from '~/tools/handle-content'
 
 import type { MethodDeclMap, InputCheckPasswordSRP } from './mtproto'
 import { Client } from './mtproto'
@@ -13,6 +13,8 @@ import {
   IS_TEST,
   FILE_SIZE,
   transformUser,
+  transformMessage,
+  sortMessages,
   generateRandomId,
   getFilePartSize
 } from './api.helpers'
@@ -375,6 +377,22 @@ class Api {
         fileType: string
         isLarge: boolean
         partsCount: number
+        imageParams?: {
+          w: number
+          h: number
+        }
+        videoParams?: {
+          duration: number
+          w: number
+          h: number
+        }
+        thumb?: {
+          fileId: string
+          fileName: string
+          fileType: string
+          isLarge: boolean
+          partsCount: number
+        }
       }
     },
     folder: {
@@ -408,10 +426,25 @@ class Api {
             name: message.inputMedia.fileName,
             md5_checksum: message.inputMedia.isLarge ? undefined : ''
           },
+          thumb: message.inputMedia.thumb ? {
+            _: message.inputMedia.thumb.isLarge ? 'inputFileBig' : 'inputFile',
+            id: message.inputMedia.thumb.fileId,
+            parts: message.inputMedia.thumb.partsCount,
+            name: message.inputMedia.thumb.fileName,
+            md5_checksum: message.inputMedia.thumb.isLarge ? undefined : ''
+          } : undefined,
+          force_file: false,
           attributes: [{
             _: 'documentAttributeFilename',
             file_name: message.inputMedia.fileName
-          }, ...(message.inputMedia.fileType.endsWith('gif') ? [{
+          }, ...(message.inputMedia.imageParams ? [{
+            _: 'documentAttributeImageSize',
+            ...message.inputMedia.imageParams
+          }] : []), ...(message.inputMedia.videoParams ? [{
+            _: 'documentAttributeVideo',
+            round_message: false,
+            ...message.inputMedia.videoParams
+          }] : []), ...(message.inputMedia.fileType.endsWith('gif') ? [{
             _: 'documentAttributeAnimated'
           }] : [])],
           mime_type: message.inputMedia.fileType,
@@ -500,7 +533,8 @@ class Api {
     })
   }
 
-  public async parseUploadingFile(
+  public async prepareUploadingFile(
+    fileKey: string,
     file: File
   ) {
     const { size: fileSize, name: fileName, type: fileType } = file
@@ -518,9 +552,10 @@ class Api {
       }
     })
 
+    apiCache.setFile(fileKey, fileData)
+
     return {
       fileId,
-      fileData,
       fileName,
       fileType,
       isLarge,
@@ -530,27 +565,38 @@ class Api {
     }
   }
 
-  public async uploadFilePart({
-    fileId,
-    fileData,
-    isLarge,
-    part,
-    partSize,
-    lastPartSize,
-    partsCount
-  }: {
-    fileId: string
-    fileData: Uint8Array
-    isLarge: boolean
-    part: number
-    partSize: number
-    lastPartSize: number
-    partsCount: number
-  }) {
-    const uploaded = part * partSize
-    const uploading = part === partsCount - 1 ? lastPartSize : partSize
+  public resetUploadingFile(
+    fileKey: string
+  ) {
+    apiCache.resetFile(fileKey)
+  }
 
-    return await this.call(
+  public async uploadFilePart(
+    params: {
+      fileKey: string
+      fileId: string
+      isLarge: boolean
+      part: number
+      partSize: number
+      lastPartSize: number
+      partsCount: number
+    }
+  ) {
+    const { fileKey, fileId, isLarge, part, partSize, lastPartSize, partsCount } = params
+    const isLast = part === partsCount - 1
+    const uploaded = part * partSize
+    const uploading = isLast ? lastPartSize : partSize
+
+    let fileData: Uint8Array | undefined = await apiCache.getFile(fileKey)
+    fileData = fileData?.subarray(uploaded, uploaded + uploading)
+
+    if (!fileData) return
+
+    if (isLast) {
+      this.resetUploadingFile(fileKey)
+    }
+
+    return this.call(
       isLarge ?
         'upload.saveBigFilePart' :
         'upload.saveFilePart',
@@ -558,7 +604,7 @@ class Api {
         file_id: fileId,
         file_part: part,
         file_total_parts: partsCount,
-        bytes: fileData.subarray(uploaded, uploaded + uploading)
+        bytes: fileData
       }, {
         thread: 3
       }
@@ -628,6 +674,81 @@ class Api {
       bytes,
       ext
     }
+  }
+
+  public async searchMessages(
+    query: string,
+    folder: {
+      id: number
+      access_hash: string
+    },
+    offsetId: number,
+    addtional?: boolean
+  ) {
+    const user = await apiCache.getUser()
+    const { messages } = await this.call('messages.search', {
+      peer: folder.id === user?.id ? {
+        _: 'inputPeerSelf'
+      } : {
+        _: 'inputPeerChannel',
+        channel_id: folder.id,
+        access_hash: folder.access_hash
+      },
+      filter: {
+        _: 'inputMessagesFilterEmpty'
+      },
+      q: query,
+      offset_id: offsetId,
+      min_date: 0,
+      max_date: 0,
+      add_offset: 0,
+      max_id: 0,
+      min_id: 0,
+      hash: 0,
+      limit: 20
+    })
+
+    if (addtional) {
+      return messages
+    }
+
+    let searchMessages = offsetId ?
+      await apiCache.getSearchMessages() :
+      new Map()
+
+    const parentIds: number[] = []
+
+    messages.forEach(message => {
+      message = transformMessage(message, user)
+      searchMessages.set(message.id, message)
+
+      if (message.isParent) {
+        parentIds.push(message.id)
+      }
+    })
+
+    const additionalMessages = await Promise.all(parentIds.map(id =>
+      this.searchMessages(
+        stringifyFileMessage('', id),
+        folder,
+        0,
+        true
+      )
+    ))
+
+    additionalMessages.flat().forEach(message => {
+      message = transformMessage(message, user)
+      searchMessages.set(message.id, message)
+    })
+
+    searchMessages = new Map(sortMessages([...searchMessages]))
+    apiCache.setSearchMessages(searchMessages)
+
+    return searchMessages
+  }
+
+  public resetSearchMessages() {
+    apiCache.resetSearchMessages()
   }
 }
 

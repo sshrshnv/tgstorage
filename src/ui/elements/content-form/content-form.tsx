@@ -22,7 +22,7 @@ type Props = {
   message: {
     id?: number
     text: string
-    files?: InputFile[]
+    inputFiles?: InputFile[]
   }
   texts: Texts['en']
   loading?: boolean
@@ -30,7 +30,7 @@ type Props = {
   onAddFiles?: (files: File[]) => void
   onRemoveFile?: (file: InputFile) => void
   onChangeText?: (note: string) => void
-  onCancelEdit?: () => void
+  onCancel?: () => void
 }
 
 export const ContentForm: FC<Props> = memo(({
@@ -41,17 +41,17 @@ export const ContentForm: FC<Props> = memo(({
   onAddFiles,
   onRemoveFile,
   onChangeText,
-  onCancelEdit
+  onCancel
 }) => {
+  const elRef = useRef<HTMLDivElement>(null)
+
   const isChecklist = useMemo(() => {
     return checkIsChecklistMessage(message.text)
   }, [message.text])
 
   const isFilled = useMemo(() => {
-    return !!message.text || !!message.files?.length
-  }, [message.text, message.files?.length])
-
-  const elRef = useRef<HTMLDivElement>(null)
+    return !!message.text || !!message.inputFiles?.length
+  }, [message.text, message.inputFiles?.length])
 
   const scrollToBottom = useCallback(() => {
     elRef?.current?.scrollTo(0, elRef.current.offsetHeight)
@@ -79,7 +79,7 @@ export const ContentForm: FC<Props> = memo(({
               styles._small
             )}
             icon={<CrossIcon/>}
-            onClick={onCancelEdit}
+            onClick={onCancel}
           />
         </div>
       )}
@@ -104,6 +104,7 @@ export const ContentForm: FC<Props> = memo(({
           <ContentFormNote
             message={message}
             placeholder={texts.messagePlaceholder}
+            sendingPlaceholder={texts.messageSendingPlaceholder}
             loading={loading}
             isOpened={isFilled}
             enableChecklist={enableChecklist}

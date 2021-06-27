@@ -4,7 +4,8 @@ import { memo } from 'preact/compat'
 import { useEffect, useMemo, useRef } from 'preact/hooks'
 
 import type { Folder, Message } from '~/core/store'
-import { ContentList, useVirtualList } from '~/ui/elements/content-list'
+import { ContentList } from '~/ui/elements/content-list'
+import { useVirtualList } from '~/ui/hooks'
 
 import { StorageContentMessageItem } from './storage.content-message-item'
 

@@ -15,5 +15,5 @@ export const useSendingMessage = (folderId: number) => {
 
   return useMemo(() => ({
     sendingMessage
-  }), [sendingMessage?.files])
+  }), [sendingMessage?.inputFiles])
 }

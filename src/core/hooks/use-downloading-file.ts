@@ -23,6 +23,7 @@ export const useDownloadingFile = (file: {
   }), [
     downloadingFile?.url,
     downloadingFile?.blob,
-    downloadingFile?.progress
+    downloadingFile?.downloading,
+    downloadingFile?.progress,
   ])
 }

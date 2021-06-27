@@ -1,7 +1,7 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
 import { memo } from 'preact/compat'
-import { useMemo, useCallback } from 'preact/hooks'
+import { useMemo, useCallback, useEffect } from 'preact/hooks'
 import cn from 'classnames'
 
 import type { InputFile } from '~/core/store'
@@ -26,17 +26,28 @@ export const ContentFormNoteItem: FC<Props> = memo(({
   onRemoveFile
 }) => {
   const previewUrl = useMemo(() => {
-    if (inputFile?.file?.type.startsWith('image')) {
+    if (inputFile?.thumb) {
+      return URL.createObjectURL(inputFile.thumb)
+    } else if (inputFile?.file?.type.startsWith('image')) {
       return URL.createObjectURL(inputFile.file)
     }
     return ''
   }, [inputFile?.file])
 
   const removeFile = useCallback(() => {
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl)
+    }
     if (inputFile) {
       onRemoveFile?.(inputFile)
     }
-  }, [inputFile, onRemoveFile])
+  }, [inputFile, previewUrl, onRemoveFile])
+
+  useEffect(() => () => {
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl)
+    }
+  })
 
   return (
     <div class={styles.noteItem}>
@@ -45,13 +56,13 @@ export const ContentFormNoteItem: FC<Props> = memo(({
           <img src={previewUrl}/>
         ) : (
           <FilePreviewIcon
-            name={inputFile?.file?.name}
+            name={inputFile?.name}
           />
         )}
       </div>
       <div class={styles.noteItemContent}>
         <Text small grey ellipsis>
-          {inputFile?.file?.name}
+          {inputFile?.name}
         </Text>
         <Text
           class={cn(

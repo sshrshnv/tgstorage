@@ -1,16 +1,24 @@
 import { get, set, update } from 'idb-keyval'
 
-import type { User, Folders, FolderMessages, FoldersMessages, Settings } from '~/core/store'
+import type {
+  User,
+  Folders,
+  FolderMessages,
+  FoldersMessages,
+  Message,
+  Settings
+} from '~/core/store'
 
 import { META_KEY } from './api.helpers'
 
 const cache = {}
 
 const setData = async (key: string, data, dbData?) => {
+  dbData = typeof dbData !== 'undefined' ? dbData : data
   if (cache[key]) {
-    update(key, () => dbData || data).catch(() => {/*nothing*/})
+    update(key, () => dbData).catch(() => {/*nothing*/})
   } else {
-    set(key, dbData || data).catch(() => {/*nothing*/})
+    set(key, dbData).catch(() => {/*nothing*/})
   }
   cache[key] = data
   return data
@@ -48,18 +56,23 @@ export const apiCache = {
   getFoldersMessages: async (): Promise<FoldersMessages> => {
     const cachedFolders = await apiCache.getFolders()
     const foldersMessages = new Map()
-
     await Promise.all([...cachedFolders.values()].map(({ id }) =>
       apiCache.getFolderMessages(id).then(folderMessages => foldersMessages.set(id, folderMessages))
     ))
-
     return foldersMessages
   },
   resetFoldersMessages: async () => {
     const cachedFolders = await apiCache.getFolders()
-
     return Promise.all([...cachedFolders.values()].map(({ id }) =>
       apiCache.resetFolderMessages(id)
     ))
-  }
+  },
+
+  setFile: (fileKey, fileData) => setData(`file-${fileKey}`, fileData, null),
+  getFile: (fileKey) => getData(`file-${fileKey}`),
+  resetFile: (fileKey) => apiCache.setFile(fileKey, null),
+
+  setSearchMessages: (messages) => setData('searchMessages', messages, null),
+  getSearchMessages: (): Promise<Map<number, Message>> => getData('searchMessages', new Map()),
+  resetSearchMessages: () => setData('searchMessages', null),
 }

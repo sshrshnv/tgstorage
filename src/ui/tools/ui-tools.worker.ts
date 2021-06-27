@@ -1,10 +1,9 @@
 import { expose } from 'comlink'
-import { imageDataRGB } from 'stackblur-canvas'
 
-const uiTools = {
-  processImageDataRGB(...params: Parameters<typeof imageDataRGB>) {
-    return imageDataRGB(...params)
-  }
+import { getBluredImageData } from './get-blured-image-data'
+
+const uiWorkerTools = {
+  getBluredImageData
 }
 
-expose(uiTools)
+expose(uiWorkerTools)

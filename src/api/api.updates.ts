@@ -20,32 +20,46 @@ export const handleUpdates = async (
     update?
     updates?
   },
-  options?
+  options?: {
+    new?: boolean
+    deleted?: boolean
+    edited?: boolean
+    offsetId?: number
+  }
 ): Promise<{
   folders?: Folders
 }> => updatesQueue.enqueue(async () => {
   const { chats, messages, update, updates } = data
   let folders
   let foldersMessages
+  let searchMessages
 
   if (chats?.length) {
     folders = await handleChats(chats)
   }
   if (messages?.length) {
-    foldersMessages = await handleMessages(messages, options)
+    [foldersMessages, searchMessages] = await Promise.all([
+      handleMessages(messages, options),
+      handleSearchMessages(messages, options),
+    ])
   }
   if (update) {
-    foldersMessages = await handleMessagesUpdates([update])
+    [foldersMessages, searchMessages] = await handleMessagesUpdates([update])
   }
   if (updates?.length) {
-    foldersMessages = await handleMessagesUpdates(updates)
+    [foldersMessages, searchMessages] = await handleMessagesUpdates(updates)
   }
 
-  return { folders, foldersMessages }
+  return {
+    folders,
+    foldersMessages,
+    searchMessages
+  }
 })
 
 const handleMessagesUpdates = async (messagesUpdates) => {
   let foldersMessages
+  let searchMessages
 
   for (let i = 0; i < messagesUpdates.length; i++) {
     const { _, message, messages } = messagesUpdates[i]
@@ -55,15 +69,21 @@ const handleMessagesUpdates = async (messagesUpdates) => {
     }
 
     if (['updateDeleteMessages', 'updateDeleteChannelMessages'].includes(_)) {
-      foldersMessages = await handleMessages(messages, { deleted: true }) || foldersMessages
+      [foldersMessages = foldersMessages, searchMessages] = await Promise.all([
+        handleMessages(messages, { deleted: true }),
+        handleSearchMessages(messages, { deleted: true })
+      ])
     }
 
     if (['updateEditMessage', 'updateEditChannelMessage'].includes(_)) {
-      foldersMessages = await handleMessages([message], { edited: true }) || foldersMessages
+      [foldersMessages = foldersMessages, searchMessages] = await Promise.all([
+        handleMessages([message], { edited: true }),
+        handleSearchMessages([message], { edited: true })
+      ])
     }
   }
 
-  return foldersMessages
+  return [foldersMessages, searchMessages]
 }
 
 const handleChats = async (chats): Promise<Folders> => {
@@ -163,4 +183,37 @@ const handleMessages = async (
   }))
 
   return foldersMessages
+}
+
+const handleSearchMessages = async (
+  messages,
+  options?: {
+    deleted?: boolean
+    edited?: boolean
+  }
+) => {
+  let updated = false
+  const user = await apiCache.getUser()
+  const searchMessages = await apiCache.getSearchMessages()
+
+  messages.forEach(message => {
+    if (searchMessages.has(message.id)) {
+      if (options?.deleted) {
+        searchMessages.delete(message.id)
+        updated = true
+      }
+
+      if (options?.edited) {
+        searchMessages.set(message.id, transformMessage(message, user))
+        updated = true
+      }
+    }
+  })
+
+  if (updated) {
+    apiCache.setSearchMessages(searchMessages)
+    return new Map(searchMessages)
+  } else {
+    return undefined
+  }
 }

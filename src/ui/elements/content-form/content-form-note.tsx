@@ -22,9 +22,10 @@ import { ContentFormNoteItem } from './content-form-note-item'
 type Props = {
   message: {
     text: string
-    files?: InputFile[]
+    inputFiles?: InputFile[]
   }
   placeholder?: string
+  sendingPlaceholder?: string
   loading?: boolean
   isOpened?: boolean
   enableChecklist: () => void
@@ -39,6 +40,7 @@ const TEXTAREA_HEIGHT = 22
 export const ContentFormNote: FC<Props> = memo(({
   message,
   placeholder,
+  sendingPlaceholder,
   loading,
   isOpened,
   enableChecklist,
@@ -47,6 +49,7 @@ export const ContentFormNote: FC<Props> = memo(({
   onRemoveFile
 }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const inputFileKey = useRef(0)
 
   const isParentFiles = useMemo(() => {
     return checkIsParentFilesMessage(message.text)
@@ -62,9 +65,9 @@ export const ContentFormNote: FC<Props> = memo(({
         .replaceAll(' ', '')
         .replaceAll('\n', '')
         .length ||
-      !!message.files?.length
+      !!message.inputFiles?.length
     )
-  }, [message.text, message.files])
+  }, [message.text, message.inputFiles])
 
   const handleInput = useCallback(value => {
     onChangeText?.(value)
@@ -74,6 +77,7 @@ export const ContentFormNote: FC<Props> = memo(({
     if (files?.length) {
       onAddFiles?.(Array.from(files))
     }
+    inputFileKey.current += 1
   }, [onAddFiles])
 
   const setStyles = useCallback(rafSchedule((textareaRef) => {
@@ -104,15 +108,16 @@ export const ContentFormNote: FC<Props> = memo(({
         <Textarea
           class={styles.textarea}
           value={normalizedText}
-          placeholder={placeholder}
+          placeholder={loading ? sendingPlaceholder : placeholder}
+          disabled={loading}
           forwardedRef={textareaRef}
           onInput={handleInput}
         />
-        {message.files?.map((file, index) => (
+        {message.inputFiles?.map((inputFile, index) => (
           <ContentFormNoteItem
-            key={file.key}
+            key={inputFile.key}
             index={index}
-            inputFile={file}
+            inputFile={inputFile}
             loading={loading}
             onRemoveFile={onRemoveFile}
           />
@@ -124,6 +129,7 @@ export const ContentFormNote: FC<Props> = memo(({
       ) : (
         <div class={styles.buttons}>
           <FileInput
+            key={inputFileKey.current}
             class={styles.button}
             onChange={addFiles}
           />

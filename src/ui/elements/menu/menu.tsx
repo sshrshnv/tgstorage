@@ -66,7 +66,8 @@ export const Menu: FC<Props> = memo(({
     if (!parentEl) return
 
     let touchStartTimeoutId = 0
-    const handleTouchStart = () => {
+    const handleTouchStart = (ev) => {
+      ev.stopPropagation()
       touchStartTimeoutId = self.setTimeout(toggle, 500)
     }
     const handleTouchEnd = () => {

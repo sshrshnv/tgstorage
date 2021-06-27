@@ -9,6 +9,7 @@ type Props = {
   class?: string
   value?: string
   placeholder?: string
+  disabled?: boolean
   forwardedRef?: RefObject<HTMLTextAreaElement>
   onInput?: (value: string) => void
 }
@@ -17,6 +18,7 @@ export const Textarea: FC<Props> = ({
   class: className,
   value = '',
   placeholder,
+  disabled,
   forwardedRef,
   onInput
 }) => {
@@ -40,6 +42,7 @@ export const Textarea: FC<Props> = ({
       <textarea
         class={styles.textarea}
         placeholder={placeholder ? `${placeholder}…` : ''}
+        disabled={disabled}
         ref={forwardedRef}
         onInput={handleInput}
         onPaste={handlePaste}

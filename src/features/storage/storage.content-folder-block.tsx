@@ -4,7 +4,7 @@ import { memo } from 'preact/compat'
 import { useCallback } from 'preact/hooks'
 
 import { setActiveFolder, loadFolderMessages } from '~/core/actions'
-import { useTexts, useActiveFolder } from '~/core/hooks'
+import { useTexts, useActiveFolder, useMessageForm } from '~/core/hooks'
 import { Content } from '~/ui/elements/content'
 import { ContentHeader } from '~/ui/elements/content-header'
 import { ContentForm } from '~/ui/elements/content-form'
@@ -12,7 +12,6 @@ import { Button } from '~/ui/elements/button'
 import { SearchIcon } from '~/ui/icons'
 
 import { StorageContentMessagesList } from './storage.content-messages-list'
-import { useMessageForm } from './hooks'
 
 type Props = {
   dropAvailable: boolean
@@ -35,7 +34,7 @@ export const StorageContentFolderBlock: FC<Props> = memo(({
     loading,
     handleSubmit,
     handleEditMessage,
-    handleCancelEditMessage,
+    handleCancelMessage,
     handleChangeText,
     handleAddFiles,
     handleRemoveFile
@@ -43,7 +42,7 @@ export const StorageContentFolderBlock: FC<Props> = memo(({
 
   const loadMessages = useCallback((offsetId) => {
     loadFolderMessages(folder, offsetId)
-  }, [folder, messages, messagesLoading])
+  }, [folder])
 
   const handleClose = useCallback(() => {
     setActiveFolder(0)
@@ -89,7 +88,7 @@ export const StorageContentFolderBlock: FC<Props> = memo(({
         onChangeText={handleChangeText}
         onAddFiles={handleAddFiles}
         onRemoveFile={handleRemoveFile}
-        onCancelEdit={handleCancelEditMessage}
+        onCancel={handleCancelMessage}
       />
     </Content>
   )

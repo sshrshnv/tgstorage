@@ -4,7 +4,8 @@ import {
   SEPARATOR,
   FOLDER_POSTFIX,
   checkIsFileMessage,
-  parseFileMessage
+  parseFileMessage,
+  checkIsParentFilesMessage
 } from '~/tools/handle-content'
 import {
   convertStrippedImageBytesToUrl,
@@ -93,6 +94,7 @@ export const transformMessage = (message, user) => {
   return {
     id,
     parentId: checkIsFileMessage(text) ? parseFileMessage(text).parentId : undefined,
+    isParent: checkIsParentFilesMessage(text),
     text,
     date: formatDate(date, user.country),
     editDate,

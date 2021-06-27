@@ -1,6 +1,6 @@
 import createSyncTaskQueue from 'sync-task-queue'
 
-import type { Folder, InputMessage, InputFile, DownloadingFile, MessageMedia } from '~/core/store'
+import type { Folder, InputMessage, InputFile, DownloadingFile } from '~/core/store'
 import { store } from '~/core/store'
 import { api } from '~/api'
 import { wait } from '~/tools/wait'
@@ -19,52 +19,15 @@ export const uploadFiles = async (
   folder: Folder,
   parentId: number
 ) => {
-  const { files = [] } = message
+  const { inputFiles = [] } = message
 
-  const checkIsUploading = (fileKey) => {
-    const sendingMessage = getSendingMessage(folder.id)
-    return !!sendingMessage?.files?.some(({ key }) => key === fileKey)
-  }
-
-  const onUploadPart = (fileKey, progress) => {
+  for (let i = 0; i < inputFiles.length; i++) {
     const sendingMessage = getSendingMessage(folder.id)
     if (!sendingMessage) return
 
-    setSendingMessage(folder.id, {
-      ...sendingMessage,
-      files: sendingMessage.files?.map(file => file.key === fileKey ? ({ ...file, progress }) : file)
-    })
-  }
-
-  const uploadFile = async (inputFile: InputFile) => {
-    if (!inputFile?.file || !checkIsUploading(inputFile.key)) return
-
-    const fileParams = await api.parseUploadingFile(inputFile.file)
-
-    for (let part = 0; part < fileParams.partsCount; part++) {
-      if (!checkIsUploading(inputFile.key)) return
-
-      await api.uploadFilePart({ part, ...fileParams })
-      const progress = Math.round((part + 1) / fileParams.partsCount * 100)
-      onUploadPart(inputFile.key, progress)
-    }
-
-    return {
-      fileId: fileParams.fileId,
-      fileName: fileParams.fileName,
-      fileType: fileParams.fileType,
-      isLarge: fileParams.isLarge,
-      partsCount: fileParams.partsCount
-    }
-  }
-
-  for (let i = 0; i < files.length; i++) {
-    let sendingMessage = getSendingMessage(folder.id)
-    if (!sendingMessage) return
-
-    const inputFile = files[i]
-    const final = i === files.length - 1
-    const uploadedFile = await uploadFile(inputFile)
+    const inputFile = inputFiles[i]
+    const final = i === inputFiles.length - 1
+    const uploadedFile = await uploadFile(folder, inputFile)
 
     if (!uploadedFile) continue
 
@@ -74,18 +37,96 @@ export const uploadFiles = async (
     }, folder, final)
 
     if (success && !final) {
-      sendingMessage = getSendingMessage(folder.id)
+      const sendingMessage = getSendingMessage(folder.id)
       if (!sendingMessage) return
 
       const updatedMessage = {
         ...sendingMessage,
-        files: sendingMessage.files?.filter(({ key }) => key !== inputFile.key)
+        inputFiles: sendingMessage.inputFiles?.filter(({ key }) => key !== inputFile.key)
       }
       setSendingMessage(folder.id, updatedMessage)
     }
   }
 
   return message
+}
+
+const uploadFile = async (folder: Folder, inputFile: InputFile) => {
+  if (!inputFile?.file || !checkIsUploading(folder, inputFile.key)) return
+
+  const fileParams = await api.prepareUploadingFile(inputFile.key, inputFile.file)
+  delete inputFile.file
+
+  for (let part = 0; part < fileParams.partsCount; part++) {
+    if (!checkIsUploading(folder, inputFile.key)) return
+
+    await api.uploadFilePart({
+      ...fileParams,
+      fileKey: inputFile.key,
+      part
+    })
+    const progress = Math.round((part + 1) / fileParams.partsCount * 100)
+    onUploadPart(folder, inputFile.key, progress)
+  }
+
+  let thumbParams
+  const { w, h, duration } = inputFile
+
+  if (inputFile.thumb) {
+    const thumbKey = `thumb${inputFile.thumb.type}${inputFile.thumb.lastModified}${inputFile.thumb.size}`
+    thumbParams = await api.prepareUploadingFile(thumbKey, inputFile.thumb)
+    delete inputFile.thumb
+
+    for (let part = 0; part < thumbParams.partsCount; part++) {
+      if (!checkIsUploading(folder, inputFile.key)) return
+
+      await api.uploadFilePart({
+        ...thumbParams,
+        fileKey: thumbKey,
+        part
+      })
+    }
+  }
+
+  return {
+    fileId: fileParams.fileId,
+    fileName: fileParams.fileName,
+    fileType: fileParams.fileType,
+    isLarge: fileParams.isLarge,
+    partsCount: fileParams.partsCount,
+    imageParams: (w && h && !duration) ? { w, h } : undefined,
+    videoParams: (w && h && duration) ? { w, h, duration } : undefined,
+    thumb: thumbParams ? {
+      fileId: thumbParams.fileId,
+      fileName: thumbParams.fileName,
+      fileType: thumbParams.fileType,
+      isLarge: thumbParams.isLarge,
+      partsCount: thumbParams.partsCount
+    } : undefined
+  }
+}
+
+const checkIsUploading = (folder, fileKey) => {
+  const sendingMessage = getSendingMessage(folder.id)
+  return !!sendingMessage?.inputFiles?.some(({ key }) => key === fileKey)
+}
+
+const onUploadPart = (folder, fileKey, progress) => {
+  const sendingMessage = getSendingMessage(folder.id)
+  if (!sendingMessage) return
+
+  setSendingMessage(folder.id, {
+    ...sendingMessage,
+    inputFiles: sendingMessage.inputFiles?.map(inputFile =>
+      inputFile.key === fileKey ? ({ ...inputFile, progress }) : inputFile
+    )
+  })
+}
+
+export const resetUploadingFiles = (inputFiles: InputFile[]) => {
+  inputFiles.forEach(inputFile => {
+    api.resetUploadingFile(inputFile.key)
+  })
 }
 
 export const getDownloadingFile = (file: {
@@ -118,6 +159,20 @@ export const pauseDownloadingFile = (file: {
   }
 }
 
+export const resetDownloadingFile = (file: {
+  id: string
+  size: number
+}) => {
+  const downloadingFiles = new Map(store.getState().downloadingFiles)
+
+  if (!downloadingFiles.has(`${file.id}-${file.size}`)) return
+  downloadingFiles.delete(`${file.id}-${file.size}`)
+
+  store.setState({
+    downloadingFiles
+  })
+}
+
 const DOWNLOADING_TIMEOUT = 400
 const MAX_DOWNLOADING_COUNT = 4
 
@@ -144,7 +199,7 @@ export const downloadFile = async (
   file: DownloadingFile
 ) => {
   const folder = getActiveFolder() as Folder
-  let downloadingFile = getDownloadingFile(file) || file
+  let downloadingFile: DownloadingFile | undefined = getDownloadingFile(file) || file
 
   if (
     downloadingFile.url ||
@@ -172,6 +227,8 @@ export const downloadFile = async (
   setDownloadingFile(downloadingFile)
 
   downloadingQueue.add(async () => {
+    const downloadingFile = getDownloadingFile(file)
+    if (!downloadingFile) return
     const {
       id,
       lastPart = -1,
@@ -182,11 +239,11 @@ export const downloadFile = async (
       file_reference,
       thumb_size,
       isPhoto
-    } = getDownloadingFile(file) || downloadingFile
+    } = downloadingFile
 
     for (let part = lastPart + 1; part < partsCount; part++ ) {
-      downloadingFile = getDownloadingFile(file) || downloadingFile
-      if (downloadingFile.downloading === false) return
+      let downloadingFile = getDownloadingFile(file)
+      if (!downloadingFile || downloadingFile.downloading === false) return
 
       const offsetSize = part * partSize
       const isLastPart = part === partsCount - 1
@@ -201,24 +258,28 @@ export const downloadFile = async (
         thumb_size,
         isPhoto
       }).catch(({ message }) => {
-        if (message === 'FILE_REFERENCE_EXPIRED') {
+        if (downloadingFile && message === 'FILE_REFERENCE_EXPIRED') {
           pauseDownloadingFile(downloadingFile)
           refreshMessage(folder, messageId)
         }
       })
 
       if (!filePart) return
-
       const { bytes: nextBytes, ext } = filePart
-      downloadingFile = getDownloadingFile(file) || downloadingFile
+
+      downloadingFile = getDownloadingFile(file)
+      if (!downloadingFile) return
+
       const prevBytes = downloadingFile.bytes || new Uint8Array()
       const bytes = new Uint8Array(prevBytes.length + nextBytes.length)
       bytes.set(prevBytes)
       bytes.set(nextBytes, prevBytes.length)
       const typeParts = downloadingFile.type.split('/')
       const type = `${typeParts[0]}/${typeParts[1] || ext}`
-      const blob = isLastPart ? new Blob([new Uint8Array(bytes)], { type }) : null
       const isImage = type.startsWith('image') || !!thumb_size
+      const blob = isLastPart ?
+        new Blob([new Uint8Array(bytes)], { type: isImage ? 'image/jpeg' : type }) :
+        null
       const progress = Math.round((part + 1) / partsCount * 100)
 
       setDownloadingFile({

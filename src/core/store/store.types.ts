@@ -84,10 +84,19 @@ export type FolderMessages =
 export type FoldersMessages =
   Map<number, FolderMessages>
 
+export type SearchMessages =
+  Map<number, Message>
+
 export type InputFile = {
   id: string
   key: string
   progress: number
+  name: string
+  size: number
+  w?: number
+  h?: number
+  duration?: number
+  thumb?: File
   data?: Uint8Array
   file?: File
 }
@@ -101,8 +110,24 @@ export type InputMessage = {
     fileType: string
     isLarge: boolean
     partsCount: number
+    imageParams?: {
+      w: number
+      h: number
+    }
+    videoParams?: {
+      duration: number
+      w: number
+      h: number
+    }
+    thumb?: {
+      fileId: string
+      fileName: string
+      fileType: string
+      isLarge: boolean
+      partsCount: number
+    }
   }
-  files?: InputFile[]
+  inputFiles?: InputFile[]
 }
 
 export type SendingMessages =
@@ -148,6 +173,7 @@ export type State = {
   activeFolderId: number
   loadingFolderIds: Map<number, boolean>
   sendingMessages: SendingMessages
+  searchMessages: SearchMessages
   downloadingFiles: DownloadingFiles
   settings: Settings
   texts: Texts

@@ -78,6 +78,7 @@ export const AuthFormPassword: FC<Props> = ({
         error={error && (texts[error] || texts.error)}
         readonly={loading}
         icon={passwordVisible ? <EyeOpenedIcon/> : <EyeClosedIcon/>}
+        autoFocus
         onIconClick={togglePasswordVisibility}
         onInput={handlePasswordChange}
       />

@@ -1,9 +1,9 @@
-import type { Folder, FoldersMessages, InputMessage, Message } from '~/core/store'
+import type { Folder, FoldersMessages, SearchMessages, InputMessage } from '~/core/store'
 import { store } from '~/core/store'
 import { api } from '~/api'
 
 import { setLoadingFolderId } from './folders'
-import { uploadFiles } from './message-media'
+import { uploadFiles, resetUploadingFiles } from './message-media'
 import { setUpdates } from './updates'
 
 export const loadFolderMessages = async (
@@ -31,6 +31,14 @@ export const setFoldersMessages = (
   })
 }
 
+export const setSearchMessages = (
+  searchMessages: SearchMessages
+) => {
+  store.setState({
+    searchMessages
+  })
+}
+
 export const createMessage = async (
   message: InputMessage,
   folder: Folder,
@@ -45,14 +53,14 @@ export const createMessage = async (
   if (!updates) return false
   setUpdates(updates)
 
-  if (message.files) {
+  if (message.inputFiles) {
     const [[parentId]] = updates.foldersMessages?.get(folder.id) || new Map()
     if (parentId) {
       await uploadFiles(message, folder, parentId)
     }
   }
 
-  if (final && !message.files?.length) {
+  if (final && !message.inputFiles?.length) {
     resetSendingMessage(folder.id)
   }
 
@@ -73,7 +81,7 @@ export const editMessage = async (
     setUpdates(updates)
   }
 
-  if (message.files && message.id) {
+  if (message.inputFiles && message.id) {
     await uploadFiles(message, folder, message.id)
   }
 
@@ -114,6 +122,10 @@ export const setSendingMessage = (
 export const resetSendingMessage = (
   folderId: number
 ) => {
+  const sendingMessage = getSendingMessage(folderId)
+  if (sendingMessage?.inputFiles) {
+    resetUploadingFiles(sendingMessage.inputFiles)
+  }
   setSendingMessage(folderId, undefined)
 }
 
@@ -168,4 +180,23 @@ export const refreshMessage = (
     timeoutId,
     waitIds: [...(refreshMessages[folder.id]?.waitIds || []), id]
   }
+}
+
+export const searchMessages = async (
+  query: string,
+  folder: Folder,
+  offsetId: number
+) => {
+  const searchMessages = await api.searchMessages(
+    query,
+    folder,
+    offsetId || 0
+  )
+
+  setSearchMessages(searchMessages)
+}
+
+export const resetSearchMessages = () => {
+  api.resetSearchMessages()
+  setSearchMessages(new Map())
 }

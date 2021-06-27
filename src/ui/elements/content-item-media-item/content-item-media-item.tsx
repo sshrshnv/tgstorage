@@ -92,9 +92,11 @@ export const ContentItemMediaItem: FC<Props> = memo(({
           <Text grey ellipsis>
             {formatSize(media.originalSize)}
           </Text>
-          <Text grey ellipsis>
-            {typeof downloadingProgress === 'number' && `${downloadingProgress}%`}
-          </Text>
+          {typeof downloadingProgress === 'number' && (
+            <Text grey ellipsis>
+              {`${downloadingProgress}%`}
+            </Text>
+          )}
         </div>
       </div>
 

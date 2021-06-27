@@ -13,18 +13,22 @@ import styles from './content-header.styl'
 
 type Props = {
   title?: string
-  placeholder?: string
+  inputPlaceholder?: string
+  inputValue?: string
   button?: h.JSX.Element | null
   loading?: boolean
   withoutDesktopBack?: boolean
+  onInput: (value: string) => void
 }
 
 export const ContentHeader: FC<Props> = memo(({
   title,
-  placeholder,
+  inputPlaceholder,
+  inputValue,
   button,
   loading,
-  withoutDesktopBack
+  withoutDesktopBack,
+  onInput
 }) => {
   const { closeSlide } = useSlide()
 
@@ -42,14 +46,16 @@ export const ContentHeader: FC<Props> = memo(({
       {title && (
         <div class={styles.title}>{title}</div>
       )}
-      {placeholder && (
+      {inputPlaceholder && (
         <Fragment>
           <Input
             class={styles.input}
-            placeholder={placeholder}
+            value={inputValue}
+            placeholder={inputPlaceholder}
             border={false}
-            clear
+            clear={!loading}
             autoFocus
+            onInput={onInput}
           />
         </Fragment>
       )}

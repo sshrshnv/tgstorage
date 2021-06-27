@@ -123,6 +123,7 @@ export const AuthFormCode: FC<Props> = ({
         value={code}
         error={error && (texts[error] || texts.error)}
         readonly={loading}
+        autoFocus
         onInput={handleCodeChange}
       />
       <Break size={28} px/>

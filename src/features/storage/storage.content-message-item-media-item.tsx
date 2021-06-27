@@ -4,7 +4,7 @@ import { useState, useCallback, useMemo, useEffect } from 'preact/hooks'
 import { saveAs } from 'file-saver'
 
 import type { Folder, Message, MessageMedia, DownloadingFile } from '~/core/store'
-import { deleteMessage, downloadFile, pauseDownloadingFile } from '~/core/actions'
+import { deleteMessage, downloadFile, pauseDownloadingFile, resetDownloadingFile } from '~/core/actions'
 import { useTexts, useDownloadingFile } from '~/core/hooks'
 import { ContentItemMediaItem } from '~/ui/elements/content-item-media-item'
 import { DownloadIcon, DeleteIcon } from '~/ui/icons'
@@ -25,7 +25,6 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
   const { texts } = useTexts('storage')
   const [confirmation, setConfirmation] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [downloading, setDownloading] = useState(false)
 
   const media = message.media as MessageMedia
   const blurPreviewUrl = media.thumbMUrl || media.thumbSUrl
@@ -46,15 +45,19 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
     downloadingFile: originalDownloadingFile
   } = useDownloadingFile(originalFile)
 
+  const [downloading, setDownloading] = useState(!!originalDownloadingFile?.downloading)
+
   const resetConfirmation = useCallback(() => {
     setConfirmation(false)
   }, [setConfirmation])
 
   const saveFile = useCallback(() => {
-    const { url, blob, name } = originalDownloadingFile as DownloadingFile
+    if (!originalDownloadingFile) return
+    const { url, blob, name } = originalDownloadingFile
     const data = url || blob as string | Blob
     saveAs(data, name)
     setDownloading(false)
+    resetDownloadingFile(originalDownloadingFile)
   }, [
     originalDownloadingFile,
     setDownloading
@@ -77,7 +80,7 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
 
   const handleCancelDownload = useCallback(() => {
     if (!originalDownloadingFile) return
-    pauseDownloadingFile(originalDownloadingFile)
+    resetDownloadingFile(originalDownloadingFile)
     setDownloading(false)
   }, [originalDownloadingFile, setDownloading])
 

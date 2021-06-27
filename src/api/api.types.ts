@@ -5,7 +5,7 @@ import type {
   Folders,
   Folder,
   FoldersMessages,
-  Message,
+  SearchMessages,
   InputMessage
 } from '~/core/store'
 
@@ -35,6 +35,7 @@ export type UploadedFile = {
 export type Updates = {
   folders?: Folders
   foldersMessages?: FoldersMessages
+  searchMessages?: SearchMessages
 }
 
 export type Api = {
@@ -138,11 +139,11 @@ export type Api = {
     folder: Folder
   ) => Promise<Updates>
 
-  parseUploadingFile: (
+  prepareUploadingFile: (
+    fileKey: string,
     file: File
   ) => Promise<{
     fileId: string
-    fileData: Uint8Array
     fileName: string
     fileType: string
     isLarge: boolean
@@ -150,6 +151,22 @@ export type Api = {
     lastPartSize: number
     partsCount: number
   }>
+
+  resetUploadingFile: (
+    fileKey: string
+  ) => Promise<void>
+
+  uploadFilePart: (
+    fileParams: {
+      fileKey: string
+      fileId: string
+      isLarge: boolean
+      part: number
+      partSize: number
+      lastPartSize: number
+      partsCount: number
+    }
+  ) => Promise<boolean>
 
   parseDownloadingFile: (
     fileSize: number
@@ -159,16 +176,6 @@ export type Api = {
     partsCount: number
     precise: boolean
   }>
-
-  uploadFilePart: (fileParams: {
-    fileId: string
-    fileData: Uint8Array
-    isLarge: boolean
-    part: number
-    partSize: number
-    lastPartSize: number
-    partsCount: number
-  }) => Promise<boolean>
 
   downloadFilePart: (fileParams: {
     id: string
@@ -184,4 +191,12 @@ export type Api = {
     thumb_size: string
     isPhoto: boolean
   }) => Promise<{ bytes: Uint8Array, ext: string }>
+
+  searchMessages: (
+    query: string,
+    folder: Folder,
+    offsetId: number
+  ) => Promise<SearchMessages>
+
+  resetSearchMessages: () => void
 }

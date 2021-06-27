@@ -3,8 +3,8 @@ import type { FunctionComponent as FC } from 'preact'
 import { memo } from 'preact/compat'
 import { useMemo, useState, useCallback } from 'preact/hooks'
 
-import type { Folder, Message, DownloadingFile } from '~/core/store'
-import { deleteMessage, downloadFile } from '~/core/actions'
+import type { Folder, Message } from '~/core/store'
+import { deleteMessage } from '~/core/actions'
 import { useTexts, useQuickEditMessage } from '~/core/hooks'
 import {
   checkIsChecklistMessage,
@@ -93,14 +93,6 @@ export const StorageContentMessageItem: FC<Props> = memo(({
   const resetConfirmation = useCallback(() => {
     setConfirmation(false)
   }, [setConfirmation])
-
-  const deleteMediaMessage = useCallback((id: number) => {
-    return deleteMessage({ id }, folder)
-  }, [folder])
-
-  const downloadMediaFile = useCallback((messageId: number, file: DownloadingFile) => {
-    return downloadFile(messageId, file)
-  }, [message.id])
 
   const menu = useMemo(() => ({
     items: [{

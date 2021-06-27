@@ -1,8 +1,7 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
 import { memo } from 'preact/compat'
-import { useEffect, useRef, useCallback } from 'preact/hooks'
-import rafSchedule from 'raf-schd'
+import { useEffect, useRef } from 'preact/hooks'
 import cn from 'classnames'
 
 import type { Message } from '~/core/store'
@@ -25,8 +24,6 @@ type Props = {
   onDelete?: (id: number) => void
 }
 
-const TRANSPARENT_CLASS = 'TRNSPRNT'
-
 export const ContentItem: FC<Props> = memo(({
   children,
   message,
@@ -40,18 +37,6 @@ export const ContentItem: FC<Props> = memo(({
   onDelete,
 }) => {
   const elRef = useRef<HTMLDivElement>(null)
-  const isVisibleRef = useRef(false)
-
-  const setStyles = useCallback(rafSchedule((elRef, isVisibleRef, offset) => {
-    const el = elRef.current as HTMLDivElement
-    if (!el || typeof offset !== 'number') return
-
-    el.style.bottom = `${offset}px`
-    if (!isVisibleRef.current) {
-      isVisibleRef.current = true
-      el.classList.remove(TRANSPARENT_CLASS)
-    }
-  }), [])
 
   useEffect(() => {
     if (!resizeObserver) return
@@ -67,12 +52,7 @@ export const ContentItem: FC<Props> = memo(({
     return () => intersectionObserver.unobserve(elRef.current)
   }, [intersectionObserver])
 
-  useEffect(() => {
-    setStyles(elRef, isVisibleRef, offset)
-  }, [offset])
-
   useEffect(() => () => {
-    setStyles.cancel()
     onDelete?.(message.id)
   }, [])
 
@@ -81,9 +61,13 @@ export const ContentItem: FC<Props> = memo(({
       id={`${message.id}`}
       class={cn(
         styles.root,
-        !isVisibleRef.current && TRANSPARENT_CLASS,
-        !visible && styles._hidden
+        typeof offset !== 'number' && styles._transparent
       )}
+      style={{
+        top: `${offset}px`,
+        display: visible ? 'block' : 'none',
+        opacity: typeof offset !== 'number' ? 0 : 1
+      }}
       ref={elRef}
     >
       <div class={styles.content}>
@@ -97,7 +81,7 @@ export const ContentItem: FC<Props> = memo(({
           <Menu
             {...menu}
             class={styles.menu}
-            positionY={(offset || 0) + (height || 0) > 240 ? 'top' : 'bottom'}
+            //positionY={(offset || 0) + (height || 0) > 240 ? 'bottom' : 'top'}
             parentRef={elRef}
           />
         )}

@@ -1,22 +1,29 @@
 import { useMemo, useCallback, useState, useRef, useEffect } from 'preact/hooks'
 
 import type { InputFile, Message } from '~/core/store'
-import { createMessage, editMessage, setSendingMessage, resetSendingMessage } from '~/core/actions'
+import {
+  createMessage,
+  editMessage,
+  setSendingMessage,
+  resetSendingMessage,
+  resetUploadingFiles
+} from '~/core/actions'
 import { useActiveFolder, useSendingMessage } from '~/core/hooks'
-import { stringifyParentFilesMessage } from '~/tools/handle-content'
+import { checkIsParentFilesMessage, stringifyParentFilesMessage } from '~/tools/handle-content'
+import { uiTools } from '~/ui/tools'
 
 const initialMessage = {
   key: 0,
   id: 0,
   text: '',
-  files: [] as InputFile[]
+  inputFiles: [] as InputFile[]
 }
 
 export const useMessageForm = () => {
   const { folder } = useActiveFolder()
   const { sendingMessage } = useSendingMessage(folder.id)
   const [loading, setLoading] = useState(!!sendingMessage)
-  const [message, setMessage] = useState({ ...initialMessage, ...sendingMessage})
+  const [message, setMessage] = useState({ ...initialMessage, ...sendingMessage })
   const messageKeyRef = useRef(0)
   const initialEditingMessage = useRef<Message | null>(null)
 
@@ -29,10 +36,19 @@ export const useMessageForm = () => {
     setLoading(true)
     setSendingMessage(folder.id, message)
 
-    const sendingMessage = message.files ? {
-      ...message,
-      text: stringifyParentFilesMessage(message.text)
-    } : message
+    let sendingMessage = message
+
+    if (
+      message.inputFiles?.length || (
+        initialEditingMessage.current &&
+        checkIsParentFilesMessage(initialEditingMessage.current.text)
+      )
+    ) {
+      sendingMessage = {
+        ...message,
+        text: stringifyParentFilesMessage(message.text)
+      }
+    }
 
     const success = message.id ?
       await editMessage(
@@ -52,11 +68,12 @@ export const useMessageForm = () => {
   }, [message, setLoading, updateForm])
 
   const handleEditMessage = useCallback((message: Message) => {
+    if (sendingMessage) return
     initialEditingMessage.current = message
     updateForm(message)
-  }, [updateForm])
+  }, [sendingMessage, updateForm])
 
-  const handleCancelEditMessage = useCallback(() => {
+  const handleCancelMessage = useCallback(() => {
     updateForm(initialMessage)
     resetSendingMessage(folder.id)
   }, [updateForm, folder.id])
@@ -65,16 +82,30 @@ export const useMessageForm = () => {
     setMessage({ ...message, text })
   }, [message])
 
-  const handleAddFiles = useCallback((files: File[]) => {
+  const handleAddFiles = useCallback(async (files: File[]) => {
     const uniqFiles = files
       .map(file => ({ key: `${file.name}${file.type}${file.lastModified}${file.size}`, file }))
-      .filter(file => (message.files || []).every(({ key }) => key !== file.key))
+      .filter(file => (message.inputFiles || []).every(({ key }) => key !== file.key))
+
+    const uniqInputFiles = await Promise.all(uniqFiles.map(inputFile => new Promise(async (resolve) => {
+      const params =
+        inputFile.file.type.startsWith('image') ? await uiTools.processImageFile(inputFile.file) :
+          inputFile.file.type.startsWith('video') ? await uiTools.processVideoFile(inputFile.file) :
+            undefined
+
+      resolve({
+        ...inputFile,
+        ...params,
+        name: inputFile.file.name,
+        size: inputFile.file.size
+      })
+    }))) as InputFile[]
 
     setMessage({
       ...message,
-      files: [
-        ...(message.files || []),
-        ...uniqFiles.map(({ key, file }) => ({ id: '', progress: 0, key, file }))
+      inputFiles: [
+        ...(message.inputFiles || []),
+        ...uniqInputFiles.map((uniqFile) => ({ ...uniqFile, id: '', progress: 0 }))
       ]
     })
   }, [message])
@@ -82,17 +113,22 @@ export const useMessageForm = () => {
   const handleRemoveFile = useCallback((inputFile: InputFile) => {
     const updatedMessage = {
       ...message,
-      files: (sendingMessage || message).files?.filter(({ key }) => key !== inputFile.key) || []
+      inputFiles: (sendingMessage || message).inputFiles?.filter(({ key }) => key !== inputFile.key) || []
     }
-    setMessage(updatedMessage)
-    setSendingMessage(folder.id, updatedMessage)
+    if (sendingMessage && !updatedMessage.inputFiles.length) {
+      handleCancelMessage()
+    } else {
+      setMessage(updatedMessage)
+      setSendingMessage(folder.id, updatedMessage)
+      resetUploadingFiles([inputFile])
+    }
   }, [message, sendingMessage, folder.id])
 
   useEffect(() => {
     if (sendingMessage) {
       setMessage({ ...message, ...sendingMessage })
     }
-  }, [sendingMessage?.files])
+  }, [sendingMessage?.inputFiles])
 
   useEffect(() => {
     updateForm(initialMessage)
@@ -103,7 +139,7 @@ export const useMessageForm = () => {
     loading,
     handleSubmit,
     handleEditMessage,
-    handleCancelEditMessage,
+    handleCancelMessage,
     handleChangeText,
     handleAddFiles,
     handleRemoveFile
@@ -112,7 +148,7 @@ export const useMessageForm = () => {
     loading,
     handleSubmit,
     handleEditMessage,
-    handleCancelEditMessage,
+    handleCancelMessage,
     handleChangeText,
     handleAddFiles,
     handleRemoveFile

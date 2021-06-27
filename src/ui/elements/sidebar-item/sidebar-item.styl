@@ -9,6 +9,10 @@
   opacity: 1
   transition: opacity .2s ease-in
 
+  & + .root
+    .content
+      border-top: 1px solid var(--item-border-color)
+
 .icon
   display: flex
   justify-content: center
@@ -31,7 +35,6 @@
   flex-shrink: 0
   width: calc(100% - 60px)
   padding: 12px 0
-  border-bottom: 1px solid var(--item-border-color)
 
 .title
   width: calc(100% - 20px)
@@ -50,10 +53,10 @@
   color: var(--color-light-2)
 
 .menu
-  top: 0
+  top: 1px
   right: 0
   width: 42px
-  height: 64px
+  height: 63px
 
 ._disabled
   pointer-events: none

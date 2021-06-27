@@ -4,7 +4,7 @@ import { memo } from 'preact/compat'
 import { useRef, useEffect, useCallback } from 'preact/hooks'
 import rafSchedule from 'raf-schd'
 
-import { uiTools } from '~/ui/tools'
+import { uiWorkerTools } from '~/ui/tools'
 
 type Props = {
   url: string
@@ -36,7 +36,7 @@ export const BlurImage: FC<Props> = memo(({
       const canvasParams: [number, number, number, number] = [0, 0, width, height]
       bufferCanvasContext.drawImage(image, ...imageParams, ...canvasParams)
       const imageData = bufferCanvasContext.getImageData(...canvasParams)
-      const bluredImageData = await uiTools.processImageDataRGB(imageData, ...canvasParams, radius)
+      const bluredImageData = await uiWorkerTools.getBluredImageData(imageData, ...canvasParams, radius)
       canvasContext.putImageData(bluredImageData, 0, 0)
     }
     image.src = url

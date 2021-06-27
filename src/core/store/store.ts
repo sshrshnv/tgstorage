@@ -35,6 +35,7 @@ const state: State = {
   activeFolderId: 0,
   loadingFolderIds: new Map(),
   sendingMessages: new Map(),
+  searchMessages: new Map(),
   downloadingFiles: new Map(),
   settings: settings || {
     locale: detectLocale()
