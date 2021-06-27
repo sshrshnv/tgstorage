@@ -65,7 +65,10 @@ const handleMessagesUpdates = async (messagesUpdates) => {
     const { _, message, messages } = messagesUpdates[i]
 
     if (['updateNewMessage', 'updateNewChannelMessage'].includes(_)) {
-      foldersMessages = await handleMessages([message], { new: true }) || foldersMessages
+      [foldersMessages = foldersMessages, searchMessages] = await Promise.all([
+        handleMessages([message], { new: true }),
+        handleSearchMessages([message], { new: true })
+      ])
     }
 
     if (['updateDeleteMessages', 'updateDeleteChannelMessages'].includes(_)) {
@@ -188,13 +191,15 @@ const handleMessages = async (
 const handleSearchMessages = async (
   messages,
   options?: {
+    new?: boolean
     deleted?: boolean
     edited?: boolean
   }
 ) => {
   let updated = false
+  let sorted = true
+  let searchMessages = await apiCache.getSearchMessages()
   const user = await apiCache.getUser()
-  const searchMessages = await apiCache.getSearchMessages()
 
   messages.forEach(message => {
     if (searchMessages.has(message.id)) {
@@ -204,13 +209,28 @@ const handleSearchMessages = async (
       }
 
       if (options?.edited) {
-        searchMessages.set(message.id, transformMessage(message, user))
+        message = transformMessage(message, user)
+        searchMessages.set(message.id, message)
         updated = true
+      }
+    }
+
+    if (options?.new) {
+      message = transformMessage(message, user)
+
+      if (message.parentId && searchMessages.has(message.parentId)) {
+        searchMessages.set(message.id, message)
+        updated = true
+        sorted = false
       }
     }
   })
 
   if (updated) {
+    if (!sorted) {
+      searchMessages = new Map(sortMessages([...searchMessages]))
+    }
+
     apiCache.setSearchMessages(searchMessages)
     return new Map(searchMessages)
   } else {

@@ -32,6 +32,12 @@ export const useMessageForm = () => {
     setMessage({ ...message, key: messageKeyRef.current })
   }, [messageKeyRef, setMessage])
 
+  const handleCancelMessage = useCallback(() => {
+    initialEditingMessage.current = null
+    updateForm(initialMessage)
+    resetSendingMessage(folder.id)
+  }, [updateForm, folder.id])
+
   const handleSubmit = useCallback(async () => {
     setLoading(true)
     setSendingMessage(folder.id, message)
@@ -63,20 +69,15 @@ export const useMessageForm = () => {
 
     setLoading(false)
     if (success) {
-      updateForm(initialMessage)
+      handleCancelMessage()
     }
-  }, [message, setLoading, updateForm])
+  }, [message, setLoading, handleCancelMessage])
 
   const handleEditMessage = useCallback((message: Message) => {
     if (sendingMessage) return
     initialEditingMessage.current = message
     updateForm(message)
   }, [sendingMessage, updateForm])
-
-  const handleCancelMessage = useCallback(() => {
-    updateForm(initialMessage)
-    resetSendingMessage(folder.id)
-  }, [updateForm, folder.id])
 
   const handleChangeText = useCallback((text: string) => {
     setMessage({ ...message, text })
@@ -122,21 +123,25 @@ export const useMessageForm = () => {
       setSendingMessage(folder.id, updatedMessage)
       resetUploadingFiles([inputFile])
     }
-  }, [message, sendingMessage, folder.id])
+  }, [message, sendingMessage, folder.id, handleCancelMessage])
 
   useEffect(() => {
     if (sendingMessage) {
       setMessage({ ...message, ...sendingMessage })
+    } else if (message) {
+      handleCancelMessage()
     }
-  }, [sendingMessage?.inputFiles])
+  }, [sendingMessage])
 
   useEffect(() => {
+    initialEditingMessage.current = null
     updateForm(initialMessage)
   }, [folder.id])
 
   return useMemo(() => ({
     message,
     loading,
+    editing: !!initialEditingMessage.current,
     handleSubmit,
     handleEditMessage,
     handleCancelMessage,
@@ -146,6 +151,7 @@ export const useMessageForm = () => {
   }), [
     message,
     loading,
+    initialEditingMessage.current,
     handleSubmit,
     handleEditMessage,
     handleCancelMessage,

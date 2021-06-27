@@ -18,7 +18,7 @@ type Props = {
   button?: h.JSX.Element | null
   loading?: boolean
   withoutDesktopBack?: boolean
-  onInput: (value: string) => void
+  onInput?: (value: string) => void
 }
 
 export const ContentHeader: FC<Props> = memo(({

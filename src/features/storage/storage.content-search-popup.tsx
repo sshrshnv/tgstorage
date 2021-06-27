@@ -3,9 +3,10 @@ import type { FunctionComponent as FC } from 'preact'
 import { useState, useCallback, useEffect, useRef } from 'preact/hooks'
 
 import { searchMessages, resetSearchMessages } from '~/core/actions'
-import { useTexts, useActiveFolder, useSearchMessages } from '~/core/hooks'
+import { useTexts, useActiveFolder, useSearchMessages, useMessageForm } from '~/core/hooks'
 import { Content } from '~/ui/elements/content'
 import { ContentHeader } from '~/ui/elements/content-header'
+import { ContentForm } from '~/ui/elements/content-form'
 import { Layout } from '~/ui/elements/layout'
 import { Text } from '~/ui/elements/text'
 
@@ -25,6 +26,18 @@ export const StorageContentSearchPopup: FC<Props> = ({
   const [loading, setLoading] = useState(false)
   const [offsetLoading, setOffsetLoading] = useState(false)
   const searchTimeout = useRef(0)
+
+  const {
+    message: formMessage,
+    loading: formLoading,
+    editing: formEditing,
+    handleSubmit,
+    handleEditMessage,
+    handleCancelMessage,
+    handleChangeText,
+    handleAddFiles,
+    handleRemoveFile
+  } = useMessageForm()
 
   const loadOffsetMessages = useCallback(async (offsetId) => {
     setOffsetLoading(true)
@@ -77,9 +90,23 @@ export const StorageContentSearchPopup: FC<Props> = ({
         messages={(query.length < 3 || loading) ? [] : messages}
         messagesLoading={loading}
         loadMessages={loadOffsetMessages}
-        //onEditMessage={handleEditMessage}
+        onEditMessage={handleEditMessage}
         lastMessageId={lastMessageId}
       />
+
+      {(!!messages.length && formEditing) && (
+        <ContentForm
+          key={formMessage.key}
+          texts={texts}
+          message={formMessage}
+          loading={formLoading}
+          onSubmit={handleSubmit}
+          onChangeText={handleChangeText}
+          onAddFiles={handleAddFiles}
+          onRemoveFile={handleRemoveFile}
+          onCancel={handleCancelMessage}
+        />
+      )}
 
       {query.length < 3 && (
         <Layout center>
