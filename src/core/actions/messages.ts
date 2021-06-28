@@ -1,8 +1,14 @@
-import type { Folder, FoldersMessages, SearchMessages, InputMessage } from '~/core/store'
+import type {
+  Folder,
+  FoldersMessages,
+  SearchMessages,
+  Message,
+  InputMessage
+} from '~/core/store'
 import { store } from '~/core/store'
 import { api } from '~/api'
 
-import { setLoadingFolderId } from './folders'
+import { setLoadingFolderId, getActiveFolder } from './folders'
 import { uploadFiles, resetUploadingFiles } from './message-media'
 import { setUpdates } from './updates'
 
@@ -46,7 +52,6 @@ export const createMessage = async (
 ) => {
   const updates = await api.createMessage(message, folder)
     .catch((error) => {
-      console.log(error)
       return null
     })
 
@@ -199,4 +204,28 @@ export const searchMessages = async (
 export const resetSearchMessages = () => {
   api.resetSearchMessages()
   setSearchMessages(new Map())
+}
+
+export const moveMessage = async (
+  message: Message,
+  toFolder: Folder
+) => {
+  const fromFolder = getActiveFolder()
+  if (!fromFolder) return
+
+  const updates = await api.moveMessage(
+    message,
+    fromFolder,
+    toFolder
+  )
+
+  if (!updates) return
+  setUpdates(updates)
+
+  const success = await deleteMessage(
+    message,
+    fromFolder
+  )
+
+  return success
 }

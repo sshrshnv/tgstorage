@@ -29,6 +29,7 @@ type Props = {
   intersectionObserver: IntersectionObserver | undefined
   onEdit?: (message: Message) => void
   onDelete?: (id: number) => void
+  onMove?: (message: Message) => void
 }
 
 export const StorageContentMessageItem: FC<Props> = memo(({
@@ -40,7 +41,8 @@ export const StorageContentMessageItem: FC<Props> = memo(({
   resizeObserver,
   intersectionObserver,
   onEdit,
-  onDelete
+  onDelete,
+  onMove
 }) => {
   const { texts } = useTexts('storage')
   const { editing, editText } = useQuickEditMessage(message)
@@ -66,8 +68,8 @@ export const StorageContentMessageItem: FC<Props> = memo(({
   }, [message, onEdit])
 
   const handleMove = useCallback(() => {
-    //move
-  }, [])
+    onMove?.(message)
+  }, [message, onMove])
 
   const handleCopy = useCallback(() => {
     //copy

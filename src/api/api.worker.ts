@@ -394,6 +394,12 @@ class Api {
           partsCount: number
         }
       }
+      media?: {
+        id: string
+        access_hash: string
+        file_reference: ArrayBuffer
+        isPhoto: boolean
+      }
     },
     folder: {
       id: number
@@ -402,7 +408,7 @@ class Api {
   ) {
     const user = await apiCache.getUser()
     const updates = await this.call(
-      message.inputMedia ?
+      (message.inputMedia || message.media) ?
         'messages.sendMedia' :
         'messages.sendMessage',
       {
@@ -449,6 +455,23 @@ class Api {
           }] : [])],
           mime_type: message.inputMedia.fileType,
           nosound_video: message.inputMedia.fileType.endsWith('gif')
+        }} : {}),
+        ...(message.media ? { media: message.media.isPhoto ? {
+          _: 'inputMediaPhoto',
+          id: {
+            _: 'inputPhoto',
+            id: message.media.id,
+            access_hash: message.media.access_hash,
+            file_reference: message.media.file_reference
+          }
+        } : {
+          _: 'inputMediaDocument',
+          id: {
+            _: 'inputDocument',
+            id: message.media.id,
+            access_hash: message.media.access_hash,
+            file_reference: message.media.file_reference
+          }
         }} : {})
       }
     )
@@ -466,7 +489,12 @@ class Api {
     message: {
       id: number
       text: string
-      media?: any
+      media?: {
+        id: string
+        access_hash: string
+        file_reference: ArrayBuffer
+        isPhoto: boolean
+      }
     },
     folder: {
       id: number
@@ -484,7 +512,23 @@ class Api {
       },
       id: message.id,
       message: message.text || undefined,
-      media: message.media,
+      ...(message.media ? { media: message.media.isPhoto ? {
+        _: 'inputMediaPhoto',
+        id: {
+          _: 'inputPhoto',
+          id: message.media.id,
+          access_hash: message.media.access_hash,
+          file_reference: message.media.file_reference
+        }
+      } : {
+        _: 'inputMediaDocument',
+        id: {
+          _: 'inputDocument',
+          id: message.media.id,
+          access_hash: message.media.access_hash,
+          file_reference: message.media.file_reference
+        }
+      }} : {}),
       no_webpage: false
     })
 
@@ -531,6 +575,51 @@ class Api {
     }))}, {
       deleted: true
     })
+  }
+
+  public async moveMessage(
+    message: {
+      id: number
+      text: string
+      mediaMessages?: { id: number, message: string }[]
+    },
+    fromFolder: {
+      id: number
+      access_hash: string
+    },
+    toFolder: {
+      id: number
+      access_hash: string
+    }
+  ) {
+    let updates = await this.createMessage(message, toFolder)
+
+    if (!message.mediaMessages?.length) {
+      return updates
+    }
+
+    const [[parentId]] = updates.foldersMessages?.get(toFolder.id) || new Map()
+
+    updates = await this.refreshMessages(
+      fromFolder,
+      message.mediaMessages.map(({ id }) => id)
+    )
+    const folderMessages = updates.foldersMessages?.get(fromFolder.id)
+
+    if (!folderMessages) {
+      return updates
+    }
+
+    for (let i = 0; i < message.mediaMessages.length; i++) {
+      const updates = await this.createMessage({
+        ...folderMessages.get(message.mediaMessages[i].id),
+        text: stringifyFileMessage('', parentId)
+      }, toFolder)
+
+      if (i === message.mediaMessages.length - 1) {
+        return updates
+      }
+    }
   }
 
   public async prepareUploadingFile(

@@ -6,6 +6,7 @@ import type {
   Folder,
   FoldersMessages,
   SearchMessages,
+  Message,
   InputMessage
 } from '~/core/store'
 
@@ -137,6 +138,12 @@ export type Api = {
       mediaMessages?: { id: number }[]
     },
     folder: Folder
+  ) => Promise<Updates>
+
+  moveMessage: (
+    message: Message,
+    fromFolder: Folder,
+    toFolder: Folder
   ) => Promise<Updates>
 
   prepareUploadingFile: (

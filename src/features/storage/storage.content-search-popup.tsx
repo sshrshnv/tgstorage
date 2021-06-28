@@ -2,6 +2,7 @@ import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
 import { useState, useCallback, useEffect, useRef } from 'preact/hooks'
 
+import type { Message } from '~/core/store'
 import { searchMessages, resetSearchMessages } from '~/core/actions'
 import { useTexts, useActiveFolder, useSearchMessages, useMessageForm } from '~/core/hooks'
 import { Content } from '~/ui/elements/content'
@@ -14,10 +15,12 @@ import { StorageContentMessagesList } from './storage.content-messages-list'
 
 type Props = {
   toggleSearch: () => void
+  setMovingMessage: (message: Message) => void
 }
 
 export const StorageContentSearchPopup: FC<Props> = ({
-  toggleSearch
+  toggleSearch,
+  setMovingMessage
 }) => {
   const { texts } = useTexts('storage')
   const { folder } = useActiveFolder()
@@ -36,7 +39,7 @@ export const StorageContentSearchPopup: FC<Props> = ({
     handleCancelMessage,
     handleChangeText,
     handleAddFiles,
-    handleRemoveFile
+    handleRemoveFile,
   } = useMessageForm()
 
   const loadOffsetMessages = useCallback(async (offsetId) => {
@@ -89,9 +92,10 @@ export const StorageContentSearchPopup: FC<Props> = ({
         folder={folder}
         messages={(query.length < 3 || loading) ? [] : messages}
         messagesLoading={loading}
+        lastMessageId={lastMessageId}
         loadMessages={loadOffsetMessages}
         onEditMessage={handleEditMessage}
-        lastMessageId={lastMessageId}
+        onMoveMessage={setMovingMessage}
       />
 
       {(!!messages.length && formEditing) && (

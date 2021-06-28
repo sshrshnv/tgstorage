@@ -14,7 +14,7 @@ import { Radio } from '~/ui/elements/radio'
 import { Button } from '~/ui/elements/button'
 import { Break } from '~/ui/elements/break'
 
-import type { FolderPopupParams } from './storage.sidebar'
+import type { FolderPopupParams } from './storage'
 
 type Props = {
   params: FolderPopupParams
@@ -129,7 +129,7 @@ export const StorageSidebarFolderPopup: FC<Props> = memo(({
     const success = isNewFolder ? await createFolder(
       folderName
     ).catch(err => {
-      console.log(err)
+      //
     }) : (isEditFolder && typeof params === 'object') ? await editFolder(
       folderName,
       initialFolder

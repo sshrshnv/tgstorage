@@ -16,6 +16,7 @@ type Props = {
   lastMessageId: number
   loadMessages?: (offsetId: number) => void
   onEditMessage?: (message: Message) => void
+  onMoveMessage?: (message: Message) => void
 }
 
 export const StorageContentMessagesList: FC<Props> = memo(({
@@ -24,7 +25,8 @@ export const StorageContentMessagesList: FC<Props> = memo(({
   messagesLoading,
   lastMessageId,
   loadMessages,
-  onEditMessage
+  onEditMessage,
+  onMoveMessage
 }) => {
   const {
     offsets,
@@ -82,6 +84,7 @@ export const StorageContentMessagesList: FC<Props> = memo(({
             intersectionObserver={intersectionObserver}
             onEdit={onEditMessage}
             onDelete={onDeleteMessage}
+            onMove={onMoveMessage}
           />
         )
       })}

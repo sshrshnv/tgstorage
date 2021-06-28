@@ -91,10 +91,13 @@ export const transformMessage = (message, user) => {
     views
   } = message
 
+  const isFileMessage = checkIsFileMessage(text)
+  const isParentFilesMessage = !isFileMessage && checkIsParentFilesMessage(text)
+
   return {
     id,
-    parentId: checkIsFileMessage(text) ? parseFileMessage(text).parentId : undefined,
-    isParent: checkIsParentFilesMessage(text),
+    parentId: isFileMessage ? parseFileMessage(text).parentId : undefined,
+    isParent: isParentFilesMessage,
     text,
     date: formatDate(date, user.country),
     editDate,
@@ -165,5 +168,5 @@ export const sortMessages = (messages: [number, Message][]) => {
 }
 
 export const generateRandomId = () => {
-  return `${Math.floor(Math.random() * 0xFFFFFFFF) + Math.floor(Math.random() * 0xFFFFFF)}`
+  return `${Math.floor(Math.random() * 0xFFFFFFFF)}${Math.floor(Math.random() * 0xFFFFFF)}`.slice(0, 16)
 }

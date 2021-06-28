@@ -1,6 +1,6 @@
 import createSyncTaskQueue from 'sync-task-queue'
 
-import type { Folder, Folders, FolderMessages } from '~/core/store'
+import type { Folder, Folders, FolderMessages, FoldersMessages, SearchMessages } from '~/core/store'
 import { FOLDER_POSTFIX } from '~/tools/handle-content'
 
 import {
@@ -28,6 +28,8 @@ export const handleUpdates = async (
   }
 ): Promise<{
   folders?: Folders
+  foldersMessages?: FoldersMessages
+  searchMessages?: SearchMessages
 }> => updatesQueue.enqueue(async () => {
   const { chats, messages, update, updates } = data
   let folders

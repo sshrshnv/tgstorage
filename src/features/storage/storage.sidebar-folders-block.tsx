@@ -11,16 +11,18 @@ import { Button } from '~/ui/elements/button'
 import { Loader } from '~/ui/elements/loader'
 import { UserIcon, SettingsIcon, FolderPlusIcon } from '~/ui/icons'
 
+import type { FolderPopupParams } from './storage'
 import { StorageSidebarFoldersList } from './storage.sidebar-folders-list'
-import type { FolderPopupParams } from './storage.sidebar'
 
 type Props = {
+  mobileTransparent?: boolean
   setFolderPopupParams?: (params: FolderPopupParams) => void
   setProfilePopupVisible?: (value: boolean) => void
   setSettingsPopupVisible?: (value: boolean) => void
 }
 
 export const StorageSidebarFoldersBlock: FC<Props> = memo(({
+  mobileTransparent,
   setFolderPopupParams,
   setProfilePopupVisible,
   setSettingsPopupVisible
@@ -44,6 +46,7 @@ export const StorageSidebarFoldersBlock: FC<Props> = memo(({
   return (
     <Sidebar
       disabled={foldersLoading}
+      mobileTransparent={mobileTransparent}
     >
       <SidebarHeader>
         <Button

@@ -16,3 +16,34 @@
 
 ._active
   z-index: 10
+
+.overlay
+  z-index: -1
+  position: absolute
+  top: 0
+  right: 0
+  bottom: 0
+  left: 0
+  display: flex
+  justify-content: center
+  align-items: center
+  background-color: var(--content-background-color-08)
+  opacity: 0
+  transition: opacity .2s ease-in-out
+
+  &._active
+    z-index: 1
+    opacity: 1
+
+    @media $desktop
+      z-index: 10
+
+  @media $mobile
+    display: none
+
+.overlayButton
+  position: absolute
+  top: 0
+  right: 0
+  height: 48px
+  background-color: transparent

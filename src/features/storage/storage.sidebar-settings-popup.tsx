@@ -1,5 +1,6 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { memo } from 'preact/compat'
 
 import { useTexts } from '~/core/hooks'
 import { SidebarPopup } from '~/ui/elements/sidebar-popup'
@@ -8,7 +9,7 @@ type Props = {
   onClose: () => void
 }
 
-export const StorageSidebarSettingsPopup: FC<Props> = ({
+export const StorageSidebarSettingsPopup: FC<Props> = memo(({
   onClose
 }) => {
   const { texts } = useTexts('storage')
@@ -21,4 +22,4 @@ export const StorageSidebarSettingsPopup: FC<Props> = ({
 
     </SidebarPopup>
   )
-}
+})

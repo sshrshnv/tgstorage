@@ -8,12 +8,13 @@ import { useTexts } from '~/core/hooks'
 import { SidebarTitle } from '~/ui/elements/sidebar-title'
 import { EditIcon, FolderPlusIcon } from '~/ui/icons'
 
-import type { FolderPopupParams } from './storage.sidebar'
+import type { FolderPopupParams } from './storage'
 
 type Props = {
   folder: Folder
   index: number
   disabled?: boolean
+  withoutMenu?: boolean
   setFolderPopupParams?: (params: FolderPopupParams) => void
 }
 
@@ -21,6 +22,7 @@ export const StorageSidebarFolderCategoryItem: FC<Props> = memo(({
   folder,
   index,
   disabled,
+  withoutMenu,
   setFolderPopupParams
 }) => {
   const { texts } = useTexts('storage')
@@ -52,7 +54,7 @@ export const StorageSidebarFolderCategoryItem: FC<Props> = memo(({
 
   return (
     <SidebarTitle
-      menu={menu}
+      menu={withoutMenu ? null : menu}
       disabled={disabled}
     >
       {folder.category || texts.generalCategoryTitle}

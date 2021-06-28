@@ -3,6 +3,7 @@ import type { FunctionComponent as FC } from 'preact'
 import { memo } from 'preact/compat'
 import { useCallback } from 'preact/hooks'
 
+import type { Message } from '~/core/store'
 import { setActiveFolder, loadFolderMessages } from '~/core/actions'
 import { useTexts, useActiveFolder, useMessageForm } from '~/core/hooks'
 import { Content } from '~/ui/elements/content'
@@ -16,11 +17,13 @@ import { StorageContentMessagesList } from './storage.content-messages-list'
 type Props = {
   dropAvailable: boolean
   toggleSearch: () => void
+  setMovingMessage: (message: Message) => void
 }
 
 export const StorageContentFolderBlock: FC<Props> = memo(({
   dropAvailable,
-  toggleSearch
+  toggleSearch,
+  setMovingMessage
 }) => {
   const { texts } = useTexts('storage')
   const {
@@ -74,9 +77,10 @@ export const StorageContentFolderBlock: FC<Props> = memo(({
         folder={folder}
         messages={messages}
         messagesLoading={messagesLoading}
+        lastMessageId={lastMessageId}
         loadMessages={loadMessages}
         onEditMessage={handleEditMessage}
-        lastMessageId={lastMessageId}
+        onMoveMessage={setMovingMessage}
       />
 
       <ContentForm

@@ -1,0 +1,40 @@
+import { h } from 'preact'
+import type { FunctionComponent as FC } from 'preact'
+import { memo } from 'preact/compat'
+
+import type { Folder } from '~/core/store'
+import { useTexts } from '~/core/hooks'
+import { SidebarPopup } from '~/ui/elements/sidebar-popup'
+
+import { StorageSidebarFoldersList } from './storage.sidebar-folders-list'
+
+type Props = {
+  loading?: boolean
+  onFolderSelect: (folder: Folder) => void
+  onClose: () => void
+}
+
+export const StorageSidebarFoldersPopup: FC<Props> = memo(({
+  loading,
+  onFolderSelect,
+  onClose
+}) => {
+  const { texts } = useTexts('storage')
+
+  return (
+    <SidebarPopup
+      title={texts.folderSelectTitle}
+      loading={loading}
+      withoutPaddings
+      onClose={onClose}
+    >
+      <StorageSidebarFoldersList
+        onFolderSelect={onFolderSelect}
+        filterActiveFolder
+        loadingDisabled
+        withoutMenu
+        withoutMessage
+      />
+    </SidebarPopup>
+  )
+})

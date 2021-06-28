@@ -1,14 +1,23 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import cn from 'classnames'
 
 import styles from './sidebar-wrapper.styl'
 
-export const SidebarWrapper: FC = ({
-  children
+type Props = {
+  mobileTransparent?: boolean
+}
+
+export const SidebarWrapper: FC<Props> = ({
+  children,
+  mobileTransparent
 }) => {
 
   return (
-    <div class={styles.root}>
+    <div class={cn(
+      styles.root,
+      mobileTransparent && styles._mobileTransparent
+    )}>
       {children}
     </div>
   )

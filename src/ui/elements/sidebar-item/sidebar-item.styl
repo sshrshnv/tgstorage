@@ -11,6 +11,7 @@
 
   & + .root
     .content
+      height: 65px
       border-top: 1px solid var(--item-border-color)
 
 .icon
@@ -32,8 +33,12 @@
     fill: var(--color-white)
 
 .content
+  display: flex
+  flex-direction: column
+  justify-content: center
   flex-shrink: 0
   width: calc(100% - 60px)
+  height: 64px
   padding: 12px 0
 
 .title

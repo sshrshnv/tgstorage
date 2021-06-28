@@ -14,6 +14,7 @@ import styles from './sidebar-item.styl'
 type Props = {
   title: string
   description: string
+  emptyDescription: string
   index?: number
   menu?: MenuProps | null
   disabled?: boolean
@@ -23,6 +24,7 @@ type Props = {
 export const SidebarItem: FC<Props> = memo(({
   title,
   description,
+  emptyDescription,
   index,
   disabled,
   menu,
@@ -47,8 +49,14 @@ export const SidebarItem: FC<Props> = memo(({
         <FolderIcon style={{ fill: color }}/>
       </div>
       <div class={styles.content}>
-        <div class={styles.title}>{title}</div>
-        <div class={styles.description}>{description || 'Empty'}</div>
+        <div class={styles.title}>
+          {title}
+        </div>
+        {(description || emptyDescription) && (
+          <div class={styles.description}>
+            {description || emptyDescription}
+          </div>
+        )}
       </div>
       {(menu && !disabled) && (
         <Menu
