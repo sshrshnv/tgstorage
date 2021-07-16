@@ -18,7 +18,7 @@
   line-height: 1
   cursor: pointer
   user-select: none
-  transition: .2s ease-in
+  transition: .2s ease-in-out
   transition-property: background, opacity
 
   > svg
@@ -26,6 +26,7 @@
     width: 18px
     height: 18px
     fill: var(--default-font-color)
+    transition: fill .2s ease-in-out
 
   &:focus
     outline: none
@@ -80,3 +81,7 @@
 
   &:active
     opacity: .75
+
+:global(.fullscreen)
+  .root > svg
+    fill: var(--color-white)

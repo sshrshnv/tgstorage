@@ -24,7 +24,8 @@ export const processVideoFile = (file: File): Promise<{
     const thumb = await Promise.race([
       wait(2500),
       new Promise(resolve => {
-        video.onseeked = () => {
+        video.onseeked = async () => {
+          await wait(100)
           const canvas = document.createElement('canvas')
           const canvasContext = canvas.getContext('2d')
           const imageParams: [number, number, number, number] = [0, 0, videoParams.w, videoParams.h]

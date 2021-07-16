@@ -1,5 +1,5 @@
-import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { h } from 'preact'
 
 import { Button } from '~/ui/elements/button'
 import type { Props } from '~/ui/elements/button'

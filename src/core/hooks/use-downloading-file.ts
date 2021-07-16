@@ -21,7 +21,6 @@ export const useDownloadingFile = (file: {
   return useMemo(() => ({
     downloadingFile
   }), [
-    downloadingFile?.url,
     downloadingFile?.blob,
     downloadingFile?.downloading,
     downloadingFile?.progress,

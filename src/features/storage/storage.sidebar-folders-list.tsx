@@ -41,7 +41,7 @@ export const StorageSidebarFoldersList: FC<Props> = memo(({
     <Fragment>
       {filteredFolders.map((folder, index) => (
         <Fragment key={folder.id}>
-          {(!index || folder.category !== folders[index - 1].category) && (
+          {(!index || folder.category !== filteredFolders[index - 1].category) && (
             <StorageSidebarFolderCategoryItem
               folder={folder as Folder}
               index={index}

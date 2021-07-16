@@ -1,5 +1,5 @@
-import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { h } from 'preact'
 import { memo } from 'preact/compat'
 import { useEffect, useRef } from 'preact/hooks'
 import cn from 'classnames'
@@ -39,17 +39,23 @@ export const ContentItem: FC<Props> = memo(({
   const elRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (!resizeObserver) return
+    if (!resizeObserver || !elRef.current) return
 
     resizeObserver.observe(elRef.current)
-    return () => resizeObserver.unobserve(elRef.current)
+    return () => {
+      if (!elRef.current) return
+      resizeObserver.unobserve(elRef.current)
+    }
   }, [resizeObserver])
 
   useEffect(() => {
-    if (!intersectionObserver) return
+    if (!intersectionObserver || !elRef.current) return
 
     intersectionObserver.observe(elRef.current)
-    return () => intersectionObserver.unobserve(elRef.current)
+    return () => {
+      if (!elRef.current) return
+      intersectionObserver.unobserve(elRef.current)
+    }
   }, [intersectionObserver])
 
   useEffect(() => () => {

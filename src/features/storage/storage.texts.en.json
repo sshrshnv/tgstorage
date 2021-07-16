@@ -41,7 +41,7 @@
   "messageMoveTitle": "Move message",
   "messageCopyTitle": "Copy text",
   "messageShareTitle": "Share text",
-  "emptyMessage": "Empty message",
+  "emptyMessage": "Waiting for file",
   "mediaDeleteTitle": "Delete file",
   "mediaDownloadTitle": "Download"
 }

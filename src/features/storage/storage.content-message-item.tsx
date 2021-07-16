@@ -1,5 +1,5 @@
-import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { h } from 'preact'
 import { memo } from 'preact/compat'
 import { useMemo, useState, useCallback } from 'preact/hooks'
 
@@ -18,6 +18,8 @@ import { ContentItemChecklist } from '~/ui/elements/content-item-checklist'
 import { EditIcon, MoveIcon, CopyIcon, ShareIcon, DeleteIcon } from '~/ui/icons'
 
 import { StorageContentMessageItemMediaList } from './storage.content-message-item-media-list'
+import { StorageContentMessageItemMediaItem } from './storage.content-message-item-media-item'
+import { StorageContentMessageItemGallery } from './storage.content-message-item-gallery'
 
 type Props = {
   folder: Folder
@@ -48,6 +50,7 @@ export const StorageContentMessageItem: FC<Props> = memo(({
   const { editing, editText } = useQuickEditMessage(message)
   const [confirmation, setConfirmation] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [galleryInitialId, setGalleryInitialId] = useState('')
 
   const isChecklist = useMemo(() => {
     return checkIsChecklistMessage(message.text)
@@ -91,6 +94,14 @@ export const StorageContentMessageItem: FC<Props> = memo(({
     ev.stopPropagation()
     setConfirmation(true)
   }, [confirmation, message, folder])
+
+  const openGallery = useCallback((id: string) => {
+    setGalleryInitialId(id)
+  }, [setGalleryInitialId])
+
+  const closeGallery = useCallback(() => {
+    setGalleryInitialId('')
+  }, [setGalleryInitialId])
 
   const resetConfirmation = useCallback(() => {
     setConfirmation(false)
@@ -162,11 +173,30 @@ export const StorageContentMessageItem: FC<Props> = memo(({
         />
       )}
 
+      {!!message.media && (
+        <StorageContentMessageItemMediaItem
+          folder={folder}
+          message={message}
+          mediaLoadAvailable={visible}
+          onPreviewClick={openGallery}
+        />
+      )}
+
       {message.mediaMessages?.length && (
         <StorageContentMessageItemMediaList
           folder={folder}
           mediaMessages={message.mediaMessages}
           mediaLoadAvailable={visible}
+          onPreviewClick={openGallery}
+        />
+      )}
+
+      {galleryInitialId && (
+        <StorageContentMessageItemGallery
+          initialId={galleryInitialId}
+          mediaMessage={message.media ? message : undefined}
+          mediaMessages={message.mediaMessages}
+          onClose={closeGallery}
         />
       )}
     </ContentItem>

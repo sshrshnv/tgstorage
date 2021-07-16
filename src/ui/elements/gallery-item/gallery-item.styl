@@ -1,0 +1,32 @@
+.root
+  position: relative
+  z-index: 0
+  display: flex
+  flex-direction: column
+  justify-content: center
+  align-items: center
+  height: 100%
+  padding: 0 1px
+
+  &._active
+    padding: 0
+
+.image
+  display: block
+  width: auto
+  height: auto
+  max-width: 100%
+  max-height: calc(100% - 96px)
+
+.player
+  max-width: 100%
+  max-height: calc(100% - 96px)
+
+.loader
+  position: absolute
+  z-index: 12
+
+:global(.fullscreen)
+  .image
+  .player
+    max-height: 100%

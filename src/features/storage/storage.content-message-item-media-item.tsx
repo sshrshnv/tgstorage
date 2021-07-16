@@ -1,11 +1,12 @@
-import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
-import { useState, useCallback, useMemo, useEffect } from 'preact/hooks'
+import { h } from 'preact'
+import { useState, useCallback, useMemo, useEffect, useRef } from 'preact/hooks'
 import { saveAs } from 'file-saver'
 
 import type { Folder, Message, MessageMedia, DownloadingFile } from '~/core/store'
 import { deleteMessage, downloadFile, pauseDownloadingFile, resetDownloadingFile } from '~/core/actions'
 import { useTexts, useDownloadingFile } from '~/core/hooks'
+import { checkIsIOS } from '~/tools/detect-device'
 import { ContentItemMediaItem } from '~/ui/elements/content-item-media-item'
 import { DownloadIcon, DeleteIcon } from '~/ui/icons'
 
@@ -13,14 +14,16 @@ type Props = {
   folder: Folder
   message: Message
   mediaLoadAvailable: boolean
-  compact: boolean
+  compact?: boolean
+  onPreviewClick?: (id: string) => void
 }
 
 export const StorageContentMessageItemMediaItem: FC<Props> = ({
   folder,
   message,
   mediaLoadAvailable,
-  compact
+  compact,
+  onPreviewClick
 }) => {
   const { texts } = useTexts('storage')
   const [confirmation, setConfirmation] = useState(false)
@@ -45,6 +48,10 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
     downloadingFile: originalDownloadingFile
   } = useDownloadingFile(originalFile)
 
+  const thumbFileRef = useRef(thumbFile)
+  const thumbDownloadingFileRef = useRef(thumbDownloadingFile)
+  const originalDownloadingFileRef = useRef(originalDownloadingFile)
+
   const [downloading, setDownloading] = useState(!!originalDownloadingFile?.downloading)
 
   const resetConfirmation = useCallback(() => {
@@ -52,9 +59,9 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
   }, [setConfirmation])
 
   const saveFile = useCallback(() => {
-    if (!originalDownloadingFile) return
-    const { url, blob, name } = originalDownloadingFile
-    const data = url || blob as string | Blob
+    if (!originalDownloadingFile?.blob) return
+    const { blob, name } = originalDownloadingFile
+    const data = checkIsIOS() ? blob.slice() : blob
     saveAs(data, name)
     setDownloading(false)
     resetDownloadingFile(originalDownloadingFile)
@@ -64,7 +71,7 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
   ])
 
   const handleDownload = useCallback(async () => {
-    if (originalDownloadingFile?.url || originalDownloadingFile?.blob) {
+    if (originalDownloadingFile?.blob) {
       saveFile()
     } else {
       setDownloading(true)
@@ -118,14 +125,14 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
   ])
 
   useEffect(() => {
-    if (thumbDownloadingFile?.url) return
+    if (thumbDownloadingFileRef.current?.blob) return
 
     if (mediaLoadAvailable) {
-      if (!thumbFile || thumbDownloadingFile?.downloading) return
+      if (!thumbFile || thumbDownloadingFileRef.current?.downloading) return
       downloadFile(message.id, thumbFile)
     } else {
-      if (!thumbDownloadingFile?.downloading) return
-      pauseDownloadingFile(thumbDownloadingFile)
+      if (!thumbDownloadingFileRef.current?.downloading) return
+      pauseDownloadingFile(thumbDownloadingFileRef.current)
     }
   }, [mediaLoadAvailable, thumbFile?.file_reference])
 
@@ -133,30 +140,39 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
     if (
       downloading &&
       originalFile &&
-      !originalDownloadingFile?.url &&
-      !originalDownloadingFile?.blob &&
-      !originalDownloadingFile?.downloading
+      !originalDownloadingFileRef.current?.blob &&
+      !originalDownloadingFileRef.current?.downloading
     ) {
       downloadFile(message.id, originalFile)
     }
   }, [originalFile?.file_reference])
 
   useEffect(() => {
-    if (
-      downloading &&
-      (originalDownloadingFile?.url || originalDownloadingFile?.blob)
-    ) {
+    if (downloading && originalDownloadingFile?.blob) {
       saveFile()
     }
-  }, [originalDownloadingFile?.url, originalDownloadingFile?.blob])
+  }, [originalDownloadingFile?.blob])
+
+  useEffect(() => {
+    thumbFileRef.current = thumbFile
+  }, [thumbFile])
+
+  useEffect(() => {
+    thumbDownloadingFileRef.current = thumbDownloadingFile
+  }, [thumbDownloadingFile])
 
   useEffect(() => () => {
-    if (
-      !thumbFile ||
-      !originalDownloadingFile?.downloading ||
-      originalDownloadingFile?.url
-    ) return
-    pauseDownloadingFile(thumbFile)
+    if (thumbDownloadingFileRef.current) {
+      if (thumbDownloadingFileRef.current.downloading) {
+        pauseDownloadingFile(thumbDownloadingFileRef.current)
+      }
+      thumbFileRef.current = undefined
+      thumbDownloadingFileRef.current = undefined
+    }
+
+    if (originalDownloadingFileRef.current) {
+      originalDownloadingFileRef.current = undefined
+    }
   }, [])
 
   return (
@@ -164,13 +180,14 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
       media={media}
       blurPreviewUrl={blurPreviewUrl}
       hasPreviewFile={!!thumbFile}
-      previewFileUrl={thumbDownloadingFile?.url}
+      previewBlob={thumbDownloadingFile?.blob}
       menu={menu}
       compact={compact}
       loading={loading}
       downloading={downloading}
       downloadingProgress={downloading ? originalDownloadingFile?.progress : undefined}
       onCancelDownload={handleCancelDownload}
+      onPreviewClick={onPreviewClick}
     />
   )
 }

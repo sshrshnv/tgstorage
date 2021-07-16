@@ -1,5 +1,5 @@
-export type UIWorkerTools = {
-  getBluredImageData(
+export type WorkerTools = {
+  processBluredImageData(
     data: ImageData,
     topX: number,
     topY: number,

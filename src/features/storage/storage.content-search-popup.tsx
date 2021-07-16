@@ -1,5 +1,5 @@
-import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { h } from 'preact'
 import { useState, useCallback, useEffect, useRef } from 'preact/hooks'
 
 import type { Message } from '~/core/store'
@@ -41,6 +41,8 @@ export const StorageContentSearchPopup: FC<Props> = ({
     handleAddFiles,
     handleRemoveFile,
   } = useMessageForm()
+
+  const isFormVisible = !!messages.length && formEditing
 
   const loadOffsetMessages = useCallback(async (offsetId) => {
     setOffsetLoading(true)
@@ -93,12 +95,13 @@ export const StorageContentSearchPopup: FC<Props> = ({
         messages={(query.length < 3 || loading) ? [] : messages}
         messagesLoading={loading}
         lastMessageId={lastMessageId}
+        fullHeight
         loadMessages={loadOffsetMessages}
         onEditMessage={handleEditMessage}
         onMoveMessage={setMovingMessage}
       />
 
-      {(!!messages.length && formEditing) && (
+      {isFormVisible && (
         <ContentForm
           key={formMessage.key}
           texts={texts}

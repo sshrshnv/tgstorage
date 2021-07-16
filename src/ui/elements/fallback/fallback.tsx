@@ -1,5 +1,5 @@
-import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { h } from 'preact'
 
 import { Layout } from '~/ui/elements/layout'
 import { Break } from '~/ui/elements/break'

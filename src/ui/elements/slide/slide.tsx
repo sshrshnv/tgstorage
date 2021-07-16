@@ -1,5 +1,5 @@
-import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { h } from 'preact'
 import { memo } from 'preact/compat'
 import { useEffect, useCallback, useRef } from 'preact/hooks'
 import cn from 'classnames'
@@ -9,6 +9,7 @@ import { animationClassName } from '~/ui/styles/animation'
 import styles from './slide.styl'
 
 type Props = {
+  id?: string
   name: string
   class?: string
   onClose?: () => void
@@ -18,6 +19,7 @@ const slides: string[] = []
 
 export const Slide: FC<Props> = memo(({
   children,
+  id,
   name,
   class: className,
   onClose
@@ -62,6 +64,7 @@ export const Slide: FC<Props> = memo(({
 
   return (
     <div
+      id={id}
       class={cn(
         className,
         styles.root,

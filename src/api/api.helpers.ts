@@ -120,6 +120,10 @@ export const transformMedia = (media) => {
       mime_type: type, size, attributes, thumbs, video_thumbs
     } = file
     const name = attributes?.find(({ _ }) => _ === 'documentAttributeFilename')?.file_name || ''
+    const description = attributes?.find(({ _ }) => _ === 'documentAttributeAudio')
+    const duration = attributes?.find(({ _ }) => ['documentAttributeAudio', 'documentAttributeVideo'].includes(_))?.duration
+    const nameParts = name.split('.')
+    const ext = nameParts[nameParts.length - 1]
     const thumbS = (sizes || thumbs)?.find(({ _ }) => _ === 'photoStrippedSize')
     const thumbSUrl = thumbS?.bytes && convertStrippedImageBytesToUrl(thumbS.bytes)
     const thumbM = (sizes || thumbs)?.find(({ _ }) => ['photoCachedSize', 'photoSize'].includes(_))
@@ -131,14 +135,18 @@ export const transformMedia = (media) => {
       access_hash,
       file_reference,
       name,
-      type: type || 'image',
+      description: description ? {
+        performer: description.performer,
+        title: description.title
+      } : undefined,
+      duration,
+      type: type || (['png', 'jpg', 'jpeg', 'tiff', 'heic', 'heif'].includes(ext) ? `image/${ext}` : ext),
       originalSize: size,
       attributes,
       dc_id,
       thumbSUrl,
       thumbM: thumbM ? {
         size: thumbM.size,
-        location: thumbM.location,
         thumb_size: thumbM.type
       } : undefined,
       thumbMUrl,

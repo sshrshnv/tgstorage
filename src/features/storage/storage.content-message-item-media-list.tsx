@@ -1,5 +1,5 @@
-import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { h } from 'preact'
 import { memo } from 'preact/compat'
 
 import type {  Folder, Message } from '~/core/store'
@@ -11,12 +11,14 @@ type Props = {
   folder: Folder
   mediaMessages?: Message[]
   mediaLoadAvailable: boolean
+  onPreviewClick?: (id: string) => void
 }
 
 export const StorageContentMessageItemMediaList: FC<Props> = memo(({
   folder,
   mediaMessages,
-  mediaLoadAvailable
+  mediaLoadAvailable,
+  onPreviewClick
 }) => {
   const compact = (mediaMessages?.length || 0) > 4
 
@@ -29,6 +31,7 @@ export const StorageContentMessageItemMediaList: FC<Props> = memo(({
           message={mediaMessage}
           mediaLoadAvailable={mediaLoadAvailable}
           compact={compact}
+          onPreviewClick={onPreviewClick}
         />
       ))}
     </ContentItemMediaList>

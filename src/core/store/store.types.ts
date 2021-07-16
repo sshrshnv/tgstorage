@@ -43,6 +43,11 @@ export type MessageMedia = {
   access_hash: string
   file_reference: ArrayBuffer
   name?: string
+  description?: {
+    performer?: string
+    title?: string
+  }
+  duration?: number
   type: string
   originalSize?: number
   dc_id: number
@@ -50,19 +55,11 @@ export type MessageMedia = {
   thumbSUrl?: string
   thumbM?: {
     size: number
-    location: {
-      local_id: number
-      volume_id: string
-    }
     thumb_size: string
   }
   thumbMUrl?: string
   thumbVideo?: {
     size: number
-    location: {
-      local_id: number
-      volume_id: string
-    }
   }
   isPhoto: boolean
 }
@@ -135,7 +132,6 @@ export type SendingMessages =
 
 export type DownloadingFile = {
   id: string
-  url?: string
   blob?: Blob
   bytes?: Uint8Array
   partSize?: number
@@ -144,16 +140,16 @@ export type DownloadingFile = {
   lastPart?: number
   name?: string
   size: number
+  description?: {
+    performer?: string
+    title?: string
+  }
+  duration?: number
   type: string
   ext?: string
   dc_id: number
   access_hash: string
   file_reference: ArrayBuffer
-  location?: {
-    local_id: number
-    volume_id: string
-  }
-  photo?: boolean
   thumb?: boolean
   thumb_size: string
   downloading?: boolean

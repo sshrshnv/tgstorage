@@ -202,7 +202,6 @@ export const downloadFile = async (
   let downloadingFile: DownloadingFile | undefined = getDownloadingFile(file) || file
 
   if (
-    downloadingFile.url ||
     downloadingFile.blob ||
     downloadingFile.downloading
   ) return
@@ -285,8 +284,7 @@ export const downloadFile = async (
       setDownloadingFile({
         ...downloadingFile,
         ...(blob ? {
-          url: isImage ? URL.createObjectURL(blob) : undefined,
-          blob: isImage ? undefined : blob,
+          blob,
           bytes: undefined,
           downloading: false
         } : {

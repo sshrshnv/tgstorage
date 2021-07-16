@@ -44,11 +44,12 @@ class Api {
     this.client = new Client({
       APIID: API_ID,
       APIHash: API_HASH,
+      APILayer: 121,
       test: IS_TEST,
       dc: meta.baseDC,
       autoConnect: true,
-      meta,
-      debug: IS_TEST
+      debug: IS_TEST,
+      meta
     })
 
     this.client.on('metaChanged', meta => apiCache.setMeta(meta))
@@ -449,6 +450,7 @@ class Api {
           }] : []), ...(message.inputMedia.videoParams ? [{
             _: 'documentAttributeVideo',
             round_message: false,
+            supports_streaming: message.inputMedia.fileName.endsWith('mp4'),
             ...message.inputMedia.videoParams
           }] : []), ...(message.inputMedia.fileType.endsWith('gif') ? [{
             _: 'documentAttributeAnimated'
@@ -717,7 +719,6 @@ class Api {
     partSize,
     offsetSize,
     precise,
-    //location,
     dc_id,
     access_hash,
     file_reference,
@@ -728,10 +729,6 @@ class Api {
     partSize: number
     offsetSize: number
     precise: boolean
-    location?: {
-      local_id: number
-      volume_id: string
-    }
     dc_id: number
     access_hash: string
     file_reference: ArrayBuffer
@@ -741,8 +738,6 @@ class Api {
     const file = await this.call('upload.getFile', {
       location: {
         _: isPhoto ? 'inputPhotoFileLocation' : 'inputDocumentFileLocation',
-        //local_id: location.local_id,
-        //volume_id: location.volume_id,
         id,
         access_hash,
         file_reference,

@@ -1,5 +1,5 @@
-import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { h } from 'preact'
 import cn from 'classnames'
 
 import { Loader } from '~/ui/elements/loader'

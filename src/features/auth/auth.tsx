@@ -1,5 +1,5 @@
-import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { h } from 'preact'
 import { useState, useEffect } from 'preact/hooks'
 
 import { Layout } from '~/ui/elements/layout'

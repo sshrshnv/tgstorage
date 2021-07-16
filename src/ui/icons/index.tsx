@@ -97,3 +97,18 @@ export const FileIcon: FC<Props> = () => <Fallback><FileSVG/></Fallback>
 
 const DownloadSVG: FC = lazy(() => import('./download.svg'))
 export const DownloadIcon: FC<Props> = () => <Fallback><DownloadSVG/></Fallback>
+
+const DeviceSVG: FC = lazy(() => import('./device.svg'))
+export const DeviceIcon: FC<Props> = () => <Fallback><DeviceSVG/></Fallback>
+
+const PlaySVG: FC = lazy(() => import('./play.svg'))
+export const PlayIcon: FC<Props> = () => <Fallback><PlaySVG/></Fallback>
+
+const PauseSVG: FC = lazy(() => import('./pause.svg'))
+export const PauseIcon: FC<Props> = () => <Fallback><PauseSVG/></Fallback>
+
+const FullscreenSVG: FC = lazy(() => import('./fullscreen.svg'))
+export const FullscreenIcon: FC<Props> = () => <Fallback><FullscreenSVG/></Fallback>
+
+const FullscreenExitSVG: FC = lazy(() => import('./fullscreen-exit.svg'))
+export const FullscreenExitIcon: FC<Props> = () => <Fallback><FullscreenExitSVG/></Fallback>

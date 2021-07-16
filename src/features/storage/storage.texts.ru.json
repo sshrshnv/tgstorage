@@ -2,5 +2,6 @@
   "generalCategoryTitle": "Важное",
   "generalFolderTitle": "Telegram",
   "categoryExistingValue": "Выбрать категорию",
-  "categoryNewValue": "Создать категорию"
+  "categoryNewValue": "Создать категорию",
+  "searchPlaceholder": "Text"
 }

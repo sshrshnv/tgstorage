@@ -1,18 +1,20 @@
-import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { h } from 'preact'
 import { memo } from 'preact/compat'
 import { useMemo } from 'preact/hooks'
 
-import { FileIcon } from '~/ui/icons'
+import { FileIcon, PlayIcon } from '~/ui/icons'
 
 import styles from './file-preview-icon.styl'
 
 type Props = {
   name?: string
+  isAudio?: boolean
 }
 
 export const FilePreviewIcon: FC<Props> = memo(({
-  name
+  name,
+  isAudio
 }) => {
   const extention = useMemo(() => {
     return name?.split('.').pop() || ''
@@ -20,7 +22,7 @@ export const FilePreviewIcon: FC<Props> = memo(({
 
   return (
     <div class={styles.root}>
-      <FileIcon/>
+      {isAudio ? <PlayIcon/> : <FileIcon/>}
       {extention}
     </div>
   )

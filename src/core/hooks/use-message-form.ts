@@ -10,7 +10,8 @@ import {
 } from '~/core/actions'
 import { useActiveFolder, useSendingMessage } from '~/core/hooks'
 import { checkIsParentFilesMessage, stringifyParentFilesMessage } from '~/tools/handle-content'
-import { uiTools } from '~/ui/tools'
+import { processImageFile } from '~/tools/process-image-file'
+import { processVideoFile } from '~/tools/process-video-file'
 
 const initialMessage = {
   key: 0,
@@ -90,8 +91,8 @@ export const useMessageForm = () => {
 
     const uniqInputFiles = await Promise.all(uniqFiles.map(inputFile => new Promise(async (resolve) => {
       const params =
-        inputFile.file.type.startsWith('image') ? await uiTools.processImageFile(inputFile.file) :
-          inputFile.file.type.startsWith('video') ? await uiTools.processVideoFile(inputFile.file) :
+        inputFile.file.type.startsWith('image') ? await processImageFile(inputFile.file) :
+          inputFile.file.type.startsWith('video') ? await processVideoFile(inputFile.file) :
             undefined
 
       resolve({

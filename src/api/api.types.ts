@@ -188,10 +188,6 @@ export type Api = {
     id: string
     partSize: number
     offsetSize: number
-    location?: {
-      local_id: number
-      volume_id: string
-    }
     dc_id: number
     access_hash: string
     file_reference: ArrayBuffer

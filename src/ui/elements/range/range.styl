@@ -1,0 +1,159 @@
+$range-thumb-size = 14px
+
+range-track()
+  position: relative
+  display: block
+  width: 100%
+  height: 16px
+  padding: 0
+  background: transparent
+  color: transparent
+  border: solid transparent
+  border-width: 7px 0
+  box-shadow: none
+
+range-thumb()
+  position: relative
+  z-index: 1
+  display: block
+  width: $range-thumb-size
+  height $range-thumb-size
+  padding: 0
+  box-sizing: border-box
+  border: none
+  border-radius: 50%
+  box-shadow: none
+  background: var(--default-font-color)
+  transition: background .2s ease-in-out
+
+progress-bar()
+  position: relative
+  display: block
+  width: 100%
+  height: 2px
+  padding: 0
+  border-radius: 2px
+  border: none
+  box-shadow: none
+  background: var(--progress-background-color)
+  transition: background .2s ease-in-out
+
+progress-value()
+  position: relative
+  z-index: 1
+  display: block
+  height: 2px
+  padding: 0
+  border-radius: 2px
+  border: none
+  box-shadow: none
+  background: var(--default-font-color)
+  transition: background .2s ease-in-out
+
+.root
+  position: relative
+  display: flex
+  align-items: center
+  width: 100%
+  height: 24px
+
+.input
+  margin: 0
+  position: relative
+  z-index: 1
+  width: 100%
+  height: 100%
+  padding: 0
+  border: none
+  color: transparent
+  background: transparent
+  font-size: 0
+  outline: none
+  cursor: pointer
+  -moz-appearance: none
+  -webkit-appearance: none
+  appearance: none
+  overflow: hidden
+  box-shadow: none
+
+  &:focus
+    outline: none
+
+  &::-moz-focus-outer
+    border: none
+  &::-moz-range-track
+    range-track()
+  &::-moz-range-thumb
+    range-thumb()
+
+  &::-webkit-slider-runnable-track
+    range-track()
+    -webkit-appearance: none
+  &::-webkit-slider-thumb
+    range-thumb()
+    margin-top: -6px
+    -webkit-appearance: none
+
+  &::-ms-track
+    range-track()
+    margin-top: 0
+  &::-ms-thumb
+    range-thumb()
+    margin-top: 0
+
+.progress
+  margin: 0
+  position: absolute
+  z-index: 0
+  left: 0
+  right: 0
+  top: 11px
+  width: 100%
+  height: 2px
+  padding: 0
+  border-radius: 2px
+  border: none
+  -moz-appearance: none
+  -webkit-appearance: none
+  appearance: none
+  overflow: hidden
+  box-shadow: none
+  background: var(--progress-background-color)
+  transition: background .2s ease-in-out
+
+  &:focus
+    outline: none
+
+  &::-moz-progress-bar
+    progress-bar()
+    background: var(--default-font-color)
+    -moz-appearance: none
+
+  &::-webkit-progress-bar
+    progress-bar()
+    -webkit-appearance: none
+  &::-webkit-progress-value
+    progress-value()
+    -webkit-appearance: none
+
+:global(.fullscreen)
+  .input
+    &::-moz-range-thumb
+      background: var(--color-white)
+
+    &::-webkit-slider-thumb
+      background: var(--color-white)
+
+    &::-ms-thumb
+      background: var(--color-white)
+
+  .progress
+    background: var(--color-dark-2)
+
+    &::-moz-progress-bar
+      background: var(--color-white)
+
+    &::-webkit-progress-bar
+      background: var(--color-dark-2)
+    &::-webkit-progress-value
+      background: var(--color-white)

@@ -1,7 +1,7 @@
-import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { h } from 'preact'
 import { memo } from 'preact/compat'
-import { useMemo, useRef } from 'preact/hooks'
+import { useMemo, useRef, useCallback } from 'preact/hooks'
 import cn from 'classnames'
 
 import type { MessageMedia } from '~/core/store'
@@ -10,7 +10,7 @@ import { Menu } from '~/ui/elements/menu'
 import type { Props as MenuProps } from '~/ui/elements/menu'
 import { Text } from '~/ui/elements/text'
 import { BlurImage } from '~/ui/elements/blur-image'
-import { FilePreview } from '~/ui/elements/file-preview'
+import { FilePreviewImage } from '~/ui/elements/file-preview-image'
 import { FilePreviewIcon } from '~/ui/elements/file-preview-icon'
 import { Loader } from '~/ui/elements/loader'
 import { Button } from '~/ui/elements/button'
@@ -22,26 +22,28 @@ type Props = {
   media: MessageMedia
   blurPreviewUrl?: string
   hasPreviewFile?: boolean
-  previewFileUrl?: string
+  previewBlob?: Blob
   compact?: boolean
   menu?: MenuProps | null
   loading?: boolean
   downloading?: boolean
   downloadingProgress?: number | undefined
   onCancelDownload: () => void
+  onPreviewClick?: (id: string) => void
 }
 
 export const ContentItemMediaItem: FC<Props> = memo(({
   media,
   blurPreviewUrl,
   hasPreviewFile,
-  previewFileUrl,
+  previewBlob,
   compact,
   menu,
   loading,
   downloading,
   downloadingProgress,
-  onCancelDownload
+  onCancelDownload,
+  onPreviewClick
 }) => {
   const elRef = useRef<HTMLDivElement>(null)
 
@@ -53,17 +55,29 @@ export const ContentItemMediaItem: FC<Props> = memo(({
     return media.type.startsWith('video')
   }, [media.type])
 
+  const isAudio = useMemo(() => {
+    return media.type.startsWith('audio')
+  }, [media.type])
+
+  const handlePreviewClick = useCallback(() => {
+    onPreviewClick?.(media.id)
+  }, [media.id, onPreviewClick])
+
   return (
     <div
       class={cn(
         styles.root,
         compact && styles._compact,
         isImage && styles._image,
-        isVideo && styles._video
+        isVideo && styles._video,
+        isAudio && styles._audio,
       )}
       ref={elRef}
     >
-      <div class={styles.preview}>
+      <div
+        class={styles.preview}
+        onClick={(isImage || isVideo || isAudio) ? handlePreviewClick : undefined}
+      >
         {blurPreviewUrl && (
           <BlurImage
             url={blurPreviewUrl}
@@ -73,13 +87,16 @@ export const ContentItemMediaItem: FC<Props> = memo(({
           />
         )}
         {hasPreviewFile && (
-          <FilePreview
-            url={previewFileUrl}
+          <FilePreviewImage
+            blob={previewBlob}
+            timeout={50}
+            isVideo={isVideo}
           />
         )}
         {!hasPreviewFile && (
           <FilePreviewIcon
             name={media.name}
+            isAudio={isAudio}
           />
         )}
       </div>

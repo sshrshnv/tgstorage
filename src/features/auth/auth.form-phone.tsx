@@ -1,5 +1,5 @@
-import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { h } from 'preact'
 import { useCallback, useEffect, useState } from 'preact/hooks'
 import type { StateUpdater } from 'preact/hooks'
 

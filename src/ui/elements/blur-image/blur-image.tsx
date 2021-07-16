@@ -1,10 +1,10 @@
-import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { h } from 'preact'
 import { memo } from 'preact/compat'
 import { useRef, useEffect, useCallback } from 'preact/hooks'
 import rafSchedule from 'raf-schd'
 
-import { uiWorkerTools } from '~/ui/tools'
+import { workerTools } from '~/tools/worker-tools'
 
 type Props = {
   url: string
@@ -36,7 +36,7 @@ export const BlurImage: FC<Props> = memo(({
       const canvasParams: [number, number, number, number] = [0, 0, width, height]
       bufferCanvasContext.drawImage(image, ...imageParams, ...canvasParams)
       const imageData = bufferCanvasContext.getImageData(...canvasParams)
-      const bluredImageData = await uiWorkerTools.getBluredImageData(imageData, ...canvasParams, radius)
+      const bluredImageData = await workerTools.processBluredImageData(imageData, ...canvasParams, radius)
       canvasContext.putImageData(bluredImageData, 0, 0)
     }
     image.src = url

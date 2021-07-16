@@ -1,5 +1,5 @@
-import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { h } from 'preact'
 import { memo } from 'preact/compat'
 import { useEffect, useMemo, useRef } from 'preact/hooks'
 
@@ -14,6 +14,7 @@ type Props = {
   messages: Message[]
   messagesLoading: boolean
   lastMessageId: number
+  fullHeight?: boolean
   loadMessages?: (offsetId: number) => void
   onEditMessage?: (message: Message) => void
   onMoveMessage?: (message: Message) => void
@@ -24,6 +25,7 @@ export const StorageContentMessagesList: FC<Props> = memo(({
   messages,
   messagesLoading,
   lastMessageId,
+  fullHeight,
   loadMessages,
   onEditMessage,
   onMoveMessage
@@ -59,6 +61,7 @@ export const StorageContentMessagesList: FC<Props> = memo(({
   return (
     <ContentList
       forwardedRef={intersectionElRef}
+      fullHeight={fullHeight}
     >
       {messages.map((message, index) => {
         const offset = useMemo(() => {

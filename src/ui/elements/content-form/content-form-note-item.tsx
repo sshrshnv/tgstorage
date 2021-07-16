@@ -1,7 +1,7 @@
-import { h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { h } from 'preact'
 import { memo } from 'preact/compat'
-import { useMemo, useCallback, useEffect } from 'preact/hooks'
+import { useMemo, useCallback } from 'preact/hooks'
 import cn from 'classnames'
 
 import type { InputFile } from '~/core/store'
@@ -35,25 +35,23 @@ export const ContentFormNoteItem: FC<Props> = memo(({
   }, [inputFile?.file])
 
   const removeFile = useCallback(() => {
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl)
-    }
     if (inputFile) {
       onRemoveFile?.(inputFile)
     }
   }, [inputFile, previewUrl, onRemoveFile])
 
-  useEffect(() => () => {
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl)
-    }
-  })
+  const handleLoad = useCallback(() => {
+    URL.revokeObjectURL(previewUrl)
+  }, [previewUrl])
 
   return (
     <div class={styles.noteItem}>
       <div class={styles.noteItemPreview}>
         {previewUrl ? (
-          <img src={previewUrl}/>
+          <img
+            src={previewUrl}
+            onLoad={handleLoad}
+          />
         ) : (
           <FilePreviewIcon
             name={inputFile?.name}
