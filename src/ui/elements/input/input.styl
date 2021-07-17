@@ -12,14 +12,19 @@
   border: none
   background-color: inherit
   box-shadow: none
-  font-family: inherit
+  font-family: var(--font-family-content)
+  font-weight: var(--font-weight-content)
   font-size: 16px
+  letter-spacing: .2px
   color: var(--default-font-color)
   appearance: none
   outline: none
 
   &:focus
     outline: none
+
+  &::placeholder
+    font-family: var(--font-family-ui)
 
   &:-webkit-autofill
   &:-internal-autofill-previewed

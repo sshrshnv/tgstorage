@@ -91,6 +91,10 @@ export const transformMessage = (message, user) => {
     views
   } = message
 
+  const media = fullMedia && transformMedia(fullMedia)
+
+  //if (!text && !media) return
+
   const isFileMessage = checkIsFileMessage(text)
   const isParentFilesMessage = !isFileMessage && checkIsParentFilesMessage(text)
 
@@ -112,22 +116,30 @@ export const transformMedia = (media) => {
   if (['messageMediaPhoto', 'messageMediaDocument'].includes(_)) {
     const file = media.photo || media.document
 
-    if (!file?.access_hash) return undefined
+    if (!file?.access_hash || file?.has_stickers) return undefined
 
     const {
-      id, access_hash, file_reference, dc_id,
+      id, date, access_hash, file_reference, dc_id,
       sizes, video_sizes,
-      mime_type: type, size, attributes, thumbs, video_thumbs
+      mime_type, size, attributes, thumbs, video_thumbs
     } = file
-    const name = attributes?.find(({ _ }) => _ === 'documentAttributeFilename')?.file_name || ''
+    const isPhoto = !!media.photo
+    const type = isPhoto ? 'image/jpeg' : mime_type
+    const name = isPhoto ? `photo-${date}.jpg` : (attributes?.find(({ _ }) => _ === 'documentAttributeFilename')?.file_name || '')
     const description = attributes?.find(({ _ }) => _ === 'documentAttributeAudio')
     const duration = attributes?.find(({ _ }) => ['documentAttributeAudio', 'documentAttributeVideo'].includes(_))?.duration
     const nameParts = name.split('.')
     const ext = nameParts[nameParts.length - 1]
+
+    const filteredPhotos = (sizes || thumbs)?.filter(({ _ }) => _ === 'photoSize')
+    const filteredPhotoSizes = filteredPhotos?.map(({ size }) => size)
+    const originalPhoto = isPhoto ? filteredPhotos?.find(({ size }) => size === Math.max(...filteredPhotoSizes)) : undefined
+    const originalSize = originalPhoto?.size || size
+    const originalSizeType = originalPhoto?.type || ''
+
     const thumbS = (sizes || thumbs)?.find(({ _ }) => _ === 'photoStrippedSize')
     const thumbSUrl = thumbS?.bytes && convertStrippedImageBytesToUrl(thumbS.bytes)
-    const thumbM = (sizes || thumbs)?.find(({ _ }) => ['photoCachedSize', 'photoSize'].includes(_))
-    const thumbMUrl = thumbM?.bytes && convertImageBytesToUrl(thumbM.bytes)
+    const thumbM = filteredPhotos?.find(({ size }) => size === Math.min(...filteredPhotoSizes))
     const thumbVideo = (video_sizes || video_thumbs)?.[0]
 
     return {
@@ -140,18 +152,18 @@ export const transformMedia = (media) => {
         title: description.title
       } : undefined,
       duration,
-      type: type || (['png', 'jpg', 'jpeg', 'tiff', 'heic', 'heif'].includes(ext) ? `image/${ext}` : ext),
-      originalSize: size,
+      type,
+      ext,
+      originalSize,
+      originalSizeType: originalSizeType,
       attributes,
       dc_id,
       thumbSUrl,
       thumbM: thumbM ? {
         size: thumbM.size,
-        thumb_size: thumbM.type
+        sizeType: thumbM.type
       } : undefined,
-      thumbMUrl,
-      thumbVideo,
-      isPhoto: !!media.photo
+      thumbVideo
     }
   }
 

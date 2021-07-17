@@ -15,6 +15,7 @@ type Props = {
   message: Message
   mediaLoadAvailable: boolean
   compact?: boolean
+  single?: boolean
   onPreviewClick?: (id: string) => void
 }
 
@@ -23,6 +24,7 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
   message,
   mediaLoadAvailable,
   compact,
+  single,
   onPreviewClick
 }) => {
   const { texts } = useTexts('storage')
@@ -30,7 +32,7 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
   const [loading, setLoading] = useState(false)
 
   const media = message.media as MessageMedia
-  const blurPreviewUrl = media.thumbMUrl || media.thumbSUrl
+  const blurPreviewUrl = media.thumbSUrl
 
   const thumbFile = useMemo(() => {
     return media.thumbM ? { ...media, ...media.thumbM } as DownloadingFile : undefined
@@ -183,6 +185,7 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
       previewBlob={thumbDownloadingFile?.blob}
       menu={menu}
       compact={compact}
+      single={single}
       loading={loading}
       downloading={downloading}
       downloadingProgress={downloading ? originalDownloadingFile?.progress : undefined}

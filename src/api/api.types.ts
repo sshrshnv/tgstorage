@@ -191,8 +191,8 @@ export type Api = {
     dc_id: number
     access_hash: string
     file_reference: ArrayBuffer
-    thumb_size: string
-    isPhoto: boolean
+    sizeType: string
+    originalSizeType: string
   }) => Promise<{ bytes: Uint8Array, ext: string }>
 
   searchMessages: (

@@ -151,7 +151,7 @@ const handleMessages = async (
     if (_ === 'message' && folders.has(folderId)) {
       message = !options?.deleted ? transformMessage(message, user) : message
 
-      if (options?.deleted && folderMessages.has(message.id)) {
+      if ((options?.deleted || !message) && folderMessages.has(message.id)) {
         folderMessages.delete(message.id)
         isUpdated = true
       } else if (options?.edited && folderMessages.has(message.id)) {
@@ -219,6 +219,7 @@ const handleSearchMessages = async (
 
     if (options?.new) {
       message = transformMessage(message, user)
+      if (!message) return
 
       if (message.parentId && searchMessages.has(message.parentId)) {
         searchMessages.set(message.id, message)

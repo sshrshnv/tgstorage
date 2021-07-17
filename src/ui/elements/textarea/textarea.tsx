@@ -44,7 +44,7 @@ export const Textarea: FC<Props> = ({
         placeholder={placeholder ? `${placeholder}…` : ''}
         disabled={disabled}
         ref={forwardedRef}
-        maxLength={1000}
+        maxLength={1600}
         onInput={handleInput}
         onPaste={handlePaste}
         {...inputData}

@@ -5,12 +5,12 @@
   transition: opacity .5s ease-in
   will-change: opacity
 
-._visible
-  opacity: 1
-  will-change: unset
+  &._visible
+    opacity: 1
+    will-change: unset
 
-._hidden
-  display: none
+  &._hidden
+    display: none
 
 .icon
   position: absolute
@@ -22,4 +22,4 @@
   background-color: var(--color-black-01)
 
   > svg
-    fill: var(--color-white-05)
+    fill: var(--color-white)

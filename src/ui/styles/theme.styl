@@ -1,4 +1,15 @@
+:global
+  @font-face
+    font-family: "Segoe UI Light"
+    font-weight: 400
+    src: local("Segoe UI Semilight")
+
 :root
+  --font-family-ui: -apple-system, BlinkMacSystemFont, "Roboto", "Arial", system-ui, sans-serif
+  --font-family-content: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Arial", system-ui, sans-serif
+  --font-weight-ui: 500
+  --font-weight-content: 400
+
   --color-brand: $color-brand
   --color-white: #ffffff
   --color-white-01: alpha(#ffffff, 0.1)
@@ -22,18 +33,19 @@
   --color-dark-3-l5: lighten(#26292c, 5%)
   --color-dark-3-l1: lighten(#26292c, 1%)
   --color-dark-3: #26292c
-  --color-dark-4: #81909f
+  --color-blue-1: #81909f
+  --color-blue-4: #f6f8fa
 
   --default-font-color: var(--color-black)
   --disabled-font-color: var(--color-light-3)
   --default-background-color: var(--color-white)
   --sidebar-background-color: var(--color-white)
-  --sidebar-header-background-color: var(--color-white)
+  --sidebar-header-background-color: var(--color-blue-4)
   --content-background-color: var(--color-light-4)
   --content-background-color-08: var(--color-light-4-08)
-  --content-form-background-color: var(--color-white)
+  --content-form-background-color: var(--color-blue-4)
   --content-item-background-color: var(--color-white)
-  --dropdown-border-color: transparent
+  --dropdown-border-color: var(--color-blue-4)
   --dropdown-item-border-color: var(--color-light-4)
   --icon-background-color: var(--color-white)
   --icon-border-color: var(--color-black)
@@ -50,6 +62,8 @@
 
   @media $dark
     color-scheme: dark
+
+    --font-family-content: -apple-system, BlinkMacSystemFont, "Segoe UI Light", "Roboto", "Arial", system-ui, sans-serif
 
     --default-font-color: var(--color-white)
     --disabled-font-color: var(--color-dark-3-l10)

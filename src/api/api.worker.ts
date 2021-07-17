@@ -48,7 +48,7 @@ class Api {
       test: IS_TEST,
       dc: meta.baseDC,
       autoConnect: true,
-      debug: IS_TEST,
+      debug: true,
       meta
     })
 
@@ -399,7 +399,7 @@ class Api {
         id: string
         access_hash: string
         file_reference: ArrayBuffer
-        isPhoto: boolean
+        originalSizeType: string
       }
     },
     folder: {
@@ -458,7 +458,7 @@ class Api {
           mime_type: message.inputMedia.fileType,
           nosound_video: message.inputMedia.fileType.endsWith('gif')
         }} : {}),
-        ...(message.media ? { media: message.media.isPhoto ? {
+        ...(message.media ? { media: message.media.originalSizeType ? {
           _: 'inputMediaPhoto',
           id: {
             _: 'inputPhoto',
@@ -495,7 +495,7 @@ class Api {
         id: string
         access_hash: string
         file_reference: ArrayBuffer
-        isPhoto: boolean
+        originalSizeType: boolean
       }
     },
     folder: {
@@ -514,7 +514,7 @@ class Api {
       },
       id: message.id,
       message: message.text || undefined,
-      ...(message.media ? { media: message.media.isPhoto ? {
+      ...(message.media ? { media: message.media.originalSizeType ? {
         _: 'inputMediaPhoto',
         id: {
           _: 'inputPhoto',
@@ -722,8 +722,8 @@ class Api {
     dc_id,
     access_hash,
     file_reference,
-    thumb_size = '',
-    isPhoto
+    sizeType,
+    originalSizeType
   }: {
     id: string
     partSize: number
@@ -732,16 +732,16 @@ class Api {
     dc_id: number
     access_hash: string
     file_reference: ArrayBuffer
-    thumb_size: string
-    isPhoto: boolean
+    sizeType: string
+    originalSizeType: string
   }) {
     const file = await this.call('upload.getFile', {
       location: {
-        _: isPhoto ? 'inputPhotoFileLocation' : 'inputDocumentFileLocation',
+        _: originalSizeType ? 'inputPhotoFileLocation' : 'inputDocumentFileLocation',
         id,
         access_hash,
         file_reference,
-        thumb_size
+        thumb_size: sizeType || originalSizeType || ''
       },
       cdn_supported: false,
       limit: partSize,

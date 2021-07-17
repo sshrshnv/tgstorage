@@ -30,7 +30,7 @@ export const SidebarItem: FC<Props> = memo(({
   menu,
   onClick
 }) => {
-  const elRef = useRef(null)
+  const elRef = useRef<HTMLDivElement>(null)
   const color = getColor(index)
 
   return (

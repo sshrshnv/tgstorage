@@ -179,6 +179,7 @@ export const StorageContentMessageItem: FC<Props> = memo(({
           message={message}
           mediaLoadAvailable={visible}
           onPreviewClick={openGallery}
+          single
         />
       )}
 

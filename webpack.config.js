@@ -27,6 +27,8 @@ const isBundleAnalyzer = () => !!process.env.BUNDLE_ANALYZER
 module.exports = {
   mode: isDev() ? 'development' : 'production',
 
+  target: 'web',
+
   entry: {
     app: './src/core/app.tsx'
   },
@@ -124,7 +126,7 @@ module.exports = {
         }]
       }, {
         test: /\.(woff2?|jpe?g|png|gif|mp4)$/,
-        use: ['file-loader']
+        type: 'asset/resource'
       }, {
         test: /\.svg$/,
         use: ['preact-svg-loader'],

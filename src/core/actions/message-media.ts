@@ -211,7 +211,7 @@ export const downloadFile = async (
     file_reference: file.file_reference,
     dc_id: file.dc_id,
     access_hash: file.access_hash,
-    thumb_size: file.thumb_size,
+    sizeType: file.sizeType,
     downloading: true
   }
 
@@ -236,8 +236,8 @@ export const downloadFile = async (
       dc_id,
       access_hash,
       file_reference,
-      thumb_size,
-      isPhoto
+      sizeType,
+      originalSizeType
     } = downloadingFile
 
     for (let part = lastPart + 1; part < partsCount; part++ ) {
@@ -254,8 +254,8 @@ export const downloadFile = async (
         dc_id,
         access_hash,
         file_reference,
-        thumb_size,
-        isPhoto
+        sizeType,
+        originalSizeType
       }).catch(({ message }) => {
         if (downloadingFile && message === 'FILE_REFERENCE_EXPIRED') {
           pauseDownloadingFile(downloadingFile)
@@ -275,7 +275,7 @@ export const downloadFile = async (
       bytes.set(nextBytes, prevBytes.length)
       const typeParts = downloadingFile.type.split('/')
       const type = `${typeParts[0]}/${typeParts[1] || ext}`
-      const isImage = type.startsWith('image') || !!thumb_size
+      const isImage = type.startsWith('image') || !!sizeType
       const blob = isLastPart ?
         new Blob([new Uint8Array(bytes)], { type: isImage ? 'image/jpeg' : type }) :
         null

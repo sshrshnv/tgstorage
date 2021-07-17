@@ -55,13 +55,12 @@ export type MessageMedia = {
   thumbSUrl?: string
   thumbM?: {
     size: number
-    thumb_size: string
+    sizeType: string
   }
-  thumbMUrl?: string
   thumbVideo?: {
     size: number
   }
-  isPhoto: boolean
+  originalSizeType: string
 }
 
 export type Message = {
@@ -151,10 +150,10 @@ export type DownloadingFile = {
   access_hash: string
   file_reference: ArrayBuffer
   thumb?: boolean
-  thumb_size: string
+  sizeType: string
   downloading?: boolean
   progress?: number
-  isPhoto: boolean
+  originalSizeType: string
 }
 
 export type DownloadingFiles =

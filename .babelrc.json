@@ -4,10 +4,7 @@
       "modules": false,
       "bugfixes": true,
       "corejs": 3,
-      "useBuiltIns": "entry",
-      "targets": {
-        "safari": "12.2"
-      }
+      "useBuiltIns": "entry"
      }],
     ["@babel/typescript", { "jsxPragma": "h" }]
   ],

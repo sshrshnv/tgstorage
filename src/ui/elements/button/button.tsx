@@ -38,7 +38,9 @@ export const Button: FC<Props> = ({
   icon,
   onClick
 }) => {
-  return (
+  return loading ? (
+    <Loader brand big/>
+  ) : (
     <button
       class={cn(
         styles.root,
@@ -58,9 +60,7 @@ export const Button: FC<Props> = ({
       onClick={onClick}
     >
       {icon}
-      {loading ? (
-        <Loader brand={brand}/>
-      ) : children}
+      {children}
     </button>
   )
 }
