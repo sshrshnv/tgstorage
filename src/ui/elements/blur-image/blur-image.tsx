@@ -29,7 +29,7 @@ export const BlurImage: FC<Props> = memo(({
     const image = new Image()
     image.onload = async () => {
       const bufferCanvas = self.document.createElement('canvas')
-      const bufferCanvasContext = bufferCanvas.getContext('2d')
+      const bufferCanvasContext = bufferCanvas.getContext('2d', { alpha: false })
       if (!bufferCanvasContext) return
 
       const imageParams: [number, number, number, number] = [0, 0, image.naturalWidth, image.naturalHeight]

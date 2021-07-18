@@ -30,7 +30,7 @@ type Props = {
   isOpened?: boolean
   enableChecklist: () => void
   onChangeText?: (note: string) => void
-  onAddFiles?: (files: File[]) => void
+  onAddFiles?: (fileKeys: string[]) => void
   onRemoveFile?: (file: InputFile) => void
 }
 
@@ -73,9 +73,9 @@ export const ContentFormNote: FC<Props> = memo(({
     onChangeText?.(value)
   }, [onChangeText])
 
-  const addFiles = useCallback((files: File[]) => {
-    if (files?.length) {
-      onAddFiles?.(Array.from(files))
+  const addFiles = useCallback((fileKeys: string[]) => {
+    if (fileKeys?.length) {
+      onAddFiles?.(fileKeys)
     }
     inputFileKey.current += 1
   }, [onAddFiles])
@@ -115,7 +115,7 @@ export const ContentFormNote: FC<Props> = memo(({
         />
         {message.inputFiles?.map((inputFile, index) => (
           <ContentFormNoteItem
-            key={inputFile.key}
+            key={inputFile.fileKey}
             index={index}
             inputFile={inputFile}
             loading={loading}

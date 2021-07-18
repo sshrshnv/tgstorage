@@ -5,6 +5,7 @@ import { useMemo, useCallback } from 'preact/hooks'
 import cn from 'classnames'
 
 import type { InputFile } from '~/core/store'
+import { getFile, getFileMeta } from '~/core/cache'
 import { Text } from '~/ui/elements/text'
 import { Button } from '~/ui/elements/button'
 import { FilePreviewIcon } from '~/ui/elements/file-preview-icon'
@@ -26,13 +27,26 @@ export const ContentFormNoteItem: FC<Props> = memo(({
   onRemoveFile
 }) => {
   const previewUrl = useMemo(() => {
-    if (inputFile?.thumb) {
-      return URL.createObjectURL(inputFile.thumb)
-    } else if (inputFile?.file?.type.startsWith('image')) {
-      return URL.createObjectURL(inputFile.file)
+    if (inputFile?.thumbFileKey) {
+      let thumbFile = getFile(inputFile.thumbFileKey)
+      if (!thumbFile) return ''
+
+      const url = URL.createObjectURL(thumbFile)
+      thumbFile = undefined
+      return url
+    } else if (inputFile?.fileKey) {
+      const fileMeta = getFileMeta(inputFile.fileKey)
+      if (!fileMeta?.type.startsWith('image')) return ''
+
+      let file = getFile(inputFile.fileKey)
+      if (!file) return ''
+
+      const url = URL.createObjectURL(file)
+      file = undefined
+      return url
     }
     return ''
-  }, [inputFile?.file])
+  }, [inputFile?.fileKey])
 
   const removeFile = useCallback(() => {
     if (inputFile) {

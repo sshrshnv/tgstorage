@@ -1,14 +1,27 @@
+import { getFile, setFile } from '~/core/cache'
+
 const THUMB_MAX_SIZE = 120
 
-export const processImageFile = (file: File): Promise<{
+export const processImageFile = (file: File|string|undefined): Promise<{
   w: number
   h: number
-  thumb?: File
+  thumbFileKey?: string
 } | undefined> => new Promise(resolve => {
+  if (typeof file === 'string') {
+    file = getFile(file) as File
+  }
+
+  if (!file) {
+    resolve(undefined)
+  }
+
   const fileUrl = URL.createObjectURL(file)
+  file = undefined
   const image = new Image()
 
   image.onload = () => {
+    URL.revokeObjectURL(fileUrl)
+
     const imageSize = {
       w: image.naturalWidth,
       h: image.naturalHeight
@@ -18,13 +31,12 @@ export const processImageFile = (file: File): Promise<{
     const height = ratio >= 1 ? Math.floor(THUMB_MAX_SIZE / ratio) : THUMB_MAX_SIZE
 
     const canvas = document.createElement('canvas')
-    const canvasContext = canvas.getContext('2d')
+    const canvasContext = canvas.getContext('2d', { alpha: false })
     const imageParams: [number, number, number, number] = [0, 0, imageSize.w, imageSize.h]
     const canvasParams: [number, number, number, number] = [0, 0, width, height]
 
     if (!canvasContext) {
       canvas.remove()
-      URL.revokeObjectURL(fileUrl)
       return resolve(imageSize)
     }
 
@@ -35,30 +47,24 @@ export const processImageFile = (file: File): Promise<{
     canvas.toBlob((blob) => {
       if (!blob) {
         canvas.remove()
-        URL.revokeObjectURL(fileUrl)
         return resolve(imageSize)
       }
 
+      canvas.remove()
+      let thumbFile = new File([blob], '', { type: 'image/jpeg', lastModified: Date.now() }) as File|undefined
+      const thumbFileKey = setFile(thumbFile)
+      thumbFile = undefined
+
       resolve({
         ...imageSize,
-        thumb: new File(
-          [blob],
-          '',
-          {
-            type: 'image/jpeg',
-            lastModified: Date.now()
-          }
-        )
+        thumbFileKey
       })
-
-      canvas.remove()
-      URL.revokeObjectURL(fileUrl)
     }, 'image/jpeg')
   }
 
   image.onerror = () => {
-    resolve(undefined)
     URL.revokeObjectURL(fileUrl)
+    resolve(undefined)
   }
 
   image.src = fileUrl

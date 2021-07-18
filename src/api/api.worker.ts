@@ -1,7 +1,8 @@
-import { expose } from 'comlink'
+import { expose, transfer } from 'comlink'
 
 import { wait } from '~/tools/wait'
 import { FOLDER_POSTFIX, generateFolderName, stringifyFileMessage } from '~/tools/handle-content'
+import { FILE_SIZE, getFilePartSize } from '~/tools/handle-file'
 
 import type { MethodDeclMap, InputCheckPasswordSRP } from './mtproto'
 import { Client } from './mtproto'
@@ -11,12 +12,10 @@ import {
   API_ID,
   API_HASH,
   IS_TEST,
-  FILE_SIZE,
   transformUser,
   transformMessage,
   sortMessages,
-  generateRandomId,
-  getFilePartSize
+  generateRandomId
 } from './api.helpers'
 
 const initialMeta = {
@@ -625,25 +624,18 @@ class Api {
   }
 
   public async prepareUploadingFile(
-    fileKey: string,
-    file: File
+    fileMeta: {
+      size: number
+      name: string
+      type: string
+    }
   ) {
-    const { size: fileSize, name: fileName, type: fileType } = file
+    const { size: fileSize, name: fileName, type: fileType } = fileMeta
     const fileId = generateRandomId()
     const isLarge = fileSize > FILE_SIZE.MB10
     const partSize = getFilePartSize(fileSize)
     const lastPartSize = fileSize % partSize
     const partsCount = Math.ceil(fileSize / partSize)
-
-    const fileData: Uint8Array = await new Promise(resolve => {
-      const reader = new FileReader()
-      reader.readAsArrayBuffer(file)
-      reader.onload = () => {
-        resolve(new Uint8Array(reader.result as ArrayBuffer))
-      }
-    })
-
-    apiCache.setFile(fileKey, fileData)
 
     return {
       fileId,
@@ -656,36 +648,16 @@ class Api {
     }
   }
 
-  public resetUploadingFile(
-    fileKey: string
-  ) {
-    apiCache.resetFile(fileKey)
-  }
-
   public async uploadFilePart(
+    filePartBytes: ArrayBuffer,
     params: {
-      fileKey: string
       fileId: string
       isLarge: boolean
       part: number
-      partSize: number
-      lastPartSize: number
       partsCount: number
     }
   ) {
-    const { fileKey, fileId, isLarge, part, partSize, lastPartSize, partsCount } = params
-    const isLast = part === partsCount - 1
-    const uploaded = part * partSize
-    const uploading = isLast ? lastPartSize : partSize
-
-    let fileData: Uint8Array | undefined = await apiCache.getFile(fileKey)
-    fileData = fileData?.subarray(uploaded, uploaded + uploading)
-
-    if (!fileData) return
-
-    if (isLast) {
-      this.resetUploadingFile(fileKey)
-    }
+    const { fileId, isLarge, part, partsCount } = params
 
     return this.call(
       isLarge ?
@@ -695,23 +667,11 @@ class Api {
         file_id: fileId,
         file_part: part,
         file_total_parts: partsCount,
-        bytes: fileData
+        bytes: filePartBytes
       }, {
         thread: 3
       }
     )
-  }
-
-  public async parseDownloadingFile(
-    fileSize: number
-  ) {
-    const partSize = FILE_SIZE.MB1
-    const partsCount = Math.ceil(fileSize / partSize)
-
-    return {
-      partSize,
-      partsCount
-    }
   }
 
   public async downloadFilePart({
@@ -735,7 +695,7 @@ class Api {
     sizeType: string
     originalSizeType: string
   }) {
-    const file = await this.call('upload.getFile', {
+    let file = await this.call('upload.getFile', {
       location: {
         _: originalSizeType ? 'inputPhotoFileLocation' : 'inputDocumentFileLocation',
         id,
@@ -751,13 +711,11 @@ class Api {
       dc: dc_id,
       thread: 2
     })
-    const bytes = new Uint8Array(file.bytes)
-    const ext = file.type._.replace('storage.file', '').toLowerCase()
 
-    return {
-      bytes,
-      ext
-    }
+    const bytes = new Uint8Array(file.bytes)
+    file = undefined
+
+    return transfer(bytes, [bytes.buffer])
   }
 
   public async searchMessages(

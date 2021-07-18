@@ -5,6 +5,7 @@ import { useState, useEffect, useRef, useCallback } from 'preact/hooks'
 import cn from 'classnames'
 import rafSchedule from 'raf-schd'
 
+import { getFile } from '~/core/cache'
 import { formatDuration } from '~/tools/format-time'
 import { Button } from '~/ui/elements/button'
 import { Range } from '~/ui/elements/range'
@@ -14,8 +15,8 @@ import styles from './player.styl'
 
 type Props = {
   class?: string
-  thumbBlob?: Blob
-  blob?: Blob
+  thumbFileKey?: string
+  fileKey?: string
   duration?: number
   description?: {
     performer?: string
@@ -31,8 +32,8 @@ type Props = {
 
 export const Player: FC<Props> = memo(({
   class: className,
-  thumbBlob,
-  blob,
+  thumbFileKey,
+  fileKey,
   duration,
   description,
   active,
@@ -114,11 +115,17 @@ export const Player: FC<Props> = memo(({
   }, [])
 
   useEffect(() => {
-    if (!blob) return
-    const url = URL.createObjectURL(blob)
+    if (!fileKey) return
+
+    let file = getFile(fileKey)
+    if (!file) return
+
+    const url = URL.createObjectURL(file)
+    file = undefined
     setUrl(url)
+
     return () => URL.revokeObjectURL(url)
-  }, [blob])
+  }, [fileKey])
 
   useEffect(() => {
     if (!url) return
@@ -132,9 +139,17 @@ export const Player: FC<Props> = memo(({
   }, [playing])
 
   useEffect(() => {
-    if (!thumbBlob || thumbUrl) return
-    setThumbUrl(URL.createObjectURL(thumbBlob))
-  }, [thumbBlob])
+    if (!thumbFileKey || thumbUrl) return
+
+    let thumbFile = getFile(thumbFileKey)
+    if (!thumbFile) return
+
+    const url = URL.createObjectURL(thumbFile)
+    thumbFile = undefined
+    setThumbUrl(url)
+
+    return () => URL.revokeObjectURL(url)
+  }, [thumbFileKey])
 
   useEffect(() => {
     if (firstRenderRef.current) return
@@ -205,7 +220,7 @@ export const Player: FC<Props> = memo(({
         <div
           class={cn(
             styles.description,
-            (!blob || (isFullscreen && !controlsHidden)) && styles._transparent
+            (!fileKey || (isFullscreen && !controlsHidden)) && styles._transparent
           )}
           onClick={handleContentClick}
         >

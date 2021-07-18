@@ -40,7 +40,7 @@ export const ContentWrapper: FC<Props> = ({
           square
           onClick={closeOverlay}
         />
-        <Text grey>{overlayText}</Text>
+        <Text small grey>{overlayText}</Text>
       </div>
     </div>
   )

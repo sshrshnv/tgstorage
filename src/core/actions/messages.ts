@@ -51,7 +51,7 @@ export const createMessage = async (
   final = true
 ) => {
   const updates = await api.createMessage(message, folder)
-    .catch((error) => {
+    .catch(() => {
       return null
     })
 

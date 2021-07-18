@@ -1,18 +1,16 @@
+import { transfer } from 'comlink'
 import createSyncTaskQueue from 'sync-task-queue'
 
 import type { Folder, InputMessage, InputFile, DownloadingFile } from '~/core/store'
 import { store } from '~/core/store'
+import { getFilePart, getFileMeta, deleteFile, addBytes, transferBytesToFile } from '~/core/cache'
 import { api } from '~/api'
 import { wait } from '~/tools/wait'
 import { generateFileMessageMark } from '~/tools/handle-content'
+import { FILE_SIZE, generateFileKey, transformToBytes } from '~/tools/handle-file'
 
 import { getActiveFolder } from './folders'
-import {
-  getSendingMessage,
-  setSendingMessage,
-  createMessage,
-  refreshMessage
-} from './messages'
+import { getSendingMessage, setSendingMessage, createMessage, refreshMessage } from './messages'
 
 export const uploadFiles = async (
   message: InputMessage,
@@ -27,8 +25,8 @@ export const uploadFiles = async (
 
     const inputFile = inputFiles[i]
     const final = i === inputFiles.length - 1
-    const uploadedFile = await uploadFile(folder, inputFile)
 
+    const uploadedFile = await uploadFile(folder, inputFile)
     if (!uploadedFile) continue
 
     const success = await createMessage({
@@ -42,7 +40,7 @@ export const uploadFiles = async (
 
       const updatedMessage = {
         ...sendingMessage,
-        inputFiles: sendingMessage.inputFiles?.filter(({ key }) => key !== inputFile.key)
+        inputFiles: sendingMessage.inputFiles?.filter(({ fileKey }) => fileKey !== inputFile.fileKey)
       }
       setSendingMessage(folder.id, updatedMessage)
     }
@@ -52,63 +50,79 @@ export const uploadFiles = async (
 }
 
 const uploadFile = async (folder: Folder, inputFile: InputFile) => {
-  if (!inputFile?.file || !checkIsUploading(folder, inputFile.key)) return
+  if (!inputFile?.fileKey) return
 
-  const fileParams = await api.prepareUploadingFile(inputFile.key, inputFile.file)
-  delete inputFile.file
+  const [mainFileParams, thumbFileParams] = await Promise.all([
+    inputFile.fileKey, inputFile.thumbFileKey
+  ].map(async (fileKey) => {
+    if (!fileKey) return
 
-  for (let part = 0; part < fileParams.partsCount; part++) {
-    if (!checkIsUploading(folder, inputFile.key)) return
+    const isMainFile = fileKey === inputFile.fileKey
+    const fileMeta = getFileMeta(fileKey)
 
-    await api.uploadFilePart({
-      ...fileParams,
-      fileKey: inputFile.key,
-      part
-    })
-    const progress = Math.round((part + 1) / fileParams.partsCount * 100)
-    onUploadPart(folder, inputFile.key, progress)
-  }
+    if (!fileMeta || !checkIsUploading(folder, fileKey)) return
 
-  let thumbParams
-  const { w, h, duration } = inputFile
+    const fileParams = await api.prepareUploadingFile(fileMeta)
+    const { partSize, lastPartSize, partsCount } = fileParams
 
-  if (inputFile.thumb) {
-    const thumbKey = `thumb${inputFile.thumb.type}${inputFile.thumb.lastModified}${inputFile.thumb.size}`
-    thumbParams = await api.prepareUploadingFile(thumbKey, inputFile.thumb)
-    delete inputFile.thumb
+    for (let part = 0; part < partsCount; part++) {
+      if (!checkIsUploading(folder, fileKey)) return
 
-    for (let part = 0; part < thumbParams.partsCount; part++) {
-      if (!checkIsUploading(folder, inputFile.key)) return
+      const isLastPart = part === partsCount - 1
 
-      await api.uploadFilePart({
-        ...thumbParams,
-        fileKey: thumbKey,
+      let filePart = getFilePart(fileKey, {
+        start: part * partSize,
+        end: part * partSize + (isLastPart ? lastPartSize : partSize)
+      })
+
+      let filePartBytes = await transformToBytes(filePart) as ArrayBuffer|undefined
+      filePart = undefined
+
+      if (!filePartBytes) return
+
+      await api.uploadFilePart(transfer(filePartBytes, [filePartBytes]), {
+        ...fileParams,
         part
       })
+
+      filePartBytes = undefined
+
+      if (isMainFile) {
+        const progress = Math.round((part + 1) / partsCount * 100)
+        onUploadPart(folder, fileKey, progress)
+      }
     }
-  }
+
+    deleteFile(fileKey)
+    return fileParams
+  }))
+
+  if (!mainFileParams) return
+  const { w, h, duration } = inputFile
 
   return {
-    fileId: fileParams.fileId,
-    fileName: fileParams.fileName,
-    fileType: fileParams.fileType,
-    isLarge: fileParams.isLarge,
-    partsCount: fileParams.partsCount,
+    fileId: mainFileParams.fileId,
+    fileName: mainFileParams.fileName,
+    fileType: mainFileParams.fileType,
+    isLarge: mainFileParams.isLarge,
+    partsCount: mainFileParams.partsCount,
     imageParams: (w && h && !duration) ? { w, h } : undefined,
     videoParams: (w && h && duration) ? { w, h, duration } : undefined,
-    thumb: thumbParams ? {
-      fileId: thumbParams.fileId,
-      fileName: thumbParams.fileName,
-      fileType: thumbParams.fileType,
-      isLarge: thumbParams.isLarge,
-      partsCount: thumbParams.partsCount
+    thumb: thumbFileParams ? {
+      fileId: thumbFileParams.fileId,
+      fileName: thumbFileParams.fileName,
+      fileType: thumbFileParams.fileType,
+      isLarge: thumbFileParams.isLarge,
+      partsCount: thumbFileParams.partsCount
     } : undefined
   }
 }
 
 const checkIsUploading = (folder, fileKey) => {
   const sendingMessage = getSendingMessage(folder.id)
-  return !!sendingMessage?.inputFiles?.some(({ key }) => key === fileKey)
+  return !!sendingMessage?.inputFiles?.some(inputFile =>
+    [inputFile.fileKey, inputFile.thumbFileKey].includes(fileKey)
+  )
 }
 
 const onUploadPart = (folder, fileKey, progress) => {
@@ -118,14 +132,15 @@ const onUploadPart = (folder, fileKey, progress) => {
   setSendingMessage(folder.id, {
     ...sendingMessage,
     inputFiles: sendingMessage.inputFiles?.map(inputFile =>
-      inputFile.key === fileKey ? ({ ...inputFile, progress }) : inputFile
+      inputFile.fileKey === fileKey ? ({ ...inputFile, progress }) : inputFile
     )
   })
 }
 
 export const resetUploadingFiles = (inputFiles: InputFile[]) => {
-  inputFiles.forEach(inputFile => {
-    api.resetUploadingFile(inputFile.key)
+  inputFiles.forEach(({ fileKey, thumbFileKey }) => {
+    if (fileKey) deleteFile(fileKey)
+    if (thumbFileKey) deleteFile(thumbFileKey)
   })
 }
 
@@ -133,14 +148,16 @@ export const getDownloadingFile = (file: {
   id: string
   size: number
 }) => {
-  return store.getState().downloadingFiles.get(`${file.id}-${file.size}`)
+  const fileKey = generateFileKey(file)
+  return store.getState().downloadingFiles.get(fileKey)
 }
 
 export const setDownloadingFile = (
   file: DownloadingFile
 ) => {
   const downloadingFiles = new Map(store.getState().downloadingFiles)
-  downloadingFiles.set(`${file.id}-${file.size}`, file)
+  const fileKey = generateFileKey(file)
+  downloadingFiles.set(fileKey, file)
   store.setState({
     downloadingFiles
   })
@@ -164,9 +181,10 @@ export const resetDownloadingFile = (file: {
   size: number
 }) => {
   const downloadingFiles = new Map(store.getState().downloadingFiles)
+  const fileKey = generateFileKey(file)
 
-  if (!downloadingFiles.has(`${file.id}-${file.size}`)) return
-  downloadingFiles.delete(`${file.id}-${file.size}`)
+  if (!downloadingFiles.has(fileKey)) return
+  downloadingFiles.delete(fileKey)
 
   store.setState({
     downloadingFiles
@@ -202,7 +220,7 @@ export const downloadFile = async (
   let downloadingFile: DownloadingFile | undefined = getDownloadingFile(file) || file
 
   if (
-    downloadingFile.blob ||
+    downloadingFile.fileKey ||
     downloadingFile.downloading
   ) return
 
@@ -216,10 +234,12 @@ export const downloadFile = async (
   }
 
   if (!downloadingFile.lastPart) {
-    const fileParams = await api.parseDownloadingFile(file.size)
+    const partSize = FILE_SIZE.MB1
+    const partsCount = Math.ceil(file.size / partSize)
     downloadingFile = {
       ...downloadingFile,
-      ...fileParams
+      partSize,
+      partsCount
     }
   }
 
@@ -247,7 +267,7 @@ export const downloadFile = async (
       const offsetSize = part * partSize
       const isLastPart = part === partsCount - 1
 
-      const filePart = await api.downloadFilePart({
+      let bytes = await api.downloadFilePart({
         id,
         partSize,
         offsetSize,
@@ -263,35 +283,30 @@ export const downloadFile = async (
         }
       })
 
-      if (!filePart) return
-      const { bytes: nextBytes, ext } = filePart
+      if (!bytes) return
 
       downloadingFile = getDownloadingFile(file)
       if (!downloadingFile) return
 
-      const prevBytes = downloadingFile.bytes || new Uint8Array()
-      const bytes = new Uint8Array(prevBytes.length + nextBytes.length)
-      bytes.set(prevBytes)
-      bytes.set(nextBytes, prevBytes.length)
-      const typeParts = downloadingFile.type.split('/')
-      const type = `${typeParts[0]}/${typeParts[1] || ext}`
+      let fileKey: string|undefined = generateFileKey(downloadingFile)
+      const { type } = downloadingFile
       const isImage = type.startsWith('image') || !!sizeType
-      const blob = isLastPart ?
-        new Blob([new Uint8Array(bytes)], { type: isImage ? 'image/jpeg' : type }) :
-        null
       const progress = Math.round((part + 1) / partsCount * 100)
+
+      addBytes(fileKey, bytes)
+      bytes = undefined
+
+      fileKey = isLastPart ?
+        transferBytesToFile(fileKey, isImage ? 'image/jpeg' : type) :
+        undefined
 
       setDownloadingFile({
         ...downloadingFile,
-        ...(blob ? {
-          blob,
-          bytes: undefined,
+        ...(fileKey ? {
+          fileKey,
           downloading: false
-        } : {
-          bytes
-        }),
+        } : {}),
         lastPart: part,
-        ext,
         progress
       })
     }

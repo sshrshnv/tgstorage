@@ -85,44 +85,44 @@ export type SearchMessages =
 
 export type InputFile = {
   id: string
-  key: string
   progress: number
   name: string
   size: number
   w?: number
   h?: number
   duration?: number
-  thumb?: File
-  data?: Uint8Array
-  file?: File
+  thumbFileKey?: string
+  fileKey?: string
 }
 
-export type InputMessage = {
-  id?: number
-  text: string
-  inputMedia?: {
+export type InputMedia = {
+  fileId: string
+  fileName: string
+  fileType: string
+  isLarge: boolean
+  partsCount: number
+  imageParams?: {
+    w: number
+    h: number
+  }
+  videoParams?: {
+    duration: number
+    w: number
+    h: number
+  }
+  thumb?: {
     fileId: string
     fileName: string
     fileType: string
     isLarge: boolean
     partsCount: number
-    imageParams?: {
-      w: number
-      h: number
-    }
-    videoParams?: {
-      duration: number
-      w: number
-      h: number
-    }
-    thumb?: {
-      fileId: string
-      fileName: string
-      fileType: string
-      isLarge: boolean
-      partsCount: number
-    }
   }
+}
+
+export type InputMessage = {
+  id?: number
+  text: string
+  inputMedia?: InputMedia
   inputFiles?: InputFile[]
 }
 
@@ -131,8 +131,7 @@ export type SendingMessages =
 
 export type DownloadingFile = {
   id: string
-  blob?: Blob
-  bytes?: Uint8Array
+  fileKey?: string
   partSize?: number
   lastPartSize?: number
   partsCount?: number
@@ -172,4 +171,6 @@ export type State = {
   downloadingFiles: DownloadingFiles
   settings: Settings
   texts: Texts
+  appUpdateExist: boolean
+  appUpdateAccepted: boolean
 }

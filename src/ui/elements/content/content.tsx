@@ -3,6 +3,7 @@ import { h } from 'preact'
 import { memo } from 'preact/compat'
 import { useCallback, useEffect } from 'preact/hooks'
 
+import { setFile } from '~/core/cache'
 import { Slide } from '~/ui/elements/slide'
 
 import styles from './content.styl'
@@ -11,7 +12,7 @@ type Props = {
   name: string
   dropAvailable?: boolean
   onClose?: () => void
-  onAddFiles?: (files: File[]) => void
+  onAddFiles?: (fileKeys: string[]) => void
   onAddMessage?: (text: string) => void
 }
 
@@ -36,10 +37,18 @@ export const Content: FC<Props> = memo(({
     ev.stopPropagation()
     ev.preventDefault()
 
-    const files = ev.dataTransfer?.files
+    const fileList = ev.dataTransfer?.files
+    const fileKeys: string[] = []
 
-    if (files?.length) {
-      onAddFiles?.(Array.from(files))
+    for (let i = 0; i < (fileList?.length || 0); i++) {
+      const fileKey = setFile(fileList?.item(i))
+      if (fileKey && !fileKeys.includes(fileKey)) {
+        fileKeys.push(fileKey)
+      }
+    }
+
+    if (fileKeys.length) {
+      onAddFiles?.(fileKeys)
     }
   }, [onAddFiles])
 
@@ -47,11 +56,19 @@ export const Content: FC<Props> = memo(({
     const handlePaste = (ev: ClipboardEvent) => {
       if (!dropAvailable) return
 
-      const files = ev.clipboardData?.files
-      const text = files?.length ? '' : ev.clipboardData?.getData('text')
+      const fileList = ev.clipboardData?.files
+      const fileKeys: string[] = []
+      const text = fileList?.length ? '' : ev.clipboardData?.getData('text')
 
-      if (files?.length) {
-        onAddFiles?.(Array.from(files))
+      for (let i = 0; i < (fileList?.length || 0); i++) {
+        const fileKey = setFile(fileList?.item(i))
+        if (fileKey && !fileKeys.includes(fileKey)) {
+          fileKeys.push(fileKey)
+        }
+      }
+
+      if (fileKeys?.length) {
+        onAddFiles?.(fileKeys)
       }
       if (text?.length) {
         onAddMessage?.(text)

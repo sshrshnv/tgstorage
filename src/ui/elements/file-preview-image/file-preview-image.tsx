@@ -4,13 +4,14 @@ import { memo } from 'preact/compat'
 import { useEffect, useState, useCallback } from 'preact/hooks'
 import cn from 'classnames'
 
+import { getFile } from '~/core/cache'
 import { PlayIcon } from '~/ui/icons'
 
 import styles from './file-preview-image.styl'
 
 type Props = {
   class?: string
-  blob?: Blob
+  fileKey?: string
   timeout?: number
   isFullscreen?: boolean
   isVideo?: boolean
@@ -18,7 +19,7 @@ type Props = {
 
 export const FilePreviewImage: FC<Props> = memo(({
   class: className,
-  blob,
+  fileKey,
   timeout,
   isFullscreen,
   isVideo
@@ -33,8 +34,13 @@ export const FilePreviewImage: FC<Props> = memo(({
   }, [url])
 
   useEffect(() => {
-    if (!blob || url) return
-    setUrl(URL.createObjectURL(blob))
+    if (!fileKey || url) return
+
+    let file = getFile(fileKey)
+    if (!file) return
+
+    setUrl(URL.createObjectURL(file))
+    file = undefined
 
     if (!ready) {
       if (timeout) {
@@ -43,7 +49,7 @@ export const FilePreviewImage: FC<Props> = memo(({
         setReady(true)
       }
     }
-  }, [blob])
+  }, [fileKey])
 
   useEffect(() => {
     setHidden(true)

@@ -3,13 +3,14 @@ import { h } from 'preact'
 import { useCallback } from 'preact/hooks'
 import cn from 'classnames'
 
+import { setFile } from '~/core/cache'
 import { AttachIcon } from '~/ui/icons'
 
 import styles from './file-input.styl'
 
 type Props = {
   class?: string
-  onChange?: (files: File[]) => void
+  onChange?: (fileKeys: string[]) => void
 }
 
 export const FileInput: FC<Props> = ({
@@ -17,8 +18,18 @@ export const FileInput: FC<Props> = ({
   onChange
 }) => {
   const handleChange = useCallback((ev) => {
-    const files: File[] = [...ev.target.files]
-    onChange?.(files)
+    const fileList: FileList = ev.target.files
+    const fileKeys: string[] = []
+
+    for (let i = 0; i < fileList.length; i++) {
+      const fileKey = setFile(fileList.item(i))
+      if (fileKey && !fileKeys.includes(fileKey)) {
+        fileKeys.push(fileKey)
+      }
+    }
+
+    ev.target.value = ''
+    onChange?.(fileKeys)
   }, [onChange])
 
   return (

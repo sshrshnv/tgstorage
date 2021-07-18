@@ -53,7 +53,7 @@ export const StorageContent: FC<Props> = memo(({
         />
       )}
       {!folder.id && (
-        <Text grey>
+        <Text small grey>
           {texts.emptyActiveFolder}
         </Text>
       )}

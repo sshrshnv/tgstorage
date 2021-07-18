@@ -4,7 +4,6 @@ const webpack = require('webpack')
 const dotenv = require('dotenv')
 const HtmlPlugin = require('html-webpack-plugin')
 const HtmlInjectPreloadPlugin = require('@principalstudio/html-webpack-inject-preload')
-const WorkboxPlugin = require('workbox-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 //const CopyPlugin = require('copy-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
@@ -30,7 +29,8 @@ module.exports = {
   target: 'web',
 
   entry: {
-    app: './src/core/app.tsx'
+    app: './src/core/app.tsx',
+    sw: { import: './src/sw/sw.ts', filename: 'sw.js' }
   },
 
   output: {
@@ -170,18 +170,6 @@ module.exports = {
         { from: './src/ui/images/*', to: './[name]-v1[ext]' },
       ]
     }) : () => {},*/
-
-    isProd() ? new WorkboxPlugin.GenerateSW({
-      cacheId: 'tgstorage',
-      navigateFallback: '/index.html',
-      navigateFallbackAllowlist: [/^(?!\/__)/],
-      swDest: 'sw.js',
-      clientsClaim: true,
-      skipWaiting: true,
-      cleanupOutdatedCaches: true,
-      exclude: [/\.map$/, /\.cache$/],
-      maximumFileSizeToCacheInBytes: 10 * 1024 * 1024
-    }) : () => {},
 
     isDev() ? new webpack.HotModuleReplacementPlugin() : () => {},
 

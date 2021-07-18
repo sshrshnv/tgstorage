@@ -10,8 +10,8 @@ import { Loader } from '~/ui/elements/loader'
 import styles from './gallery-item.styl'
 
 type Props = {
-  thumbBlob?: Blob
-  blob?: Blob
+  thumbFileKey?: string
+  fileKey?: string
   type: string
   name?: string
   description?: {
@@ -28,8 +28,8 @@ type Props = {
 }
 
 export const GalleryItem: FC<Props> = memo(({
-  thumbBlob,
-  blob,
+  thumbFileKey,
+  fileKey,
   type,
   description,
   duration,
@@ -49,8 +49,8 @@ export const GalleryItem: FC<Props> = memo(({
       {(isVideo || isAudio) ? (
         <Player
           class={styles.player}
-          blob={blob}
-          thumbBlob={thumbBlob}
+          fileKey={fileKey}
+          thumbFileKey={thumbFileKey}
           duration={duration}
           description={description}
           type={type}
@@ -63,12 +63,12 @@ export const GalleryItem: FC<Props> = memo(({
       ) : (
         <FilePreviewImage
           class={styles.image}
-          blob={blob}
+          fileKey={fileKey}
           timeout={150}
           isFullscreen={isFullscreen}
         />
       )}
-      {(active && !blob) && (
+      {(active && !fileKey) && (
         <Loader
           class={styles.loader}
           progress={progress}

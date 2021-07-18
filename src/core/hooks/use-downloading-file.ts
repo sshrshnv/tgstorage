@@ -2,6 +2,7 @@ import { useMemo } from 'preact/hooks'
 import { useStoreState } from 'unistore-hooks'
 
 import type { State } from '~/core/store'
+import { generateFileKey } from '~/tools/handle-file'
 
 export const useDownloadingFile = (file: {
   id: string
@@ -15,13 +16,13 @@ export const useDownloadingFile = (file: {
     downloadingFiles: state.downloadingFiles
   }))
   const downloadingFile = file ?
-    downloadingFiles.get(`${file.id}-${file.size}`) :
+    downloadingFiles.get(generateFileKey(file)) :
     undefined
 
   return useMemo(() => ({
     downloadingFile
   }), [
-    downloadingFile?.blob,
+    downloadingFile?.fileKey,
     downloadingFile?.downloading,
     downloadingFile?.progress,
   ])

@@ -8,8 +8,7 @@ import {
   checkIsParentFilesMessage
 } from '~/tools/handle-content'
 import {
-  convertStrippedImageBytesToUrl,
-  convertImageBytesToUrl
+  convertStrippedImageBytesToUrl
 } from '~/tools/handle-content-media'
 
 import type { MessageMedia } from './mtproto'
@@ -18,24 +17,6 @@ export const API_ID = +(process.env.API_ID || '')
 export const API_HASH = `${process.env.API_HASH || ''}`
 export const IS_TEST = `${process.env.API_TEST || ''}` !== 'false'
 export const META_KEY = IS_TEST ? 'metatest' : 'meta'
-
-export const FILE_SIZE = {
-  KB64: 65536,
-  KB128: 131072,
-  KB512: 524288,
-  MB1: 1048576,
-  MB10: 10485760,
-  MB100: 104857600,
-  MB750: 786432000,
-  MB1500: 1572864000
-}
-
-export const getFilePartSize = (fileSize) => (
-  fileSize <= FILE_SIZE.MB100 ? 128 :
-    fileSize <= FILE_SIZE.MB750 ? 256 :
-      fileSize <= FILE_SIZE.MB1500 ? 512 :
-        0
-) * 1024
 
 export const transformUser = (user, country) => {
   if (!user) return null
@@ -93,7 +74,7 @@ export const transformMessage = (message, user) => {
 
   const media = fullMedia && transformMedia(fullMedia)
 
-  //if (!text && !media) return
+  if (!text && !media) return
 
   const isFileMessage = checkIsFileMessage(text)
   const isParentFilesMessage = !isFileMessage && checkIsParentFilesMessage(text)

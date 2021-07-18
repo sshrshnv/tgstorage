@@ -68,10 +68,6 @@ export const apiCache = {
     ))
   },
 
-  setFile: (fileKey, fileData) => setData(`file-${fileKey}`, fileData, null),
-  getFile: (fileKey) => getData(`file-${fileKey}`),
-  resetFile: (fileKey) => apiCache.setFile(fileKey, null),
-
   setSearchMessages: (messages) => setData('searchMessages', messages, null),
   getSearchMessages: (): Promise<Map<number, Message>> => getData('searchMessages', new Map()),
   resetSearchMessages: () => setData('searchMessages', null),

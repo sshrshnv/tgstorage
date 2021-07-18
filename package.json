@@ -20,7 +20,8 @@
     "dev": "npm run clean && BUILD_ENV=dev NODE_ENV=development webpack serve --progress",
     "prod": "npm run clean && BUILD_ENV=prod NODE_ENV=production webpack serve --progress",
     "build:stage": "npm run clean && BUILD_ENV=stage NODE_ENV=production webpack",
-    "build:prod": "npm run clean && BUILD_ENV=prod NODE_ENV=production webpack",
+    "build:prod": "npm run clean && BUILD_ENV=prod NODE_ENV=production webpack && npm run inject-sw-manifest",
+    "inject-sw-manifest": "workbox injectManifest workbox.config.js",
     "clean": "rimraf build",
     "lint": "eslint src --ext .js,.ts,.tsx",
     "analyze-bundle": "npm run clean && BUNDLE_ANALYZER=true BUILD_ENV=stage NODE_ENV=production webpack",
@@ -47,7 +48,11 @@
     "stackblur-canvas": "2.5.0",
     "sync-task-queue": "1.0.3",
     "unistore": "3.5.2",
-    "unistore-hooks": "0.1.1"
+    "unistore-hooks": "0.1.1",
+    "workbox-core": "6.1.5",
+    "workbox-precaching": "6.1.5",
+    "workbox-routing": "6.1.5",
+    "workbox-window": "6.1.5"
   },
   "devDependencies": {
     "@babel/core": "7.14.6",
@@ -65,11 +70,11 @@
     "babel-loader": "8.2.2",
     "comlink": "4.3.1",
     "copy-webpack-plugin": "9.0.1",
-    "css-loader": "6.0.0",
+    "css-loader": "6.1.0",
     "css-minimizer-webpack-plugin": "3.0.2",
     "dotenv": "10.0.0",
     "dotenv-webpack": "7.0.3",
-    "eslint": "7.30.0",
+    "eslint": "7.31.0",
     "eslint-plugin-react": "7.24.0",
     "html-webpack-plugin": "5.3.2",
     "mini-css-extract-plugin": "2.1.0",
@@ -86,6 +91,7 @@
     "webpack-bundle-analyzer": "4.4.2",
     "webpack-cli": "4.7.2",
     "webpack-dev-server": "3.11.2",
+    "workbox-cli": "6.1.5",
     "workbox-webpack-plugin": "6.1.5",
     "worker-loader": "3.0.8"
   }

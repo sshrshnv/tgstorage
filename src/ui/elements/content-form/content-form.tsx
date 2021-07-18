@@ -27,8 +27,8 @@ type Props = {
   texts: Texts['en']
   loading?: boolean
   onSubmit?: () => void
-  onAddFiles?: (files: File[]) => void
-  onRemoveFile?: (file: InputFile) => void
+  onAddFiles?: (fileKeys: string[]) => void
+  onRemoveFile?: (inputFile: InputFile) => void
   onChangeText?: (note: string) => void
   onCancel?: () => void
 }

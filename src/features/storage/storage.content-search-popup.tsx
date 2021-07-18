@@ -117,7 +117,7 @@ export const StorageContentSearchPopup: FC<Props> = ({
 
       {query.length < 3 && (
         <Layout center>
-          <Text grey>
+          <Text small grey>
             {texts.searchInitial} {folder.title}
           </Text>
         </Layout>
@@ -125,7 +125,7 @@ export const StorageContentSearchPopup: FC<Props> = ({
 
       {(query.length >= 3 && !loading && !messages.length) && (
         <Layout center>
-          <Text grey>
+          <Text small grey>
             {texts.searchEmpty}
           </Text>
         </Layout>

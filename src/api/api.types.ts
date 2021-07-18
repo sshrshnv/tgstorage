@@ -147,8 +147,11 @@ export type Api = {
   ) => Promise<Updates>
 
   prepareUploadingFile: (
-    fileKey: string,
-    file: File
+    fileMeta: {
+      size: number
+      name: string
+      type: string
+    }
   ) => Promise<{
     fileId: string
     fileName: string
@@ -159,30 +162,15 @@ export type Api = {
     partsCount: number
   }>
 
-  resetUploadingFile: (
-    fileKey: string
-  ) => Promise<void>
-
   uploadFilePart: (
+    filePartBytes: ArrayBuffer,
     fileParams: {
-      fileKey: string
       fileId: string
       isLarge: boolean
       part: number
-      partSize: number
-      lastPartSize: number
       partsCount: number
     }
   ) => Promise<boolean>
-
-  parseDownloadingFile: (
-    fileSize: number
-  ) => Promise<{
-    partSize: number
-    lastPartSize: number
-    partsCount: number
-    precise: boolean
-  }>
 
   downloadFilePart: (fileParams: {
     id: string
@@ -193,7 +181,7 @@ export type Api = {
     file_reference: ArrayBuffer
     sizeType: string
     originalSizeType: string
-  }) => Promise<{ bytes: Uint8Array, ext: string }>
+  }) => Promise<Uint8Array>
 
   searchMessages: (
     query: string,

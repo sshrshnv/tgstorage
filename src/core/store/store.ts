@@ -43,7 +43,9 @@ const state: State = {
   texts: {
     en,
     ru
-  }
+  },
+  appUpdateExist: false,
+  appUpdateAccepted: false
 }
 
 const store = process.env.NODE_ENV === 'production' ?

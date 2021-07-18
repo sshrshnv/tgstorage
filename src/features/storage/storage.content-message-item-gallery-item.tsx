@@ -53,7 +53,7 @@ export const StorageContentMessageItemGalleryItem: FC<Props> = memo(({
     if (
       !active ||
       !originalFile ||
-      originalDownloadingFileRef.current?.blob ||
+      originalDownloadingFileRef.current?.fileKey ||
       originalDownloadingFileRef.current?.downloading
     ) return
 
@@ -81,8 +81,8 @@ export const StorageContentMessageItemGalleryItem: FC<Props> = memo(({
 
   return (
     <GalleryItem
-      thumbBlob={isVideo ? thumbDownloadingFile?.blob : undefined}
-      blob={originalDownloadingFile?.blob}
+      thumbFileKey={isVideo ? thumbDownloadingFile?.fileKey : undefined}
+      fileKey={originalDownloadingFile?.fileKey}
       type={originalFile.type}
       name={media.name}
       description={media.description}

@@ -1,6 +1,7 @@
 import { useMemo, useCallback, useState, useRef, useEffect } from 'preact/hooks'
 
 import type { InputFile, Message } from '~/core/store'
+import { getFileMeta } from '~/core/cache'
 import {
   createMessage,
   editMessage,
@@ -28,16 +29,20 @@ export const useMessageForm = () => {
   const messageKeyRef = useRef(0)
   const initialEditingMessage = useRef<Message | null>(null)
 
-  const updateForm = useCallback((message) => {
+  const updateForm = useCallback((newMessage) => {
+    if (!sendingMessage && message.inputFiles.length && !newMessage.inputFiles.length) {
+      resetUploadingFiles(message.inputFiles)
+    }
+
     messageKeyRef.current += 1
-    setMessage({ ...message, key: messageKeyRef.current })
-  }, [messageKeyRef, setMessage])
+    setMessage({ ...newMessage, key: messageKeyRef.current })
+  }, [message.inputFiles.length, !!sendingMessage, messageKeyRef, setMessage])
 
   const handleCancelMessage = useCallback(() => {
     initialEditingMessage.current = null
     updateForm(initialMessage)
     resetSendingMessage(folder.id)
-  }, [updateForm, folder.id])
+  }, [folder.id, updateForm])
 
   const handleSubmit = useCallback(async () => {
     setLoading(true)
@@ -84,22 +89,22 @@ export const useMessageForm = () => {
     setMessage({ ...message, text })
   }, [message])
 
-  const handleAddFiles = useCallback(async (files: File[]) => {
-    const uniqFiles = files
-      .map(file => ({ key: `${file.name}${file.type}${file.lastModified}${file.size}`, file }))
-      .filter(file => (message.inputFiles || []).every(({ key }) => key !== file.key))
+  const handleAddFiles = useCallback(async (fileKeys: string[]) => {
+    const uniqFileKeys = fileKeys
+      .filter(fileKey => (message.inputFiles || []).every(inputFile => inputFile.fileKey !== fileKey))
 
-    const uniqInputFiles = await Promise.all(uniqFiles.map(inputFile => new Promise(async (resolve) => {
+    const uniqInputFiles = await Promise.all(uniqFileKeys.map(fileKey => new Promise(async (resolve) => {
+      const fileMeta = getFileMeta(fileKey)
       const params =
-        inputFile.file.type.startsWith('image') ? await processImageFile(inputFile.file) :
-          inputFile.file.type.startsWith('video') ? await processVideoFile(inputFile.file) :
+        fileMeta?.type.startsWith('image') ? await processImageFile(fileKey) :
+          fileMeta?.type.startsWith('video') ? await processVideoFile(fileKey) :
             undefined
 
       resolve({
-        ...inputFile,
-        ...params,
-        name: inputFile.file.name,
-        size: inputFile.file.size
+        fileKey,
+        name: fileMeta?.name,
+        size: fileMeta?.size,
+        ...params
       })
     }))) as InputFile[]
 
@@ -115,7 +120,7 @@ export const useMessageForm = () => {
   const handleRemoveFile = useCallback((inputFile: InputFile) => {
     const updatedMessage = {
       ...message,
-      inputFiles: (sendingMessage || message).inputFiles?.filter(({ key }) => key !== inputFile.key) || []
+      inputFiles: (sendingMessage || message).inputFiles?.filter(({ fileKey }) => fileKey !== inputFile.fileKey) || []
     }
     if (sendingMessage && !updatedMessage.inputFiles.length) {
       handleCancelMessage()

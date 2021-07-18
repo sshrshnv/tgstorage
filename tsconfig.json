@@ -5,7 +5,7 @@
     "declaration": false,
     "strictPropertyInitialization": false,
     "experimentalDecorators": true,
-    "lib": ["dom", "esnext"],
+    "lib": ["dom", "esnext", "WebWorker"],
     "moduleResolution": "node",
     "module": "esnext",
     "target": "esnext",
