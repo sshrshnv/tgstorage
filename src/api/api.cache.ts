@@ -12,17 +12,32 @@ import type {
 import { META_KEY } from './api.helpers'
 
 const cache = {}
+const offsetsCache = new Map<number, number | 'end'>()
 
-const setData = async (key: string, data, dbData?) => {
+const setData = async (
+  key: string, {
+    data,
+    dbData,
+    db = true
+  }: {
+    data: any
+    dbData?: any
+    db?: boolean
+  }
+) => {
+  cache[key] = data
+
+  if (!db) return data
   dbData = typeof dbData !== 'undefined' ? dbData : data
+
   if (cache[key]) {
     update(key, () => dbData).catch(() => {/*nothing*/})
   } else {
     set(key, dbData).catch(() => {/*nothing*/})
   }
-  cache[key] = data
   return data
 }
+
 const getData = async (key: string, fallback: any = null) => {
   if (!cache[key]) {
     cache[key] = await get(key).catch(() => fallback) || fallback
@@ -31,25 +46,38 @@ const getData = async (key: string, fallback: any = null) => {
 }
 
 export const apiCache = {
-  setQueryTime: (queryName: string) => setData(`query-${queryName}`, Date.now()),
+  setQueryTime: (queryName: string) => setData(`query-${queryName}`, {
+    data: Date.now()
+  }),
   getQueryTime: (queryName: string) => getData(`query-${queryName}`, 0),
 
-  setMeta: (meta) => setData(META_KEY, meta),
+  setMeta: (meta) => setData(META_KEY, {
+    data: meta
+  }),
   getMeta: (initialMeta) => getData(META_KEY, initialMeta),
   resetMeta: () => apiCache.setMeta(null),
 
-  setUser: (user: User) => setData('user', user),
+  setUser: (user: User) => setData('user', {
+    data: user
+  }),
   getUser: (): Promise<User> => getData('user', null),
   resetUser: () => apiCache.setUser(null),
 
-  setSettings: (settings: Settings) => setData('settings', settings),
+  setSettings: (settings: Settings) => setData('settings', {
+    data: settings
+  }),
   getSettings: (): Promise<Settings> => getData('settings', null),
 
-  setFolders: (folders: Folders) => setData('folders', folders),
+  setFolders: (folders: Folders) => setData('folders', {
+    data: folders
+  }),
   getFolders: (): Promise<Folders> => getData('folders', new Map()),
   resetFolders: () => apiCache.setFolders(new Map()),
 
-  setFolderMessages: (folderId, messages) => setData(`messages-${folderId}`, messages, new Map([...messages].slice(0, 20))),
+  setFolderMessages: (folderId, messages) => setData(`messages-${folderId}`, {
+    data: messages,
+    dbData: new Map([...messages].slice(0, 20))
+  }),
   getFolderMessages: (folderId): Promise<FolderMessages> => getData(`messages-${folderId}`, new Map()),
   resetFolderMessages: (folderId) => apiCache.setFolderMessages(folderId, new Map()),
 
@@ -68,7 +96,20 @@ export const apiCache = {
     ))
   },
 
-  setSearchMessages: (messages) => setData('searchMessages', messages, null),
+  setSearchMessages: (messages) => setData('searchMessages', {
+    data: messages,
+    db: false
+  }),
   getSearchMessages: (): Promise<Map<number, Message>> => getData('searchMessages', new Map()),
-  resetSearchMessages: () => setData('searchMessages', null),
+  setSearchOffsetId: (offsetId: number | 'end') => setData('searchOffsetId', {
+    data: offsetId
+  }),
+  getSearchOffsetId: () => getData('searchOffsetId', 0),
+  resetSearch: () => {
+    apiCache.setSearchMessages(null)
+    apiCache.setSearchOffsetId(0)
+  },
+
+  setFolderOffsetId: (folderId: number, offsetId: number | 'end') => offsetsCache.set(folderId, offsetId),
+  getFolderOffsetId: (folderId: number) => offsetsCache.get(folderId)
 }

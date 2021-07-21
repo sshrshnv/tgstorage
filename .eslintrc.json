@@ -29,7 +29,7 @@
     "@typescript-eslint/semi": ["warn", "never"],
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off",
-    "@typescript-eslint/no-unused-vars": ["warn"],
+    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
     "@typescript-eslint/member-delimiter-style": ["warn", {
       "multiline": { "delimiter": "none", "requireLast": false },
       "singleline": { "delimiter": "comma", "requireLast": false }

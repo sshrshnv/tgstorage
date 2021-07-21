@@ -1,9 +1,10 @@
 import type { FunctionComponent as FC } from 'preact'
 import { h } from 'preact'
 import { memo } from 'preact/compat'
-import { useEffect, useMemo, useRef } from 'preact/hooks'
+import { useEffect } from 'preact/hooks'
 
 import type { Folder, Message } from '~/core/store'
+import { useUpdatableRef } from '~/tools/hooks'
 import { ContentList } from '~/ui/elements/content-list'
 import { useVirtualList } from '~/ui/hooks'
 
@@ -15,7 +16,7 @@ type Props = {
   messagesLoading: boolean
   lastMessageId: number
   fullHeight?: boolean
-  loadMessages?: (offsetId: number) => void
+  loadMessages?: () => void
   onEditMessage?: (message: Message) => void
   onMoveMessage?: (message: Message) => void
 }
@@ -36,40 +37,39 @@ export const StorageContentMessagesList: FC<Props> = memo(({
     resizeObserver,
     visibility,
     intersectionObserver,
-    intersectionElRef,
     countRef,
+    intersectionRef,
     onDeleteMessage
   } = useVirtualList()
-  const lastOffsetIdRef = useRef(0)
+  const lastMessageIdRef = useUpdatableRef(lastMessageId)
+  const messagesLoadingRef = useUpdatableRef(messagesLoading)
+  const loadMessagesRef = useUpdatableRef(loadMessages)
 
   useEffect(() => {
     countRef.current = messages.length
-  }, [messages.length])
+  }, [messages.length, countRef])
 
   useEffect(() => {
+    const lastMessageId = lastMessageIdRef.current
+    const messagesLoading = messagesLoadingRef.current
+    const loadMessages = loadMessagesRef.current
     if (
       !messagesLoading &&
       typeof lastMessageId !== 'undefined' &&
-      lastOffsetIdRef.current !== lastMessageId &&
       visibility.lastIndex === messages.length - 1
     ) {
-      lastOffsetIdRef.current = lastMessageId
-      loadMessages?.(lastMessageId)
+      loadMessages?.()
     }
-  }, [visibility.lastIndex])
+  }, [messages.length, visibility.lastIndex, messagesLoadingRef, lastMessageIdRef, loadMessagesRef])
 
   return (
     <ContentList
-      forwardedRef={intersectionElRef}
+      intersectionRef={intersectionRef}
       fullHeight={fullHeight}
     >
       {messages.map((message, index) => {
-        const offset = useMemo(() => {
-          return offsets.get(message.id)
-        }, [offsets, message.id])
-        const height = useMemo(() => {
-          return heights.get(message.id)
-        }, [heights, message.id])
+        const offset = offsets.get(message.id)
+        const height = heights.get(message.id)
         const visible = (
           (index >= visibility.firstIndex && index <= visibility.lastIndex) ||
           index === offsets.size - 1

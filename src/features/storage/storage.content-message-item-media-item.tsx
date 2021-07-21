@@ -1,9 +1,10 @@
 import type { FunctionComponent as FC } from 'preact'
 import { h } from 'preact'
-import { useState, useCallback, useMemo, useEffect, useRef } from 'preact/hooks'
+import { useState, useCallback, useMemo, useEffect } from 'preact/hooks'
 import { saveAs } from 'file-saver'
 
 import type { Folder, Message, MessageMedia, DownloadingFile } from '~/core/store'
+import { useStateRef, useCallbackRef, useMemoRef, useUpdatableRef } from '~/tools/hooks'
 import { deleteMessage, downloadFile, pauseDownloadingFile, resetDownloadingFile } from '~/core/actions'
 import { useTexts, useDownloadingFile } from '~/core/hooks'
 import { getFile } from '~/core/cache'
@@ -31,37 +32,44 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
   const { texts } = useTexts('storage')
   const [confirmation, setConfirmation] = useState(false)
   const [loading, setLoading] = useState(false)
-
+  const messageIdRef = useUpdatableRef(message.id)
   const media = message.media as MessageMedia
+  const mediaRef = useUpdatableRef(media)
   const blurPreviewUrl = media.thumbSUrl
 
-  const thumbFile = useMemo(() => {
-    return media.thumbM ? { ...media, ...media.thumbM } as DownloadingFile : undefined
-  }, [media.file_reference, media.thumbM])
+  const [thumbFile, thumbFileRef] = useMemoRef(() => {
+    return media.thumbM ? {
+      ...mediaRef.current,
+      ...media.thumbM,
+      file_reference: media.file_reference
+    } as DownloadingFile : undefined
+  }, [media.file_reference, media.thumbM, mediaRef])
 
-  const originalFile = useMemo(() => {
-    return { ...media, size: media.originalSize } as DownloadingFile
-  }, [media.file_reference])
+  const [originalFile, originalFileRef] = useMemoRef(() => {
+    return {
+      ...mediaRef.current,
+      size: media.originalSize,
+      file_reference: media.file_reference
+    } as DownloadingFile
+  }, [media.file_reference, media.originalSize, mediaRef])
 
   const {
-    downloadingFile: thumbDownloadingFile
+    downloadingFile: thumbDownloadingFile,
+    downloadingFileRef: thumbDownloadingFileRef
   } = useDownloadingFile(thumbFile)
 
   const {
-    downloadingFile: originalDownloadingFile
+    downloadingFile: originalDownloadingFile,
+    downloadingFileRef: originalDownloadingFileRef
   } = useDownloadingFile(originalFile)
 
-  const thumbFileRef = useRef(thumbFile)
-  const thumbDownloadingFileRef = useRef(thumbDownloadingFile)
-  const originalDownloadingFileRef = useRef(originalDownloadingFile)
-
-  const [downloading, setDownloading] = useState(!!originalDownloadingFile?.downloading)
+  const [downloading, setDownloading, downloadingRef] = useStateRef(!!originalDownloadingFile?.downloading)
 
   const resetConfirmation = useCallback(() => {
     setConfirmation(false)
   }, [setConfirmation])
 
-  const saveFile = useCallback(() => {
+  const [saveFile, saveFileRef] = useCallbackRef(() => {
     if (!originalDownloadingFile?.fileKey) return
     const { fileKey, name } = originalDownloadingFile
     let file = getFile(fileKey)
@@ -126,6 +134,9 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
     onClose: resetConfirmation
   }), [
     confirmation,
+    texts.mediaDownloadTitle,
+    texts.confirmDeleteButton,
+    texts.mediaDeleteTitle,
     handleDelete,
     handleDownload,
     resetConfirmation
@@ -135,38 +146,30 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
     if (thumbDownloadingFileRef.current?.fileKey) return
 
     if (mediaLoadAvailable) {
-      if (!thumbFile || thumbDownloadingFileRef.current?.downloading) return
-      downloadFile(message.id, thumbFile)
+      if (!thumbFileRef.current || thumbDownloadingFileRef.current?.downloading) return
+      downloadFile(messageIdRef.current, thumbFileRef.current)
     } else {
       if (!thumbDownloadingFileRef.current?.downloading) return
       pauseDownloadingFile(thumbDownloadingFileRef.current)
     }
-  }, [mediaLoadAvailable, thumbFile?.file_reference])
+  }, [mediaLoadAvailable, thumbFile?.file_reference, messageIdRef, thumbFileRef, thumbDownloadingFileRef])
 
   useEffect(() => {
     if (
-      downloading &&
-      originalFile &&
+      downloadingRef.current &&
+      originalFileRef.current &&
       !originalDownloadingFileRef.current?.fileKey &&
       !originalDownloadingFileRef.current?.downloading
     ) {
-      downloadFile(message.id, originalFile)
+      downloadFile(messageIdRef.current, originalFileRef.current)
     }
-  }, [originalFile?.file_reference])
+  }, [originalFile?.file_reference, messageIdRef, downloadingRef, originalFileRef, originalDownloadingFileRef])
 
   useEffect(() => {
-    if (downloading && originalDownloadingFile?.fileKey) {
-      saveFile()
+    if (downloadingRef.current && originalDownloadingFile?.fileKey) {
+      saveFileRef.current()
     }
-  }, [originalDownloadingFile?.fileKey])
-
-  useEffect(() => {
-    thumbFileRef.current = thumbFile
-  }, [thumbFile])
-
-  useEffect(() => {
-    thumbDownloadingFileRef.current = thumbDownloadingFile
-  }, [thumbDownloadingFile])
+  }, [originalDownloadingFile?.fileKey, downloadingRef, originalDownloadingFile, saveFileRef])
 
   useEffect(() => () => {
     if (thumbDownloadingFileRef.current) {
@@ -180,7 +183,7 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
     if (originalDownloadingFileRef.current) {
       originalDownloadingFileRef.current = undefined
     }
-  }, [])
+  }, [thumbFileRef, thumbDownloadingFileRef, originalDownloadingFileRef])
 
   return (
     <ContentItemMediaItem

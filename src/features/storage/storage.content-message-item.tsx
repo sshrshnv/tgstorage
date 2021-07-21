@@ -134,6 +134,12 @@ export const StorageContentMessageItem: FC<Props> = memo(({
     onClose: resetConfirmation
   }), [
     confirmation,
+    texts.messageEditTitle,
+    texts.messageMoveTitle,
+    texts.messageCopyTitle,
+    texts.messageShareTitle,
+    texts.confirmDeleteButton,
+    texts.messageDeleteTitle,
     handleEdit,
     handleMove,
     handleCopy,

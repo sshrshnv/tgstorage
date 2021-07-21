@@ -1,9 +1,10 @@
 import type { FunctionComponent as FC } from 'preact'
 import { h } from 'preact'
 import { memo } from 'preact/compat'
-import { useMemo, useEffect, useRef, useState } from 'preact/hooks'
+import { useEffect, useState } from 'preact/hooks'
 
 import type { MessageMedia, DownloadingFile } from '~/core/store'
+import { useMemoRef, useUpdatableRef } from '~/tools/hooks'
 import { downloadFile, pauseDownloadingFile, streamFile } from '~/core/actions'
 import { useDownloadingFile } from '~/core/hooks'
 import { checkIsSWRegistered } from '~/sw'
@@ -24,65 +25,70 @@ export const StorageContentMessageItemGalleryItem: FC<Props> = memo(({
   isFullscreen,
   isFakeFullscreen
 }) => {
+  const messageIdRef = useUpdatableRef(messageId)
+  const mediaRef = useUpdatableRef(media)
   const [streamFileUrl, setStreamFileUrl] = useState('')
 
-  const isVideo = useMemo(() => {
+  const [isVideo, isVideoRef] = useMemoRef(() => {
     return media.type.startsWith('video')
   }, [media.type])
 
-  const isAudio = useMemo(() => {
+  const [isAudio, isAudioRef] = useMemoRef(() => {
     return media.type.startsWith('audio')
   }, [media.type])
 
-  const thumbFile = useMemo(() => {
-    return media.thumbM ? { ...media, ...media.thumbM } as DownloadingFile : undefined
-  }, [media.file_reference, media.thumbM])
+  const [thumbFile] = useMemoRef(() => {
+    return media.thumbM ? {
+      ...mediaRef.current,
+      ...media.thumbM,
+      file_reference: media.file_reference
+    } as DownloadingFile : undefined
+  }, [media.file_reference, media.thumbM, mediaRef])
 
-  const originalFile = useMemo(() => {
-    return { ...media, size: media.originalSize } as DownloadingFile
-  }, [media.file_reference])
+  const [originalFile, originalFileRef] = useMemoRef(() => {
+    return {
+      ...mediaRef.current,
+      size: media.originalSize,
+      file_reference: media.file_reference
+    } as DownloadingFile
+  }, [media.file_reference, media.originalSize, mediaRef])
 
   const {
     downloadingFile: thumbDownloadingFile
   } = useDownloadingFile(thumbFile)
 
   const {
-    downloadingFile: originalDownloadingFile
+    downloadingFile: originalDownloadingFile,
+    downloadingFileRef: originalDownloadingFileRef
   } = useDownloadingFile(originalFile)
-
-  const originalDownloadingFileRef = useRef(originalDownloadingFile)
 
   useEffect(() => {
     if (
       !active ||
-      !(isVideo || isAudio) ||
+      !(isVideoRef.current || isAudioRef.current) ||
       !checkIsSWRegistered()
     ) return
 
-    const streamFileUrl = streamFile(messageId, originalFile)
+    const streamFileUrl = streamFile(messageIdRef.current, originalFileRef.current)
     setStreamFileUrl(streamFileUrl)
-  }, [active])
+  }, [active, isVideoRef, isAudioRef, messageIdRef, originalFileRef])
 
   useEffect(() => {
     if (
       !active ||
-      !originalFile ||
-      ((isVideo || isAudio) && checkIsSWRegistered()) ||
+      !originalFileRef.current ||
+      ((isVideoRef.current || isAudioRef.current) && checkIsSWRegistered()) ||
       originalDownloadingFileRef.current?.fileKey ||
       originalDownloadingFileRef.current?.downloading
     ) return
 
-    downloadFile(messageId, originalFile)
+    downloadFile(messageIdRef.current, originalFileRef.current)
 
     return () => {
       if (!originalDownloadingFileRef.current?.downloading) return
       pauseDownloadingFile(originalDownloadingFileRef.current)
     }
-  }, [active, originalFile?.file_reference])
-
-  useEffect(() => {
-    originalDownloadingFileRef.current = originalDownloadingFile
-  }, [originalDownloadingFile])
+  }, [active, originalFile?.file_reference, messageIdRef, originalFileRef, isVideoRef, isAudioRef, originalDownloadingFileRef])
 
   useEffect(() => () => {
     if (originalDownloadingFileRef.current) {
@@ -92,7 +98,7 @@ export const StorageContentMessageItemGalleryItem: FC<Props> = memo(({
 
       originalDownloadingFileRef.current = undefined
     }
-  }, [])
+  }, [originalDownloadingFileRef])
 
   return (
     <GalleryItem

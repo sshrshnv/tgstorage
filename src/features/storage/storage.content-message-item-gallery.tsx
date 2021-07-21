@@ -37,7 +37,7 @@ export const StorageContentMessageItemGallery: FC<Props> = memo(({
       }
     })
     return list
-  }, [mediaMessages]) as { id: number, media: MessageMedia }[]
+  }, [mediaMessage, mediaMessages]) as { id: number, media: MessageMedia }[]
 
   const initialIndex = useMemo(() => {
     return Math.max(0, mediaList.findIndex(({ media }) => media.id === initialId))

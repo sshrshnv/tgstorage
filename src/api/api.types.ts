@@ -113,8 +113,7 @@ export type Api = {
   ) => Promise<Updates>
 
   getMessages: (
-    folder: Folder,
-    offsetId?: number
+    folder: Folder
   ) => Promise<Updates>
 
   refreshMessages: (
@@ -186,9 +185,8 @@ export type Api = {
 
   searchMessages: (
     query: string,
-    folder: Folder,
-    offsetId: number
-  ) => Promise<SearchMessages>
+    folder: Folder
+  ) => Promise<SearchMessages|undefined>
 
-  resetSearchMessages: () => void
+  resetSearch: () => void
 }

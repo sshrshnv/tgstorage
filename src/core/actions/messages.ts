@@ -13,11 +13,10 @@ import { uploadFiles, resetUploadingFiles } from './message-media'
 import { setUpdates } from './updates'
 
 export const loadFolderMessages = async (
-  folder: Folder,
-  offsetId?: number
+  folder: Folder
 ) => {
   setLoadingFolderId(folder.id, true)
-  const updates = await api.getMessages(folder, offsetId)
+  const updates = await api.getMessages(folder)
 
   if (!updates) {
     setLoadingFolderId(folder.id, false)
@@ -192,20 +191,18 @@ export const refreshMessage = (
 
 export const searchMessages = async (
   query: string,
-  folder: Folder,
-  offsetId: number
+  folder: Folder
 ) => {
   const searchMessages = await api.searchMessages(
     query,
-    folder,
-    offsetId || 0
+    folder
   )
-
+  if (!searchMessages) return
   setSearchMessages(searchMessages)
 }
 
-export const resetSearchMessages = () => {
-  api.resetSearchMessages()
+export const resetSearch = () => {
+  api.resetSearch()
   setSearchMessages(new Map())
 }
 

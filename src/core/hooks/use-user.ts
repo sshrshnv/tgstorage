@@ -15,5 +15,5 @@ export const useUser = () => {
   return useMemo(() => ({
     user,
     userLoading
-  }), [user?.id, userLoading])
+  }), [user, userLoading])
 }

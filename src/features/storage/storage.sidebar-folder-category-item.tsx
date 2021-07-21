@@ -50,7 +50,13 @@ export const StorageSidebarFolderCategoryItem: FC<Props> = memo(({
       icon: <FolderPlusIcon/>,
       onClick: addFolder
     }]
-  }), [index, editCategory, addFolder])
+  }), [
+    index,
+    texts.categoryEditTitle,
+    texts.folderAddTitle,
+    editCategory,
+    addFolder
+  ])
 
   return (
     <SidebarTitle

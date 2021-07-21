@@ -4,6 +4,7 @@ import { memo } from 'preact/compat'
 import { useEffect, useState, useCallback } from 'preact/hooks'
 import cn from 'classnames'
 
+import { useStateRef, useUpdatableRef } from '~/tools/hooks'
 import { getFile } from '~/core/cache'
 import { PlayIcon } from '~/ui/icons'
 
@@ -24,9 +25,10 @@ export const FilePreviewImage: FC<Props> = memo(({
   isFullscreen,
   isVideo
 }) => {
-  const [url, setUrl] = useState('')
-  const [ready, setReady] = useState(false)
+  const [url, _setUrl, urlRef, setUrlRef] = useStateRef('')
+  const [ready, _setReady, readyRef, setReadyRef] = useStateRef(false)
   const [hidden, setHidden] = useState(false)
+  const timeoutRef = useUpdatableRef(timeout)
 
   const handleLoad = useCallback(() => {
     if (!url) return
@@ -34,22 +36,22 @@ export const FilePreviewImage: FC<Props> = memo(({
   }, [url])
 
   useEffect(() => {
-    if (!fileKey || url) return
+    if (!fileKey || urlRef.current) return
 
     let file = getFile(fileKey)
     if (!file) return
 
-    setUrl(URL.createObjectURL(file))
+    setUrlRef.current(URL.createObjectURL(file))
     file = undefined
 
-    if (!ready) {
-      if (timeout) {
-        setTimeout(() => setReady(true), timeout)
+    if (!readyRef.current) {
+      if (timeoutRef.current) {
+        setTimeout(() => setReadyRef.current(true), timeoutRef.current)
       } else {
-        setReady(true)
+        setReadyRef.current(true)
       }
     }
-  }, [fileKey])
+  }, [fileKey, urlRef, setUrlRef, readyRef, setReadyRef, timeoutRef])
 
   useEffect(() => {
     setHidden(true)

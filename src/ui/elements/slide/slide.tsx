@@ -4,6 +4,7 @@ import { memo } from 'preact/compat'
 import { useEffect, useCallback, useRef } from 'preact/hooks'
 import cn from 'classnames'
 
+import { useUpdatableRef } from '~/tools/hooks'
 import { animationClassName } from '~/ui/styles/animation'
 
 import styles from './slide.styl'
@@ -25,7 +26,8 @@ export const Slide: FC<Props> = memo(({
   onClose
 }) => {
   const slideRef = useRef<HTMLDivElement>(null)
-  let animation: Animation | undefined
+  const animationRef = useRef<Animation|undefined>()
+  const nameRef = useUpdatableRef(name)
 
   const handlePopState = useCallback(() => {
     if (slides[slides.length - 1] !== name) {
@@ -34,20 +36,20 @@ export const Slide: FC<Props> = memo(({
 
     slides.length = slides.length - 1
 
-    if (!animation) {
+    if (!animationRef.current) {
       onClose?.()
       return
     }
 
-    animation.reverse()
+    animationRef.current.reverse()
     setTimeout(() => onClose?.(), 200)
-  }, [animation, onClose])
+  }, [name, animationRef, onClose])
 
   useEffect(() => {
-    slides.push(name)
+    slides.push(nameRef.current)
     history.pushState(history.state, document.title, location.href)
 
-    animation = slideRef?.current?.animate?.([
+    animationRef.current = slideRef?.current?.animate?.([
       { transform: 'translateX(80px)', opacity: 0 },
       { transform: 'translateX(0)', opacity: 1 },
     ], {
@@ -55,7 +57,7 @@ export const Slide: FC<Props> = memo(({
       fill: 'forwards',
       easing: 'ease-in-out'
     })
-  }, [])
+  }, [nameRef])
 
   useEffect(() => {
     self.addEventListener('popstate', handlePopState)

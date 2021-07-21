@@ -16,5 +16,7 @@ export const useTexts = (feature?: 'auth'|'storage') => {
 
   return useMemo(() => ({
     texts
-  }), [feature])
+  }),
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  [feature])
 }

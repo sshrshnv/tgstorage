@@ -1,11 +1,14 @@
-import { useCallback, useMemo } from 'preact/hooks'
+import { useMemo } from 'preact/hooks'
+
+import { useCallbackRef } from '~/tools/hooks'
 
 export const useSlide = () => {
-  const closeSlide = useCallback(() => {
+  const [closeSlide, closeSlideRef] = useCallbackRef(() => {
     self.history.back()
   }, [])
 
   return useMemo(() => ({
-    closeSlide
-  }), [])
+    closeSlide,
+    closeSlideRef
+  }), [closeSlide, closeSlideRef])
 }

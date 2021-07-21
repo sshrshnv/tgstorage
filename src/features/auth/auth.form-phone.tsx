@@ -1,11 +1,13 @@
 import type { FunctionComponent as FC } from 'preact'
-import { h } from 'preact'
-import { useCallback, useEffect, useState } from 'preact/hooks'
 import type { StateUpdater } from 'preact/hooks'
+import { h } from 'preact'
+import { memo } from 'preact/compat'
+import { useCallback, useEffect, useState } from 'preact/hooks'
 
-import { useTexts, useSettings } from '~/core/hooks'
-import { api } from '~/api'
 import type { Countries } from '~/api'
+import { api } from '~/api'
+import { useUpdatableRef } from '~/tools/hooks'
+import { useTexts, useSettings } from '~/core/hooks'
 import { formatPhone } from '~/tools/format-phone'
 import { Form } from '~/ui/elements/form'
 import { Text } from '~/ui/elements/text'
@@ -33,7 +35,7 @@ type Props = {
   setStep: StateUpdater<Step>
 }
 
-export const AuthFormPhone: FC<Props> = ({
+export const AuthFormPhone: FC<Props> = memo(({
   phone,
   timeout,
   country,
@@ -45,7 +47,9 @@ export const AuthFormPhone: FC<Props> = ({
   setCodeType,
   setStep
 }) => {
-  const { locale } = useSettings()
+  const countryRef = useUpdatableRef(country)
+  const setCountryRef = useUpdatableRef(setCountry)
+  const { localeRef } = useSettings()
   const { texts } = useTexts('auth')
   const [ready, setReady] = useState(false)
   const [countries, setCountries] = useState<Countries['countries']>([])
@@ -58,7 +62,7 @@ export const AuthFormPhone: FC<Props> = ({
     if (country) {
       setPhone(formatPhone('', country).value)
     }
-  }, [setCountry])
+  }, [initialCountry, countries, setCountry, setPhone])
 
   const handlePhoneChange = useCallback(phone => {
     if (error) {
@@ -82,7 +86,7 @@ export const AuthFormPhone: FC<Props> = ({
     setCountry(foundCountry)
     setPhone(validValue)
     return validValue
-  }, [country, error, setPhone])
+  }, [initialCountry, countries, country, error, setPhone, setCountry])
 
   const handleSubmit = useCallback(async () => {
     if (loading) return
@@ -101,21 +105,21 @@ export const AuthFormPhone: FC<Props> = ({
       setTimeout(timeout)
       setCodeType({ type: type._, nextType: next_type?._ || '' })
     }
-  }, [phone, loading, setPhoneCodeHash, setStep, setTimeout, setError])
+  }, [country.value, country.foundValue, phone, loading, setPhoneCodeHash, setCodeType, setStep, setTimeout, setError])
 
   useEffect(() => {
     Promise.all([
-      api.getCountry().then(({ country: value }) => setCountry({ ...country, value })),
-      api.getCountries(locale).then(({ countries }) => setCountries(countries))
+      api.getCountry().then(({ country: value }) => setCountryRef.current({ ...countryRef.current, value })),
+      api.getCountries(localeRef.current).then(({ countries }) => setCountries(countries))
     ]).then(() => setReady(true))
-  }, [])
+  }, [localeRef, countryRef, setCountryRef])
 
   useEffect(() => {
     const foundCountry = findCountryByCountryValue(countries, country.value)
     const validPhone = foundCountry?.code !== country.code ? '' : phone
     setCountry(foundCountry || { ...initialCountry, value: country.value })
     setPhone(formatPhone(validPhone, foundCountry).value)
-  }, [country.value, countries, setPhone, setCountry])
+  }, [initialCountry, phone, country.code, country.value, countries, setPhone, setCountry])
 
   return (
     <Form onSubmit={handleSubmit} center>
@@ -167,4 +171,4 @@ export const AuthFormPhone: FC<Props> = ({
       </Button>
     </Form>
   )
-}
+})

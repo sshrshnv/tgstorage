@@ -308,16 +308,21 @@ class Api {
     folder: {
       id: number
       access_hash: string
-    },
-    offsetId = 0
+    }
   ) {
-    const isQueryAvailable = !!offsetId || await checkIsQueryAvailableByTime(`getMessages-${folder.id}`, 30)
+    const folderOffsetId = await apiCache.getFolderOffsetId(folder.id) || 0
+    const isQueryAvailable = folderOffsetId ?
+      folderOffsetId !== 'end' :
+      await checkIsQueryAvailableByTime(`getMessages-${folder.id}`, 30)
 
     if (!isQueryAvailable) {
       return null
     }
 
+    const limit = 20
+    const offsetId = folderOffsetId as number
     const user = await apiCache.getUser()
+
     const { messages } = await this.call('messages.getHistory', {
       peer: folder.id === user?.id ? {
         _: 'inputPeerSelf'
@@ -332,8 +337,15 @@ class Api {
       max_id: 0,
       min_id: 0,
       hash: 0,
-      limit: 20
+      limit
     })
+
+    if (messages.length < limit) {
+      apiCache.setFolderOffsetId(folder.id, 'end')
+    } else {
+      const lastMessage = messages[messages.length - 1]
+      apiCache.setFolderOffsetId(folder.id, lastMessage.id)
+    }
 
     return handleUpdates({ messages }, { offsetId })
   }
@@ -724,10 +736,14 @@ class Api {
       id: number
       access_hash: string
     },
-    offsetId: number,
     addtional?: boolean
   ) {
+    const offsetId = await apiCache.getSearchOffsetId()
+    if (offsetId === 'end') return
+
+    const limit = 20
     const user = await apiCache.getUser()
+
     const { messages } = await this.call('messages.search', {
       peer: folder.id === user?.id ? {
         _: 'inputPeerSelf'
@@ -747,7 +763,7 @@ class Api {
       max_id: 0,
       min_id: 0,
       hash: 0,
-      limit: 20
+      limit
     })
 
     if (addtional) {
@@ -757,11 +773,13 @@ class Api {
     let searchMessages = offsetId ?
       await apiCache.getSearchMessages() :
       new Map()
-
+    const searchOffsetId = messages.length < limit ? 'end' : messages[messages.length - 1].id
     const parentIds: number[] = []
 
     messages.forEach(message => {
       message = transformMessage(message, user)
+
+      if (!message || searchMessages.has(message.id)) return
       searchMessages.set(message.id, message)
 
       if (message.isParent) {
@@ -773,24 +791,25 @@ class Api {
       this.searchMessages(
         stringifyFileMessage('', id),
         folder,
-        0,
         true
       )
     ))
 
-    additionalMessages.flat().forEach(message => {
-      message = transformMessage(message, user)
-      searchMessages.set(message.id, message)
+    additionalMessages.flat().forEach(imessage => {
+      const message = transformMessage(imessage, user)
+      if (!message) return
+      searchMessages.set(imessage.id, message)
     })
 
     searchMessages = new Map(sortMessages([...searchMessages]))
     apiCache.setSearchMessages(searchMessages)
+    apiCache.setSearchOffsetId(searchOffsetId)
 
     return searchMessages
   }
 
-  public resetSearchMessages() {
-    apiCache.resetSearchMessages()
+  public resetSearch() {
+    apiCache.resetSearch()
   }
 }
 

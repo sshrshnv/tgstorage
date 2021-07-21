@@ -3,7 +3,8 @@ import { h } from 'preact'
 import { useState, useCallback, useEffect, useRef } from 'preact/hooks'
 
 import type { Message } from '~/core/store'
-import { searchMessages, resetSearchMessages } from '~/core/actions'
+import { useCallbackRef, useUpdatableRef } from '~/tools/hooks'
+import { searchMessages, resetSearch } from '~/core/actions'
 import { useTexts, useActiveFolder, useSearchMessages, useMessageForm } from '~/core/hooks'
 import { Content } from '~/ui/elements/content'
 import { ContentHeader } from '~/ui/elements/content-header'
@@ -40,21 +41,21 @@ export const StorageContentSearchPopup: FC<Props> = ({
     handleChangeText,
     handleAddFiles,
     handleRemoveFile,
-  } = useMessageForm()
+  } = useMessageForm(folder)
 
   const isFormVisible = !!messages.length && formEditing
 
-  const loadOffsetMessages = useCallback(async (offsetId) => {
+  const loadOffsetMessages = useCallback(async () => {
     setOffsetLoading(true)
-    await searchMessages(query, folder, offsetId)
+    await searchMessages(query, folder)
     setOffsetLoading(false)
-  }, [query, folder.id])
+  }, [folder, query])
 
-  const loadMessages = useCallback(async (query) => {
+  const [_, loadMessagesRef] = useCallbackRef(async (query) => {
     setLoading(true)
-    await searchMessages(query, folder, 0)
+    await searchMessages(query, folder)
     setLoading(false)
-  }, [folder.id])
+  }, [folder])
 
   useEffect(() => {
     if (searchTimeout.current) {
@@ -62,19 +63,16 @@ export const StorageContentSearchPopup: FC<Props> = ({
       searchTimeout.current = 0
     }
 
-    if (messages.length) {
-      resetSearchMessages()
-    }
-
+    resetSearch()
     if (query.length < 3) return
 
     searchTimeout.current = self.setTimeout(() => {
-      loadMessages(query)
-    }, 300)
-  }, [query])
+      loadMessagesRef.current(query)
+    }, 500)
+  }, [query, loadMessagesRef])
 
   useEffect(() => () => {
-    resetSearchMessages()
+    resetSearch()
   }, [])
 
   return (

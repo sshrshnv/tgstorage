@@ -2,14 +2,11 @@ import { h, Fragment } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
 import { memo } from 'preact/compat'
 import { useCallback, useEffect, useRef, useMemo } from 'preact/hooks'
-import rafSchedule from 'raf-schd'
 import cn from 'classnames'
 
 import type { InputFile } from '~/core/store'
-import {
-  checkIsParentFilesMessage,
-  parseParentFilesMessage
-} from '~/tools/handle-content'
+import { useRAFCallback } from '~/tools/hooks'
+import { checkIsParentFilesMessage, parseParentFilesMessage } from '~/tools/handle-content'
 import { Textarea } from '~/ui/elements/textarea'
 import { FileInput } from '~/ui/elements/file-input'
 import { Loader } from '~/ui/elements/loader'
@@ -80,18 +77,18 @@ export const ContentFormNote: FC<Props> = memo(({
     inputFileKey.current += 1
   }, [onAddFiles])
 
-  const setStyles = useCallback(rafSchedule((textareaRef) => {
+  const [_, setStylesRef, cancelSetStylesRef] = useRAFCallback((textareaRef) => {
     const textareaEl = textareaRef?.current
     const textareaParentEl = textareaEl?.parentElement
     if (!textareaParentEl) return
 
     textareaParentEl.style.height = `${TEXTAREA_PARENT_HEIGHT}px`
     textareaParentEl.style.height = `${TEXTAREA_PARENT_HEIGHT - TEXTAREA_HEIGHT + textareaEl.scrollHeight}px`
-  }), [])
+  }, [])
 
   useEffect(() => {
-    setStyles(textareaRef)
-  }, [message.text])
+    setStylesRef.current(textareaRef)
+  }, [message.text, setStylesRef])
 
   useEffect(() => {
     if (!isOpened) return
@@ -99,8 +96,8 @@ export const ContentFormNote: FC<Props> = memo(({
   }, [isOpened])
 
   useEffect(() => () => {
-    setStyles.cancel()
-  }, [])
+    cancelSetStylesRef.current?.()
+  }, [cancelSetStylesRef])
 
   return (
     <Fragment>

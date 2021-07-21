@@ -62,7 +62,7 @@ export const transformFolder = chat => {
   }
 }
 
-export const transformMessage = (message, user) => {
+export const transformMessage = (message, user, { allowEmpty = false } = {}) => {
   const {
     id,
     message: text,
@@ -71,10 +71,9 @@ export const transformMessage = (message, user) => {
     media: fullMedia,
     views
   } = message
-
   const media = fullMedia && transformMedia(fullMedia)
 
-  if (!text && !media) return
+  if (!allowEmpty && !text && !media) return
 
   const isFileMessage = checkIsFileMessage(text)
   const isParentFilesMessage = !isFileMessage && checkIsParentFilesMessage(text)

@@ -41,10 +41,10 @@ export const StorageContentFolderBlock: FC<Props> = memo(({
     handleChangeText,
     handleAddFiles,
     handleRemoveFile
-  } = useMessageForm()
+  } = useMessageForm(folder)
 
-  const loadMessages = useCallback((offsetId) => {
-    loadFolderMessages(folder, offsetId)
+  const loadMessages = useCallback(() => {
+    loadFolderMessages(folder)
   }, [folder])
 
   const handleClose = useCallback(() => {

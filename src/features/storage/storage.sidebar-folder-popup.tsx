@@ -41,7 +41,7 @@ export const StorageSidebarFolderPopup: FC<Props> = memo(({
   const categoryOptions = useMemo(() => categories.map(category => ({
     text: category || texts.generalCategoryTitle,
     value: category
-  })), [categories])
+  })), [categories, texts.generalCategoryTitle])
 
   const folderNames = useMemo(() => folders.map(({ title, category }) =>
     generateFolderName(title, category).toLowerCase()
@@ -108,6 +108,13 @@ export const StorageSidebarFolderPopup: FC<Props> = memo(({
   }, [
     categories,
     folderNames,
+    isEditCategory,
+    isEditFolder,
+    isNewFolder,
+    texts.errorFolderNameEmpty,
+    texts.errorFolderNameExist,
+    texts.errorCategoryNameEmpty,
+    texts.errorCategoryNameExist,
     setCategoryNameError,
     setFolderTitleError
   ])
@@ -128,8 +135,8 @@ export const StorageSidebarFolderPopup: FC<Props> = memo(({
     setLoading(true)
     const success = isNewFolder ? await createFolder(
       folderName
-    ).catch(err => {
-      //
+    ).catch(() => {
+      //todo
     }) : (isEditFolder && typeof params === 'object') ? await editFolder(
       folderName,
       initialFolder
@@ -142,12 +149,19 @@ export const StorageSidebarFolderPopup: FC<Props> = memo(({
       onClose()
     }
   }, [
-    folderNames,
+    params,
+    initialFolder,
+    initialCategory,
     categoryRadioValue,
     categorySelectValue,
     categoryNameValue,
     folderTitleValue,
-    validate
+    isEditFolder,
+    isNewFolder,
+    isEditCategory,
+    texts,
+    validate,
+    onClose
   ])
 
   return (

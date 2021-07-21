@@ -1,6 +1,7 @@
 import { useMemo, useCallback, useState, useRef, useEffect } from 'preact/hooks'
 
-import type { InputFile, Message } from '~/core/store'
+import type { Folder, InputFile, Message } from '~/core/store'
+import { useStateRef, useCallbackRef } from '~/tools/hooks'
 import { getFileMeta } from '~/core/cache'
 import {
   createMessage,
@@ -9,7 +10,7 @@ import {
   resetSendingMessage,
   resetUploadingFiles
 } from '~/core/actions'
-import { useActiveFolder, useSendingMessage } from '~/core/hooks'
+import { useSendingMessage } from '~/core/hooks'
 import { checkIsParentFilesMessage, stringifyParentFilesMessage } from '~/tools/handle-content'
 import { processImageFile } from '~/tools/process-image-file'
 import { processVideoFile } from '~/tools/process-video-file'
@@ -21,34 +22,40 @@ const initialMessage = {
   inputFiles: [] as InputFile[]
 }
 
-export const useMessageForm = () => {
-  const { folder } = useActiveFolder()
-  const { sendingMessage } = useSendingMessage(folder.id)
-  const [loading, setLoading] = useState(!!sendingMessage)
-  const [message, setMessage] = useState({ ...initialMessage, ...sendingMessage })
+export const useMessageForm = (folder: Folder) => {
+  const { sendingMessage, sendingMessageRef } = useSendingMessage(folder.id)
+  const [loading, setLoading] = useState(!!sendingMessageRef.current)
+  const [message, setMessage, messageRef, setMessageRef] = useStateRef(() => ({ ...initialMessage, ...sendingMessageRef.current }))
   const messageKeyRef = useRef(0)
   const initialEditingMessage = useRef<Message | null>(null)
+  const isEditing = !!initialEditingMessage.current
 
-  const updateForm = useCallback((newMessage) => {
-    if (!sendingMessage && message.inputFiles.length && !newMessage.inputFiles.length) {
+  const [updateForm, updateFormRef] = useCallbackRef((newMessage, checkInputFiles = true) => {
+    if (
+      checkInputFiles &&
+      !sendingMessageRef.current &&
+      message.inputFiles?.length &&
+      !newMessage.inputFiles?.length
+    ) {
       resetUploadingFiles(message.inputFiles)
     }
 
     messageKeyRef.current += 1
     setMessage({ ...newMessage, key: messageKeyRef.current })
-  }, [message.inputFiles.length, !!sendingMessage, messageKeyRef, setMessage])
+  }, [message.inputFiles, sendingMessageRef, setMessage])
 
-  const handleCancelMessage = useCallback(() => {
+  const [handleCancelMessage, handleCancelMessageRef] = useCallbackRef(() => {
     initialEditingMessage.current = null
-    updateForm(initialMessage)
+    updateFormRef.current(initialMessage)
     resetSendingMessage(folder.id)
   }, [folder.id, updateForm])
 
   const handleSubmit = useCallback(async () => {
+    const message = messageRef.current
+    let sendingMessage = message
+
     setLoading(true)
     setSendingMessage(folder.id, message)
-
-    let sendingMessage = message
 
     if (
       message.inputFiles?.length || (
@@ -77,19 +84,21 @@ export const useMessageForm = () => {
     if (success) {
       handleCancelMessage()
     }
-  }, [message, setLoading, handleCancelMessage])
+  }, [folder, messageRef, handleCancelMessage, setLoading])
 
   const handleEditMessage = useCallback((message: Message) => {
-    if (sendingMessage) return
+    if (sendingMessageRef.current) return
     initialEditingMessage.current = message
     updateForm(message)
-  }, [sendingMessage, updateForm])
+  }, [sendingMessageRef, updateForm])
 
   const handleChangeText = useCallback((text: string) => {
+    const message = messageRef.current
     setMessage({ ...message, text })
-  }, [message])
+  }, [messageRef, setMessage])
 
   const handleAddFiles = useCallback(async (fileKeys: string[]) => {
+    const message = messageRef.current
     const uniqFileKeys = fileKeys
       .filter(fileKey => (message.inputFiles || []).every(inputFile => inputFile.fileKey !== fileKey))
 
@@ -115,39 +124,42 @@ export const useMessageForm = () => {
         ...uniqInputFiles.map((uniqFile) => ({ ...uniqFile, id: '', progress: 0 }))
       ]
     })
-  }, [message])
+  }, [messageRef, setMessage])
 
   const handleRemoveFile = useCallback((inputFile: InputFile) => {
+    const message = messageRef.current
     const updatedMessage = {
       ...message,
-      inputFiles: (sendingMessage || message).inputFiles?.filter(({ fileKey }) => fileKey !== inputFile.fileKey) || []
+      inputFiles: (sendingMessageRef.current || message).inputFiles?.filter(({ fileKey }) =>
+        fileKey !== inputFile.fileKey
+      ) || []
     }
-    if (sendingMessage && !updatedMessage.inputFiles.length) {
+    if (sendingMessageRef.current && !updatedMessage.inputFiles.length) {
       handleCancelMessage()
     } else {
       setMessage(updatedMessage)
       setSendingMessage(folder.id, updatedMessage)
       resetUploadingFiles([inputFile])
     }
-  }, [message, sendingMessage, folder.id, handleCancelMessage])
+  }, [messageRef, sendingMessageRef, folder.id, setMessage, handleCancelMessage])
 
   useEffect(() => {
     if (sendingMessage) {
-      setMessage({ ...message, ...sendingMessage })
-    } else if (message) {
-      handleCancelMessage()
+      setMessageRef.current({ ...messageRef.current, ...sendingMessage })
+    } else if (messageRef.current) {
+      handleCancelMessageRef.current()
     }
-  }, [sendingMessage])
+  }, [sendingMessage, messageRef, setMessageRef, handleCancelMessageRef])
 
   useEffect(() => {
     initialEditingMessage.current = null
-    updateForm(initialMessage)
-  }, [folder.id])
+    updateFormRef.current(initialMessage)
+  }, [folder.id, updateFormRef])
 
   return useMemo(() => ({
     message,
     loading,
-    editing: !!initialEditingMessage.current,
+    editing: isEditing,
     handleSubmit,
     handleEditMessage,
     handleCancelMessage,
@@ -157,7 +169,7 @@ export const useMessageForm = () => {
   }), [
     message,
     loading,
-    initialEditingMessage.current,
+    isEditing,
     handleSubmit,
     handleEditMessage,
     handleCancelMessage,

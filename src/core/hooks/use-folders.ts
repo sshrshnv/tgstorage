@@ -28,5 +28,5 @@ export const useFolders = () => {
     folders,
     categories,
     foldersLoading
-  }), [folders, foldersLoading])
+  }), [folders, categories, foldersLoading])
 }

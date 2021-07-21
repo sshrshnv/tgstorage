@@ -3,6 +3,7 @@ import { h } from 'preact'
 import { useRef, useEffect, useMemo } from 'preact/hooks'
 import cn from 'classnames'
 
+import { useUpdatableRef } from '~/tools/hooks'
 import { checkIsLandscape } from '~/tools/detect-screen'
 import { Button } from '~/ui/elements/button'
 import { FullscreenIcon, FullscreenExitIcon } from '~/ui/icons'
@@ -26,7 +27,7 @@ export const Fullscreen: FC<Props> = ({
 
   const { requestFullscreen, exitFullscreen } = useMemo(() => {
     const requestFullscreen = () => {
-      const el = forwardedRef?.current || {} as any
+      const el = forwardedRef.current || {} as any
 
       if (el.requestFullscreen) {
         el.requestFullscreen()
@@ -64,10 +65,15 @@ export const Fullscreen: FC<Props> = ({
     }
 
     return { requestFullscreen, exitFullscreen }
-  }, [forwardedRef?.current, isFullscreenRef, onChange])
+  }, [forwardedRef, isFullscreenRef, onChange])
+
+  const onChangeRef = useUpdatableRef(onChange)
+  const requestFullscreenRef = useUpdatableRef(requestFullscreen)
 
   useEffect(() => {
-    const el = forwardedRef?.current as any
+    const el = forwardedRef.current as any
+    const onChange = onChangeRef.current
+
     if (!el) return
 
     if (forwardedRef?.current) {
@@ -94,9 +100,10 @@ export const Fullscreen: FC<Props> = ({
       el.removeEventListener('fullscreenchange', handleFullscreenChange)
       el.removeEventListener('webkitfullscreenchange', handleFullscreenChange)
     }
-  }, [forwardedRef?.current])
+  }, [forwardedRef, onChangeRef])
 
   useEffect(() => {
+    const requestFullscreen = requestFullscreenRef.current
     const handleOrientationChange = () => {
       if (checkIsLandscape() && !isFullscreenRef.current) {
         requestFullscreen()
@@ -115,7 +122,7 @@ export const Fullscreen: FC<Props> = ({
         self.removeEventListener('orientationchange', handleOrientationChange)
       }
     }
-  }, [])
+  }, [requestFullscreenRef])
 
   return (
     <Button

@@ -4,6 +4,7 @@ import { memo } from 'preact/compat'
 import { useCallback, useRef, useState, useEffect } from 'preact/hooks'
 import cn from 'classnames'
 
+import { useUpdatableRef } from '~/tools/hooks'
 import { CrossIcon } from '~/ui/icons'
 
 import { moveCursorToEnd } from './input.helpers'
@@ -56,6 +57,8 @@ export const Input: FC<Props> = memo(({
   const [inputData, setInputData] = useState({ value })
   const [focused, setFocused] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
+  const autoFocusRef = useUpdatableRef(autoFocus)
+  const inputDataValueRef = useUpdatableRef(inputData.value)
 
   const handleFocus = useCallback(() => {
     moveCursorToEnd((forwardedRef || inputRef)?.current)
@@ -72,7 +75,7 @@ export const Input: FC<Props> = memo(({
     const formattedValue = onInput?.('')
     setInputData({ value: typeof formattedValue === 'undefined' ? '' : formattedValue });
     (forwardedRef || inputRef)?.current?.focus()
-  }, [setInputData])
+  }, [forwardedRef, setInputData, onInput])
 
   const handleInput = useCallback(ev => {
     const value = ev?.target?.value.replace('  ', ' ') || ''
@@ -81,17 +84,17 @@ export const Input: FC<Props> = memo(({
   }, [setInputData, onInput])
 
   useEffect(() => {
-    if (inputData.value !== value) {
+    if (inputDataValueRef.current !== value) {
       setInputData({ value })
     }
-  }, [value])
+  }, [value, inputDataValueRef])
 
   useEffect(() => {
-    if (!autoFocus) return
+    if (!autoFocusRef.current) return
     setTimeout(() => {
       (forwardedRef || inputRef)?.current?.focus()
     }, 300)
-  }, [])
+  }, [autoFocusRef, forwardedRef])
 
   return (
     <div class={cn(

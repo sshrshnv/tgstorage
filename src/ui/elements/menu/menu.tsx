@@ -1,9 +1,10 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC, RefObject } from 'preact'
 import { memo } from 'preact/compat'
-import { useState, useCallback, useEffect, useRef } from 'preact/hooks'
+import { useState, useEffect, useRef } from 'preact/hooks'
 import cn from 'classnames'
 
+import { useCallbackRef } from '~/tools/hooks'
 import { Button } from '~/ui/elements/button'
 import { MenuIcon } from '~/ui/icons'
 import { animationClassName } from '~/ui/styles/animation'
@@ -38,7 +39,7 @@ export const Menu: FC<Props> = memo(({
   const dropdownRef = useRef<HTMLDivElement>(null)
   const [expanded, setExpanded] = useState(false)
 
-  const toggle = useCallback((ev?) => {
+  const [toggle, toggleRef] = useCallbackRef((ev?) => {
     ev?.preventDefault()
     ev?.stopPropagation()
     if (expanded) {
@@ -63,6 +64,8 @@ export const Menu: FC<Props> = memo(({
 
   useEffect(() => {
     const parentEl = parentRef?.current
+    const toggle = toggleRef.current
+
     if (!parentEl) return
 
     let touchStartTimeoutId = 0
@@ -87,7 +90,7 @@ export const Menu: FC<Props> = memo(({
       parentEl.removeEventListener('touchmove', handleTouchEnd)
       parentEl.removeEventListener('touchend', handleTouchEnd)
     }
-  }, [])
+  }, [parentRef, toggleRef])
 
   return !items.length ? null : (
     <div

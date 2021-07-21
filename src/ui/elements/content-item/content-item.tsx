@@ -5,6 +5,7 @@ import { useEffect, useRef } from 'preact/hooks'
 import cn from 'classnames'
 
 import type { Message } from '~/core/store'
+import { useUpdatableRef } from '~/tools/hooks'
 import { Menu } from '~/ui/elements/menu'
 import type { Props as MenuProps } from '~/ui/elements/menu'
 import { Loader } from '~/ui/elements/loader'
@@ -28,7 +29,7 @@ export const ContentItem: FC<Props> = memo(({
   children,
   message,
   offset,
-  height,
+  //height,
   visible,
   resizeObserver,
   intersectionObserver,
@@ -37,6 +38,8 @@ export const ContentItem: FC<Props> = memo(({
   onDelete,
 }) => {
   const elRef = useRef<HTMLDivElement>(null)
+  const messageIdRef = useUpdatableRef(message.id)
+  const onDeleteRef = useUpdatableRef(onDelete)
 
   useEffect(() => {
     if (!resizeObserver || !elRef.current) return
@@ -57,8 +60,8 @@ export const ContentItem: FC<Props> = memo(({
   }, [intersectionObserver])
 
   useEffect(() => () => {
-    onDelete?.(message.id)
-  }, [])
+    onDeleteRef.current?.(messageIdRef.current)
+  }, [messageIdRef, onDeleteRef])
 
   return (
     <div

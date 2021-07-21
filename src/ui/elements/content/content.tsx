@@ -3,6 +3,7 @@ import { h } from 'preact'
 import { memo } from 'preact/compat'
 import { useCallback, useEffect } from 'preact/hooks'
 
+import { useCallbackRef } from '~/tools/hooks'
 import { setFile } from '~/core/cache'
 import { Slide } from '~/ui/elements/slide'
 
@@ -52,32 +53,33 @@ export const Content: FC<Props> = memo(({
     }
   }, [dropAvailable, onAddFiles])
 
-  useEffect(() => {
-    const handlePaste = (ev: ClipboardEvent) => {
-      if (!dropAvailable) return
+  const [_, handlePasteRef] = useCallbackRef((ev: ClipboardEvent) => {
+    if (!dropAvailable) return
 
-      const fileList = ev.clipboardData?.files
-      const fileKeys: string[] = []
-      const text = fileList?.length ? '' : ev.clipboardData?.getData('text')
+    const fileList = ev.clipboardData?.files
+    const fileKeys: string[] = []
+    const text = fileList?.length ? '' : ev.clipboardData?.getData('text')
 
-      for (let i = 0; i < (fileList?.length || 0); i++) {
-        const fileKey = setFile(fileList?.item(i))
-        if (fileKey && !fileKeys.includes(fileKey)) {
-          fileKeys.push(fileKey)
-        }
-      }
-
-      if (fileKeys?.length) {
-        onAddFiles?.(fileKeys)
-      }
-      if (text?.length) {
-        onAddMessage?.(text)
+    for (let i = 0; i < (fileList?.length || 0); i++) {
+      const fileKey = setFile(fileList?.item(i))
+      if (fileKey && !fileKeys.includes(fileKey)) {
+        fileKeys.push(fileKey)
       }
     }
 
+    if (fileKeys?.length) {
+      onAddFiles?.(fileKeys)
+    }
+    if (text?.length) {
+      onAddMessage?.(text)
+    }
+  }, [dropAvailable, onAddFiles, onAddMessage])
+
+  useEffect(() => {
+    const handlePaste = handlePasteRef.current
     document.addEventListener('paste', handlePaste, { passive: true })
     return () => document.removeEventListener('paste', handlePaste)
-  }, [])
+  }, [handlePasteRef])
 
   return (
     <Slide

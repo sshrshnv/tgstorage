@@ -1,17 +1,17 @@
 import { h } from 'preact'
-import type { FunctionComponent as FC, RefObject } from 'preact'
+import type { FunctionComponent as FC, RefCallback } from 'preact'
 import cn from 'classnames'
 
 import styles from './content-list.styl'
 
 type Props = {
-  forwardedRef: RefObject<HTMLDivElement>
+  intersectionRef: RefCallback<HTMLElement>
   fullHeight?: boolean
 }
 
 export const ContentList: FC<Props> = ({
   children,
-  forwardedRef,
+  intersectionRef,
   fullHeight
 }) => {
   return (
@@ -20,7 +20,7 @@ export const ContentList: FC<Props> = ({
         styles.root,
         fullHeight && styles._fullHeight
       )}
-      ref={forwardedRef}
+      ref={intersectionRef}
     >
       {children}
     </main>

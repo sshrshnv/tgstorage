@@ -9,7 +9,7 @@ import { formatSize } from '~/tools/format-size'
 import { Menu } from '~/ui/elements/menu'
 import type { Props as MenuProps } from '~/ui/elements/menu'
 import { Text } from '~/ui/elements/text'
-import { BlurImage } from '~/ui/elements/blur-image'
+import { BluredImage } from '~/ui/elements/blured-image'
 import { FilePreviewImage } from '~/ui/elements/file-preview-image'
 import { FilePreviewIcon } from '~/ui/elements/file-preview-icon'
 import { Loader } from '~/ui/elements/loader'
@@ -84,7 +84,7 @@ export const ContentItemMediaItem: FC<Props> = memo(({
           onClick={(isImage || isVideo || isAudio) ? handlePreviewClick : undefined}
         >
           {blurPreviewUrl && (
-            <BlurImage
+            <BluredImage
               url={blurPreviewUrl}
               width={64}
               height={64}

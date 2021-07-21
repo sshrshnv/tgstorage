@@ -1,9 +1,10 @@
 import type { FunctionComponent as FC } from 'preact'
 import { h } from 'preact'
 import { memo } from 'preact/compat'
-import { useState, useCallback, useEffect } from 'preact/hooks'
+import { useEffect } from 'preact/hooks'
 
 import type { Message } from '~/core/store'
+import { useStateRef, useCallbackRef } from '~/tools/hooks'
 import { useTexts, useActiveFolder } from '~/core/hooks'
 import { Text } from '~/ui/elements/text'
 import { ContentWrapper } from '~/ui/elements/content-wrapper'
@@ -22,17 +23,17 @@ export const StorageContent: FC<Props> = memo(({
 }) => {
   const { texts } = useTexts('storage')
   const { folder } = useActiveFolder()
-  const [search, setSearch] = useState(false)
+  const [search, setSearch, searchRef] = useStateRef(false)
 
-  const toggleSearch = useCallback(() => {
+  const [toggleSearch, toggleSearchRef] = useCallbackRef(() => {
     setSearch(!search)
   }, [search])
 
   useEffect(() => {
-    if (search) {
-      toggleSearch()
+    if (searchRef.current) {
+      toggleSearchRef.current()
     }
-  }, [folder.id])
+  }, [folder.id, searchRef, toggleSearchRef])
 
   return (
     <ContentWrapper

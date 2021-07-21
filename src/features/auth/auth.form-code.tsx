@@ -1,7 +1,8 @@
-import { Fragment, h } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
-import { useCallback, useState } from 'preact/hooks'
 import type { StateUpdater } from 'preact/hooks'
+import { Fragment, h } from 'preact'
+import { memo } from 'preact/compat'
+import { useCallback, useState } from 'preact/hooks'
 
 import { setUser } from '~/core/actions'
 import { useTexts } from '~/core/hooks'
@@ -31,7 +32,7 @@ type Props = {
   setStep: StateUpdater<Step>
 }
 
-export const AuthFormCode: FC<Props> = ({
+export const AuthFormCode: FC<Props> = memo(({
   country,
   phone,
   phoneCodeHash,
@@ -73,7 +74,7 @@ export const AuthFormCode: FC<Props> = ({
       setTimeout(timeout)
       setCodeType({ type: type._, nextType: next_type?._ || '' })
     }
-  }, [phone, phoneCodeHash, codeType, setTimeout, setError])
+  }, [phone, phoneCodeHash, setTimeout, setError, setCodeType, setPhoneCodeHash])
 
   const handleSubmit = useCallback(async () => {
     if (loading) return
@@ -98,7 +99,7 @@ export const AuthFormCode: FC<Props> = ({
       }
       setUser(user)
     }
-  }, [phone, phoneCodeHash, code, loading, setStep, setError])
+  }, [phone, phoneCodeHash, country.value, country.foundValue, code, loading, setStep, setError])
 
   return (
     <Form onSubmit={handleSubmit} center>
@@ -151,4 +152,4 @@ export const AuthFormCode: FC<Props> = ({
       )}
     </Form>
   )
-}
+})

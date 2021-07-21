@@ -15,8 +15,9 @@ export const useSearchMessages = () => {
 
   return useMemo(() => {
     const messages = [...searchMessages.values()] as Message[]
+    const groupedMessages = groupMessages(messages) as Message[]
     return {
-      messages: groupMessages(messages) as Message[],
+      messages: groupedMessages,
       lastMessageId: messages[messages.length - 1]?.id
     }
   }, [searchMessages])

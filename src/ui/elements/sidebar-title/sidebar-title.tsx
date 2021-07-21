@@ -19,7 +19,7 @@ export const SidebarTitle: FC<Props> = memo(({
   menu,
   disabled
 }) => {
-  const parentRef = useRef(null)
+  const parentRef = useRef<HTMLDivElement>(null)
 
   return (
     <div

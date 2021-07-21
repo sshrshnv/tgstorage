@@ -1,11 +1,12 @@
 import type { FunctionComponent as FC, RefObject } from 'preact'
 import { h } from 'preact'
 import { memo, createPortal } from 'preact/compat'
-import { useEffect, useState } from 'preact/hooks'
+import { useEffect } from 'preact/hooks'
 import cn from 'classnames'
 import KeenSlider from 'keen-slider'
 import 'keen-slider/keen-slider.css'
 
+import { useStateRef, useUpdatableRef } from '~/tools/hooks'
 import { Slide, useSlide } from '~/ui/elements/slide'
 import { Button } from '~/ui/elements/button'
 import { Text } from '~/ui/elements/text'
@@ -39,11 +40,17 @@ export const Gallery: FC<Props> = memo(({
   onChangeIndex,
   onClose
 }) => {
-  const { closeSlide } = useSlide()
-  const [gallery, setGallery] = useState<any>(null)
+  const { closeSlide, closeSlideRef } = useSlide()
+  const [gallery, _setGallery, _galleryRef, setGalleryRef] = useStateRef<any>(null)
+  const initialIndexRef = useUpdatableRef(initialIndex)
+  const onChangeIndexRef = useUpdatableRef(onChangeIndex)
 
   useEffect(() => {
     if (!galleryRef.current) return
+
+    const initialIndex = initialIndexRef.current
+    const closeSlide = closeSlideRef.current
+    const onChangeIndex = onChangeIndexRef.current
 
     const gallery = new KeenSlider(galleryRef.current, {
       initial: initialIndex,
@@ -66,14 +73,14 @@ export const Gallery: FC<Props> = memo(({
       ev.preventDefault()
     }
 
-    setGallery(gallery)
+    setGalleryRef.current(gallery)
     self.document.addEventListener('keydown', handleKeyDown)
 
     return () => {
       gallery?.destroy()
       self.document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [])
+  }, [galleryRef, initialIndexRef, setGalleryRef, closeSlideRef, onChangeIndexRef])
 
   return createPortal((
     <Slide

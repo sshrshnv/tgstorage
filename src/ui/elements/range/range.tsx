@@ -3,7 +3,8 @@ import { h } from 'preact'
 import { memo } from 'preact/compat'
 import { useCallback } from 'preact/hooks'
 import cn from 'classnames'
-import rafSchedule from 'raf-schd'
+
+import { useRAFCallback } from '~/tools/hooks'
 
 import styles from './range.styl'
 
@@ -30,14 +31,14 @@ export const Range: FC<Props> = memo(({
     onChange?.(value)
   }, [onChange])
 
-  const handleTouch = useCallback(rafSchedule((ev) => {
+  const [handleTouch, _handleTouchRef, cancelHandleTouchRef] = useRAFCallback((ev) => {
     const { width, left } = ev.target.getBoundingClientRect()
     const { clientX } = ev.touches[0]
     const valuePercent = Math.min(1, Math.max(0, (clientX - left) / width))
     const value = min + (max - min) * valuePercent
     onChange?.(value)
-    return () => handleTouch.cancel()
-  }), [onChange])
+    return () => cancelHandleTouchRef.current?.()
+  }, [onChange])
 
   return (
     <div class={cn(

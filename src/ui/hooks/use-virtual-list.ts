@@ -1,5 +1,6 @@
-import { useCallback, useMemo, useRef, useState } from 'preact/hooks'
+import { useCallback, useMemo, useRef } from 'preact/hooks'
 
+import { useStateRef, useCallbackRef } from '~/tools/hooks'
 import { useResizeObserver } from '~/ui/hooks/use-resize-observer'
 import { useIntersectionObserver } from '~/ui/hooks/use-intersection-observer'
 
@@ -12,24 +13,13 @@ const initialVisibility = {
 }
 
 export const useVirtualList = () => {
-  const [offsets, setOffsets] = useState<Map<number, number>>(new Map())
-  const offsetsRef = useRef<Map<number, number>>(new Map())
+  const [offsets, _setOffsets, offsetsRef, setOffsetsRef] = useStateRef<Map<number, number>>(new Map())
+  const [visibility, _setVisibility, visibilityRef, setVisibilityRef] = useStateRef(initialVisibility)
   const heightsRef = useRef<Map<number, number>>(new Map())
-  const [visibility, setVisibility] = useState(initialVisibility)
-  const visibilityRef = useRef(initialVisibility)
   const intersectingsRef = useRef<Map<number, boolean>>(new Map())
   const countRef = useRef(PREVISIBILE_COUNT)
 
-  const setHeight = useCallback((value: number, id: number) => {
-    if (!value || value === heightsRef.current.get(id)) return
-
-    heightsRef.current.set(id, value)
-    heightsRef.current = new Map([...heightsRef.current].sort((a, b) => b[0] - a[0]))
-
-    resetOffsets()
-  }, [])
-
-  const calcOffsets = useCallback(() => {
+  const [_calcOffsets, calcOffsetsRef] = useCallbackRef(() => {
     let heightsSum = 0
 
     return new Map([...heightsRef.current].map(([id, height], index) => {
@@ -37,22 +27,55 @@ export const useVirtualList = () => {
       heightsSum += height
       return [id, offset]
     }))
-  }, [])
+  }, [heightsRef])
 
-  const resetOffsets = useCallback(() => {
+  const [_resetOffsets, resetOffsetsRef] = useCallbackRef(() => {
     const offsets = offsetsRef.current
-    const newOffsets = calcOffsets()
+    const newOffsets = calcOffsetsRef.current()
 
     if (
       offsets.size !== newOffsets.size ||
       [...newOffsets].some(([id, value]) => value !== offsets.get(id))
     ) {
       offsetsRef.current = newOffsets
-      setOffsets(newOffsets)
+      setOffsetsRef.current(newOffsets)
+    }
+  }, [offsetsRef, calcOffsetsRef, setOffsetsRef])
+
+  const [_setHeight, setHeightRef] = useCallbackRef((value: number, id: number) => {
+    if (!value || value === heightsRef.current.get(id)) return
+
+    heightsRef.current.set(id, value)
+    heightsRef.current = new Map([...heightsRef.current].sort((a, b) => b[0] - a[0]))
+
+    resetOffsetsRef.current()
+  }, [heightsRef, resetOffsetsRef])
+
+  const [_calcVisibility, calcVisibilityRef] = useCallbackRef(() => {
+    const intersectingValues = [...intersectingsRef.current.values()]
+    const firstIntersectingIndex = intersectingValues.indexOf(true)
+    const lastIntersectingIndex = intersectingValues.lastIndexOf(true)
+
+    return {
+      firstIndex: Math.max(0, firstIntersectingIndex - PREVISIBILE_COUNT),
+      lastIndex: Math.min(lastIntersectingIndex + PREVISIBILE_COUNT, countRef.current - 1)
     }
   }, [])
 
-  const setIntersecting = useCallback((value: boolean, id: number) => {
+  const [_resetVisibility, resetVisibilityRef] = useCallbackRef(() => {
+    const visibility = visibilityRef.current
+    const newVisibility = calcVisibilityRef.current()
+
+    if (
+      visibility.firstIndex !== newVisibility.firstIndex ||
+      visibility.lastIndex !== newVisibility.lastIndex
+    ) {
+      visibilityRef.current = newVisibility
+      setVisibilityRef.current(newVisibility)
+    }
+  }, [visibilityRef, setVisibilityRef, calcVisibilityRef])
+
+  const [_setIntersecting, setIntersectingRef] = useCallbackRef((value: boolean, id: number) => {
     if (value) {
       const intersectings = [...intersectingsRef.current]
       const firstTrueIndex = intersectings.findIndex(([, value]) => !!value)
@@ -71,51 +94,30 @@ export const useVirtualList = () => {
     intersectingsRef.current.set(id, value)
     intersectingsRef.current = new Map([...intersectingsRef.current].sort((a, b) => b[0] - a[0]))
 
-    resetVisibility()
-  }, [])
-
-  const calcVisibility = useCallback(() => {
-    const intersectingValues = [...intersectingsRef.current.values()]
-    const firstIntersectingIndex = intersectingValues.indexOf(true)
-    const lastIntersectingIndex = intersectingValues.lastIndexOf(true)
-
-    return {
-      firstIndex: Math.max(0, firstIntersectingIndex - PREVISIBILE_COUNT),
-      lastIndex: Math.min(lastIntersectingIndex + PREVISIBILE_COUNT, countRef.current - 1)
-    }
-  }, [])
-
-  const resetVisibility = useCallback(() => {
-    const visibility = visibilityRef.current
-    const newVisibility = calcVisibility()
-
-    if (
-      visibility.firstIndex !== newVisibility.firstIndex ||
-      visibility.lastIndex !== newVisibility.lastIndex
-    ) {
-      visibilityRef.current = newVisibility
-      setVisibility(newVisibility)
-    }
-  }, [])
+    resetVisibilityRef.current()
+  }, [intersectingsRef, resetVisibilityRef])
 
   const onDeleteMessage = useCallback((id: number) => {
     heightsRef.current.delete(id)
-    resetOffsets()
+    resetOffsetsRef.current()
 
     intersectingsRef.current.delete(id)
-    resetVisibility()
-  }, [])
+    resetVisibilityRef.current()
+  }, [resetOffsetsRef, resetVisibilityRef])
 
-  const { resizeObserver } = useResizeObserver((el: ResizeObserverEntry) => {
+  const [_handleResizeObserver, handleResizeObserverRef] = useCallbackRef((el: ResizeObserverEntry) => {
     const height = (el.contentBoxSize?.[0] || el.contentBoxSize)?.blockSize || el.contentRect.height
     const id = +el.target.id
-    setHeight(height, id)
-  })
+    setHeightRef.current(height, id)
+  }, [setHeightRef])
 
-  const { intersectionObserver, intersectionElRef } = useIntersectionObserver((el: IntersectionObserverEntry) => {
+  const [_handleIntersectionObserver, handleIntersectionObserverRef] = useCallbackRef((el: IntersectionObserverEntry) => {
     const id = +el.target.id
-    setIntersecting(el.isIntersecting, id)
-  })
+    setIntersectingRef.current(el.isIntersecting, id)
+  }, [setIntersectingRef])
+
+  const { resizeObserver } = useResizeObserver(handleResizeObserverRef)
+  const { intersectionRef, intersectionObserver } = useIntersectionObserver(handleIntersectionObserverRef)
 
   return useMemo(() => ({
     offsets,
@@ -123,8 +125,8 @@ export const useVirtualList = () => {
     visibility,
     resizeObserver,
     intersectionObserver,
-    intersectionElRef,
     countRef,
+    intersectionRef,
     onDeleteMessage
-  }), [offsets, visibility, resizeObserver, intersectionObserver, onDeleteMessage])
+  }), [offsets, visibility, resizeObserver, intersectionObserver, intersectionRef, onDeleteMessage])
 }

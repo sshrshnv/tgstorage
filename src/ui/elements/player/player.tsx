@@ -3,8 +3,8 @@ import { h, Fragment } from 'preact'
 import { memo } from 'preact/compat'
 import { useState, useEffect, useRef, useCallback } from 'preact/hooks'
 import cn from 'classnames'
-import rafSchedule from 'raf-schd'
 
+import { useRAFCallback } from '~/tools/hooks'
 import { getFile } from '~/core/cache'
 import { formatDuration } from '~/tools/format-time'
 import { Button } from '~/ui/elements/button'
@@ -59,17 +59,17 @@ export const Player: FC<Props> = memo(({
   const [hidden, setHidden] = useState(false)
   const [streamLoading, setStreamLoading] = useState(!!streamFileUrl)
 
-  const syncProgress = useCallback(rafSchedule(() => {
+  const [syncProgress, _syncProgressRef, cancelSyncProgressRef] = useRAFCallback(() => {
     if (!playerRef?.current) return
     setProgress(playerRef.current.currentTime)
 
     if (playerRef.current.paused || playerRef.current.ended) {
-      syncProgress.cancel()
+      cancelSyncProgressRef.current?.()
       setPlaying(false)
     } else {
       syncProgress()
     }
-  }), [])
+  }, [playerRef, setProgress, setPlaying])
 
   const togglePlay = useCallback((ev: Event|undefined = undefined) => {
     ev?.stopPropagation()
@@ -81,13 +81,13 @@ export const Player: FC<Props> = memo(({
   }, [])
 
   const changeProgress = useCallback(value => {
-    syncProgress.cancel()
+    cancelSyncProgressRef.current?.()
     setProgress(value)
     self.clearTimeout(progressChangeTimeoutRef.current)
     progressChangeTimeoutRef.current = self.setTimeout(() => {
       playerRef.current.currentTime = value
     }, 100)
-  }, [setProgress])
+  }, [cancelSyncProgressRef, setProgress])
 
   const hideControlsAfterTimeout = useCallback(() => {
     self.clearTimeout(controlsHideTimeoutRef.current)
@@ -229,12 +229,13 @@ export const Player: FC<Props> = memo(({
   }, [parentRef, handleContentClick])
 
   useEffect(() => {
+    const cancelSyncProgress = cancelSyncProgressRef.current
     firstRenderRef.current = false
     return () => {
-      syncProgress.cancel()
+      cancelSyncProgress?.()
       self.clearTimeout(controlsHideTimeoutRef.current)
     }
-  }, [syncProgress])
+  }, [syncProgress, cancelSyncProgressRef])
 
   return (
     <Fragment>

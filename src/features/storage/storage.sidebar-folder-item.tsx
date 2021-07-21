@@ -4,6 +4,7 @@ import { memo } from 'preact/compat'
 import { useCallback, useState, useMemo, useEffect } from 'preact/hooks'
 
 import type { Folder } from '~/core/store'
+import { useUpdatableRef } from '~/tools/hooks'
 import { deleteFolder, setActiveFolder, loadFolderMessages } from '~/core/actions'
 import { useTexts, useFolder } from '~/core/hooks'
 import { SidebarItem } from '~/ui/elements/sidebar-item'
@@ -33,8 +34,9 @@ export const StorageSidebarFolderItem: FC<Props> = memo(({
   onFolderSelect
 }) => {
   const { texts } = useTexts('storage')
-  const { folder, messages } = useFolder(id)
+  const { folder, folderRef, messages } = useFolder(id)
   const [confirmation, setConfirmation] = useState(false)
+  const loadingDisabledRef = useUpdatableRef(loadingDisabled)
 
   const handleClick = useCallback(() => {
     if (onFolderSelect) {
@@ -42,7 +44,7 @@ export const StorageSidebarFolderItem: FC<Props> = memo(({
     } else {
       setActiveFolder(id)
     }
-  }, [folder, onFolderSelect])
+  }, [id, folder, onFolderSelect])
 
   const handleEdit = useCallback(() => {
     setFolderPopupParams?.({
@@ -58,7 +60,7 @@ export const StorageSidebarFolderItem: FC<Props> = memo(({
     }
     ev.stopPropagation()
     setConfirmation(true)
-  }, [confirmation])
+  }, [folder, confirmation])
 
   const resetConfirmation = useCallback(() => {
     setConfirmation(false)
@@ -77,12 +79,21 @@ export const StorageSidebarFolderItem: FC<Props> = memo(({
       onClick: handleDelete
     }] : [],
     onClose: resetConfirmation
-  }), [index, confirmation, handleEdit, handleDelete, resetConfirmation])
+  }), [
+    index,
+    confirmation,
+    texts.folderEditTitle,
+    texts.confirmDeleteButton,
+    texts.folderDeleteTitle,
+    handleEdit,
+    handleDelete,
+    resetConfirmation
+  ])
 
   useEffect(() => {
-    if (loadingDisabled) return
-    loadFolderMessages(folder, 0)
-  }, [])
+    if (loadingDisabledRef.current) return
+    loadFolderMessages(folderRef.current, 0)
+  }, [folderRef, loadingDisabledRef])
 
   return (
     <SidebarItem

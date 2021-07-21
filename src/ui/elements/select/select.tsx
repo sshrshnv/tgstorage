@@ -4,6 +4,7 @@ import { memo } from 'preact/compat'
 import { useState, useCallback, useRef, useEffect, useMemo } from 'preact/hooks'
 import cn from 'classnames'
 
+import { useCallbackRef } from '~/tools/hooks'
 import { useTexts } from '~/core/hooks'
 import { Input } from '~/ui/elements/input'
 import { Loader } from '~/ui/elements/loader'
@@ -61,7 +62,11 @@ export const Select: FC<Props> = memo(({
     filteredOptions[0]?.text.toLowerCase() === searchValue.toLowerCase()
   ), [searchValue, filteredOptions])
 
-  const expand = useCallback(() => {
+  const firstFilteredOption = useMemo(() => {
+    return filteredOptions[0]
+  }, [filteredOptions])
+
+  const [expand, expandRef] = useCallbackRef(() => {
     if (disabled || loading) return
     if (!focused) {
       inputRef?.current?.focus()
@@ -69,7 +74,7 @@ export const Select: FC<Props> = memo(({
     setExpanded(true)
   }, [disabled, loading, focused, inputRef, setExpanded])
 
-  const collapse = useCallback(() => {
+  const [collapse, collapseRef] = useCallbackRef(() => {
     if (focused) {
       inputRef?.current?.blur()
     }
@@ -97,10 +102,10 @@ export const Select: FC<Props> = memo(({
 
   const handleBlur = useCallback(() => {
     if (search && !selected && filteredOptions.length === 1) {
-      select(filteredOptions[0])
+      select(firstFilteredOption)
     }
     setFocused(false)
-  }, [search, selected, filteredOptions.length, select, setFocused])
+  }, [search, selected, firstFilteredOption, filteredOptions.length, select, setFocused])
 
   useEffect(() => {
     if (!expanded) return
@@ -123,6 +128,8 @@ export const Select: FC<Props> = memo(({
   }, [options, value])
 
   useEffect(() => {
+    const collapse = collapseRef.current
+    const expand = expandRef.current
     const handleKey = ({ code }) => {
       if (!focused && !expanded) return
       switch (code.toLowerCase()) {
@@ -136,7 +143,7 @@ export const Select: FC<Props> = memo(({
     }
     self.addEventListener('keydown', handleKey)
     return () => self.removeEventListener('keydown', handleKey)
-  }, [focused, expanded])
+  }, [focused, expanded, collapseRef, expandRef])
 
   return (
     <div

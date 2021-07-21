@@ -1,7 +1,8 @@
 import type { FunctionComponent as FC } from 'preact'
-import { h } from 'preact'
-import { useCallback, useState } from 'preact/hooks'
 import type { StateUpdater } from 'preact/hooks'
+import { h } from 'preact'
+import { memo } from 'preact/compat'
+import { useCallback, useState } from 'preact/hooks'
 
 import { setUser } from '~/core/actions'
 import { useTexts } from '~/core/hooks'
@@ -20,7 +21,7 @@ type Props = {
   setStep: StateUpdater<Step>
 }
 
-export const AuthFormPassword: FC<Props> = ({
+export const AuthFormPassword: FC<Props> = memo(({
   country
 }) => {
   const { texts } = useTexts('auth')
@@ -56,7 +57,7 @@ export const AuthFormPassword: FC<Props> = ({
       const { user } = response
       setUser(user)
     }
-  }, [password, loading, setError])
+  }, [country.value, country.foundValue, password, loading, setError])
 
   return (
     <Form onSubmit={handleSubmit} center>
@@ -95,4 +96,4 @@ export const AuthFormPassword: FC<Props> = ({
       </Button>
     </Form>
   )
-}
+})

@@ -4,9 +4,8 @@ import { memo } from 'preact/compat'
 import { useCallback, useMemo, useEffect } from 'preact/hooks'
 import cn from 'classnames'
 
-import {
-  CHECKLIST_CHECK_MARK_LENGTH,
-} from '~/tools/handle-content'
+import { useMemoRef, useUpdatableRef } from '~/tools/hooks'
+import { CHECKLIST_CHECK_MARK_LENGTH } from '~/tools/handle-content'
 import { Input } from '~/ui/elements/input'
 import { Button } from '~/ui/elements/button'
 import { DragIcon, CrossIcon } from '~/ui/icons/'
@@ -48,7 +47,7 @@ export const ContentFormChecklistItem: FC<Props> = memo(({
     return index === 0
   }, [index])
 
-  const isLastItem = useMemo(() => {
+  const [isLastItem, isLastItemRef] = useMemoRef(() => {
     return index === length - 1
   }, [index, length])
 
@@ -83,6 +82,8 @@ export const ContentFormChecklistItem: FC<Props> = memo(({
 
   const isDragging = draggingIndex === index
 
+  const handleLastMountRef = useUpdatableRef(handleLastMount)
+
   const handleInput = useCallback((value) => {
     return handleInputItem(value, index)
   }, [index, handleInputItem])
@@ -104,9 +105,9 @@ export const ContentFormChecklistItem: FC<Props> = memo(({
   }, [handleDragEndItem])
 
   useEffect(() => {
-    if (!isLastItem) return
-    handleLastMount()
-  }, [])
+    if (!isLastItemRef.current) return
+    handleLastMountRef.current()
+  }, [isLastItemRef, handleLastMountRef])
 
   return (
     <Fragment>

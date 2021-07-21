@@ -1,14 +1,22 @@
+import type { RefObject } from 'preact'
 import { useMemo, useEffect } from 'preact/hooks'
-import rafSchedule from 'raf-schd'
+
+import { useRAFCallback } from '~/tools/hooks'
 
 const ResizeObserver = self.ResizeObserver || (await import('resize-observer-polyfill')).default
 
-export const useResizeObserver = (handleEl) => {
-  const resizeObserver = useMemo(() => new ResizeObserver(rafSchedule(elements => {
+export const useResizeObserver = (
+  handleElRef: RefObject<(el: ResizeObserverEntry) => void>
+) => {
+  const [_handleElements, handleElementsRef] = useRAFCallback(elements => {
     for (const el of elements) {
-      handleEl(el)
+      handleElRef.current?.(el)
     }
-  })), [])
+  }, [handleElRef])
+
+  const resizeObserver = useMemo(() => {
+    return new ResizeObserver(handleElementsRef.current)
+  }, [handleElementsRef])
 
   useEffect(() => {
     return () => resizeObserver.disconnect()
