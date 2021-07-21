@@ -1,20 +1,23 @@
 declare const self: ServiceWorkerGlobalScope
 
-const [wb, actions] = await Promise.all([
-  import('./sw.runtime'),
-  import('./actions')
-])
+import { wb } from './workbox'
+import { getMessageHandler, handleStream } from './handlers'
+
+wb.setCacheNameDetails({ prefix: 'tgstorage' })
+
+self.addEventListener('message', ev => {
+  const { data } = ev
+
+  if (data?.type === 'SKIP_WAITING') {
+    self.skipWaiting()
+  } else if (data?.messageKey) {
+    getMessageHandler(data.messageKey)?.(data)
+  }
+})
+
+wb.clientsClaim()
 
 if (process.env.NODE_ENV === 'production') {
-  wb.setCacheNameDetails({ prefix: 'tgstorage' })
-
-  self.addEventListener('message', ev => {
-    if (ev.data?.type === 'SKIP_WAITING') {
-      self.skipWaiting()
-    }
-  })
-
-  wb.clientsClaim()
   wb.precacheAndRoute(self.__WB_MANIFEST)
   wb.cleanupOutdatedCaches()
 
@@ -24,11 +27,13 @@ if (process.env.NODE_ENV === 'production') {
       { allowlist: [/^(?!\/__)/] }
     )
   )
+} else {
+  self.skipWaiting()
 }
 
 wb.registerRoute(
-  ({ request }) => request.url.startsWith('/sw/stream/'),
-  actions.stream
+  new RegExp('/sw/stream'),
+  handleStream
 )
 
 export {}

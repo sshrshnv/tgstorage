@@ -86,7 +86,7 @@ export const ContentFormChecklist: FC<Props> = memo(({
     ))
 
     onSubmit?.()
-  }, [text])
+  }, [text, onChangeText, onSubmit])
 
   const handleLastMount = useCallback(() => {
     scrollToBottom?.()

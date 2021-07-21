@@ -9,34 +9,52 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const DotenvPlugin = require('dotenv-webpack')
+//const WorkboxPlugin = require('workbox-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const autoprefixer = require('autoprefixer')
-
-const babelConfig = require('./.babelrc.json')
-
-const appEnv = dotenv.config({
-  path: `./.env.${process.env.BUILD_ENV}`
-})
 
 const isProd = () => process.env.NODE_ENV === 'production'
 const isDev = () => !isProd()
 const isStage = () => process.env.BUILD_ENV === 'stage'
 const isBundleAnalyzer = () => !!process.env.BUNDLE_ANALYZER
 
-module.exports = {
+const resolveOptions = {
+  extensions: [
+    '.mjs', '.js', '.jsx', '.tsx', '.ts', '.js', '.json',
+    '.wasm', '.css', '.styl', '.html', '.svg', '.jpg', '.png'
+  ],
+  alias: {
+    '~': path.resolve('./src')
+  }
+}
+
+const mainFields = ['esm2017', 'module', 'jsnext:main', 'browser', 'main']
+
+const terserOptions = {
+  compress: {
+    ecma: 2019
+  },
+  output: {
+    ecma: 2019,
+    beautify: false,
+    comments: false,
+    ascii_only: true
+  }
+}
+
+module.exports = [{
   mode: isDev() ? 'development' : 'production',
 
   target: 'web',
 
   entry: {
-    app: './src/core/app.tsx',
-    sw: { import: './src/sw/sw.ts', filename: 'sw.js' }
+    app: './src/core/app.tsx'
   },
 
   output: {
     path: path.resolve('./build'),
-    filename: isDev() ? `[name].build.js` : `[name].build.[contenthash:8].js`,
-    chunkFilename: isDev() ? `[name].build.js` : `[name].build.[contenthash:8].js`,
+    filename: isDev() ? `[name].js` : `[name].[contenthash:8].js`,
+    chunkFilename: isDev() ? `[name].js` : `[name].[contenthash:8].js`,
     publicPath: process.env.ASSETS_HOST || '/'
   },
 
@@ -44,15 +62,7 @@ module.exports = {
     topLevelAwait: true
   },
 
-  resolve: {
-    extensions: [
-      '.mjs', '.js', '.jsx', '.tsx', '.ts', '.js', '.json',
-      '.wasm', '.css', '.styl', '.html', '.svg', '.jpg', '.png'
-    ],
-    alias: {
-      '~': path.resolve('./src')
-    }
-  },
+  resolve: resolveOptions,
 
   module: {
     rules: [{
@@ -61,16 +71,14 @@ module.exports = {
         use: [{
           loader: 'worker-loader'
         }, {
-          loader: 'babel-loader',
-          options: babelConfig
+          loader: 'babel-loader'
         }]
       } ,{
         test: /\.m?[jt]sx?$/,
         exclude: /node_modules\/(?!(comlink)\/).*/,
-        resolve: { mainFields: ['esm2017', 'module', 'jsnext:main', 'browser', 'main'] },
+        resolve: { mainFields },
         use: [{
-          loader: 'babel-loader',
-          options: babelConfig
+          loader: 'babel-loader'
         }]
       }, {
         test: /\.styl$/,
@@ -160,8 +168,8 @@ module.exports = {
     }),
 
     isProd() ? new MiniCssExtractPlugin({
-      filename: '[name].build.[contenthash:8].css',
-      chunkFilename: '[name].build.[contenthash:8].css'
+      filename: '[name].[contenthash:8].css',
+      chunkFilename: '[name].[contenthash:8].css'
     }) : () => {},
 
     /*isProd() ? new CopyPlugin({
@@ -170,7 +178,13 @@ module.exports = {
         { from: './src/ui/images/*', to: './[name]-v1[ext]' },
       ]
     }) : () => {},*/
-
+/*
+    !workboxManifestInjected ? new WorkboxPlugin.InjectManifest({
+      swDest: 'sw.js',
+      swSrc: './src/sw/sw.ts',
+      maximumFileSizeToCacheInBytes: 10 * 1024 * 1024
+    }) : () => {},
+*/
     isDev() ? new webpack.HotModuleReplacementPlugin() : () => {},
 
     isBundleAnalyzer() ? new BundleAnalyzerPlugin({
@@ -188,19 +202,7 @@ module.exports = {
     concatenateModules: false,
     minimize: isProd(),
     minimizer: isProd() ? [
-      new TerserPlugin({
-        terserOptions: {
-          compress: {
-            ecma: 2019
-          },
-          output: {
-            ecma: 2019,
-            beautify: false,
-            comments: false,
-            ascii_only: true
-          }
-        }
-      }),
+      new TerserPlugin({ terserOptions }),
       new CssMinimizerPlugin()
     ] : []
   },
@@ -228,4 +230,55 @@ module.exports = {
     children: isBundleAnalyzer(),
     modules: isBundleAnalyzer()
   }
-}
+}, {
+  mode: isDev() ? 'development' : 'production',
+
+  target: 'webworker',
+
+  entry: {
+    sw: { import: './src/sw/sw.ts', filename: 'sw.js' }
+  },
+
+  output: {
+    path: path.resolve('./build'),
+    filename: isDev() ? `sw.[name].js` : `sw.[name].[contenthash:8].js`,
+    chunkFilename: isDev() ? `sw.[name].js` : `sw.[name].[contenthash:8].js`,
+    publicPath: process.env.ASSETS_HOST || '/'
+  },
+
+  resolve: resolveOptions,
+
+  module: {
+    rules: [{
+      test: /\.m?[jt]sx?$/,
+      resolve: { mainFields },
+      use: [{
+        loader: 'babel-loader'
+      }]
+    }]
+  },
+
+  plugins: [
+    new DotenvPlugin({
+      path: `./.env.${process.env.BUILD_ENV}`
+    })
+  ],
+
+  optimization: {
+    nodeEnv: isDev() ? 'development' : 'production',
+    //chunkIds: 'named',
+    splitChunks: {
+      chunks: 'all'
+    },
+    concatenateModules: false,
+    minimize: isProd(),
+    minimizer: isProd() ? [
+      new TerserPlugin({ terserOptions })
+    ] : []
+  },
+
+  stats: {
+    children: isBundleAnalyzer(),
+    modules: isBundleAnalyzer()
+  }
+}]

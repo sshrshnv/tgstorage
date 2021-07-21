@@ -46,13 +46,13 @@ export const ContentFormNoteItem: FC<Props> = memo(({
       return url
     }
     return ''
-  }, [inputFile?.fileKey])
+  }, [inputFile?.fileKey, inputFile?.thumbFileKey])
 
   const removeFile = useCallback(() => {
     if (inputFile) {
       onRemoveFile?.(inputFile)
     }
-  }, [inputFile, previewUrl, onRemoveFile])
+  }, [inputFile, onRemoveFile])
 
   const handleLoad = useCallback(() => {
     URL.revokeObjectURL(previewUrl)

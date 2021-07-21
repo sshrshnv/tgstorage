@@ -14,6 +14,9 @@ export const checkIsIOS = () => (
   (/mac/i.test(platform) && maxTouchPoints > 1)
 ) && !window.MSStream
 
+export const checkIsSafari = () =>
+  !checkIsChrome() && /safari|mac/i.test(userAgent)
+
 export const checkIsIOSSafari = () =>
   checkIsIOS() && !checkIsIOSChrome() && /safari|mac/i.test(userAgent)
 

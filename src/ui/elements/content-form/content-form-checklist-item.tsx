@@ -101,7 +101,7 @@ export const ContentFormChecklistItem: FC<Props> = memo(({
 
   const handleDragEnd = useCallback(() => {
     return handleDragEndItem()
-  }, [index, handleDragEndItem])
+  }, [handleDragEndItem])
 
   useEffect(() => {
     if (!isLastItem) return

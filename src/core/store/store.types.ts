@@ -158,6 +158,23 @@ export type DownloadingFile = {
 export type DownloadingFiles =
   Map<string, DownloadingFile>
 
+export type StreamingFile = {
+  folder: Folder
+  messageId: number
+  id: string
+  streamKey?: string
+  size: number
+  duration?: number
+  type: string
+  streaming?: boolean
+  dc_id: number
+  access_hash: string
+  file_reference: ArrayBuffer
+}
+
+export type StreamingFiles =
+  Map<string, StreamingFile>
+
 export type State = {
   user: User
   userLoading: boolean
@@ -169,6 +186,7 @@ export type State = {
   sendingMessages: SendingMessages
   searchMessages: SearchMessages
   downloadingFiles: DownloadingFiles
+  streamingFiles: StreamingFiles
   settings: Settings
   texts: Texts
   appUpdateExist: boolean

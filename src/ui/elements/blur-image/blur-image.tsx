@@ -21,8 +21,8 @@ export const BlurImage: FC<Props> = memo(({
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
-  const blurImage = useCallback(rafSchedule((canvasRef, url) => {
-    const canvas: HTMLCanvasElement = canvasRef.current
+  const blurImage = useCallback(rafSchedule((url) => {
+    const canvas = canvasRef.current
     const canvasContext = canvas?.getContext('2d')
     if (!canvasContext || !url) return
 
@@ -43,8 +43,8 @@ export const BlurImage: FC<Props> = memo(({
   }), [])
 
   useEffect(() => {
-    blurImage(canvasRef, url)
-  }, [url])
+    blurImage(url)
+  }, [url, blurImage])
 
   return (
     <canvas

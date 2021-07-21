@@ -179,8 +179,9 @@ export type Api = {
     dc_id: number
     access_hash: string
     file_reference: ArrayBuffer
-    sizeType: string
-    originalSizeType: string
+    sizeType?: string
+    originalSizeType?: string
+    precise?: boolean
   }) => Promise<Uint8Array>
 
   searchMessages: (

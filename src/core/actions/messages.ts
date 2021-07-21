@@ -144,8 +144,10 @@ const refreshMessages: {
 
 export const refreshMessage = (
   folder: Folder,
-  id: number
-) => {
+  id: number,
+  timeout = 1000,
+  callback?: () => void
+) => new Promise(resolve => {
   if (
     refreshMessages[folder.id]?.waitIds?.includes(id) ||
     refreshMessages[folder.id]?.sendingIds?.includes(id)
@@ -172,20 +174,21 @@ export const refreshMessage = (
 
     if (updates) {
       setUpdates(updates)
+      resolve(callback?.())
     }
 
     refreshMessages[folder.id] = {
       ...refreshMessages[folder.id],
       sendingIds: []
     }
-  }, 1000)
+  }, timeout)
 
   refreshMessages[folder.id] = {
     ...refreshMessages[folder.id],
     timeoutId,
     waitIds: [...(refreshMessages[folder.id]?.waitIds || []), id]
   }
-}
+})
 
 export const searchMessages = async (
   query: string,

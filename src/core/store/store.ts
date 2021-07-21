@@ -37,6 +37,7 @@ const state: State = {
   sendingMessages: new Map(),
   searchMessages: new Map(),
   downloadingFiles: new Map(),
+  streamingFiles: new Map(),
   settings: settings || {
     locale: detectLocale()
   },

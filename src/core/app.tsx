@@ -4,6 +4,7 @@ import { h, render, Fragment } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
 import { Provider } from 'unistore-hooks'
 
+import { registerSW } from '~/sw'
 import { AuthLazy } from '~/features/auth'
 import { StorageLazy } from '~/features/storage'
 import { PreventContextMenu, PreventScale, PreventDragAndDrop } from '~/ui/handlers'
@@ -38,3 +39,5 @@ render(
   </Provider>,
   document.body
 )
+
+registerSW()

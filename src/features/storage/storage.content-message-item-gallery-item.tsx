@@ -1,11 +1,12 @@
 import type { FunctionComponent as FC } from 'preact'
 import { h } from 'preact'
 import { memo } from 'preact/compat'
-import { useMemo, useEffect, useRef } from 'preact/hooks'
+import { useMemo, useEffect, useRef, useState } from 'preact/hooks'
 
 import type { MessageMedia, DownloadingFile } from '~/core/store'
-import { downloadFile, pauseDownloadingFile } from '~/core/actions'
+import { downloadFile, pauseDownloadingFile, streamFile } from '~/core/actions'
 import { useDownloadingFile } from '~/core/hooks'
+import { checkIsSWRegistered } from '~/sw'
 import { GalleryItem } from '~/ui/elements/gallery-item'
 
 type Props = {
@@ -23,6 +24,8 @@ export const StorageContentMessageItemGalleryItem: FC<Props> = memo(({
   isFullscreen,
   isFakeFullscreen
 }) => {
+  const [streamFileUrl, setStreamFileUrl] = useState('')
+
   const isVideo = useMemo(() => {
     return media.type.startsWith('video')
   }, [media.type])
@@ -52,7 +55,19 @@ export const StorageContentMessageItemGalleryItem: FC<Props> = memo(({
   useEffect(() => {
     if (
       !active ||
+      !(isVideo || isAudio) ||
+      !checkIsSWRegistered()
+    ) return
+
+    const streamFileUrl = streamFile(messageId, originalFile)
+    setStreamFileUrl(streamFileUrl)
+  }, [active])
+
+  useEffect(() => {
+    if (
+      !active ||
       !originalFile ||
+      ((isVideo || isAudio) && checkIsSWRegistered()) ||
       originalDownloadingFileRef.current?.fileKey ||
       originalDownloadingFileRef.current?.downloading
     ) return
@@ -83,6 +98,7 @@ export const StorageContentMessageItemGalleryItem: FC<Props> = memo(({
     <GalleryItem
       thumbFileKey={isVideo ? thumbDownloadingFile?.fileKey : undefined}
       fileKey={originalDownloadingFile?.fileKey}
+      streamFileUrl={streamFileUrl}
       type={originalFile.type}
       name={media.name}
       description={media.description}

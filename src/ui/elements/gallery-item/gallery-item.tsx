@@ -1,6 +1,7 @@
 import type { FunctionComponent as FC } from 'preact'
 import { h } from 'preact'
 import { memo } from 'preact/compat'
+import { useRef } from 'preact/hooks'
 import cn from 'classnames'
 
 import { FilePreviewImage } from '~/ui/elements/file-preview-image'
@@ -12,6 +13,7 @@ import styles from './gallery-item.styl'
 type Props = {
   thumbFileKey?: string
   fileKey?: string
+  streamFileUrl?: string
   type: string
   name?: string
   description?: {
@@ -30,6 +32,7 @@ type Props = {
 export const GalleryItem: FC<Props> = memo(({
   thumbFileKey,
   fileKey,
+  streamFileUrl,
   type,
   description,
   duration,
@@ -40,21 +43,28 @@ export const GalleryItem: FC<Props> = memo(({
   isVideo,
   isAudio
 }) => {
+  const elRef = useRef<HTMLDivElement>(null)
+
   return (
-    <div class={cn(
-      styles.root,
-      'keen-slider__slide',
-      active && styles._active
-    )}>
+    <div
+      class={cn(
+        styles.root,
+        'keen-slider__slide',
+        active && styles._active
+      )}
+      ref={elRef}
+    >
       {(isVideo || isAudio) ? (
         <Player
           class={styles.player}
+          streamFileUrl={streamFileUrl}
           fileKey={fileKey}
           thumbFileKey={thumbFileKey}
           duration={duration}
           description={description}
           type={type}
           active={active}
+          parentRef={elRef}
           isFullscreen={isFullscreen}
           isFakeFullscreen={isFakeFullscreen}
           isVideo={isVideo}
@@ -68,7 +78,7 @@ export const GalleryItem: FC<Props> = memo(({
           isFullscreen={isFullscreen}
         />
       )}
-      {(active && !fileKey) && (
+      {(active && !fileKey && !streamFileUrl) && (
         <Loader
           class={styles.loader}
           progress={progress}

@@ -1,4 +1,4 @@
-import type { FunctionComponent as FC } from 'preact'
+import type { FunctionComponent as FC, RefObject } from 'preact'
 import { h, Fragment } from 'preact'
 import { memo } from 'preact/compat'
 import { useState, useEffect, useRef, useCallback } from 'preact/hooks'
@@ -9,12 +9,14 @@ import { getFile } from '~/core/cache'
 import { formatDuration } from '~/tools/format-time'
 import { Button } from '~/ui/elements/button'
 import { Range } from '~/ui/elements/range'
+import { Loader } from '~/ui/elements/loader'
 import { PlayIcon, PauseIcon } from '~/ui/icons'
 
 import styles from './player.styl'
 
 type Props = {
   class?: string
+  streamFileUrl?: string
   thumbFileKey?: string
   fileKey?: string
   duration?: number
@@ -24,6 +26,7 @@ type Props = {
   }
   type: string
   active?: boolean
+  parentRef: RefObject<HTMLDivElement>
   isFullscreen?: boolean
   isFakeFullscreen?: boolean
   isVideo?: boolean
@@ -32,11 +35,13 @@ type Props = {
 
 export const Player: FC<Props> = memo(({
   class: className,
+  streamFileUrl,
   thumbFileKey,
   fileKey,
   duration,
   description,
   active,
+  parentRef,
   isFullscreen,
   isFakeFullscreen,
   isVideo,
@@ -45,12 +50,14 @@ export const Player: FC<Props> = memo(({
   const playerRef = useRef<any>(null)
   const firstRenderRef = useRef(true)
   const controlsHideTimeoutRef = useRef(0)
+  const progressChangeTimeoutRef = useRef(0)
   const [controlsHidden, setControlsHidden] = useState(false)
   const [progress, setProgress] = useState(0)
-  const [playing, setPlaying] = useState(false)
+  const [playing, setPlaying] = useState(true)
   const [thumbUrl, setThumbUrl] = useState('')
   const [url, setUrl] = useState('')
   const [hidden, setHidden] = useState(false)
+  const [streamLoading, setStreamLoading] = useState(!!streamFileUrl)
 
   const syncProgress = useCallback(rafSchedule(() => {
     if (!playerRef?.current) return
@@ -64,18 +71,23 @@ export const Player: FC<Props> = memo(({
     }
   }), [])
 
-  const togglePlay = useCallback(() => {
+  const togglePlay = useCallback((ev: Event|undefined = undefined) => {
+    ev?.stopPropagation()
     if (playerRef.current.paused || playerRef.current.ended) {
       playerRef.current.play()
     } else {
       playerRef.current.pause()
     }
-  }, [isFullscreen, playerRef])
+  }, [])
 
   const changeProgress = useCallback(value => {
-    playerRef.current.currentTime = value
+    syncProgress.cancel()
     setProgress(value)
-  }, [playerRef, setProgress])
+    self.clearTimeout(progressChangeTimeoutRef.current)
+    progressChangeTimeoutRef.current = self.setTimeout(() => {
+      playerRef.current.currentTime = value
+    }, 100)
+  }, [setProgress])
 
   const hideControlsAfterTimeout = useCallback(() => {
     self.clearTimeout(controlsHideTimeoutRef.current)
@@ -90,29 +102,62 @@ export const Player: FC<Props> = memo(({
       hideControlsAfterTimeout()
     }
     setControlsHidden(!controlsHidden)
-  }, [controlsHidden])
+  }, [controlsHidden, hideControlsAfterTimeout])
 
-  const handlePlayStart = useCallback(() => {
+  const handlePlayStart = useCallback((ev) => {
+    ev.stopPropagation()
     syncProgress()
     setPlaying(true)
     if (isFullscreen) {
       hideControlsAfterTimeout()
     }
-  }, [isFullscreen, syncProgress, setPlaying, hideControlsAfterTimeout])
+    if (streamLoading) {
+      setStreamLoading(false)
+    }
+  }, [isFullscreen, streamLoading, syncProgress, setPlaying, hideControlsAfterTimeout])
 
-  const handleContentClick = useCallback(() => {
+  const handleContentClick = useCallback((ev) => {
     if (!url) {
       return
-    } else if (isFullscreen && playing) {
-      toggleControls()
-    } else if (!isFullscreen) {
+    } else if (isFullscreen) {
+      if (ev.type === 'click') {
+        togglePlay()
+      } else if (playing) {
+        toggleControls()
+      }
+    } else {
       togglePlay()
     }
   }, [isFullscreen, url, playing, togglePlay, toggleControls])
 
+  const handleCanPlay = useCallback(() => {
+    if (playing) {
+      playerRef.current.play()
+    }
+    if (streamLoading) {
+      setStreamLoading(false)
+    }
+  }, [playerRef, streamLoading, playing])
+
+  const handleWaiting = useCallback(() => {
+    setStreamLoading(true)
+  }, [setStreamLoading])
+
   const prevent = useCallback(ev => {
     ev.stopPropagation()
-  }, [])
+    if (controlsHidden) {
+      setControlsHidden(false)
+    }
+    if (isFullscreen) {
+      hideControlsAfterTimeout()
+    }
+  }, [isFullscreen, controlsHidden, hideControlsAfterTimeout])
+
+  useEffect(() => {
+    if (!streamFileUrl) return
+    setUrl(streamFileUrl)
+    setStreamLoading(true)
+  }, [streamFileUrl])
 
   useEffect(() => {
     if (!fileKey) return
@@ -129,8 +174,10 @@ export const Player: FC<Props> = memo(({
 
   useEffect(() => {
     if (!url) return
-    playerRef.current.play()
-  }, [url])
+    if (fileKey) {
+      playerRef.current.play()
+    }
+  }, [fileKey, url])
 
   useEffect(() => {
     if (playing) return
@@ -149,7 +196,7 @@ export const Player: FC<Props> = memo(({
     setThumbUrl(url)
 
     return () => URL.revokeObjectURL(url)
-  }, [thumbFileKey])
+  }, [thumbFileKey, thumbUrl])
 
   useEffect(() => {
     if (firstRenderRef.current) return
@@ -165,13 +212,21 @@ export const Player: FC<Props> = memo(({
       setHidden(true)
       setTimeout(() => setHidden(false), 50)
     }
-  }, [isFullscreen])
+  }, [isFullscreen, isFakeFullscreen, isVideo, hideControlsAfterTimeout])
 
   useEffect(() => {
     if (!active && playing) {
       togglePlay()
     }
-  }, [active])
+  }, [active, playing, togglePlay])
+
+  useEffect(() => {
+    const parentEl = parentRef.current
+    parentEl?.addEventListener('click', handleContentClick)
+    return () => {
+      parentEl?.removeEventListener('click', handleContentClick)
+    }
+  }, [parentRef, handleContentClick])
 
   useEffect(() => {
     firstRenderRef.current = false
@@ -179,7 +234,7 @@ export const Player: FC<Props> = memo(({
       syncProgress.cancel()
       self.clearTimeout(controlsHideTimeoutRef.current)
     }
-  }, [])
+  }, [syncProgress])
 
   return (
     <Fragment>
@@ -197,7 +252,9 @@ export const Player: FC<Props> = memo(({
           autoPlay={false}
           playsInline
           onPlay={handlePlayStart}
-          onClick={handleContentClick}
+          onPlaying={handlePlayStart}
+          onWaiting={handleWaiting}
+          onCanPlay={handleCanPlay}
         />
       ) : isAudio ? (
         <audio
@@ -212,7 +269,9 @@ export const Player: FC<Props> = memo(({
           autoPlay={false}
           playsInline
           onPlay={handlePlayStart}
-          onClick={handleContentClick}
+          onPlaying={handlePlayStart}
+          onWaiting={handleWaiting}
+          onCanPlay={handleCanPlay}
         />
       ) : null}
 
@@ -220,7 +279,7 @@ export const Player: FC<Props> = memo(({
         <div
           class={cn(
             styles.description,
-            (!fileKey || (isFullscreen && !controlsHidden)) && styles._transparent
+            (!url || streamLoading || (isFullscreen && !controlsHidden)) && styles._transparent
           )}
           onClick={handleContentClick}
         >
@@ -232,7 +291,7 @@ export const Player: FC<Props> = memo(({
         </div>
       )}
 
-      {(isVideo || isAudio) && !!url && isFullscreen && (
+      {!!url && !streamLoading && isFullscreen && (
         <Button
           class={cn(
             styles.playButton,
@@ -245,15 +304,23 @@ export const Player: FC<Props> = memo(({
         />
       )}
 
+      {streamLoading && (
+        <Loader
+          class={styles.loader}
+          white={isVideo || isFullscreen}
+          big
+        />
+      )}
+
       <div
         class={cn(
           styles.controls,
           !url && styles._disabled,
           controlsHidden && styles._hidden,
-          isFullscreen && styles._padding
+          isFullscreen && styles._fullscreen
         )}
+        onClick={prevent}
         onMouseMove={prevent}
-        onTouchStart={prevent}
         onTouchMove={prevent}
       >
         {!isFullscreen && (

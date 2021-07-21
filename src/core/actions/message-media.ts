@@ -1,13 +1,13 @@
 import { transfer } from 'comlink'
 import createSyncTaskQueue from 'sync-task-queue'
 
-import type { Folder, InputMessage, InputFile, DownloadingFile } from '~/core/store'
+import type { Folder, InputMessage, InputFile, DownloadingFile, StreamingFile } from '~/core/store'
 import { store } from '~/core/store'
 import { getFilePart, getFileMeta, deleteFile, addBytes, transferBytesToFile } from '~/core/cache'
 import { api } from '~/api'
 import { wait } from '~/tools/wait'
 import { generateFileMessageMark } from '~/tools/handle-content'
-import { FILE_SIZE, generateFileKey, transformToBytes } from '~/tools/handle-file'
+import { FILE_SIZE, generateFileKey, generateStreamFileUrl, transformToBytes } from '~/tools/handle-file'
 
 import { getActiveFolder } from './folders'
 import { getSendingMessage, setSendingMessage, createMessage, refreshMessage } from './messages'
@@ -191,6 +191,7 @@ export const resetDownloadingFile = (file: {
   })
 }
 
+const DOWNLOADING_PART_SIZE = FILE_SIZE.KB512
 const DOWNLOADING_TIMEOUT = 400
 const MAX_DOWNLOADING_COUNT = 4
 
@@ -234,7 +235,7 @@ export const downloadFile = async (
   }
 
   if (!downloadingFile.lastPart) {
-    const partSize = FILE_SIZE.MB1
+    const partSize = DOWNLOADING_PART_SIZE
     const partsCount = Math.ceil(file.size / partSize)
     downloadingFile = {
       ...downloadingFile,
@@ -311,4 +312,106 @@ export const downloadFile = async (
       })
     }
   })
+}
+
+export const getStreamingFile = (
+  fileKey: string
+) => {
+  return store.getState().streamingFiles.get(fileKey)
+}
+
+export const setStreamingFile = (
+  file: StreamingFile
+) => {
+  const streamingFiles = new Map(store.getState().streamingFiles)
+  const fileKey = generateFileKey(file)
+  streamingFiles.set(fileKey, file)
+  store.setState({
+    streamingFiles
+  })
+}
+
+export const streamFile = (
+  messageId: number,
+  file: DownloadingFile
+) => {
+  const folder = getActiveFolder() as Folder
+  const fileKey = generateFileKey(file)
+  let streamingFile: StreamingFile | undefined =
+    getStreamingFile(fileKey) ||
+    { ...file, folder, messageId }
+
+  streamingFile = {
+    ...streamingFile,
+    file_reference: file.file_reference,
+    dc_id: file.dc_id,
+    access_hash: file.access_hash,
+    streaming: true,
+    folder,
+    messageId
+  }
+
+  setStreamingFile(streamingFile)
+  return generateStreamFileUrl(streamingFile)
+}
+
+export const downloadStreamFilePart = async ({
+  fileKey,
+  offsetSize,
+  partSize,
+  file_reference
+}: {
+  fileKey: string
+  offsetSize: number
+  partSize: number
+  file_reference?: ArrayBuffer
+}): Promise<Uint8Array|undefined> => {
+  let streamingFile = getStreamingFile(fileKey) as StreamingFile
+  if (!streamingFile) return
+
+  if (file_reference) {
+    streamingFile = {
+      ...streamingFile,
+      file_reference
+    }
+    setStreamingFile(streamingFile)
+  }
+
+  const bytes = await api.downloadFilePart({
+    ...streamingFile,
+    offsetSize,
+    partSize,
+    precise: false
+  }).catch(({ message }) => {
+    if (message === 'FILE_REFERENCE_EXPIRED') {
+      const { folder, messageId } = streamingFile
+      if (!folder || !messageId) return
+
+      return refreshMessage(folder, messageId, 0, () => {
+        const file_reference = getFileReference(streamingFile)
+        return downloadStreamFilePart({ fileKey, offsetSize, partSize, file_reference })
+      }) as Promise<Uint8Array|undefined>
+    }
+  })
+
+  return bytes
+}
+
+export const getFileReference = ({
+  folder,
+  messageId,
+  id
+}: {
+  folder: Folder
+  messageId: number
+  id: string
+}) => {
+  const state = store.getState()
+  const folderMessages = state.foldersMessages.get(folder.id)
+  const message = folderMessages?.get(messageId)
+  const media = [
+    message?.media,
+    ...(message?.mediaMessages?.map(({ media }) => media) || [])
+  ].find(media => media?.id === id)
+  return media?.file_reference
 }

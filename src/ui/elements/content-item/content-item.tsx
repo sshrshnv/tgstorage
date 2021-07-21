@@ -41,21 +41,19 @@ export const ContentItem: FC<Props> = memo(({
   useEffect(() => {
     if (!resizeObserver || !elRef.current) return
 
-    resizeObserver.observe(elRef.current)
-    return () => {
-      if (!elRef.current) return
-      resizeObserver.unobserve(elRef.current)
-    }
+    const el = elRef.current
+    resizeObserver.observe(el)
+
+    return () => resizeObserver.unobserve(el)
   }, [resizeObserver])
 
   useEffect(() => {
     if (!intersectionObserver || !elRef.current) return
 
-    intersectionObserver.observe(elRef.current)
-    return () => {
-      if (!elRef.current) return
-      intersectionObserver.unobserve(elRef.current)
-    }
+    const el = elRef.current
+    intersectionObserver.observe(el)
+
+    return () => intersectionObserver.unobserve(el)
   }, [intersectionObserver])
 
   useEffect(() => () => {

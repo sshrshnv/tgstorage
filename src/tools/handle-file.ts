@@ -25,6 +25,9 @@ export const generateLocalFileKey = ({ name, size, type, lastModified }) =>
 export const generateFileKey = ({ id, size }) =>
   `${id}-${size}`
 
+export const generateStreamFileUrl = ({ id, size, type }) =>
+  `/sw/stream?fileKey=${generateFileKey({ id, size })}&fileSize=${size}&fileType=${type}`
+
 export const transformToBytes = (file: Blob | undefined) => {
   if (!file) return
 

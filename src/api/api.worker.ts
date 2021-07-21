@@ -678,7 +678,7 @@ class Api {
     id,
     partSize,
     offsetSize,
-    precise,
+    precise = true,
     dc_id,
     access_hash,
     file_reference,
@@ -688,12 +688,12 @@ class Api {
     id: string
     partSize: number
     offsetSize: number
-    precise: boolean
+    precise?: boolean
     dc_id: number
     access_hash: string
     file_reference: ArrayBuffer
-    sizeType: string
-    originalSizeType: string
+    sizeType?: string
+    originalSizeType?: string
   }) {
     let file = await this.call('upload.getFile', {
       location: {

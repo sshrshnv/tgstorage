@@ -29,7 +29,7 @@ export const Content: FC<Props> = memo(({
 
     ev.stopPropagation()
     ev.preventDefault()
-  }, [])
+  }, [dropAvailable])
 
   const handleDrop = useCallback((ev: DragEvent) => {
     if (!dropAvailable) return
@@ -50,7 +50,7 @@ export const Content: FC<Props> = memo(({
     if (fileKeys.length) {
       onAddFiles?.(fileKeys)
     }
-  }, [onAddFiles])
+  }, [dropAvailable, onAddFiles])
 
   useEffect(() => {
     const handlePaste = (ev: ClipboardEvent) => {
