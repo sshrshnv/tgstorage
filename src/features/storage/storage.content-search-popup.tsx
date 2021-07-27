@@ -3,7 +3,7 @@ import { h } from 'preact'
 import { useState, useCallback, useEffect, useRef } from 'preact/hooks'
 
 import type { Message } from '~/core/store'
-import { useCallbackRef, useUpdatableRef } from '~/tools/hooks'
+import { useCallbackRef } from '~/tools/hooks'
 import { searchMessages, resetSearch } from '~/core/actions'
 import { useTexts, useActiveFolder, useSearchMessages, useMessageForm } from '~/core/hooks'
 import { Content } from '~/ui/elements/content'
@@ -69,7 +69,7 @@ export const StorageContentSearchPopup: FC<Props> = ({
     searchTimeout.current = self.setTimeout(() => {
       loadMessagesRef.current(query)
     }, 500)
-  }, [query, loadMessagesRef])
+  }, [query])
 
   useEffect(() => () => {
     resetSearch()

@@ -93,9 +93,13 @@ const uploadFile = async (folder: Folder, inputFile: InputFile) => {
       }
     }
 
-    deleteFile(fileKey)
     return fileParams
-  }))
+  }));
+
+  [inputFile.fileKey, inputFile.thumbFileKey].forEach(fileKey => {
+    if (!fileKey) return
+    deleteFile(fileKey)
+  })
 
   if (!mainFileParams) return
   const { w, h, duration } = inputFile

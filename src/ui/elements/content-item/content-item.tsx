@@ -15,7 +15,6 @@ import styles from './content-item.styl'
 type Props = {
   message: Message
   offset: number | undefined
-  height: number | undefined
   visible: boolean
   resizeObserver: ResizeObserver
   intersectionObserver: IntersectionObserver | undefined
@@ -29,7 +28,6 @@ export const ContentItem: FC<Props> = memo(({
   children,
   message,
   offset,
-  //height,
   visible,
   resizeObserver,
   intersectionObserver,
@@ -61,7 +59,7 @@ export const ContentItem: FC<Props> = memo(({
 
   useEffect(() => () => {
     onDeleteRef.current?.(messageIdRef.current)
-  }, [messageIdRef, onDeleteRef])
+  }, [])
 
   return (
     <div
@@ -88,7 +86,6 @@ export const ContentItem: FC<Props> = memo(({
           <Menu
             {...menu}
             class={styles.menu}
-            //positionY={(offset || 0) + (height || 0) > 240 ? 'bottom' : 'top'}
             parentRef={elRef}
           />
         )}

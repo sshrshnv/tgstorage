@@ -20,9 +20,9 @@ export const useFolder = (id = 0) => {
     texts: state.texts[state.settings.locale].storage
   }))
 
-  const folder = folders.get(id) as Folder
+  const folder = folders?.get(id) as Folder
   const folderRef = useUpdatableRef(folder)
-  const folderMessages = foldersMessages.get(id)
+  const folderMessages = foldersMessages?.get(id)
 
   return useMemo(() => {
     const messages = [...(folderMessages || new Map()).values()] as Message[]

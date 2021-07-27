@@ -4,20 +4,20 @@ import { memo } from 'preact/compat'
 import { useCallback, useEffect, useRef, useMemo } from 'preact/hooks'
 import cn from 'classnames'
 
-import type { InputFile } from '~/core/store'
+import type { InputFile, Message } from '~/core/store'
 import { useRAFCallback } from '~/tools/hooks'
 import { checkIsParentFilesMessage, parseParentFilesMessage } from '~/tools/handle-content'
 import { Textarea } from '~/ui/elements/textarea'
 import { FileInput } from '~/ui/elements/file-input'
 import { Loader } from '~/ui/elements/loader'
 import { Button } from '~/ui/elements/button'
-import { SendIcon, CheckboxIcon } from '~/ui/icons'
+import { SendIcon, CheckboxIcon, FileIcon } from '~/ui/icons'
 
 import styles from './content-form.styl'
 import { ContentFormNoteItem } from './content-form-note-item'
 
 type Props = {
-  message: {
+  message: Partial<Message> & {
     text: string
     inputFiles?: InputFile[]
   }
@@ -51,6 +51,10 @@ export const ContentFormNote: FC<Props> = memo(({
   const isParentFiles = useMemo(() => {
     return checkIsParentFilesMessage(message.text)
   }, [message.text])
+
+  const mediaCount = useMemo(() => {
+    return (message.mediaMessages?.length || 0) + +!!message.media?.originalSize
+  }, [message.media?.originalSize, message.mediaMessages?.length])
 
   const normalizedText = useMemo(() => {
     return isParentFiles ? parseParentFilesMessage(message.text).text : message.text
@@ -88,7 +92,7 @@ export const ContentFormNote: FC<Props> = memo(({
 
   useEffect(() => {
     setStylesRef.current(textareaRef)
-  }, [message.text, setStylesRef])
+  }, [message.text])
 
   useEffect(() => {
     if (!isOpened) return
@@ -97,7 +101,7 @@ export const ContentFormNote: FC<Props> = memo(({
 
   useEffect(() => () => {
     cancelSetStylesRef.current?.()
-  }, [cancelSetStylesRef])
+  }, [])
 
   return (
     <Fragment>
@@ -146,6 +150,12 @@ export const ContentFormNote: FC<Props> = memo(({
               onClick={enableChecklist}
             />
           )}
+        </div>
+      )}
+
+      {mediaCount > 0 && (
+        <div class={styles.mediaCount}>
+          <FileIcon/> {mediaCount}
         </div>
       )}
     </Fragment>

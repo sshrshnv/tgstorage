@@ -107,7 +107,7 @@ export const ContentFormChecklistItem: FC<Props> = memo(({
   useEffect(() => {
     if (!isLastItemRef.current) return
     handleLastMountRef.current()
-  }, [isLastItemRef, handleLastMountRef])
+  }, [])
 
   return (
     <Fragment>

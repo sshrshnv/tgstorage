@@ -1,10 +1,11 @@
 import type { FunctionComponent as FC, RefObject } from 'preact'
 import { h, Fragment } from 'preact'
 import { memo } from 'preact/compat'
-import { useState, useEffect, useRef, useCallback } from 'preact/hooks'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'preact/hooks'
 import cn from 'classnames'
 
-import { useRAFCallback } from '~/tools/hooks'
+import { useCallbackRef, useRAFCallback } from '~/tools/hooks'
+import { checkIsSafari } from '~/tools/detect-device'
 import { getFile } from '~/core/cache'
 import { formatDuration } from '~/tools/format-time'
 import { Button } from '~/ui/elements/button'
@@ -47,6 +48,7 @@ export const Player: FC<Props> = memo(({
   isVideo,
   isAudio
 }) => {
+  const isSafari = useMemo(() => checkIsSafari(), [])
   const playerRef = useRef<any>(null)
   const firstRenderRef = useRef(true)
   const controlsHideTimeoutRef = useRef(0)
@@ -57,7 +59,7 @@ export const Player: FC<Props> = memo(({
   const [thumbUrl, setThumbUrl] = useState('')
   const [url, setUrl] = useState('')
   const [hidden, setHidden] = useState(false)
-  const [streamLoading, setStreamLoading] = useState(!!streamFileUrl)
+  const [streamLoading, setStreamLoading] = useState(true)
 
   const [syncProgress, _syncProgressRef, cancelSyncProgressRef] = useRAFCallback(() => {
     if (!playerRef?.current) return
@@ -71,14 +73,22 @@ export const Player: FC<Props> = memo(({
     }
   }, [playerRef, setProgress, setPlaying])
 
-  const togglePlay = useCallback((ev: Event|undefined = undefined) => {
+  const [_play, playRef] = useCallbackRef(() => {
+    try {
+      playerRef.current.play()
+    } catch (err) {
+      alert(err)
+    }
+  }, [])
+
+  const [togglePlay, togglePlayRef] = useCallbackRef((ev: Event|undefined = undefined) => {
     ev?.stopPropagation()
     if (playerRef.current.paused || playerRef.current.ended) {
-      playerRef.current.play()
+      playRef.current()
     } else {
       playerRef.current.pause()
     }
-  }, [])
+  }, [playRef])
 
   const changeProgress = useCallback(value => {
     cancelSyncProgressRef.current?.()
@@ -89,7 +99,7 @@ export const Player: FC<Props> = memo(({
     }, 100)
   }, [cancelSyncProgressRef, setProgress])
 
-  const hideControlsAfterTimeout = useCallback(() => {
+  const [hideControlsAfterTimeout, hideControlsAfterTimeoutRef] = useCallbackRef(() => {
     self.clearTimeout(controlsHideTimeoutRef.current)
     controlsHideTimeoutRef.current = self.setTimeout(() => {
       if (playerRef.current.paused || playerRef.current.ended) return
@@ -116,7 +126,7 @@ export const Player: FC<Props> = memo(({
     }
   }, [isFullscreen, streamLoading, syncProgress, setPlaying, hideControlsAfterTimeout])
 
-  const handleContentClick = useCallback((ev) => {
+  const [handleContentClick, handleContentClickRef] = useCallbackRef((ev) => {
     if (!url) {
       return
     } else if (isFullscreen) {
@@ -132,12 +142,12 @@ export const Player: FC<Props> = memo(({
 
   const handleCanPlay = useCallback(() => {
     if (playing) {
-      playerRef.current.play()
+      playRef.current()
     }
     if (streamLoading) {
       setStreamLoading(false)
     }
-  }, [playerRef, streamLoading, playing])
+  }, [playRef, streamLoading, playing])
 
   const handleWaiting = useCallback(() => {
     setStreamLoading(true)
@@ -205,28 +215,29 @@ export const Player: FC<Props> = memo(({
       self.clearTimeout(controlsHideTimeoutRef.current)
       setControlsHidden(false)
     } else {
-      hideControlsAfterTimeout()
+      hideControlsAfterTimeoutRef.current()
     }
 
     if (isVideo && !isFakeFullscreen) {
       setHidden(true)
       setTimeout(() => setHidden(false), 50)
     }
-  }, [isFullscreen, isFakeFullscreen, isVideo, hideControlsAfterTimeout])
+  }, [isFullscreen, isFakeFullscreen])
 
   useEffect(() => {
     if (!active && playing) {
-      togglePlay()
+      togglePlayRef.current()
     }
-  }, [active, playing, togglePlay])
+  }, [active, playing])
 
   useEffect(() => {
     const parentEl = parentRef.current
+    const handleContentClick = handleContentClickRef.current
     parentEl?.addEventListener('click', handleContentClick)
     return () => {
       parentEl?.removeEventListener('click', handleContentClick)
     }
-  }, [parentRef, handleContentClick])
+  }, [parentRef])
 
   useEffect(() => {
     const cancelSyncProgress = cancelSyncProgressRef.current
@@ -235,7 +246,13 @@ export const Player: FC<Props> = memo(({
       cancelSyncProgress?.()
       self.clearTimeout(controlsHideTimeoutRef.current)
     }
-  }, [syncProgress, cancelSyncProgressRef])
+  }, [])
+
+  useEffect(() => () => {
+    playerRef.current.pause()
+    playerRef.current.src = ''
+    playerRef.current.load()
+  }, [])
 
   return (
     <Fragment>
@@ -248,14 +265,16 @@ export const Player: FC<Props> = memo(({
             hidden && styles._hidden
           )}
           src={url || undefined}
+          preload="auto"
           poster={thumbUrl}
           controls={false}
-          autoPlay={false}
+          autoPlay={isSafari}
           playsInline
           onPlay={handlePlayStart}
           onPlaying={handlePlayStart}
           onWaiting={handleWaiting}
-          onCanPlay={handleCanPlay}
+          onCanPlay={isSafari ? undefined : handleCanPlay}
+          onCanPlayThrough={isSafari ? handleCanPlay : undefined}
         />
       ) : isAudio ? (
         <audio
@@ -266,13 +285,15 @@ export const Player: FC<Props> = memo(({
             hidden && styles._hidden
           )}
           src={url || undefined}
+          preload="auto"
           controls={false}
-          autoPlay={false}
+          autoPlay={isSafari}
           playsInline
           onPlay={handlePlayStart}
           onPlaying={handlePlayStart}
           onWaiting={handleWaiting}
-          onCanPlay={handleCanPlay}
+          onCanPlay={isSafari ? undefined : handleCanPlay}
+          onCanPlayThrough={isSafari ? handleCanPlay : undefined}
         />
       ) : null}
 
@@ -316,7 +337,7 @@ export const Player: FC<Props> = memo(({
       <div
         class={cn(
           styles.controls,
-          !url && styles._disabled,
+          (!url || (isSafari && streamLoading)) && styles._disabled,
           controlsHidden && styles._hidden,
           isFullscreen && styles._fullscreen
         )}

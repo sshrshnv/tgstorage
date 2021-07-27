@@ -152,7 +152,7 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
       if (!thumbDownloadingFileRef.current?.downloading) return
       pauseDownloadingFile(thumbDownloadingFileRef.current)
     }
-  }, [mediaLoadAvailable, thumbFile?.file_reference, messageIdRef, thumbFileRef, thumbDownloadingFileRef])
+  }, [mediaLoadAvailable, thumbFile?.file_reference])
 
   useEffect(() => {
     if (
@@ -163,13 +163,13 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
     ) {
       downloadFile(messageIdRef.current, originalFileRef.current)
     }
-  }, [originalFile?.file_reference, messageIdRef, downloadingRef, originalFileRef, originalDownloadingFileRef])
+  }, [originalFile?.file_reference])
 
   useEffect(() => {
     if (downloadingRef.current && originalDownloadingFile?.fileKey) {
       saveFileRef.current()
     }
-  }, [originalDownloadingFile?.fileKey, downloadingRef, originalDownloadingFile, saveFileRef])
+  }, [originalDownloadingFile?.fileKey])
 
   useEffect(() => () => {
     if (thumbDownloadingFileRef.current) {
@@ -183,7 +183,7 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
     if (originalDownloadingFileRef.current) {
       originalDownloadingFileRef.current = undefined
     }
-  }, [thumbFileRef, thumbDownloadingFileRef, originalDownloadingFileRef])
+  }, [])
 
   return (
     <ContentItemMediaItem

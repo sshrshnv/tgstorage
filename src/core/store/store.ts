@@ -26,18 +26,25 @@ const [
   apiCache.getSettings()
 ])
 
-const state: State = {
-  user,
-  userLoading: true,
-  folders,
-  foldersLoading: true,
-  foldersMessages,
+const initialDataState = {
+  user: null,
+  userLoading: false,
+  folders: new Map(),
+  foldersLoading: false,
+  foldersMessages: new Map(),
   activeFolderId: 0,
   loadingFolderIds: new Map(),
   sendingMessages: new Map(),
   searchMessages: new Map(),
   downloadingFiles: new Map(),
   streamingFiles: new Map(),
+}
+
+const state: State = {
+  ...initialDataState,
+  user,
+  folders,
+  foldersMessages,
   settings: settings || {
     locale: detectLocale()
   },
@@ -53,4 +60,8 @@ const store = process.env.NODE_ENV === 'production' ?
   createStore(state) :
   devtools(createStore(state))
 
-export { store }
+const resetStore = () => store.setState({
+  ...initialDataState
+})
+
+export { store, resetStore }

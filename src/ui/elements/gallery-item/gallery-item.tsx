@@ -1,9 +1,10 @@
 import type { FunctionComponent as FC } from 'preact'
 import { h } from 'preact'
 import { memo } from 'preact/compat'
-import { useRef } from 'preact/hooks'
+import { useMemo, useRef } from 'preact/hooks'
 import cn from 'classnames'
 
+import { checkIsIOS } from '~/tools/detect-device'
 import { FilePreviewImage } from '~/ui/elements/file-preview-image'
 import { Player } from '~/ui/elements/player'
 import { Loader } from '~/ui/elements/loader'
@@ -44,13 +45,14 @@ export const GalleryItem: FC<Props> = memo(({
   isAudio
 }) => {
   const elRef = useRef<HTMLDivElement>(null)
+  const isPerformance = useMemo(() => checkIsIOS(), [])
 
   return (
     <div
       class={cn(
         styles.root,
         'keen-slider__slide',
-        active && styles._active
+        isPerformance && styles._performance
       )}
       ref={elRef}
     >

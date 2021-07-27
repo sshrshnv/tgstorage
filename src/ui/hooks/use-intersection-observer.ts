@@ -1,7 +1,7 @@
 import type { RefObject } from 'preact'
 import { useMemo, useEffect, useState, useCallback } from 'preact/hooks'
 
-import { useRAFCallback } from '~/tools/hooks'
+import { useRAFCallback, useMemoRef } from '~/tools/hooks'
 
 export const useIntersectionObserver = (
   handleElRef: RefObject<(el: IntersectionObserverEntry) => void>
@@ -18,15 +18,15 @@ export const useIntersectionObserver = (
     }
   }, [handleElRef])
 
-  const intersectionObserver = useMemo(() => {
+  const [intersectionObserver, intersectionObserverRef] = useMemoRef(() => {
     return intersectionEl ? new IntersectionObserver(handleElementsRef.current, {
       root: intersectionEl
     }) : undefined
   }, [intersectionEl, handleElementsRef])
 
-  useEffect(() => {
-    //return () => intersectionObserver?.disconnect()
-  }, [intersectionObserver])
+  useEffect(() => () => {
+    intersectionObserverRef.current?.disconnect()
+  }, [])
 
   return useMemo(() => ({
     intersectionRef,

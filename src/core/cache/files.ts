@@ -87,3 +87,9 @@ export const transferBytesToFile = (fileId: string, type) => {
 
   return fileKey
 }
+
+export const resetFiles = () => {
+  fileCache.clear()
+  fileMetaCache.clear()
+  bytesCache.clear()
+}

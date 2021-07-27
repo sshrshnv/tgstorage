@@ -33,7 +33,7 @@ export const StorageContent: FC<Props> = memo(({
     if (searchRef.current) {
       toggleSearchRef.current()
     }
-  }, [folder.id, searchRef, toggleSearchRef])
+  }, [folder.id])
 
   return (
     <ContentWrapper

@@ -1,10 +1,11 @@
 import type { FunctionComponent as FC } from 'preact'
 import { h } from 'preact'
 import { memo } from 'preact/compat'
-import { useEffect, useCallback, useRef } from 'preact/hooks'
+import { useEffect, useRef, useMemo } from 'preact/hooks'
 import cn from 'classnames'
 
-import { useUpdatableRef } from '~/tools/hooks'
+import { useUpdatableRef, useCallbackRef } from '~/tools/hooks'
+import { checkIsIOS } from '~/tools/detect-device'
 import { animationClassName } from '~/ui/styles/animation'
 
 import styles from './slide.styl'
@@ -28,8 +29,9 @@ export const Slide: FC<Props> = memo(({
   const slideRef = useRef<HTMLDivElement>(null)
   const animationRef = useRef<Animation|undefined>()
   const nameRef = useUpdatableRef(name)
+  const isPerformance = useMemo(() => checkIsIOS(), [])
 
-  const handlePopState = useCallback(() => {
+  const [_handlePopState, handlePopStateRef] = useCallbackRef(() => {
     if (slides[slides.length - 1] !== name) {
       return
     }
@@ -43,7 +45,7 @@ export const Slide: FC<Props> = memo(({
 
     animationRef.current.reverse()
     setTimeout(() => onClose?.(), 200)
-  }, [name, animationRef, onClose])
+  }, [name, onClose])
 
   useEffect(() => {
     slides.push(nameRef.current)
@@ -57,12 +59,13 @@ export const Slide: FC<Props> = memo(({
       fill: 'forwards',
       easing: 'ease-in-out'
     })
-  }, [nameRef])
+  }, [])
 
   useEffect(() => {
+    const handlePopState = handlePopStateRef.current
     self.addEventListener('popstate', handlePopState)
     return () => self.removeEventListener('popstate', handlePopState)
-  }, [handlePopState])
+  }, [])
 
   return (
     <div
@@ -70,7 +73,8 @@ export const Slide: FC<Props> = memo(({
       class={cn(
         className,
         styles.root,
-        styles[animationClassName]
+        styles[animationClassName],
+        isPerformance && styles._performance
       )}
       ref={slideRef}
     >

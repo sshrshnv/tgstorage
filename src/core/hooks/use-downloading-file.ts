@@ -24,9 +24,7 @@ export const useDownloadingFile = (file: {
   return useMemo(() => ({
     downloadingFile,
     downloadingFileRef
-  }),
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  [
+  }), [
     downloadingFile?.fileKey,
     downloadingFile?.downloading,
     downloadingFile?.progress

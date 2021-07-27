@@ -189,7 +189,7 @@ module.exports = [{
 
     isBundleAnalyzer() ? new BundleAnalyzerPlugin({
       analyzerHost: '0.0.0.0',
-      analyzerPort: 5001
+      analyzerPort: 5002
     }) : () => {}
   ],
 

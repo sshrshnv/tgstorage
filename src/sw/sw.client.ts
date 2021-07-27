@@ -16,19 +16,21 @@ export const registerSW = async () => {
 
   const wb = new Workbox('/sw.js')
 
-  if (process.env.NODE_ENV === 'production') {
-    wb.addEventListener('waiting', () => {
-      waitAppUpdateAccepted(() => {
-        wb.addEventListener('controlling', () => {
-          self.location.reload()
-        })
-
-        wb.messageSkipWaiting()
-      })
-
-      setAppUpdateExist()
+  const update = () => {
+    wb.addEventListener('controlling', () => {
+      self.location.reload()
     })
+    wb.messageSkipWaiting()
   }
+
+  wb.addEventListener('waiting', () => {
+    if (process.env.NODE_ENV === 'production') {
+      waitAppUpdateAccepted(update)
+      setAppUpdateExist()
+    } else {
+      update()
+    }
+  })
 
   wb.addEventListener('message', async ev => {
     const { sw, data } = ev

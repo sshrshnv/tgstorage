@@ -17,8 +17,7 @@ export const useSendingMessage = (folderId: number) => {
 
   return useMemo(() => ({
     sendingMessage,
-    sendingMessageRef
-  }),
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  [sendingMessage?.inputFiles, sendingMessageRef])
+    sendingMessageRef,
+    isSendingMessageExist: !!sendingMessage
+  }), [sendingMessage?.folderId, sendingMessage?.inputFiles, sendingMessageRef])
 }

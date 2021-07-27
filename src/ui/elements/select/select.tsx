@@ -143,7 +143,7 @@ export const Select: FC<Props> = memo(({
     }
     self.addEventListener('keydown', handleKey)
     return () => self.removeEventListener('keydown', handleKey)
-  }, [focused, expanded, collapseRef, expandRef])
+  }, [focused, expanded])
 
   return (
     <div

@@ -33,7 +33,7 @@ export const BluredImage: FC<Props> = memo(({
       height: heightRef.current,
       radius: radiusRef.current
     })
-  }, [url, widthRef, heightRef, radiusRef])
+  }, [url])
 
   return (
     <canvas

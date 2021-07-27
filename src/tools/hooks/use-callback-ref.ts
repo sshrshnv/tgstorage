@@ -5,7 +5,6 @@ export const useCallbackRef = <T extends Function>(fn: T, inputs: Inputs): [
   T,
   Ref<T>
 ] => {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const callback = useCallback(fn, inputs)
   const callbackRef = useRef(callback)
 

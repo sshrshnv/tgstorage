@@ -76,15 +76,12 @@ export const Fullscreen: FC<Props> = ({
 
     if (!el) return
 
-    if (forwardedRef?.current) {
-      const el = forwardedRef.current as any
-      if (
-        !el.requestFullscreen &&
-        !el.webkitEnterFullscreen && !el.webkitEnterFullScreen &&
-        !el.webkitRequestFullscreen && !el.webkitRequestFullScreen
-      ) {
-        onChange(false, true)
-      }
+    if (
+      !el.requestFullscreen &&
+      !el.webkitEnterFullscreen && !el.webkitEnterFullScreen &&
+      !el.webkitRequestFullscreen && !el.webkitRequestFullScreen
+    ) {
+      onChange(false, true)
     }
 
     const handleFullscreenChange = () => {
@@ -100,7 +97,7 @@ export const Fullscreen: FC<Props> = ({
       el.removeEventListener('fullscreenchange', handleFullscreenChange)
       el.removeEventListener('webkitfullscreenchange', handleFullscreenChange)
     }
-  }, [forwardedRef, onChangeRef])
+  }, [])
 
   useEffect(() => {
     const requestFullscreen = requestFullscreenRef.current
@@ -122,7 +119,7 @@ export const Fullscreen: FC<Props> = ({
         self.removeEventListener('orientationchange', handleOrientationChange)
       }
     }
-  }, [requestFullscreenRef])
+  }, [])
 
   return (
     <Button

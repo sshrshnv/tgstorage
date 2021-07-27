@@ -33,7 +33,6 @@ export const StorageContentMessagesList: FC<Props> = memo(({
 }) => {
   const {
     offsets,
-    heights,
     resizeObserver,
     visibility,
     intersectionObserver,
@@ -47,7 +46,7 @@ export const StorageContentMessagesList: FC<Props> = memo(({
 
   useEffect(() => {
     countRef.current = messages.length
-  }, [messages.length, countRef])
+  }, [messages.length])
 
   useEffect(() => {
     const lastMessageId = lastMessageIdRef.current
@@ -60,7 +59,7 @@ export const StorageContentMessagesList: FC<Props> = memo(({
     ) {
       loadMessages?.()
     }
-  }, [messages.length, visibility.lastIndex, messagesLoadingRef, lastMessageIdRef, loadMessagesRef])
+  }, [messages.length, visibility.lastIndex])
 
   return (
     <ContentList
@@ -69,7 +68,6 @@ export const StorageContentMessagesList: FC<Props> = memo(({
     >
       {messages.map((message, index) => {
         const offset = offsets.get(message.id)
-        const height = heights.get(message.id)
         const visible = (
           (index >= visibility.firstIndex && index <= visibility.lastIndex) ||
           index === offsets.size - 1
@@ -81,7 +79,6 @@ export const StorageContentMessagesList: FC<Props> = memo(({
             folder={folder}
             message={message}
             offset={offset}
-            height={height}
             visible={visible}
             resizeObserver={resizeObserver}
             intersectionObserver={intersectionObserver}

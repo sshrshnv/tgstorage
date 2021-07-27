@@ -80,7 +80,7 @@ export const Gallery: FC<Props> = memo(({
       gallery?.destroy()
       self.document.removeEventListener('keydown', handleKeyDown)
     }
-  }, [galleryRef, initialIndexRef, setGalleryRef, closeSlideRef, onChangeIndexRef])
+  }, [])
 
   return createPortal((
     <Slide

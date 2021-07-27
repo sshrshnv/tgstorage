@@ -48,6 +48,8 @@ export const AuthFormPhone: FC<Props> = memo(({
   setStep
 }) => {
   const countryRef = useUpdatableRef(country)
+  const initialCountryRef = useUpdatableRef(initialCountry)
+  const phoneRef = useUpdatableRef(phone)
   const setCountryRef = useUpdatableRef(setCountry)
   const { localeRef } = useSettings()
   const { texts } = useTexts('auth')
@@ -112,14 +114,17 @@ export const AuthFormPhone: FC<Props> = memo(({
       api.getCountry().then(({ country: value }) => setCountryRef.current({ ...countryRef.current, value })),
       api.getCountries(localeRef.current).then(({ countries }) => setCountries(countries))
     ]).then(() => setReady(true))
-  }, [localeRef, countryRef, setCountryRef])
+  }, [])
 
   useEffect(() => {
+    const initialCountry = initialCountryRef.current
+    const countryCode = countryRef.current.code
+    const phone = phoneRef.current
     const foundCountry = findCountryByCountryValue(countries, country.value)
-    const validPhone = foundCountry?.code !== country.code ? '' : phone
-    setCountry(foundCountry || { ...initialCountry, value: country.value })
+    const validPhone = foundCountry?.code !== countryCode ? '' : phone
+    setCountryRef.current(foundCountry || { ...initialCountry, value: country.value })
     setPhone(formatPhone(validPhone, foundCountry).value)
-  }, [initialCountry, phone, country.code, country.value, countries, setPhone, setCountry])
+  }, [country.value, countries])
 
   return (
     <Form onSubmit={handleSubmit} center>

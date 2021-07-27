@@ -120,6 +120,7 @@ export type InputMedia = {
 }
 
 export type InputMessage = {
+  folderId?: number
   id?: number
   text: string
   inputMedia?: InputMedia

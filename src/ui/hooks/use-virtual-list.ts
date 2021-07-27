@@ -121,7 +121,6 @@ export const useVirtualList = () => {
 
   return useMemo(() => ({
     offsets,
-    heights: heightsRef.current,
     visibility,
     resizeObserver,
     intersectionObserver,

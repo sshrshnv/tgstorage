@@ -1,7 +1,7 @@
 declare const self: ServiceWorkerGlobalScope
 
 import { wb } from './workbox'
-import { getMessageHandler, handleStream } from './handlers'
+import { getMessageHandler, deleteMessageHandler, handleStream } from './handlers'
 
 wb.setCacheNameDetails({ prefix: 'tgstorage' })
 
@@ -12,6 +12,7 @@ self.addEventListener('message', ev => {
     self.skipWaiting()
   } else if (data?.messageKey) {
     getMessageHandler(data.messageKey)?.(data)
+    deleteMessageHandler(data.messageKey)
   }
 })
 

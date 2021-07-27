@@ -1,5 +1,6 @@
 import type { User } from '~/core/store'
-import { store } from '~/core/store'
+import { store, resetStore } from '~/core/store'
+import { resetFiles } from '~/core/cache'
 import { api } from '~/api'
 
 export const getUser = () =>
@@ -16,4 +17,6 @@ export const setUser = (
 
 export const logOut = async () => {
   await api.logOut()
+  resetStore()
+  resetFiles()
 }

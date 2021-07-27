@@ -1,4 +1,4 @@
-import { get, set, update } from 'idb-keyval'
+import { get, set, update, clear } from 'idb-keyval'
 
 import type {
   User,
@@ -11,8 +11,8 @@ import type {
 
 import { META_KEY } from './api.helpers'
 
-const cache = {}
-const offsetsCache = new Map<number, number | 'end'>()
+let cache = {}
+let offsetsCache = new Map<number, number | 'end'>()
 
 const setData = async (
   key: string, {
@@ -55,13 +55,11 @@ export const apiCache = {
     data: meta
   }),
   getMeta: (initialMeta) => getData(META_KEY, initialMeta),
-  resetMeta: () => apiCache.setMeta(null),
 
   setUser: (user: User) => setData('user', {
     data: user
   }),
   getUser: (): Promise<User> => getData('user', null),
-  resetUser: () => apiCache.setUser(null),
 
   setSettings: (settings: Settings) => setData('settings', {
     data: settings
@@ -72,14 +70,12 @@ export const apiCache = {
     data: folders
   }),
   getFolders: (): Promise<Folders> => getData('folders', new Map()),
-  resetFolders: () => apiCache.setFolders(new Map()),
 
   setFolderMessages: (folderId, messages) => setData(`messages-${folderId}`, {
     data: messages,
     dbData: new Map([...messages].slice(0, 20))
   }),
   getFolderMessages: (folderId): Promise<FolderMessages> => getData(`messages-${folderId}`, new Map()),
-  resetFolderMessages: (folderId) => apiCache.setFolderMessages(folderId, new Map()),
 
   getFoldersMessages: async (): Promise<FoldersMessages> => {
     const cachedFolders = await apiCache.getFolders()
@@ -88,12 +84,6 @@ export const apiCache = {
       apiCache.getFolderMessages(id).then(folderMessages => foldersMessages.set(id, folderMessages))
     ))
     return foldersMessages
-  },
-  resetFoldersMessages: async () => {
-    const cachedFolders = await apiCache.getFolders()
-    return Promise.all([...cachedFolders.values()].map(({ id }) =>
-      apiCache.resetFolderMessages(id)
-    ))
   },
 
   setSearchMessages: (messages) => setData('searchMessages', {
@@ -112,4 +102,13 @@ export const apiCache = {
 
   setFolderOffsetId: (folderId: number, offsetId: number | 'end') => offsetsCache.set(folderId, offsetId),
   getFolderOffsetId: (folderId: number) => offsetsCache.get(folderId)
+}
+
+export const resetApiCache = async () => {
+  const settings = await apiCache.getSettings()
+
+  cache = {}
+  offsetsCache = new Map()
+  await clear()
+  apiCache.setSettings(settings)
 }

@@ -71,7 +71,7 @@ export const StorageContentMessageItemGalleryItem: FC<Props> = memo(({
 
     const streamFileUrl = streamFile(messageIdRef.current, originalFileRef.current)
     setStreamFileUrl(streamFileUrl)
-  }, [active, isVideoRef, isAudioRef, messageIdRef, originalFileRef])
+  }, [active])
 
   useEffect(() => {
     if (
@@ -88,7 +88,7 @@ export const StorageContentMessageItemGalleryItem: FC<Props> = memo(({
       if (!originalDownloadingFileRef.current?.downloading) return
       pauseDownloadingFile(originalDownloadingFileRef.current)
     }
-  }, [active, originalFile?.file_reference, messageIdRef, originalFileRef, isVideoRef, isAudioRef, originalDownloadingFileRef])
+  }, [active, originalFile?.file_reference])
 
   useEffect(() => () => {
     if (originalDownloadingFileRef.current) {
@@ -98,7 +98,7 @@ export const StorageContentMessageItemGalleryItem: FC<Props> = memo(({
 
       originalDownloadingFileRef.current = undefined
     }
-  }, [originalDownloadingFileRef])
+  }, [])
 
   return (
     <GalleryItem

@@ -44,8 +44,8 @@ export const StorageContentFolderBlock: FC<Props> = memo(({
   } = useMessageForm(folder)
 
   const loadMessages = useCallback(() => {
-    loadFolderMessages(folder)
-  }, [folder])
+    loadFolderMessages(folder, lastMessageId)
+  }, [folder, lastMessageId])
 
   const handleClose = useCallback(() => {
     setActiveFolder(0)
@@ -84,7 +84,7 @@ export const StorageContentFolderBlock: FC<Props> = memo(({
       />
 
       <ContentForm
-        key={message.key}
+        key={`${folder.id}-${message.key}`}
         texts={texts}
         message={message}
         loading={loading}

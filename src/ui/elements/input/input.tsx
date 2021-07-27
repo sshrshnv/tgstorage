@@ -87,14 +87,14 @@ export const Input: FC<Props> = memo(({
     if (inputDataValueRef.current !== value) {
       setInputData({ value })
     }
-  }, [value, inputDataValueRef])
+  }, [value])
 
   useEffect(() => {
     if (!autoFocusRef.current) return
     setTimeout(() => {
       (forwardedRef || inputRef)?.current?.focus()
     }, 300)
-  }, [autoFocusRef, forwardedRef])
+  }, [])
 
   return (
     <div class={cn(

@@ -1,7 +1,7 @@
-import { useMemo, useCallback, useState, useRef, useEffect } from 'preact/hooks'
+import { useMemo, useCallback, useRef, useEffect } from 'preact/hooks'
 
 import type { Folder, InputFile, Message } from '~/core/store'
-import { useStateRef, useCallbackRef } from '~/tools/hooks'
+import { useStateRef, useCallbackRef, useUpdatableRef } from '~/tools/hooks'
 import { getFileMeta } from '~/core/cache'
 import {
   createMessage,
@@ -23,17 +23,26 @@ const initialMessage = {
 }
 
 export const useMessageForm = (folder: Folder) => {
+  const folderRef = useUpdatableRef(folder)
   const { sendingMessage, sendingMessageRef } = useSendingMessage(folder.id)
-  const [loading, setLoading] = useState(!!sendingMessageRef.current)
-  const [message, setMessage, messageRef, setMessageRef] = useStateRef(() => ({ ...initialMessage, ...sendingMessageRef.current }))
+  const [loading, setLoading, _loadingRef, setLoadingRef] = useStateRef(!!sendingMessageRef.current)
+  const [message, setMessage, messageRef, setMessageRef] = useStateRef(() => ({
+    ...initialMessage,
+    ...sendingMessageRef.current,
+    folderId: folder.id
+  }))
   const messageKeyRef = useRef(0)
-  const initialEditingMessage = useRef<Message | null>(null)
-  const isEditing = !!initialEditingMessage.current
+  const initialEditingMessageRef = useRef<Message | null>(null)
+  const isEditing = !!initialEditingMessageRef.current
 
-  const [updateForm, updateFormRef] = useCallbackRef((newMessage, checkInputFiles = true) => {
+  const [updateForm, updateFormRef] = useCallbackRef((newMessage, checkInputsFiles = true) => {
+    const message = messageRef.current
+    const sendingMessage = sendingMessageRef.current
+    const folderId = folderRef.current.id
     if (
-      checkInputFiles &&
-      !sendingMessageRef.current &&
+      checkInputsFiles &&
+      !sendingMessage &&
+      message.folderId === folderId &&
       message.inputFiles?.length &&
       !newMessage.inputFiles?.length
     ) {
@@ -41,17 +50,23 @@ export const useMessageForm = (folder: Folder) => {
     }
 
     messageKeyRef.current += 1
-    setMessage({ ...newMessage, key: messageKeyRef.current })
-  }, [message.inputFiles, sendingMessageRef, setMessage])
+    setMessage({
+      ...newMessage,
+      key: messageKeyRef.current,
+      folderId
+    })
+  }, [message.inputFiles, setMessage])
 
-  const [handleCancelMessage, handleCancelMessageRef] = useCallbackRef(() => {
-    initialEditingMessage.current = null
-    updateFormRef.current(initialMessage)
+  const handleCancelMessage = useCallback(() => {
+    initialEditingMessageRef.current = null
+    updateForm(initialMessage)
     resetSendingMessage(folder.id)
-  }, [folder.id, updateForm])
+    setLoading(false)
+  }, [folder.id, updateForm, setLoading])
 
   const handleSubmit = useCallback(async () => {
     const message = messageRef.current
+    const initialEditingMessage = initialEditingMessageRef.current
     let sendingMessage = message
 
     setLoading(true)
@@ -59,8 +74,8 @@ export const useMessageForm = (folder: Folder) => {
 
     if (
       message.inputFiles?.length || (
-        initialEditingMessage.current &&
-        checkIsParentFilesMessage(initialEditingMessage.current.text)
+        initialEditingMessage &&
+        checkIsParentFilesMessage(initialEditingMessage?.text)
       )
     ) {
       sendingMessage = {
@@ -73,7 +88,7 @@ export const useMessageForm = (folder: Folder) => {
       await editMessage(
         sendingMessage,
         folder,
-        initialEditingMessage.current?.text !== sendingMessage.text
+        initialEditingMessage?.text !== sendingMessage.text
       ) :
       await createMessage(
         sendingMessage,
@@ -81,14 +96,14 @@ export const useMessageForm = (folder: Folder) => {
       )
 
     setLoading(false)
-    if (success) {
+    if (success && sendingMessage.folderId === folderRef.current.id) {
       handleCancelMessage()
     }
   }, [folder, messageRef, handleCancelMessage, setLoading])
 
   const handleEditMessage = useCallback((message: Message) => {
     if (sendingMessageRef.current) return
-    initialEditingMessage.current = message
+    initialEditingMessageRef.current = message
     updateForm(message)
   }, [sendingMessageRef, updateForm])
 
@@ -128,13 +143,14 @@ export const useMessageForm = (folder: Folder) => {
 
   const handleRemoveFile = useCallback((inputFile: InputFile) => {
     const message = messageRef.current
+    const sendingMessage = sendingMessageRef.current
     const updatedMessage = {
       ...message,
-      inputFiles: (sendingMessageRef.current || message).inputFiles?.filter(({ fileKey }) =>
+      inputFiles: (sendingMessage || message).inputFiles?.filter(({ fileKey }) =>
         fileKey !== inputFile.fileKey
       ) || []
     }
-    if (sendingMessageRef.current && !updatedMessage.inputFiles.length) {
+    if (sendingMessage && !updatedMessage.inputFiles.length) {
       handleCancelMessage()
     } else {
       setMessage(updatedMessage)
@@ -144,17 +160,22 @@ export const useMessageForm = (folder: Folder) => {
   }, [messageRef, sendingMessageRef, folder.id, setMessage, handleCancelMessage])
 
   useEffect(() => {
-    if (sendingMessage) {
+    if (sendingMessage && sendingMessage.folderId === folderRef.current.id) {
       setMessageRef.current({ ...messageRef.current, ...sendingMessage })
-    } else if (messageRef.current) {
-      handleCancelMessageRef.current()
     }
-  }, [sendingMessage, messageRef, setMessageRef, handleCancelMessageRef])
+  }, [sendingMessage])
 
   useEffect(() => {
-    initialEditingMessage.current = null
-    updateFormRef.current(initialMessage)
-  }, [folder.id, updateFormRef])
+    if (!folder.id) return
+
+    initialEditingMessageRef.current = null
+    updateFormRef.current({
+      ...initialMessage,
+      ...sendingMessageRef.current,
+      folderId: folder.id
+    }, false)
+    setLoadingRef.current(!!sendingMessageRef.current)
+  }, [folder.id])
 
   return useMemo(() => ({
     message,

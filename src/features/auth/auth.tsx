@@ -61,9 +61,9 @@ const Auth: FC = () => {
 
   return (
     <Layout center>
-      <Break size={10} vh/>
+      <Break size={48} px/>
       <Logo/>
-      <Break size={10} vh/>
+      <Break size={40} px/>
 
       { step === 'phone' && (
         <AuthFormPhone
@@ -99,7 +99,7 @@ const Auth: FC = () => {
         />
       )}
 
-      <Break size={10} vh/>
+      <Break size={48} px/>
     </Layout>
   )
 }

@@ -4,6 +4,11 @@
     transform: translateX(80px)
     opacity: 0
 
+  &._performance
+    -webkit-backface-visibility: hidden
+    -webkit-transform-style: preserve-3d
+    -webkit-perspective: 1200px
+
 ._animationFallback
   &.root
     will-change: transform, opacity

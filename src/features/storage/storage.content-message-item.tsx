@@ -25,7 +25,6 @@ type Props = {
   folder: Folder
   message: Message
   offset: number | undefined
-  height: number | undefined
   visible: boolean
   resizeObserver: ResizeObserver
   intersectionObserver: IntersectionObserver | undefined
@@ -38,7 +37,6 @@ export const StorageContentMessageItem: FC<Props> = memo(({
   folder,
   message,
   offset,
-  height,
   visible,
   resizeObserver,
   intersectionObserver,
@@ -152,7 +150,6 @@ export const StorageContentMessageItem: FC<Props> = memo(({
     <ContentItem
       message={message}
       offset={offset}
-      height={height}
       visible={visible}
       resizeObserver={resizeObserver}
       intersectionObserver={intersectionObserver}

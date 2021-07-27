@@ -1,5 +1,5 @@
 import type { FunctionComponent as FC } from 'preact'
-import { h } from 'preact'
+import { h, Fragment } from 'preact'
 import { useCallback } from 'preact/hooks'
 import cn from 'classnames'
 
@@ -30,23 +30,27 @@ export const Radio: FC<Props> = ({
 
   return (
     <div class={styles.root}>
-      {options.map(option => (
-        <label
-          class={cn(
-            styles.option,
-            value === option.value && styles._active
+      {options.map((option, index) => (
+        <Fragment key={option.value}>
+          {index > 0 && (
+            <div class={styles.separator}/>
           )}
-          key={option.value}
-          onClick={() => handleChange(option.value)}
-        >
-          <input
-            class={styles.input}
-            name={name}
-            type="radio"
-            checked={value === option.value}
-          />
-          {option.text}
-        </label>
+          <label
+            class={cn(
+              styles.option,
+              value === option.value && styles._active
+            )}
+            onClick={() => handleChange(option.value)}
+          >
+            <input
+              class={styles.input}
+              name={name}
+              type="radio"
+              checked={value === option.value}
+            />
+            {option.text}
+          </label>
+        </Fragment>
       ))}
     </div>
   )

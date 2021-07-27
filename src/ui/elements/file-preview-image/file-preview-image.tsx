@@ -51,7 +51,7 @@ export const FilePreviewImage: FC<Props> = memo(({
         setReadyRef.current(true)
       }
     }
-  }, [fileKey, urlRef, setUrlRef, readyRef, setReadyRef, timeoutRef])
+  }, [fileKey])
 
   useEffect(() => {
     setHidden(true)

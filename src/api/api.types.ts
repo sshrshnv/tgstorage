@@ -113,7 +113,8 @@ export type Api = {
   ) => Promise<Updates>
 
   getMessages: (
-    folder: Folder
+    folder: Folder,
+    lastMessageId?: number
   ) => Promise<Updates>
 
   refreshMessages: (

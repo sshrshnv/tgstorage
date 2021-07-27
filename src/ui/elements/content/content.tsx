@@ -79,7 +79,7 @@ export const Content: FC<Props> = memo(({
     const handlePaste = handlePasteRef.current
     document.addEventListener('paste', handlePaste, { passive: true })
     return () => document.removeEventListener('paste', handlePaste)
-  }, [handlePasteRef])
+  }, [])
 
   return (
     <Slide

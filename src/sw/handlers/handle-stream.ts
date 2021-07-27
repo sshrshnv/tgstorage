@@ -22,6 +22,10 @@ export const handleStream = ({
   const params = { fileKey, fileSize, fileType, from, to, offsetSize, partSize }
   const messageKey = JSON.stringify(params)
 
+  if (from === 0 && to === 1) {
+    return resolve(generateResponse(params))
+  }
+
   addMessageHandler(messageKey, (data = {}) => {
     resolve(generateResponse(data))
     data = undefined
@@ -58,8 +62,8 @@ const generateResponse = ({
   to: number
   offsetSize: number
   partSize: number
-  bytes: Uint8Array
-  isSafari
+  bytes?: Uint8Array
+  isSafari?: boolean
 }) => {
   if (from === 0 && to === 1) {
     return new Response(new Uint8Array(2).buffer, {

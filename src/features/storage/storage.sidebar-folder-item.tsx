@@ -6,7 +6,7 @@ import { useCallback, useState, useMemo, useEffect } from 'preact/hooks'
 import type { Folder } from '~/core/store'
 import { useUpdatableRef } from '~/tools/hooks'
 import { deleteFolder, setActiveFolder, loadFolderMessages } from '~/core/actions'
-import { useTexts, useFolder } from '~/core/hooks'
+import { useTexts, useFolder, useSendingMessage } from '~/core/hooks'
 import { SidebarItem } from '~/ui/elements/sidebar-item'
 import { EditIcon, DeleteIcon } from '~/ui/icons'
 
@@ -37,6 +37,7 @@ export const StorageSidebarFolderItem: FC<Props> = memo(({
   const { folder, folderRef, messages } = useFolder(id)
   const [confirmation, setConfirmation] = useState(false)
   const loadingDisabledRef = useUpdatableRef(loadingDisabled)
+  const { isSendingMessageExist } = useSendingMessage(id)
 
   const handleClick = useCallback(() => {
     if (onFolderSelect) {
@@ -92,8 +93,8 @@ export const StorageSidebarFolderItem: FC<Props> = memo(({
 
   useEffect(() => {
     if (loadingDisabledRef.current) return
-    loadFolderMessages(folderRef.current, 0)
-  }, [folderRef, loadingDisabledRef])
+    loadFolderMessages(folderRef.current)
+  }, [])
 
   return (
     <SidebarItem
@@ -103,6 +104,7 @@ export const StorageSidebarFolderItem: FC<Props> = memo(({
       index={index}
       disabled={disabled}
       menu={withoutMenu ? null : menu}
+      loading={isSendingMessageExist}
       onClick={handleClick}
     />
   )

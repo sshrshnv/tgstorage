@@ -5,7 +5,6 @@ export const useMemoRef = <T>(factory: () => T, inputs: Inputs): [
   T,
   Ref<T>
 ] => {
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const value = useMemo(factory, inputs)
   const valueRef = useRef(value)
 

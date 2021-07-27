@@ -13,10 +13,11 @@ import { uploadFiles, resetUploadingFiles } from './message-media'
 import { setUpdates } from './updates'
 
 export const loadFolderMessages = async (
-  folder: Folder
+  folder: Folder,
+  lastMessageId?: number
 ) => {
   setLoadingFolderId(folder.id, true)
-  const updates = await api.getMessages(folder)
+  const updates = await api.getMessages(folder, lastMessageId)
 
   if (!updates) {
     setLoadingFolderId(folder.id, false)

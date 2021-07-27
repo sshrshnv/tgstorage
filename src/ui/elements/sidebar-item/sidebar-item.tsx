@@ -4,8 +4,9 @@ import { memo } from 'preact/compat'
 import { useRef } from 'preact/hooks'
 import cn from 'classnames'
 
-import { Menu } from '~/ui/elements/menu'
 import type { Props as MenuProps } from '~/ui/elements/menu'
+import { Menu } from '~/ui/elements/menu'
+import { Loader } from '~/ui/elements/loader'
 import { FolderIcon } from '~/ui/icons'
 import { getColor } from '~/ui/styles/colors'
 
@@ -18,6 +19,7 @@ type Props = {
   index?: number
   menu?: MenuProps | null
   disabled?: boolean
+  loading?: boolean
   onClick?: () => void
 }
 
@@ -26,8 +28,9 @@ export const SidebarItem: FC<Props> = memo(({
   description,
   emptyDescription,
   index,
-  disabled,
   menu,
+  disabled,
+  loading,
   onClick
 }) => {
   const elRef = useRef<HTMLDivElement>(null)
@@ -58,12 +61,15 @@ export const SidebarItem: FC<Props> = memo(({
           </div>
         )}
       </div>
-      {(menu && !disabled) && (
+      {(menu && !disabled && !loading) && (
         <Menu
           {...menu}
           class={styles.menu}
           parentRef={elRef}
         />
+      )}
+      {loading && (
+        <Loader class={styles.loader} grey/>
       )}
     </div>
   )

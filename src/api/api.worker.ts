@@ -6,7 +6,7 @@ import { FILE_SIZE, getFilePartSize } from '~/tools/handle-file'
 
 import type { MethodDeclMap, InputCheckPasswordSRP } from './mtproto'
 import { Client } from './mtproto'
-import { apiCache } from './api.cache'
+import { apiCache, resetApiCache } from './api.cache'
 import { handleUpdates } from './api.updates'
 import {
   API_ID,
@@ -166,10 +166,7 @@ class Api {
 
   public async logOut() {
     await this.call('auth.logOut')
-    apiCache.resetMeta()
-    apiCache.resetUser()
-    apiCache.resetFolders()
-    apiCache.resetFoldersMessages()
+    resetApiCache()
     return true
   }
 
@@ -308,9 +305,10 @@ class Api {
     folder: {
       id: number
       access_hash: string
-    }
+    },
+    lastMessageId?: number
   ) {
-    const folderOffsetId = await apiCache.getFolderOffsetId(folder.id) || 0
+    const folderOffsetId = await apiCache.getFolderOffsetId(folder.id) || lastMessageId || 0
     const isQueryAvailable = folderOffsetId ?
       folderOffsetId !== 'end' :
       await checkIsQueryAvailableByTime(`getMessages-${folder.id}`, 30)

@@ -17,10 +17,7 @@ export const useRAFCallback = <T extends Function>(fn: T, inputs: Inputs): [
       frameIdRef.current = 0
       fn(...lastArgsRef.current)
     })
-  },
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  inputs
-  )
+  }, inputs)
 
   const cancelCallback = useCallback(() => {
     self.cancelAnimationFrame(frameIdRef.current)

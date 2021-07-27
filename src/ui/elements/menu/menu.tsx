@@ -4,12 +4,15 @@ import { memo } from 'preact/compat'
 import { useState, useEffect, useRef } from 'preact/hooks'
 import cn from 'classnames'
 
-import { useCallbackRef } from '~/tools/hooks'
+import { useCallbackRef, useUpdatableRef } from '~/tools/hooks'
 import { Button } from '~/ui/elements/button'
 import { MenuIcon } from '~/ui/icons'
 import { animationClassName } from '~/ui/styles/animation'
 
 import styles from './menu.styl'
+
+const ITEM_HEIGHT = 40
+const OFFSET = 60
 
 export type Props = {
   class?: string
@@ -21,8 +24,6 @@ export type Props = {
     onClick?: (ev?: MouseEvent) => void
   } | null)[]
   horizontal?: boolean
-  positionX?: 'left'|'right'
-  positionY?: 'top'|'bottom'
   parentRef?: RefObject<HTMLDivElement>
   onClose?: () => void
 }
@@ -31,19 +32,25 @@ export const Menu: FC<Props> = memo(({
   class: className,
   items,
   horizontal,
-  positionX = 'right',
-  positionY = 'top',
   parentRef,
   onClose
 }) => {
-  const dropdownRef = useRef<HTMLDivElement>(null)
   const [expanded, setExpanded] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+  const dropdownRef = useRef<HTMLDivElement>(null)
+  const positionXRef = useRef('right')
+  const positionYRef = useRef('top')
+  const itemsCountRef = useUpdatableRef(items.length)
 
   const [toggle, toggleRef] = useCallbackRef((ev?) => {
     ev?.preventDefault()
     ev?.stopPropagation()
     if (expanded) {
       onClose?.()
+    } else {
+      const { top = 0 } = menuRef.current?.getBoundingClientRect() || {}
+      const menuHeight = top + itemsCountRef.current * ITEM_HEIGHT + OFFSET
+      positionYRef.current = menuHeight > self.innerHeight ? 'bottom' : 'top'
     }
     setExpanded(!expanded)
   }, [expanded, onClose])
@@ -51,7 +58,7 @@ export const Menu: FC<Props> = memo(({
   useEffect(() => {
     if (!expanded) return
 
-    dropdownRef?.current?.animate?.([
+    dropdownRef.current?.animate?.([
       { transform: 'scale(0)', opacity: 0 },
       { opacity: 1, offset: 0.5 },
       { transform: 'scale(1)', opacity: 1 }
@@ -90,7 +97,7 @@ export const Menu: FC<Props> = memo(({
       parentEl.removeEventListener('touchmove', handleTouchEnd)
       parentEl.removeEventListener('touchend', handleTouchEnd)
     }
-  }, [parentRef, toggleRef])
+  }, [])
 
   return !items.length ? null : (
     <div
@@ -98,11 +105,12 @@ export const Menu: FC<Props> = memo(({
         className,
         styles.root,
         styles[animationClassName],
-        positionX && styles[`_position-${positionX}`],
-        positionY && styles[`_position-${positionY}`],
+        styles[`_position-${positionXRef.current}`],
+        styles[`_position-${positionYRef.current}`],
         horizontal && styles._horizontal,
         expanded && styles._expanded
       )}
+      ref={menuRef}
       onClick={toggle}
     >
       <Button
