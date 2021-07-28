@@ -7,7 +7,8 @@ import {
   transformFolder,
   sortFolders,
   sortMessages,
-  transformMessage
+  transformMessage,
+  findFolderIdByMessageId
 } from './api.helpers'
 import { apiCache } from './api.cache'
 
@@ -137,9 +138,12 @@ const handleMessages = async (
   const updates: Map<number, { folderMessages: FolderMessages, isSorted: boolean }> = new Map()
 
   messages.forEach(async (message, index) => {
+    if (typeof message === 'number') {
+      message = { _: 'message', id: message }
+    }
     const { _, peer_id } = message
-    const { channel_id, user_id, chat_id } = peer_id
-    const folderId: number = channel_id || user_id || chat_id
+    const { channel_id, user_id, chat_id } = peer_id || {}
+    const folderId: number = channel_id || user_id || chat_id || findFolderIdByMessageId(foldersMessages, message.id)
 
     const folderMessages: FolderMessages =
       (options?.offsetId === 0 && index === 0) ? new Map() :
@@ -150,8 +154,9 @@ const handleMessages = async (
 
     if (_ === 'message' && folders.has(folderId)) {
       message = !options?.deleted ? transformMessage(message, user) : message
-
-      if ((options?.deleted || !message) && folderMessages.has(message.id)) {
+      if (!message) {
+        return
+      } else if (options?.deleted && folderMessages.has(message.id)) {
         folderMessages.delete(message.id)
         isUpdated = true
       } else if (options?.edited && folderMessages.has(message.id)) {

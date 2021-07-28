@@ -90,9 +90,10 @@ class Api {
     }
   }
 
-  public async listenUpdates(handler) {
-    this.client.updates.on('updates', (message) => {
-      handler(message)
+  public async listenUpdates(callback) {
+    this.client.updates.on(async (updates) => {
+      const handledUpdates = await handleUpdates(updates)
+      callback(handledUpdates)
     })
   }
 

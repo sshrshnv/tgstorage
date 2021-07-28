@@ -1,4 +1,4 @@
-import type { Message } from '~/core/store'
+import type { Message, FoldersMessages } from '~/core/store'
 import { formatDate } from '~/tools/format-date'
 import {
   SEPARATOR,
@@ -169,4 +169,8 @@ export const sortMessages = (messages: [number, Message][]) => {
 
 export const generateRandomId = () => {
   return `${Math.floor(Math.random() * 0xFFFFFFFF)}${Math.floor(Math.random() * 0xFFFFFF)}`.slice(0, 16)
+}
+
+export const findFolderIdByMessageId = (foldersMessages: FoldersMessages, messageId: number) => {
+  return [...foldersMessages.entries()].find(([_folderId, folderMessages]) => folderMessages.has(messageId))?.[0]
 }

@@ -1,4 +1,4 @@
-import { wrap, proxy } from 'comlink'
+import { wrap } from 'comlink'
 
 import type { Api as ApiInstance } from './api.types'
 import ApiWorker from './api.worker.ts'

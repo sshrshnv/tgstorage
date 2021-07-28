@@ -1,11 +1,14 @@
+import { proxy } from 'comlink'
 import type { FunctionComponent as FC } from 'preact'
 import { h } from 'preact'
-import { useState, useCallback } from 'preact/hooks'
+import { useState, useCallback, useEffect } from 'preact/hooks'
 
 import type { Folder } from '~/core/store'
+import { setUpdates } from '~/core/actions'
+import { useMoveMessage } from '~/core/hooks'
+import { api } from '~/api'
 import { Layout } from '~/ui/elements/layout'
 
-import { useMoveMessage } from '~/core/hooks'
 import { StorageSidebar } from './storage.sidebar'
 import { StorageContent } from './storage.content'
 
@@ -43,6 +46,10 @@ const Storage: FC = () => {
   const closeSettingsPopup = useCallback(() => {
     setSettingsPopupVisible(false)
   }, [setSettingsPopupVisible])
+
+  useEffect(() => {
+    api.listenUpdates(proxy(setUpdates))
+  }, [])
 
   return (
     <Layout>

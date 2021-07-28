@@ -11,7 +11,6 @@ import { PreventContextMenu, PreventScale, PreventDragAndDrop } from '~/ui/handl
 import '~/ui/styles/global.styl'
 
 import { store } from './store'
-//import { handleUpdates } from './updates'
 import { useUser } from './hooks'
 
 const App: FC = () => {
@@ -30,8 +29,6 @@ const App: FC = () => {
     </Fragment>
   )
 }
-
-//handleUpdates()
 
 render(
   <Provider value={store}>
