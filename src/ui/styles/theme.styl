@@ -15,6 +15,7 @@
   --color-white-01: alpha(#ffffff, 0.1)
   --color-white-05: alpha(#ffffff, 0.5)
   --color-black: #000000
+  --color-black-0025: alpha(#000000, 0.025)
   --color-black-01: alpha(#000000, 0.1)
   --color-black-02: alpha(#000000, 0.2)
   --color-black-05: alpha(#000000, 0.5)
@@ -34,7 +35,9 @@
   --color-dark-3-l1: lighten(#26292c, 1%)
   --color-dark-3: #26292c
   --color-blue-1: #81909f
-  --color-blue-4: #f6f8fa
+  --color-blue-1-d25: darken(#81909f, 25%)
+  --color-blue-1-d95: darken(#81909f, 80%)
+  --color-blue-4: #f7f9fa
 
   --default-font-color: var(--color-black)
   --disabled-font-color: var(--color-light-3)
@@ -45,6 +48,8 @@
   --content-background-color-08: var(--color-light-4-08)
   --content-form-background-color: var(--color-blue-4)
   --content-item-background-color: var(--color-white)
+  --content-monospace-background-color: var(--color-black-0025)
+  --content-link-color: var(--color-blue-1-d25)
   --dropdown-border-color: var(--color-blue-4)
   --dropdown-item-border-color: var(--color-light-4)
   --icon-background-color: var(--color-white)
@@ -52,8 +57,8 @@
   --icon-second-border-color: var(--color-black-01)
   --avatar-background-color: var(--color-light-4)
   --item-border-color: var(--color-light-4)
-  --form-border-color: var(--color-light-4)
-  --form-item-border-color: var(--color-light-4-l5)
+  --form-border-color: var(--color-light-4-d5)
+  --form-item-border-color: var(--color-light-4)
   --menu-icon-color: var(--color-light-4-d5)
   --scrollbar-background-color: var(--color-light-4)
   --scrollbar-color: var(--color-light-3)
@@ -74,6 +79,8 @@
     --content-background-color-08: var(--color-dark-1-08)
     --content-form-background-color: var(--color-dark-3)
     --content-item-background-color: var(--color-dark-2)
+    --content-monospace-background-color: var(--color-black-01)
+    --content-link-color: var(--color-blue-1)
     --dropdown-border-color: var(--color-light-2)
     --dropdown-item-border-color: var(--color-dark-3)
     --icon-background-color: var(--color-dark-3)

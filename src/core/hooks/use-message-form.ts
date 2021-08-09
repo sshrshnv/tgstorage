@@ -12,8 +12,9 @@ import {
 } from '~/core/actions'
 import { useSendingMessage } from '~/core/hooks'
 import { checkIsParentFilesMessage, stringifyParentFilesMessage } from '~/tools/handle-content'
-import { processImageFile } from '~/tools/process-image-file'
-import { processVideoFile } from '~/tools/process-video-file'
+import { parseInputText, normalizeInputText } from '~/tools/handle-content-text'
+import { parseImageFile } from '~/tools/parse-image-file'
+import { parseVideoFile } from '~/tools/parse-video-file'
 
 const initialMessage = {
   key: 0,
@@ -67,10 +68,20 @@ export const useMessageForm = (folder: Folder) => {
   const handleSubmit = useCallback(async () => {
     const message = messageRef.current
     const initialEditingMessage = initialEditingMessageRef.current
-    let sendingMessage = message
+    let sendingMessage = { ...message }
 
     setLoading(true)
     setSendingMessage(folder.id, message)
+
+    const { text, entities } = parseInputText(message.text)
+
+    if (entities?.length) {
+      sendingMessage = {
+        ...sendingMessage,
+        text,
+        entities
+      }
+    }
 
     if (
       message.inputFiles?.length || (
@@ -79,8 +90,8 @@ export const useMessageForm = (folder: Folder) => {
       )
     ) {
       sendingMessage = {
-        ...message,
-        text: stringifyParentFilesMessage(message.text)
+        ...sendingMessage,
+        text: stringifyParentFilesMessage(sendingMessage.text)
       }
     }
 
@@ -103,6 +114,10 @@ export const useMessageForm = (folder: Folder) => {
 
   const handleEditMessage = useCallback((message: Message) => {
     if (sendingMessageRef.current) return
+    message = {
+      ...message,
+      text: normalizeInputText(message.text, message.entities)
+    }
     initialEditingMessageRef.current = message
     updateForm(message)
   }, [sendingMessageRef, updateForm])
@@ -120,8 +135,8 @@ export const useMessageForm = (folder: Folder) => {
     const uniqInputFiles = await Promise.all(uniqFileKeys.map(fileKey => new Promise(async (resolve) => {
       const fileMeta = getFileMeta(fileKey)
       const params =
-        fileMeta?.type.startsWith('image') ? await processImageFile(fileKey) :
-          fileMeta?.type.startsWith('video') ? await processVideoFile(fileKey) :
+        fileMeta?.type.startsWith('image') ? await parseImageFile(fileKey) :
+          fileMeta?.type.startsWith('video') ? await parseVideoFile(fileKey) :
             undefined
 
       resolve({

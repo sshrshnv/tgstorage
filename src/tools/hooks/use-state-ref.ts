@@ -1,5 +1,7 @@
 import type { StateUpdater, Ref } from 'preact/hooks'
-import { useRef, useState, useEffect, useMemo } from 'preact/hooks'
+import { useRef, useState, useMemo } from 'preact/hooks'
+
+import { usePrevious } from './use-previous'
 
 export const useStateRef = <T>(initialValue: T | (() => T)): [
   T,
@@ -11,11 +13,12 @@ export const useStateRef = <T>(initialValue: T | (() => T)): [
   const [value, setValue] = useState<T>(initialValue)
   const valueRef = useRef(value)
   const setValueRef = useRef(setValue)
+  const prevValue = usePrevious(value)
 
-  useEffect(() => {
+  if (prevValue !== value) {
     valueRef.current = value
     setValueRef.current = setValue
-  }, [value])
+  }
 
   return useMemo(() => [
     value,

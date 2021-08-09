@@ -1,14 +1,30 @@
 .root
-  padding: 12px 0 16px
+  margin: 0 -16px
+  padding: 12px 16px 16px
   white-space: pre-line
   overflow-wrap: break-word
   font-family: var(--font-family-content)
   font-weight: var(--font-weight-content)
   font-size: 16px
   letter-spacing: .2px
+  line-height: 1.35
+  user-select: text
 
   &._empty
     padding-top: 0
+
+  pre
+  code
+    margin: 0
+    padding: 1px 2px
+    background-color: var(--content-monospace-background-color)
+    border-radius: 8px
+    white-space: pre-wrap
+    font-family: monospace
+
+  a
+    text-decoration: none
+    color: var(--content-link-color)
 
 .emptyText
   padding-top: 12px

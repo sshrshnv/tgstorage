@@ -19,6 +19,7 @@ export type Props = {
   items: ({
     title: string
     icon?: h.JSX.Element | null
+    url?: string
     warning?: boolean
     danger?: boolean
     onClick?: (ev?: MouseEvent) => void
@@ -43,8 +44,11 @@ export const Menu: FC<Props> = memo(({
   const itemsCountRef = useUpdatableRef(items.length)
 
   const [toggle, toggleRef] = useCallbackRef((ev?) => {
-    ev?.preventDefault()
+    if (ev?.target.tagName.toLowerCase() !== 'a') {
+      ev?.preventDefault()
+    }
     ev?.stopPropagation()
+
     if (expanded) {
       onClose?.()
     } else {
@@ -123,7 +127,18 @@ export const Menu: FC<Props> = memo(({
           class={styles.dropdown}
           ref={dropdownRef}
         >
-          {items.map((item, index) => item && (
+          {items.map((item, index) => item?.url ? (
+            <a
+              key={index}
+              class={styles.item}
+              href={item.url}
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              {item.icon}
+              {item.title}
+            </a>
+          ) : item ? (
             <div
               key={index}
               class={cn(
@@ -136,7 +151,7 @@ export const Menu: FC<Props> = memo(({
               {item.icon}
               {item.title}
             </div>
-          ))}
+          ) : null)}
         </div>
       )}
     </div>

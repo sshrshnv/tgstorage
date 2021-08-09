@@ -9,14 +9,14 @@ import {
   parseChecklistMessage,
   stringifyChecklistMessage
 } from '~/tools/handle-content'
+import { ContentFormChecklistItem } from '~/ui/elements/content-form-checklist-item'
 import { useDragReorder } from '~/ui/hooks/use-drag-reoder'
 import { Input } from '~/ui/elements/input'
 import { Loader } from '~/ui/elements/loader'
 import { Button } from '~/ui/elements/button'
 import { SendIcon } from '~/ui/icons/'
 
-import { ContentFormChecklistItem } from './content-form-checklist-item'
-import styles from './content-form.styl'
+import styles from './content-form-checklist.styl'
 
 type Props = {
   text: string

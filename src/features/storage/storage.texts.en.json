@@ -43,5 +43,7 @@
   "messageShareTitle": "Share text",
   "emptyMessage": "Waiting for file",
   "mediaDeleteTitle": "Delete file",
-  "mediaDownloadTitle": "Download"
+  "mediaDownloadTitle": "Download",
+  "linkOpenTitle": "Open link",
+  "linkCopyTitle": "Copy link"
 }

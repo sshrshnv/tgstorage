@@ -1,0 +1,46 @@
+.root
+  display: flex
+  height: 44px
+
+  &._dragging
+    opacity: 0.1
+
+.fake
+  display: flex
+  align-items: center
+  height: 44px
+  padding-left: 36px
+  opacity: 0.5
+  overflow: hidden
+
+.icon
+  display: flex
+  align-items: center
+  flex-shrink: 0
+  width: 36px
+  height: 44px
+  cursor: ns-resize
+
+  > svg
+    width: 20px
+    height: 20px
+    fill: var(--color-light-2)
+
+.input
+  flex-grow: 1
+
+  > input
+    height: 44px
+    width: 100%
+    padding: 0
+
+.button
+  width: 40px
+  height: 100%
+  flex-shrink: 0
+  align-self: flex-end
+
+  > svg
+    width: 18px
+    height: 18px
+    fill: var(--color-light-2)

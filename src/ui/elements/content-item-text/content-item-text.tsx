@@ -21,7 +21,7 @@ export const ContentItemText: FC<Props> = memo(({
       styles.root,
       !text && styles._empty
     )}>
-      {text}
+      <div dangerouslySetInnerHTML={{ __html: text }}/>
       {empty && (
         <div class={styles.emptyText}>
           {emptyText}

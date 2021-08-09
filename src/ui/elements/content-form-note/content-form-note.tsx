@@ -1,20 +1,19 @@
 import { h, Fragment } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
 import { memo } from 'preact/compat'
-import { useCallback, useEffect, useRef, useMemo } from 'preact/hooks'
+import { useCallback, useRef, useMemo } from 'preact/hooks'
 import cn from 'classnames'
 
 import type { InputFile, Message } from '~/core/store'
-import { useRAFCallback } from '~/tools/hooks'
 import { checkIsParentFilesMessage, parseParentFilesMessage } from '~/tools/handle-content'
-import { Textarea } from '~/ui/elements/textarea'
+import { ContentFormAttachment } from '~/ui/elements/content-form-attachment'
+import { ContentFormInput } from '~/ui/elements/content-form-input'
 import { FileInput } from '~/ui/elements/file-input'
 import { Loader } from '~/ui/elements/loader'
 import { Button } from '~/ui/elements/button'
 import { SendIcon, CheckboxIcon, FileIcon } from '~/ui/icons'
 
-import styles from './content-form.styl'
-import { ContentFormNoteItem } from './content-form-note-item'
+import styles from './content-form-note.styl'
 
 type Props = {
   message: Partial<Message> & {
@@ -24,28 +23,24 @@ type Props = {
   placeholder?: string
   sendingPlaceholder?: string
   loading?: boolean
-  isOpened?: boolean
+  filled?: boolean
   enableChecklist: () => void
   onChangeText?: (note: string) => void
   onAddFiles?: (fileKeys: string[]) => void
   onRemoveFile?: (file: InputFile) => void
 }
 
-const TEXTAREA_PARENT_HEIGHT = 48
-const TEXTAREA_HEIGHT = 22
-
 export const ContentFormNote: FC<Props> = memo(({
   message,
   placeholder,
   sendingPlaceholder,
   loading,
-  isOpened,
+  filled,
   enableChecklist,
   onChangeText,
   onAddFiles,
   onRemoveFile
 }) => {
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
   const inputFileKey = useRef(0)
 
   const isParentFiles = useMemo(() => {
@@ -81,41 +76,18 @@ export const ContentFormNote: FC<Props> = memo(({
     inputFileKey.current += 1
   }, [onAddFiles])
 
-  const [_, setStylesRef, cancelSetStylesRef] = useRAFCallback((textareaRef) => {
-    const textareaEl = textareaRef?.current
-    const textareaParentEl = textareaEl?.parentElement
-    if (!textareaParentEl) return
-
-    textareaParentEl.style.height = `${TEXTAREA_PARENT_HEIGHT}px`
-    textareaParentEl.style.height = `${TEXTAREA_PARENT_HEIGHT - TEXTAREA_HEIGHT + textareaEl.scrollHeight}px`
-  }, [])
-
-  useEffect(() => {
-    setStylesRef.current(textareaRef)
-  }, [message.text])
-
-  useEffect(() => {
-    if (!isOpened) return
-    textareaRef.current?.focus()
-  }, [isOpened])
-
-  useEffect(() => () => {
-    cancelSetStylesRef.current?.()
-  }, [])
-
   return (
     <Fragment>
       <div>
-        <Textarea
-          class={styles.textarea}
+        <ContentFormInput
           value={normalizedText}
           placeholder={loading ? sendingPlaceholder : placeholder}
           disabled={loading}
-          forwardedRef={textareaRef}
+          filled={filled}
           onInput={handleInput}
         />
         {message.inputFiles?.map((inputFile, index) => (
-          <ContentFormNoteItem
+          <ContentFormAttachment
             key={inputFile.fileKey}
             index={index}
             inputFile={inputFile}

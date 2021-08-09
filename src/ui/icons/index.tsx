@@ -112,3 +112,6 @@ export const FullscreenIcon: FC<Props> = () => <Fallback><FullscreenSVG/></Fallb
 
 const FullscreenExitSVG: FC = lazy(() => import('./fullscreen-exit.svg'))
 export const FullscreenExitIcon: FC<Props> = () => <Fallback><FullscreenExitSVG/></Fallback>
+
+const LinkSVG: FC = lazy(() => import('./link.svg'))
+export const LinkIcon: FC<Props> = () => <Fallback><LinkSVG/></Fallback>

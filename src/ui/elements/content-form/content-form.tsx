@@ -10,12 +10,12 @@ import {
   checkIsChecklistMessage,
   stringifyChecklistMessage
 } from '~/tools/handle-content'
+import { ContentFormNote } from '~/ui/elements/content-form-note'
+import { ContentFormChecklist } from '~/ui/elements/content-form-checklist'
 import { Form } from '~/ui/elements/form'
 import { Button } from '~/ui/elements/button'
 import { CrossIcon } from '~/ui/icons'
 
-import { ContentFormNote } from './content-form-note'
-import { ContentFormChecklist } from './content-form-checklist'
 import styles from './content-form.styl'
 
 type Props = {
@@ -49,7 +49,7 @@ export const ContentForm: FC<Props> = memo(({
     return checkIsChecklistMessage(message.text)
   }, [message.text])
 
-  const isFilled = useMemo(() => {
+  const filled = useMemo(() => {
     return !!message.text || !!message.inputFiles?.length
   }, [message.text, message.inputFiles?.length])
 
@@ -66,18 +66,14 @@ export const ContentForm: FC<Props> = memo(({
       class={styles.root}
       ref={elRef}
     >
-      {isFilled && (
+      {filled && (
         <div class={styles.header}>
           {isChecklist ?
             message.id ? texts.checklistEditTitle : texts.checklistTitle :
             message.id ? texts.messageEditTitle : texts.messageTitle
           }
           <Button
-            class={cn(
-              styles.button,
-              styles._header,
-              styles._small
-            )}
+            class={styles.button}
             icon={<CrossIcon/>}
             onClick={onCancel}
           />
@@ -86,7 +82,7 @@ export const ContentForm: FC<Props> = memo(({
       <Form
         class={cn(
           styles.form,
-          !isChecklist && isFilled && styles._vertical
+          !isChecklist && filled && styles._vertical
         )}
         onSubmit={onSubmit}
       >
@@ -106,7 +102,7 @@ export const ContentForm: FC<Props> = memo(({
             placeholder={texts.messagePlaceholder}
             sendingPlaceholder={texts.messageSendingPlaceholder}
             loading={loading}
-            isOpened={isFilled}
+            filled={filled}
             enableChecklist={enableChecklist}
             onChangeText={onChangeText}
             onAddFiles={onAddFiles}

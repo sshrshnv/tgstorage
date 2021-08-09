@@ -10,7 +10,7 @@ import { Input } from '~/ui/elements/input'
 import { Button } from '~/ui/elements/button'
 import { DragIcon, CrossIcon } from '~/ui/icons/'
 
-import styles from './content-form.styl'
+import styles from './content-form-checklist-item.styl'
 
 type Props = {
   item: string
@@ -112,19 +112,19 @@ export const ContentFormChecklistItem: FC<Props> = memo(({
   return (
     <Fragment>
       {isFirstFakeChecklistItem && (
-        <div class={styles.fakeChecklistItem}>
+        <div class={styles.fake}>
           {fakeCheclistValue}
         </div>
       )}
       <div
         class={cn(
-          styles.checklistItem,
+          styles.root,
           isDragging && styles._dragging
         )}
         key={index}
       >
         <div
-          class={styles.checklistItemIcon}
+          class={styles.icon}
           onDragStart={handleDragStart}
           onDragEnter={handleDragEnter}
           onDragEnd={handleDragEnd}
@@ -144,18 +144,14 @@ export const ContentFormChecklistItem: FC<Props> = memo(({
         />
         {!isLastItem && (
           <Button
-            class={cn(
-              styles.button,
-              styles._content,
-              styles._small
-            )}
+            class={styles.button}
             icon={<CrossIcon/>}
             onClick={handleDelete}
           />
         )}
       </div>
       {isLastFakeChecklistItem && (
-        <div class={styles.fakeChecklistItem}>
+        <div class={styles.fake}>
           {fakeCheclistValue}
         </div>
       )}

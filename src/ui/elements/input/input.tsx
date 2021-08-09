@@ -5,9 +5,9 @@ import { useCallback, useRef, useState, useEffect } from 'preact/hooks'
 import cn from 'classnames'
 
 import { useUpdatableRef } from '~/tools/hooks'
+import { moveCursorToEnd } from '~/tools/manipulate-element'
 import { CrossIcon } from '~/ui/icons'
 
-import { moveCursorToEnd } from './input.helpers'
 import styles from './input.styl'
 
 type Props = {

@@ -1,0 +1,46 @@
+.input
+  flex-grow: 1
+
+  > input
+    height: 44px
+    width: 100%
+    padding: 0
+
+  &._border
+    border-bottom: 1px solid var(--form-item-border-color)
+
+.button
+  width: 40px
+  height: 48px
+  flex-shrink: 0
+  align-self: flex-end
+
+  > svg
+    width: 20px
+    height: 20px
+    fill: var(--color-light-2)
+
+  &._primary > svg
+    fill: var(--color-brand)
+
+  &._header
+    position: absolute
+    top: 0
+    right: 0
+    width: 42px
+    height: 36px
+
+  &._content
+    height: 100%
+
+  &._small
+    > svg
+      width: 18px
+      height: 18px
+
+.loader
+  margin: 0 8px 15px
+  flex-shrink: 0
+  width: 18px
+  height: 18px
+  align-self: flex-end

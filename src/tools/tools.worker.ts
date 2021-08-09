@@ -1,9 +1,8 @@
 import { expose } from 'comlink'
-
-import { processBluredImageData } from './process-blured-image-data'
+import { imageDataRGB } from 'stackblur-canvas'
 
 const ToolsWorker = {
-  processBluredImageData
+  getBluredImageData: (...params: Parameters<typeof imageDataRGB>) => imageDataRGB(...params)
 }
 
 expose(ToolsWorker)

@@ -1,5 +1,7 @@
 import { Ref, Inputs } from 'preact/hooks'
-import { useMemo, useEffect, useRef } from 'preact/hooks'
+import { useMemo, useRef } from 'preact/hooks'
+
+import { usePrevious } from './use-previous'
 
 export const useMemoRef = <T>(factory: () => T, inputs: Inputs): [
   T,
@@ -7,10 +9,11 @@ export const useMemoRef = <T>(factory: () => T, inputs: Inputs): [
 ] => {
   const value = useMemo(factory, inputs)
   const valueRef = useRef(value)
+  const prevValue = usePrevious(value)
 
-  useEffect(() => {
+  if (prevValue !== value) {
     valueRef.current = value
-  }, [value])
+  }
 
   return useMemo(() => [
     value,

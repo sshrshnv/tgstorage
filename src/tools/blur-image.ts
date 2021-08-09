@@ -29,7 +29,7 @@ export const blurImage = ({
     const canvasParams: [number, number, number, number] = [0, 0, width, height]
     bufferCanvasContext.drawImage(image, ...imageParams, ...canvasParams)
     const imageData = bufferCanvasContext.getImageData(...canvasParams)
-    const bluredImageData = await workerTools.processBluredImageData(imageData, ...canvasParams, radius)
+    const bluredImageData = await workerTools.getBluredImageData(imageData, ...canvasParams, radius)
     canvasContext.putImageData(bluredImageData, 0, 0)
   }
   image.src = url

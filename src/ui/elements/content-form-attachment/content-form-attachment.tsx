@@ -11,7 +11,7 @@ import { Button } from '~/ui/elements/button'
 import { FilePreviewIcon } from '~/ui/elements/file-preview-icon'
 import { CrossIcon } from '~/ui/icons/'
 
-import styles from './content-form.styl'
+import styles from './content-form-attachment.styl'
 
 type Props = {
   inputFile?: InputFile
@@ -20,7 +20,7 @@ type Props = {
   onRemoveFile?: (file: InputFile) => void
 }
 
-export const ContentFormNoteItem: FC<Props> = memo(({
+export const ContentFormAttachment: FC<Props> = memo(({
   inputFile,
   index,
   loading,
@@ -59,8 +59,8 @@ export const ContentFormNoteItem: FC<Props> = memo(({
   }, [previewUrl])
 
   return (
-    <div class={styles.noteItem}>
-      <div class={styles.noteItemPreview}>
+    <div class={styles.root}>
+      <div class={styles.preview}>
         {previewUrl ? (
           <img
             src={previewUrl}
@@ -72,13 +72,13 @@ export const ContentFormNoteItem: FC<Props> = memo(({
           />
         )}
       </div>
-      <div class={styles.noteItemContent}>
+      <div class={styles.content}>
         <Text small grey ellipsis>
           {inputFile?.name}
         </Text>
         <Text
           class={cn(
-            styles.noteItemContentProgress,
+            styles.progress,
             (loading && index === 0) && styles._active
           )}
           small
@@ -89,11 +89,7 @@ export const ContentFormNoteItem: FC<Props> = memo(({
         </Text>
       </div>
       <Button
-        class={cn(
-          styles.button,
-          styles._content,
-          styles._small
-        )}
+        class={styles.button}
         icon={<CrossIcon/>}
         onClick={removeFile}
       />

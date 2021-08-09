@@ -25,7 +25,7 @@
 .header
   display: flex
   align-items: center
-  width: calc(100% - 40px)
+  width: calc(100% - 8px)
   height: 36px
   font-size: 12px
   border-bottom: 1px solid var(--form-border-color)
@@ -48,137 +48,16 @@
   @media screen and (min-width: $sidebar-width + $content-width + 64px)
     border-radius: 8px 8px 0 0
 
-.buttons
-  margin-left: auto
-  display: flex
-  flex-shrink: 0
-
 .button
-  width: 40px
-  height: 48px
-  flex-shrink: 0
-  align-self: flex-end
-
-  > svg
-    width: 20px
-    height: 20px
-    fill: var(--color-light-2)
-
-  &._primary > svg
-    fill: var(--color-brand)
-
-  &._header
-    position: absolute
-    top: 0
-    right: 0
-    width: 42px
-    height: 36px
-
-  &._content
-    height: 100%
-
-  &._small
-    > svg
-      width: 18px
-      height: 18px
-
-.loader
-  margin: 0 8px 15px
-  flex-shrink: 0
-  width: 18px
-  height: 18px
-  align-self: flex-end
-
-.textarea
-  flex-grow: 1
-  height: 48px
-  max-height: 240px
-  padding-right: 6px
-
-.input
-  flex-grow: 1
-
-  > input
-    height: 44px
-    width: 100%
-    padding: 0
-
-  &._border
-    border-bottom: 1px solid var(--form-item-border-color)
-
-.checklistItem
-  display: flex
-  height: 44px
-
-  &._dragging
-    opacity: 0.1
-
-.fakeChecklistItem
-  display: flex
-  align-items: center
-  height: 44px
-  padding-left: 36px
-  opacity: 0.5
-  overflow: hidden
-
-.checklistItemIcon
-  display: flex
-  align-items: center
-  flex-shrink: 0
-  width: 36px
-  height: 44px
-  cursor: ns-resize
-
-  > svg
-    width: 20px
-    height: 20px
-    fill: var(--color-light-2)
-
-.noteItem
-  display: flex
-  width: 100%
-  height: 80px
-  padding-bottom: 16px
-
-.noteItemPreview
-  margin-right: 16px
-  flex-shrink: 0
-  align-self: center
-  width: 64px
-  height: 100%
-
-  > img
-    width: 100%
-    height: 100%
-    border-radius: 8px
-    object-fit: cover
-
-.noteItemContent
-  display: flex
-  flex-grow: 1
-  flex-direction: column
-  justify-content: space-around
-  width: calc(100% - 120px)
-
-.noteItemContentProgress
-  font-size: 12px
-
-  &._active
-    color: var(--default-font-color)
-
-.mediaCount
   position: absolute
-  left: 0
-  bottom: 0
-  display: flex
-  align-items: flex-end
-  height: 48px
-  padding: 0 0 14px 16px
-  color: var(--color-blue-1)
-  line-height: 1
+  top: 0
+  right: 0
+  width: 42px
+  height: 36px
+  flex-shrink: 0
+  align-self: flex-end
 
   > svg
-    margin-right: 8px
-    width: 20px
-    height: 20px
-    fill: var(--color-blue-1)
+    width: 18px
+    height: 18px
+    fill: var(--color-light-2)

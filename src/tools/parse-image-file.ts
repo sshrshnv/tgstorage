@@ -2,7 +2,7 @@ import { getFile, setFile } from '~/core/cache'
 
 const THUMB_MAX_SIZE = 120
 
-export const processImageFile = (file: File|string|undefined): Promise<{
+export const parseImageFile = (file: File|string|undefined): Promise<{
   w: number
   h: number
   thumbFileKey?: string

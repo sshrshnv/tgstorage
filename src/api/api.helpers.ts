@@ -11,8 +11,6 @@ import {
   convertStrippedImageBytesToUrl
 } from '~/tools/handle-content-media'
 
-import type { MessageMedia } from './mtproto'
-
 export const API_ID = +(process.env.API_ID || '')
 export const API_HASH = `${process.env.API_HASH || ''}`
 export const IS_TEST = `${process.env.API_TEST || ''}` !== 'false'
@@ -65,7 +63,8 @@ export const transformFolder = chat => {
 export const transformMessage = (message, user, { allowEmpty = false } = {}) => {
   const {
     id,
-    message: text,
+    message: text = '',
+    entities,
     date,
     edit_date: editDate,
     media: fullMedia,
@@ -83,9 +82,10 @@ export const transformMessage = (message, user, { allowEmpty = false } = {}) => 
     parentId: isFileMessage ? parseFileMessage(text).parentId : undefined,
     isParent: isParentFilesMessage,
     text,
+    entities: entities?.map(({ _, ...entity }) => ({ type: _, ...entity })),
     date: formatDate(date, user.country),
     editDate,
-    media: fullMedia && transformMedia(fullMedia),
+    ...((media?.url || media?.pending) ? { webpage: media } : media ? { media } : {}),
     views
   }
 }
@@ -94,62 +94,90 @@ export const transformMedia = (media) => {
   const { _ } = media
 
   if (['messageMediaPhoto', 'messageMediaDocument'].includes(_)) {
-    const file = media.photo || media.document
-
-    if (!file?.access_hash || file?.has_stickers) return undefined
-
-    const {
-      id, date, access_hash, file_reference, dc_id,
-      sizes, video_sizes,
-      mime_type, size, attributes, thumbs, video_thumbs
-    } = file
-    const isPhoto = !!media.photo
-    const type = isPhoto ? 'image/jpeg' : mime_type
-    const name = isPhoto ? `photo-${date}.jpg` : (attributes?.find(({ _ }) => _ === 'documentAttributeFilename')?.file_name || '')
-    const description = attributes?.find(({ _ }) => _ === 'documentAttributeAudio')
-    const duration = attributes?.find(({ _ }) => ['documentAttributeAudio', 'documentAttributeVideo'].includes(_))?.duration
-    const nameParts = name.split('.')
-    const ext = nameParts[nameParts.length - 1]
-
-    const filteredPhotos = (sizes || thumbs)?.filter(({ _ }) => _ === 'photoSize')
-    const filteredPhotoSizes = filteredPhotos?.map(({ size }) => size)
-    const originalPhoto = isPhoto ? filteredPhotos?.find(({ size }) => size === Math.max(...filteredPhotoSizes)) : undefined
-    const originalSize = originalPhoto?.size || size
-    const originalSizeType = originalPhoto?.type || ''
-
-    const thumbS = (sizes || thumbs)?.find(({ _ }) => _ === 'photoStrippedSize')
-    const thumbSUrl = thumbS?.bytes && convertStrippedImageBytesToUrl(thumbS.bytes)
-    const thumbM = filteredPhotos?.find(({ size }) => size === Math.min(...filteredPhotoSizes))
-    const thumbVideo = (video_sizes || video_thumbs)?.[0]
-
-    return {
-      id,
-      access_hash,
-      file_reference,
-      name,
-      description: description ? {
-        performer: description.performer,
-        title: description.title
-      } : undefined,
-      duration,
-      type,
-      ext,
-      originalSize,
-      originalSizeType: originalSizeType,
-      attributes,
-      dc_id,
-      thumbSUrl,
-      thumbM: thumbM ? {
-        size: thumbM.size,
-        sizeType: thumbM.type
-      } : undefined,
-      thumbVideo
-    }
+    return parseFile(media.photo, media.document)
   }
 
   if (_ === 'messageMediaWebPage') {
-    const { webpage } = media as MessageMedia.messageMediaWebPage
-    return undefined
+    const { webpage } = media
+    if (webpage.url) {
+      return {
+        id: webpage.id,
+        url: webpage.url,
+        displayUrl: webpage.display_url,
+        siteName: webpage.site_name,
+        title: webpage.title,
+        description: webpage.description,
+        duration: webpage.duration,
+        type: webpage.type,
+        author: webpage.author,
+        embedUrl: webpage.embed_url,
+        embedType: webpage.embed_type,
+        embedWidth: webpage.embed_width,
+        embedHeight: webpage.embed_height,
+        file: parseFile(webpage.photo, webpage.document),
+        pending: false
+      }
+    } else if (webpage._ === 'webPagePending') {
+      return {
+        id: webpage.id,
+        pending: true
+      }
+    } else {
+      return
+    }
+  }
+}
+
+const parseFile = (photo, document) => {
+  const file = photo || document
+  if (!file?.access_hash || file?.has_stickers) return
+
+  const {
+    id, date, access_hash, file_reference, dc_id,
+    sizes, video_sizes,
+    mime_type, size, attributes, thumbs, video_thumbs
+  } = file
+  const isPhoto = !!photo
+  const type = isPhoto ? 'image/jpeg' : mime_type
+  const name = isPhoto ? `photo-${date}.jpg` : (attributes?.find(({ _ }) => _ === 'documentAttributeFilename')?.file_name || '')
+  const description = attributes?.find(({ _ }) => _ === 'documentAttributeAudio')
+  const duration = attributes?.find(({ _ }) => ['documentAttributeAudio', 'documentAttributeVideo'].includes(_))?.duration
+  const nameParts = name.split('.')
+  const ext = nameParts[nameParts.length - 1]
+
+  const filteredPhotos = (sizes || thumbs)?.filter(({ _ }) => _ === 'photoSize')
+  const filteredPhotoSizes = filteredPhotos?.map(({ size }) => size)
+  const originalPhoto = isPhoto ? filteredPhotos?.find(({ size }) => size === Math.max(...filteredPhotoSizes)) : undefined
+  const originalSize = originalPhoto?.size || size
+  const originalSizeType = originalPhoto?.type || ''
+
+  const thumbS = (sizes || thumbs)?.find(({ _ }) => _ === 'photoStrippedSize')
+  const thumbSUrl = thumbS?.bytes && convertStrippedImageBytesToUrl(thumbS.bytes)
+  const thumbM = filteredPhotos?.find(({ size }) => size === Math.min(...filteredPhotoSizes))
+  const thumbVideo = (video_sizes || video_thumbs)?.[0]
+
+  return {
+    id,
+    access_hash,
+    file_reference,
+    name,
+    description: description ? {
+      performer: description.performer,
+      title: description.title
+    } : undefined,
+    duration,
+    type,
+    ext,
+    originalSize,
+    originalSizeType: originalSizeType,
+    attributes,
+    dc_id,
+    thumbSUrl,
+    thumbM: thumbM ? {
+      size: thumbM.size,
+      sizeType: thumbM.type
+    } : undefined,
+    thumbVideo
   }
 }
 

@@ -1,5 +1,5 @@
 export type WorkerTools = {
-  processBluredImageData(
+  getBluredImageData(
     data: ImageData,
     topX: number,
     topY: number,

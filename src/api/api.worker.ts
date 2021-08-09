@@ -27,6 +27,7 @@ const initialMeta = {
 
 class Api {
   private client: Client
+
   private call: <K extends keyof MethodDeclMap>(
     method: K,
     data?: MethodDeclMap[K]['req'],
@@ -165,9 +166,14 @@ class Api {
     return { user: normalizedUser }
   }
 
+  private logouting = false
+
   public async logOut() {
+    if (this.logouting) return
+    this.logouting = true
     await this.call('auth.logOut')
-    resetApiCache()
+    await resetApiCache()
+    this.logouting = false
     return true
   }
 
@@ -178,9 +184,13 @@ class Api {
       return null
     }
 
-    const { _, chats } = await this.call('messages.getAllChats', {
+    const { _, chats, error } = await this.call('messages.getAllChats', {
       except_ids: loadedChats.map(chat => chat.id)
-    })
+    }).catch(error => ({ error }))
+
+    if (error) {
+      return error
+    }
 
     if (_ === 'chatsSlice') {
       return this.getFolders([...loadedChats, ...chats])
@@ -322,7 +332,7 @@ class Api {
     const offsetId = folderOffsetId as number
     const user = await apiCache.getUser()
 
-    const { messages } = await this.call('messages.getHistory', {
+    const { messages, error } = await this.call('messages.getHistory', {
       peer: folder.id === user?.id ? {
         _: 'inputPeerSelf'
       } : {
@@ -337,7 +347,11 @@ class Api {
       min_id: 0,
       hash: 0,
       limit
-    })
+    }).catch(error => ({ error }))
+
+    if (error) {
+      return error
+    }
 
     if (messages.length < limit) {
       apiCache.setFolderOffsetId(folder.id, 'end')
@@ -382,6 +396,12 @@ class Api {
   public async createMessage(
     message: {
       text: string
+      entities?: {
+        type: any
+        offset: number
+        length: number
+        url?: string
+      }[]
       inputMedia?: {
         fileId: string
         fileName: string
@@ -501,11 +521,17 @@ class Api {
     message: {
       id: number
       text: string
+      entities?: {
+        type: any
+        offset: number
+        length: number
+        url?: string
+      }[]
       media?: {
         id: string
         access_hash: string
         file_reference: ArrayBuffer
-        originalSizeType: boolean
+        originalSizeType: string
       }
     },
     folder: {
@@ -524,6 +550,12 @@ class Api {
       },
       id: message.id,
       message: message.text || undefined,
+      entities: message.entities?.map(entity => ({
+        _: entity.type,
+        offset: entity.offset,
+        length: entity.length,
+        ...(entity.url ? { url: entity.url } : {})
+      })),
       ...(message.media ? { media: message.media.originalSizeType ? {
         _: 'inputMediaPhoto',
         id: {

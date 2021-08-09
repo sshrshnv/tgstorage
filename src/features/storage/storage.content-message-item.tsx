@@ -6,11 +6,8 @@ import { useMemo, useState, useCallback } from 'preact/hooks'
 import type { Folder, Message } from '~/core/store'
 import { deleteMessage } from '~/core/actions'
 import { useTexts, useQuickEditMessage } from '~/core/hooks'
-import {
-  checkIsChecklistMessage,
-  checkIsParentFilesMessage,
-  parseParentFilesMessage
-} from '~/tools/handle-content'
+import { checkIsChecklistMessage, checkIsParentFilesMessage, parseParentFilesMessage } from '~/tools/handle-content'
+import { normalizeMessageText } from '~/tools/handle-content-text'
 import { ContentItem } from '~/ui/elements/content-item'
 import { ContentItemHeader } from '~/ui/elements/content-item-header'
 import { ContentItemText } from '~/ui/elements/content-item-text'
@@ -20,6 +17,7 @@ import { EditIcon, MoveIcon, CopyIcon, ShareIcon, DeleteIcon } from '~/ui/icons'
 import { StorageContentMessageItemMediaList } from './storage.content-message-item-media-list'
 import { StorageContentMessageItemMediaItem } from './storage.content-message-item-media-item'
 import { StorageContentMessageItemGallery } from './storage.content-message-item-gallery'
+import { StorageContentMessageItemWebpage } from './storage.content-message-item-webpage'
 
 type Props = {
   folder: Folder
@@ -58,11 +56,16 @@ export const StorageContentMessageItem: FC<Props> = memo(({
     return !!message.media || !!message.mediaMessages?.length
   }, [message.media, message.mediaMessages?.length])
 
+  const hasWebpage = useMemo(() => {
+    return !!message.webpage
+  }, [message.webpage])
+
   const normalizedText = useMemo(() => {
-    return checkIsParentFilesMessage(message.text) ?
-      parseParentFilesMessage(message.text).text :
-      message.text
-  }, [message.text])
+    const text = normalizeMessageText(message.text, message.entities)
+    return checkIsParentFilesMessage(text) ?
+      parseParentFilesMessage(text).text :
+      text
+  }, [message.text, message.entities])
 
   const handleEdit = useCallback(() => {
     onEdit?.(message)
@@ -172,7 +175,15 @@ export const StorageContentMessageItem: FC<Props> = memo(({
         <ContentItemText
           text={normalizedText}
           emptyText={texts.emptyMessage}
-          empty={!normalizedText && !hasMedia}
+          empty={!normalizedText && !hasMedia && !hasWebpage}
+        />
+      )}
+
+      {hasWebpage && (
+        <StorageContentMessageItemWebpage
+          folder={folder}
+          message={message}
+          mediaLoadAvailable={visible}
         />
       )}
 

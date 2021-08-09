@@ -3,7 +3,7 @@ import { wait } from '~/tools/wait'
 
 //const THUMB_MAX_SIZE = 1280
 
-export const processVideoFile = (file: File|string|undefined): Promise<{
+export const parseVideoFile = (file: File|string|undefined): Promise<{
   duration: number
   w: number
   h: number

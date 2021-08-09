@@ -63,12 +63,48 @@ export type MessageMedia = {
   originalSizeType: string
 }
 
+export type MessageWebpage = {
+  id: number
+  url?: string
+  displayUrl?: string
+  siteName?: string
+  title?: string
+  description?: string
+  duration?: number
+  type?: string
+  author?: string
+  embedUrl?: string
+  embedType?: string
+  embedWidth?: number
+  embedHeight?: number
+  file?: {
+    id: string
+    access_hash: string
+    file_reference: ArrayBuffer
+    thumbSUrl?: string
+    thumbM?: {
+      size: number
+      sizeType: string
+    }
+  }
+  pending: boolean
+}
+
+export type MessageEntity = {
+  type: string
+  offset: number
+  length: number
+  url?: string
+}
+
 export type Message = {
   id: number
   parentId?: number
   text: string
+  entities?: MessageEntity[]
   date: string
   media?: MessageMedia
+  webpage?: MessageWebpage
   views?: number
   editDate?: number
   mediaMessages?: Message[]
@@ -123,6 +159,7 @@ export type InputMessage = {
   folderId?: number
   id?: number
   text: string
+  entities?: MessageEntity[]
   inputMedia?: InputMedia
   inputFiles?: InputFile[]
 }

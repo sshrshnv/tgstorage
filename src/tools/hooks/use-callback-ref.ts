@@ -1,5 +1,7 @@
 import type { Inputs, Ref } from 'preact/hooks'
-import { useRef, useCallback, useEffect, useMemo } from 'preact/hooks'
+import { useRef, useCallback, useMemo } from 'preact/hooks'
+
+import { usePrevious } from './use-previous'
 
 export const useCallbackRef = <T extends Function>(fn: T, inputs: Inputs): [
   T,
@@ -7,10 +9,11 @@ export const useCallbackRef = <T extends Function>(fn: T, inputs: Inputs): [
 ] => {
   const callback = useCallback(fn, inputs)
   const callbackRef = useRef(callback)
+  const prevCallback = usePrevious(callback)
 
-  useEffect(() => {
+  if (prevCallback !== callback) {
     callbackRef.current = callback
-  }, [callback])
+  }
 
   return useMemo(() => [
     callback,

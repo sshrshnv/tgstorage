@@ -1,3 +1,4 @@
+export * from './use-previous'
 export * from './use-state-ref'
 export * from './use-callback-ref'
 export * from './use-memo-ref'

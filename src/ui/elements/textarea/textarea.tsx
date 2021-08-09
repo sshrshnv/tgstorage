@@ -1,7 +1,9 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC, RefObject } from 'preact'
-import { useCallback, useState } from 'preact/hooks'
+import { useCallback, useEffect } from 'preact/hooks'
 import cn from 'classnames'
+
+import { useStateRef } from '~/tools/hooks'
 
 import styles from './textarea.styl'
 
@@ -9,23 +11,27 @@ type Props = {
   class?: string
   value?: string
   placeholder?: string
+  maxLength?: number
   disabled?: boolean
-  forwardedRef?: RefObject<HTMLTextAreaElement>
+  textareaRef?: RefObject<HTMLTextAreaElement>
   onInput?: (value: string) => void
+  onStartSelection?: () => void
 }
 
 export const Textarea: FC<Props> = ({
   class: className,
   value = '',
   placeholder,
+  maxLength,
   disabled,
-  forwardedRef,
-  onInput
+  textareaRef,
+  onInput,
+  onStartSelection
 }) => {
-  const [inputData, setInputData] = useState({ value })
+  const [inputData, setInputData, inputDataRef, setInputDataRef] = useStateRef({ value })
 
   const handleInput = useCallback(ev => {
-    const value = ev.target.value.replace('  ', ' ')
+    const value = ev.target.value
     const formattedValue = onInput?.(value)
     setInputData({ value: typeof formattedValue === 'undefined' ? value : formattedValue })
   }, [setInputData, onInput])
@@ -33,6 +39,11 @@ export const Textarea: FC<Props> = ({
   const handlePaste = useCallback(ev => {
     ev.stopPropagation()
   }, [])
+
+  useEffect(() => {
+    if (value === inputDataRef.current.value) return
+    setInputDataRef.current({ value })
+  }, [value])
 
   return (
     <div class={cn(
@@ -43,10 +54,11 @@ export const Textarea: FC<Props> = ({
         class={styles.textarea}
         placeholder={placeholder ? `${placeholder}…` : ''}
         disabled={disabled}
-        ref={forwardedRef}
-        maxLength={1600}
+        ref={textareaRef}
+        maxLength={maxLength}
         onInput={handleInput}
         onPaste={handlePaste}
+        onSelect={onStartSelection}
         {...inputData}
       />
     </div>

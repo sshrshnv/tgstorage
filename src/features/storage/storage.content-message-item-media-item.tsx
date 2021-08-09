@@ -43,7 +43,7 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
       ...media.thumbM,
       file_reference: media.file_reference
     } as DownloadingFile : undefined
-  }, [media.file_reference, media.thumbM, mediaRef])
+  }, [media.file_reference, media.thumbM])
 
   const [originalFile, originalFileRef] = useMemoRef(() => {
     return {

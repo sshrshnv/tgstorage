@@ -1,15 +1,11 @@
-import type {
-  Folder,
-  FoldersMessages,
-  SearchMessages,
-  Message,
-  InputMessage
-} from '~/core/store'
+import type { Folder, FoldersMessages, SearchMessages, Message, InputMessage } from '~/core/store'
 import { store } from '~/core/store'
 import { api } from '~/api'
+import { wait } from '~/tools/wait'
 
 import { setLoadingFolderId, getActiveFolder } from './folders'
 import { uploadFiles, resetUploadingFiles } from './message-media'
+import { logOut } from './user'
 import { setUpdates } from './updates'
 
 export const loadFolderMessages = async (
@@ -18,6 +14,12 @@ export const loadFolderMessages = async (
 ) => {
   setLoadingFolderId(folder.id, true)
   const updates = await api.getMessages(folder, lastMessageId)
+    .catch(({ code }) => {
+      if (code === 401) {
+        logOut()
+      }
+      return null
+    })
 
   if (!updates) {
     setLoadingFolderId(folder.id, false)
@@ -43,6 +45,16 @@ export const setSearchMessages = (
   store.setState({
     searchMessages
   })
+}
+
+export const getMessageWebpage = (
+  folder: Folder,
+  messageId: number
+) => {
+  const state = store.getState()
+  const folderMessages = state.foldersMessages.get(folder.id)
+  const message = folderMessages?.get(messageId)
+  return message?.webpage
 }
 
 export const createMessage = async (
@@ -189,6 +201,19 @@ export const refreshMessage = (
     waitIds: [...(refreshMessages[folder.id]?.waitIds || []), id]
   }
 })
+
+export const refreshMessageWebpage = async (
+  folder: Folder,
+  id: number,
+) => {
+  refreshMessage(folder, id, 1000, async () => {
+    const webpage = getMessageWebpage(folder, id)
+    if (webpage?.pending) {
+      await wait(500)
+      refreshMessageWebpage(folder, id)
+    }
+  })
+}
 
 export const searchMessages = async (
   query: string,
