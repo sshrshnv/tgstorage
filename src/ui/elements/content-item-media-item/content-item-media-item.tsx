@@ -95,7 +95,7 @@ export const ContentItemMediaItem: FC<Props> = memo(({
             <FilePreviewImage
               fileKey={previewFileKey}
               timeout={50}
-              isVideo={isVideo}
+              isPlay={isVideo}
             />
           )}
           {!hasPreviewFile && (

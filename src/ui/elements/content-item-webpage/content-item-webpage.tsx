@@ -67,6 +67,7 @@ export const ContentItemWebpage: FC<Props> = memo(({
             <FilePreviewImage
               fileKey={previewFileKey}
               timeout={50}
+              isLink
             />
           )}
           {!hasPreviewFile && (
@@ -79,7 +80,7 @@ export const ContentItemWebpage: FC<Props> = memo(({
             {webpage.title || webpage.displayUrl}
           </Text>
           <div class={styles.footer}>
-            <Text grey ellipsis capitalize={!!(webpage.siteName || webpage.type)}>
+            <Text grey ellipsis capitalize={!webpage.siteName && !!webpage.type}>
               {webpage.siteName || webpage.type || webpage.url}
             </Text>
           </div>

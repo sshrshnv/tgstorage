@@ -6,7 +6,7 @@ import cn from 'classnames'
 
 import { useStateRef, useUpdatableRef } from '~/tools/hooks'
 import { getFile } from '~/core/cache'
-import { PlayIcon } from '~/ui/icons'
+import { PlayIcon, LinkIcon } from '~/ui/icons'
 
 import styles from './file-preview-image.styl'
 
@@ -15,7 +15,8 @@ type Props = {
   fileKey?: string
   timeout?: number
   isFullscreen?: boolean
-  isVideo?: boolean
+  isPlay?: boolean
+  isLink?: boolean
 }
 
 export const FilePreviewImage: FC<Props> = memo(({
@@ -23,7 +24,8 @@ export const FilePreviewImage: FC<Props> = memo(({
   fileKey,
   timeout,
   isFullscreen,
-  isVideo
+  isPlay,
+  isLink
 }) => {
   const [url, _setUrl, urlRef, setUrlRef] = useStateRef('')
   const [ready, _setReady, readyRef, setReadyRef] = useStateRef(false)
@@ -70,9 +72,17 @@ export const FilePreviewImage: FC<Props> = memo(({
         src={url}
         onLoad={handleLoad}
       />
-      {isVideo && (
-        <div class={styles.icon}>
-          <PlayIcon/>
+      {(isPlay || isLink) && (
+        <div class={cn(
+          styles.icon,
+          isLink && styles._transform
+        )}>
+          {isPlay && (
+            <PlayIcon/>
+          )}
+          {isLink && (
+            <LinkIcon/>
+          )}
         </div>
       )}
     </Fragment>

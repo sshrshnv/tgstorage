@@ -7,7 +7,10 @@ import { Provider } from 'unistore-hooks'
 import { registerSW } from '~/sw'
 import { AuthLazy } from '~/features/auth'
 import { StorageLazy } from '~/features/storage'
-import { PreventContextMenu, PreventScale, PreventDragAndDrop } from '~/ui/handlers'
+import {
+  ApplyTheme, ApplyLocale,
+  PreventContextMenu, PreventScale, PreventDragAndDrop
+} from '~/ui/handlers'
 import '~/ui/styles/global.styl'
 
 import { store } from './store'
@@ -23,6 +26,8 @@ const App: FC = () => {
       ) : (
         <AuthLazy/>
       )}
+      <ApplyTheme/>
+      <ApplyLocale/>
       <PreventContextMenu/>
       <PreventScale/>
       <PreventDragAndDrop/>

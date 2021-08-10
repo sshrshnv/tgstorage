@@ -1,23 +1,22 @@
 import { useMemo } from 'preact/hooks'
 import { useStoreState } from 'unistore-hooks'
 
-import type { State, Locales, Folder, Message } from '~/core/store'
+import type { State, Folder, Message } from '~/core/store'
+import { useTexts } from '~/core/hooks'
 import { useUpdatableRef } from '~/tools/hooks'
 import { groupMessages } from '~/tools/handle-content'
 
 export const useFolder = (id = 0) => {
+  const { texts } = useTexts('storage')
   const {
     folders,
-    foldersMessages,
-    texts
+    foldersMessages
   }: {
     folders: State['folders']
     foldersMessages: State['foldersMessages']
-    texts: State['texts'][Locales]
   } = useStoreState(state => ({
     folders: state.folders,
-    foldersMessages: state.foldersMessages,
-    texts: state.texts[state.settings.locale].storage
+    foldersMessages: state.foldersMessages
   }))
 
   const folder = folders?.get(id) as Folder

@@ -184,6 +184,12 @@ export type Api = {
     precise?: boolean
   }) => Promise<Uint8Array>
 
+  downloadPhotoFile: (photoParams: {
+    volume_id: number
+    local_id: number
+    dc_id: number
+  }) => Promise<{ bytes: Uint8Array, type: string }>
+
   searchMessages: (
     query: string,
     folder: Folder

@@ -26,6 +26,12 @@ const [
   apiCache.getSettings()
 ])
 
+const initialSettings: Settings = {
+  theme: 'system',
+  locale: detectLocale(),
+  generalFolder: true
+}
+
 const initialDataState = {
   user: null,
   userLoading: false,
@@ -45,8 +51,9 @@ const state: State = {
   user,
   folders,
   foldersMessages,
-  settings: settings || {
-    locale: detectLocale()
+  settings: {
+    ...initialSettings,
+    ...settings
   },
   texts: {
     en,

@@ -1,9 +1,11 @@
 import type { AvailableLocales } from '~/tools/detect-locale'
+import type { AvailableThemes } from '~/ui/styles/theme'
 
-export type Locales = AvailableLocales
+export type Locale = AvailableLocales
+export type Theme = AvailableThemes
 
 export type Texts = {
-  [key in Locales]: {
+  [key in Locale]: {
     [k: string]: string
   }
 }
@@ -13,17 +15,28 @@ export type Viewport = {
 }
 
 export type Settings = {
-  locale: Locales
+  locale: Locale
+  theme: Theme
+  generalFolder: boolean
 }
 
 export type User = {
   id: number
   access_hash: string
-  first_name: string
+  phone: string
+  username?: string
+  firstName: string
+  lastName?: string
   photo?: {
+    id: number
+    volume_id: number
+    local_id: number
+    dc_id: number
+  }
+  photoFile?: {
     bytes: Uint8Array
     type: string
-  } | null
+  }
   country: string
 } | null
 

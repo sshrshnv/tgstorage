@@ -19,28 +19,19 @@ export const META_KEY = IS_TEST ? 'metatest' : 'meta'
 export const transformUser = (user, country) => {
   if (!user) return null
 
-  /*
-    let photo: {
-      bytes: Uint8Array
-      type: string
-    } | null = null
-
-    if (user.photo?.photo_id) {
-      photo = await this.getFile({
-        _: 'inputPeerPhotoFileLocation',
-        peer: { _: 'inputPeerSelf' },
-        volume_id: user.photo.photo_small.volume_id,
-        local_id: user.photo.photo_small.local_id
-      },
-      user.photo.dc_id
-      )
-    }
-    */
-
   return {
     id: user.id,
     access_hash: user.access_hash,
-    first_name: user.first_name,
+    phone: user.phone,
+    username: user.username,
+    firstName: user.first_name,
+    lastName: user.last_name,
+    photo: user.photo?.photo_id ? {
+      id: user.photo.photo_id,
+      volume_id: user.photo.photo_small.volume_id,
+      local_id: user.photo.photo_small.local_id,
+      dc_id: user.photo.dc_id
+    } : undefined,
     country
   }
 }

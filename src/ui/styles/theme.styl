@@ -4,7 +4,7 @@
     font-weight: 400
     src: local("Segoe UI Semilight")
 
-:root
+light-theme()
   --font-family-ui: -apple-system, BlinkMacSystemFont, "Roboto", "Arial", system-ui, sans-serif
   --font-family-content: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Arial", system-ui, sans-serif
   --font-weight-ui: 500
@@ -65,33 +65,47 @@
   --progress-background-color: var(--color-light-3)
   --gallery-controls-background-color: var(--color-white-05)
 
+dark-theme()
+  color-scheme: dark
+
+  --font-family-content: -apple-system, BlinkMacSystemFont, "Segoe UI Light", "Roboto", "Arial", system-ui, sans-serif
+
+  --default-font-color: var(--color-white)
+  --disabled-font-color: var(--color-dark-3-l10)
+  --default-background-color: var(--color-dark-1)
+  --sidebar-background-color: var(--color-dark-2)
+  --sidebar-header-background-color: var(--color-dark-3)
+  --content-background-color: var(--color-dark-1)
+  --content-background-color-08: var(--color-dark-1-08)
+  --content-form-background-color: var(--color-dark-3)
+  --content-item-background-color: var(--color-dark-2)
+  --content-monospace-background-color: var(--color-black-01)
+  --content-link-color: var(--color-blue-1)
+  --dropdown-border-color: var(--color-light-2)
+  --dropdown-item-border-color: var(--color-dark-3)
+  --icon-background-color: var(--color-dark-3)
+  --icon-border-color: var(--color-white)
+  --icon-second-border-color: var(--color-white-01)
+  --avatar-background-color: var(--color-dark-1-08)
+  --item-border-color: var(--color-dark-3)
+  --form-border-color: var(--color-dark-3-l5)
+  --form-item-border-color: var(--color-dark-3-l1)
+  --menu-icon-color: var(--color-dark-3-l5)
+  --scrollbar-background-color: var(--color-dark-1)
+  --scrollbar-color: var(--color-dark-2)
+  --progress-background-color: var(--color-dark-2)
+  --gallery-controls-background-color: var(--color-black-02)
+
+
+:root
+  light-theme()
+
   @media $dark
-    color-scheme: dark
+    dark-theme()
 
-    --font-family-content: -apple-system, BlinkMacSystemFont, "Segoe UI Light", "Roboto", "Arial", system-ui, sans-serif
+:global
+  html[data-theme='light']
+    light-theme()
 
-    --default-font-color: var(--color-white)
-    --disabled-font-color: var(--color-dark-3-l10)
-    --default-background-color: var(--color-dark-1)
-    --sidebar-background-color: var(--color-dark-2)
-    --sidebar-header-background-color: var(--color-dark-3)
-    --content-background-color: var(--color-dark-1)
-    --content-background-color-08: var(--color-dark-1-08)
-    --content-form-background-color: var(--color-dark-3)
-    --content-item-background-color: var(--color-dark-2)
-    --content-monospace-background-color: var(--color-black-01)
-    --content-link-color: var(--color-blue-1)
-    --dropdown-border-color: var(--color-light-2)
-    --dropdown-item-border-color: var(--color-dark-3)
-    --icon-background-color: var(--color-dark-3)
-    --icon-border-color: var(--color-white)
-    --icon-second-border-color: var(--color-white-01)
-    --avatar-background-color: var(--color-dark-2)
-    --item-border-color: var(--color-dark-3)
-    --form-border-color: var(--color-dark-3-l5)
-    --form-item-border-color: var(--color-dark-3-l1)
-    --menu-icon-color: var(--color-dark-3-l5)
-    --scrollbar-background-color: var(--color-dark-1)
-    --scrollbar-color: var(--color-dark-2)
-    --progress-background-color: var(--color-dark-2)
-    --gallery-controls-background-color: var(--color-black-02)
+  html[data-theme='dark']
+    dark-theme()

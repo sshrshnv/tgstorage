@@ -1,4 +1,5 @@
-export * from './locales'
+export * from './settings'
+export * from './texts'
 export * from './user'
 export * from './updates'
 export * from './folders'

@@ -94,7 +94,10 @@ export const Select: FC<Props> = memo(({
 
   const select = useCallback(option => {
     onSelect?.(option.value)
-  }, [onSelect])
+    if (search && searchValue && !isFullSearchValue) {
+      collapse()
+    }
+  }, [search, searchValue, isFullSearchValue, collapse, onSelect])
 
   const handleFocus = useCallback(() => {
     setFocused(true)

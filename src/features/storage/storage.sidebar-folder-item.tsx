@@ -68,7 +68,7 @@ export const StorageSidebarFolderItem: FC<Props> = memo(({
   }, [setConfirmation])
 
   const menu = useMemo(() => ({
-    items: index ? [{
+    items: folder.general ? [] : [{
       title: texts.folderEditTitle,
       icon: <EditIcon/>,
       onClick: handleEdit
@@ -78,10 +78,10 @@ export const StorageSidebarFolderItem: FC<Props> = memo(({
       warning: !confirmation,
       danger: confirmation,
       onClick: handleDelete
-    }] : [],
+    }],
     onClose: resetConfirmation
   }), [
-    index,
+    folder.general,
     confirmation,
     texts.folderEditTitle,
     texts.confirmDeleteButton,

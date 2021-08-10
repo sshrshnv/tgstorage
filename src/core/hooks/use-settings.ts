@@ -5,15 +5,25 @@ import type { State } from '~/core/store'
 import { useUpdatableRef } from '~/tools/hooks'
 
 export const useSettings = () => {
-  const { locale }: {
+  const { theme, locale, generalFolder }: {
+    theme: State['settings']['theme']
     locale: State['settings']['locale']
+    generalFolder: State['settings']['generalFolder']
   } = useStoreState(state => ({
-    locale: state.settings.locale
+    theme: state.settings.theme,
+    locale: state.settings.locale,
+    generalFolder: state.settings.generalFolder
   }))
+  const themeRef = useUpdatableRef(theme)
   const localeRef = useUpdatableRef(locale)
+  const generalFolderRef = useUpdatableRef(generalFolder)
 
   return useMemo(() => ({
+    theme,
+    themeRef,
     locale,
-    localeRef
-  }), [locale, localeRef])
+    localeRef,
+    generalFolder,
+    generalFolderRef
+  }), [theme, locale, generalFolder])
 }
