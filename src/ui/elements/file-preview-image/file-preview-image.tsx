@@ -4,8 +4,8 @@ import { memo } from 'preact/compat'
 import { useEffect, useState, useCallback } from 'preact/hooks'
 import cn from 'classnames'
 
-import { useStateRef, useUpdatableRef } from '~/tools/hooks'
 import { getFile } from '~/core/cache'
+import { useStateRef, useUpdatableRef } from '~/tools/hooks'
 import { PlayIcon, LinkIcon } from '~/ui/icons'
 
 import styles from './file-preview-image.styl'

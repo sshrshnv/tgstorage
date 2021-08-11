@@ -6,13 +6,15 @@ import { useMemo, useState, useCallback } from 'preact/hooks'
 import type { Folder, Message } from '~/core/store'
 import { deleteMessage } from '~/core/actions'
 import { useTexts, useQuickEditMessage } from '~/core/hooks'
+import { COPY_TIMEOUT, copyText } from '~/tools/copy-text'
+import { IS_SHARE_SUPPORTED, shareText } from '~/tools/share-data'
 import { checkIsChecklistMessage, checkIsParentFilesMessage, parseParentFilesMessage } from '~/tools/handle-content'
 import { normalizeMessageText } from '~/tools/handle-content-text'
 import { ContentItem } from '~/ui/elements/content-item'
 import { ContentItemHeader } from '~/ui/elements/content-item-header'
 import { ContentItemText } from '~/ui/elements/content-item-text'
 import { ContentItemChecklist } from '~/ui/elements/content-item-checklist'
-import { EditIcon, MoveIcon, CopyIcon, ShareIcon, DeleteIcon } from '~/ui/icons'
+import { EditIcon, MoveIcon, CopyIcon, ShareIcon, DeleteIcon, CheckIcon } from '~/ui/icons'
 
 import { StorageContentMessageItemMediaList } from './storage.content-message-item-media-list'
 import { StorageContentMessageItemMediaItem } from './storage.content-message-item-media-item'
@@ -45,6 +47,7 @@ export const StorageContentMessageItem: FC<Props> = memo(({
   const { texts } = useTexts('storage')
   const { editing, editText } = useQuickEditMessage(message)
   const [confirmation, setConfirmation] = useState(false)
+  const [coping, setCoping] = useState(false)
   const [loading, setLoading] = useState(false)
   const [galleryInitialId, setGalleryInitialId] = useState('')
 
@@ -67,6 +70,12 @@ export const StorageContentMessageItem: FC<Props> = memo(({
       text
   }, [message.text, message.entities])
 
+  const copingText = useMemo(() => {
+    return checkIsParentFilesMessage(message.text) ?
+      parseParentFilesMessage(message.text).text :
+      message.text
+  }, [message.text])
+
   const handleEdit = useCallback(() => {
     onEdit?.(message)
   }, [message, onEdit])
@@ -75,13 +84,14 @@ export const StorageContentMessageItem: FC<Props> = memo(({
     onMove?.(message)
   }, [message, onMove])
 
-  const handleCopy = useCallback(() => {
-    //copy
-  }, [])
+  const handleCopy = useCallback(async () => {
+    setCoping(true)
+    copyText(copingText)
+  }, [copingText, setCoping])
 
   const handleShare = useCallback(() => {
-    //share
-  }, [])
+    shareText(copingText)
+  }, [copingText])
 
   const handleDelete = useCallback(async (ev) => {
     if (confirmation) {
@@ -104,40 +114,48 @@ export const StorageContentMessageItem: FC<Props> = memo(({
     setGalleryInitialId('')
   }, [setGalleryInitialId])
 
+  const resetCoping = useCallback(() => {
+    setCoping(false)
+  }, [setCoping])
+
   const resetConfirmation = useCallback(() => {
     setConfirmation(false)
   }, [setConfirmation])
 
   const menu = useMemo(() => ({
-    items: [{
+    items: [!message.fwd ? {
       title: texts.messageEditTitle,
       icon: <EditIcon/>,
       onClick: handleEdit
-    }, {
+    } : null, {
       title: texts.messageMoveTitle,
       icon: <MoveIcon/>,
       onClick: handleMove
-    }, {
-      title: texts.messageCopyTitle,
-      icon: <CopyIcon/>,
+    }, copingText.length ? {
+      title: coping ? texts.messageCopiedTitle : texts.messageCopyTitle,
+      icon: coping ? <CheckIcon/> : <CopyIcon/>,
       onClick: handleCopy
-    }, {
+    } : null, (copingText.length && IS_SHARE_SUPPORTED) ? {
       title: texts.messageShareTitle,
       icon: <ShareIcon/>,
       onClick: handleShare
-    }, {
+    }: null, {
       title: confirmation ? texts.confirmDeleteButton : texts.messageDeleteTitle,
       icon: <DeleteIcon/>,
       warning: !confirmation,
       danger: confirmation,
       onClick: handleDelete
     }],
-    onClose: resetConfirmation
+    closeTimeout: coping ? COPY_TIMEOUT : 0,
+    onClose: confirmation ? resetConfirmation : coping ? resetCoping : undefined
   }), [
     confirmation,
+    coping,
+    copingText.length,
     texts.messageEditTitle,
     texts.messageMoveTitle,
     texts.messageCopyTitle,
+    texts.messageCopiedTitle,
     texts.messageShareTitle,
     texts.confirmDeleteButton,
     texts.messageDeleteTitle,
@@ -146,7 +164,8 @@ export const StorageContentMessageItem: FC<Props> = memo(({
     handleCopy,
     handleShare,
     handleDelete,
-    resetConfirmation
+    resetConfirmation,
+    resetCoping
   ])
 
   return (
@@ -163,6 +182,9 @@ export const StorageContentMessageItem: FC<Props> = memo(({
     >
       <ContentItemHeader
         date={message.date}
+        fwd={message.fwd}
+        fwdTitle={texts.messageFwdTitle}
+        fwdFromTitle={texts.messageFwdFromTitle}
       />
 
       {isChecklist ? (

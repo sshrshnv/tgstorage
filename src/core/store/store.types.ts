@@ -110,6 +110,10 @@ export type MessageEntity = {
   url?: string
 }
 
+export type MessageFwd = {
+  name?: string
+}
+
 export type Message = {
   id: number
   parentId?: number
@@ -121,6 +125,7 @@ export type Message = {
   views?: number
   editDate?: number
   mediaMessages?: Message[]
+  fwd?: MessageFwd
 }
 
 export type FolderMessages =

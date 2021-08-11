@@ -115,3 +115,6 @@ export const groupMessages = (messages: Message[]) => {
 
   return [...groupedMessages.values()]
 }
+
+export const normalizePreviewText = (text: string, { filesTitle }) =>
+  text.replace(CHECKLIST_MESSAGE_MARK, '').replace(PARENT_FILES_MESSAGE_MARK, filesTitle)

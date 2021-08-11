@@ -1,13 +1,15 @@
 import type { FunctionComponent as FC } from 'preact'
 import { h } from 'preact'
-import { useEffect, useMemo, useCallback } from 'preact/hooks'
+import { useEffect, useMemo, useCallback, useState } from 'preact/hooks'
 
 import type { Folder, Message, MessageWebpage, DownloadingFile } from '~/core/store'
-import { useMemoRef, useUpdatableRef } from '~/tools/hooks'
 import { downloadFile, pauseDownloadingFile, refreshMessageWebpage } from '~/core/actions'
 import { useTexts, useDownloadingFile } from '~/core/hooks'
+import { useMemoRef, useUpdatableRef } from '~/tools/hooks'
+import { COPY_TIMEOUT, copyText } from '~/tools/copy-text'
+import { IS_SHARE_SUPPORTED, shareLink } from '~/tools/share-data'
 import { ContentItemWebpage } from '~/ui/elements/content-item-webpage'
-import { MoveIcon, CopyIcon } from '~/ui/icons'
+import { MoveIcon, CopyIcon, CheckIcon, ShareIcon } from '~/ui/icons'
 
 type Props = {
   folder: Folder
@@ -21,6 +23,7 @@ export const StorageContentMessageItemWebpage: FC<Props> = ({
   mediaLoadAvailable,
 }) => {
   const { texts } = useTexts('storage')
+  const [coping, setCoping] = useState(false)
   const messageIdRef = useUpdatableRef(message.id)
   const webpage = message.webpage as MessageWebpage
   const webpageRef = useUpdatableRef(webpage)
@@ -41,8 +44,17 @@ export const StorageContentMessageItemWebpage: FC<Props> = ({
   } = useDownloadingFile(thumbFile)
 
   const handleCopyLink = useCallback(() => {
-    //
+    setCoping(true)
+    copyText(webpage.url || '')
+  }, [webpage.url, setCoping])
+
+  const handleShareLink = useCallback(() => {
+    shareLink(webpage.url || '')
   }, [webpage.url])
+
+  const resetCoping = useCallback(() => {
+    setCoping(false)
+  }, [setCoping])
 
   const menu = useMemo(() => ({
     items: [{
@@ -50,11 +62,24 @@ export const StorageContentMessageItemWebpage: FC<Props> = ({
       icon: <MoveIcon/>,
       url: webpage.url
     }, {
-      title: texts.linkCopyTitle,
-      icon: <CopyIcon/>,
+      title: coping ? texts.linkCopiedTitle : texts.linkCopyTitle,
+      icon: coping ? <CheckIcon/> : <CopyIcon/>,
       onClick: handleCopyLink
-    }]
+    }, IS_SHARE_SUPPORTED ? {
+      title: texts.linkShareTitle,
+      icon: <ShareIcon/>,
+      onClick: handleShareLink
+    }: null],
+    closeTimeout: coping ? COPY_TIMEOUT : 0,
+    onClose: coping ? resetCoping : undefined
   }), [
+    coping,
+    texts.linkOpenTitle,
+    texts.linkCopyTitle,
+    texts.linkCopiedTitle,
+    handleCopyLink,
+    handleShareLink,
+    resetCoping
   ])
 
   useEffect(() => {

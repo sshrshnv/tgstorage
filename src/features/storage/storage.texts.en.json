@@ -7,6 +7,7 @@
   "folderDeleteTitle": "Delete folder",
   "folderSelectTitle": "Select folder",
   "folderEmptyDescription": "Empty",
+  "folderFilesDescription": "Files",
   "categoryEditTitle": "Edit category",
   "settingsTitle": "Settings",
   "settingsThemeLabel": "Theme",
@@ -48,10 +49,16 @@
   "messageDeleteTitle": "Delete message",
   "messageMoveTitle": "Move message",
   "messageCopyTitle": "Copy text",
+  "messageCopiedTitle": "Copied",
   "messageShareTitle": "Share text",
+  "messageFwdTitle": "Forwarded",
+  "messageFwdFromTitle": "Forwarded from",
   "emptyMessage": "Waiting for file",
+  "mediaShareTitle": "Share file",
   "mediaDeleteTitle": "Delete file",
   "mediaDownloadTitle": "Download",
   "linkOpenTitle": "Open link",
-  "linkCopyTitle": "Copy link"
+  "linkCopyTitle": "Copy link",
+  "linkCopiedTitle": "Copied",
+  "linkShareTitle": "Share link"
 }

@@ -59,6 +59,7 @@ export const transformMessage = (message, user, { allowEmpty = false } = {}) => 
     date,
     edit_date: editDate,
     media: fullMedia,
+    fwd_from,
     views
   } = message
   const media = fullMedia && transformMedia(fullMedia)
@@ -77,7 +78,8 @@ export const transformMessage = (message, user, { allowEmpty = false } = {}) => 
     date: formatDate(date, user.country),
     editDate,
     ...((media?.url || media?.pending) ? { webpage: media } : media ? { media } : {}),
-    views
+    ...(fwd_from ? { fwd: { name: fwd_from.from_name } } : {}),
+    views,
   }
 }
 

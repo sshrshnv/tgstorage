@@ -1,7 +1,6 @@
 import { useMemo, useCallback, useRef, useEffect } from 'preact/hooks'
 
 import type { Folder, InputFile, Message } from '~/core/store'
-import { useStateRef, useCallbackRef, useUpdatableRef } from '~/tools/hooks'
 import { getFileMeta } from '~/core/cache'
 import {
   createMessage,
@@ -11,6 +10,7 @@ import {
   resetUploadingFiles
 } from '~/core/actions'
 import { useSendingMessage } from '~/core/hooks'
+import { useStateRef, useCallbackRef, useUpdatableRef } from '~/tools/hooks'
 import { checkIsParentFilesMessage, stringifyParentFilesMessage } from '~/tools/handle-content'
 import { parseInputText, normalizeInputText } from '~/tools/handle-content-text'
 import { parseImageFile } from '~/tools/parse-image-file'

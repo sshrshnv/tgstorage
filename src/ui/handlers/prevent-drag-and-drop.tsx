@@ -19,11 +19,11 @@ export const PreventDragAndDrop: FC = () => {
       ev.preventDefault()
     }
 
-    document.addEventListener('dragover', handleDrag, { passive: false })
-    document.addEventListener('drop', handleDrop, { passive: false })
+    self.document.addEventListener('dragover', handleDrag, { passive: false })
+    self.document.addEventListener('drop', handleDrop, { passive: false })
     return () => {
-      document.removeEventListener('dragover', handleDrag)
-      document.removeEventListener('drop', handleDrop)
+      self.document.removeEventListener('dragover', handleDrag)
+      self.document.removeEventListener('drop', handleDrop)
     }
   }, [])
 

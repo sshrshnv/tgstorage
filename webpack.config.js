@@ -9,7 +9,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const DotenvPlugin = require('dotenv-webpack')
-//const WorkboxPlugin = require('workbox-webpack-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const autoprefixer = require('autoprefixer')
 
@@ -210,7 +209,7 @@ module.exports = [{
   devtool: isDev() ? 'eval-cheap-module-source-map' : 'hidden-source-map',
 
   devServer: {
-    //https: true,
+    https: true,
     host: '0.0.0.0',
     port: 5000,
     hot: true,

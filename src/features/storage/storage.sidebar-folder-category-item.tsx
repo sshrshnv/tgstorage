@@ -20,7 +20,6 @@ type Props = {
 
 export const StorageSidebarFolderCategoryItem: FC<Props> = memo(({
   folder,
-  index,
   disabled,
   withoutMenu,
   setFolderPopupParams
@@ -41,7 +40,7 @@ export const StorageSidebarFolderCategoryItem: FC<Props> = memo(({
   }, [folder, setFolderPopupParams])
 
   const menu = useMemo(() => ({
-    items: [index ? {
+    items: [folder.category ? {
       title: texts.categoryEditTitle,
       icon: <EditIcon/>,
       onClick: editCategory
@@ -51,7 +50,7 @@ export const StorageSidebarFolderCategoryItem: FC<Props> = memo(({
       onClick: addFolder
     }]
   }), [
-    index,
+    folder.category,
     texts.categoryEditTitle,
     texts.folderAddTitle,
     editCategory,

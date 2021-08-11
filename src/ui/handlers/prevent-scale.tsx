@@ -12,11 +12,11 @@ export const PreventScale: FC = () => {
       }
     }
 
-    document.addEventListener('gesturestart', handleGestureStart, { passive: true })
-    document.addEventListener('touchmove', handleTouchMove, { passive: true })
+    self.document.addEventListener('gesturestart', handleGestureStart, { passive: true })
+    self.document.addEventListener('touchmove', handleTouchMove, { passive: true })
     return () => {
-      document.removeEventListener('gesturestart', handleGestureStart)
-      document.removeEventListener('touchmove', handleTouchMove)
+      self.document.removeEventListener('gesturestart', handleGestureStart)
+      self.document.removeEventListener('touchmove', handleTouchMove)
     }
   }, [])
 

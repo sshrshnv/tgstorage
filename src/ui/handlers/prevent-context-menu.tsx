@@ -7,8 +7,8 @@ export const PreventContextMenu: FC = () => {
       ev.preventDefault()
     }
 
-    document.addEventListener('contextmenu', handleContextMenu, { passive: false })
-    return () => document.removeEventListener('contextmenu', handleContextMenu)
+    self.document.addEventListener('contextmenu', handleContextMenu, { passive: false })
+    return () => self.document.removeEventListener('contextmenu', handleContextMenu)
   }, [])
 
   return null

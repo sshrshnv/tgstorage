@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from 'preact/hooks'
 import cn from 'classnames'
 
 import { useCallbackRef, useUpdatableRef } from '~/tools/hooks'
+import { wait } from '~/tools/wait'
 import { Button } from '~/ui/elements/button'
 import { MenuIcon } from '~/ui/icons'
 import { animationClassName } from '~/ui/styles/animation'
@@ -26,6 +27,8 @@ export type Props = {
   } | null)[]
   horizontal?: boolean
   parentRef?: RefObject<HTMLDivElement>
+  forceOpened?: boolean
+  closeTimeout?: number
   onClose?: () => void
 }
 
@@ -34,6 +37,8 @@ export const Menu: FC<Props> = memo(({
   items,
   horizontal,
   parentRef,
+  forceOpened,
+  closeTimeout,
   onClose
 }) => {
   const [expanded, setExpanded] = useState(false)
@@ -43,13 +48,17 @@ export const Menu: FC<Props> = memo(({
   const positionYRef = useRef('top')
   const itemsCountRef = useUpdatableRef(items.length)
 
-  const [toggle, toggleRef] = useCallbackRef((ev?) => {
-    if (ev?.target.tagName.toLowerCase() !== 'a') {
+  const [toggle, toggleRef] = useCallbackRef(async (ev?) => {
+    /*if (ev?.target.tagName.toLowerCase() !== 'a') {
       ev?.preventDefault()
-    }
+    }*/
+    ev?.preventDefault()
     ev?.stopPropagation()
 
     if (expanded) {
+      if (closeTimeout) {
+        await wait(closeTimeout)
+      }
       onClose?.()
     } else {
       const { top = 0 } = menuRef.current?.getBoundingClientRect() || {}
@@ -72,6 +81,11 @@ export const Menu: FC<Props> = memo(({
       easing: 'ease-in-out'
     })
   }, [expanded])
+
+  useEffect(() => {
+    if (!forceOpened) return
+    toggleRef.current()
+  }, [forceOpened])
 
   useEffect(() => {
     const parentEl = parentRef?.current

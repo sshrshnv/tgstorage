@@ -1,6 +1,6 @@
 import type { FunctionComponent as FC } from 'preact'
 import { h } from 'preact'
-import { useMemo } from 'preact/hooks'
+import { useMemo, useCallback } from 'preact/hooks'
 import cn from 'classnames'
 
 import { UserIcon } from '~/ui/icons'
@@ -19,7 +19,7 @@ export const Avatar: FC<Props> = ({
   image,
   onClick
 }) => {
-  const src = useMemo(() => {
+  const url = useMemo(() => {
     if (!image) return ''
     const blob = new Blob(
       [new Uint8Array(image.bytes)],
@@ -28,10 +28,16 @@ export const Avatar: FC<Props> = ({
     return URL.createObjectURL(blob)
   }, [image?.bytes, image?.type])
 
-  return src ? (
+  const handleLoad = useCallback(() => {
+    if (!url) return
+    URL.revokeObjectURL(url)
+  }, [url])
+
+  return url ? (
     <img
       class={styles.root}
-      src={src}
+      src={url}
+      onLoad={handleLoad}
       onClick={onClick}
     />
   ) : (

@@ -4,8 +4,8 @@ import { memo } from 'preact/compat'
 import { useEffect } from 'preact/hooks'
 
 import type { Message } from '~/core/store'
-import { useStateRef, useCallbackRef } from '~/tools/hooks'
 import { useTexts, useActiveFolder } from '~/core/hooks'
+import { useStateRef, useCallbackRef } from '~/tools/hooks'
 import { Text } from '~/ui/elements/text'
 import { ContentWrapper } from '~/ui/elements/content-wrapper'
 

@@ -3,8 +3,8 @@ import { h } from 'preact'
 import { memo } from 'preact/compat'
 import { useCallback, useEffect } from 'preact/hooks'
 
-import { useCallbackRef } from '~/tools/hooks'
 import { setFile } from '~/core/cache'
+import { useCallbackRef } from '~/tools/hooks'
 import { Slide } from '~/ui/elements/slide'
 
 import styles from './content.styl'

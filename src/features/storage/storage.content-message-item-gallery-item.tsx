@@ -4,10 +4,10 @@ import { memo } from 'preact/compat'
 import { useEffect, useState } from 'preact/hooks'
 
 import type { MessageMedia, DownloadingFile } from '~/core/store'
-import { useMemoRef, useUpdatableRef } from '~/tools/hooks'
 import { downloadFile, pauseDownloadingFile, streamFile } from '~/core/actions'
 import { useDownloadingFile } from '~/core/hooks'
 import { checkIsSWRegistered } from '~/sw'
+import { useMemoRef, useUpdatableRef } from '~/tools/hooks'
 import { GalleryItem } from '~/ui/elements/gallery-item'
 
 type Props = {

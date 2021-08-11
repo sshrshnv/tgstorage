@@ -4,9 +4,10 @@ import { memo } from 'preact/compat'
 import { useCallback, useState, useMemo, useEffect } from 'preact/hooks'
 
 import type { Folder } from '~/core/store'
-import { useUpdatableRef } from '~/tools/hooks'
 import { deleteFolder, setActiveFolder, loadFolderMessages } from '~/core/actions'
 import { useTexts, useFolder, useSendingMessage } from '~/core/hooks'
+import { useUpdatableRef } from '~/tools/hooks'
+import { normalizePreviewText } from '~/tools/handle-content'
 import { SidebarItem } from '~/ui/elements/sidebar-item'
 import { EditIcon, DeleteIcon } from '~/ui/icons'
 
@@ -38,6 +39,10 @@ export const StorageSidebarFolderItem: FC<Props> = memo(({
   const [confirmation, setConfirmation] = useState(false)
   const loadingDisabledRef = useUpdatableRef(loadingDisabled)
   const { isSendingMessageExist } = useSendingMessage(id)
+
+  const previewMessageText = useMemo(() => {
+    return normalizePreviewText(messages?.[0]?.text || '', { filesTitle: texts.folderFilesDescription })
+  }, [messages?.[0]?.text])
 
   const handleClick = useCallback(() => {
     if (onFolderSelect) {
@@ -99,7 +104,7 @@ export const StorageSidebarFolderItem: FC<Props> = memo(({
   return (
     <SidebarItem
       title={folder.title}
-      description={withoutMessage ? '' : messages?.[0]?.text}
+      description={withoutMessage ? '' : previewMessageText}
       emptyDescription={withoutMessage ? '' : texts.folderEmptyDescription}
       index={index}
       disabled={disabled}
