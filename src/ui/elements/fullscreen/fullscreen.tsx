@@ -72,7 +72,7 @@ export const Fullscreen: FC<Props> = ({
 
   useEffect(() => {
     const el = forwardedRef.current as any
-    const onChange = onChangeRef.current
+    const onChange = (value: boolean, fake?: boolean) => onChangeRef.current(value, fake)
 
     if (!el) return
 
@@ -100,10 +100,9 @@ export const Fullscreen: FC<Props> = ({
   }, [])
 
   useEffect(() => {
-    const requestFullscreen = requestFullscreenRef.current
     const handleOrientationChange = () => {
       if (checkIsLandscape() && !isFullscreenRef.current) {
-        requestFullscreen()
+        requestFullscreenRef.current()
       }
     }
 

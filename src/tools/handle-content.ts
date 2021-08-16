@@ -116,5 +116,23 @@ export const groupMessages = (messages: Message[]) => {
   return [...groupedMessages.values()]
 }
 
-export const normalizePreviewText = (text: string, { filesTitle }) =>
-  text.replace(CHECKLIST_MESSAGE_MARK, '').replace(PARENT_FILES_MESSAGE_MARK, filesTitle)
+export const normalizeMessagePreview = (
+  message: Message
+) => {
+  if (!message) return ''
+  let text = message.text
+
+  if (checkIsChecklistMessage(text)) {
+    const { title, items } = parseChecklistMessage(text)
+    text = title || items[0]?.slice(CHECKLIST_CHECK_MARK_LENGTH)
+  } else if (checkIsParentFilesMessage(text)) {
+    ({ text } = parseParentFilesMessage(text))
+  }
+
+  if (!text) {
+    const media = message.media || message.mediaMessages?.[0]?.media
+    text = media?.name || ''
+  }
+
+  return text
+}

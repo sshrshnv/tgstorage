@@ -72,6 +72,7 @@
   left: 0
   right: 0
   bottom: 0
+  z-index: 1
   display: flex
   justify-content: space-between
   align-items: center
@@ -79,6 +80,17 @@
   height: 48px
   opacity: 1
   transition: opacity .3s ease-in-out
+
+  &::after
+    position: absolute
+    z-index: 1
+    top: 0
+    right: 0
+    bottom: 0
+    left: 0
+    display: none
+    cursor: default
+    content: ''
 
   &._disabled
     opacity: 0.1
@@ -90,18 +102,16 @@
     transition-timing-function: ease-in
 
     &::after
-      position: absolute
-      z-index: 1
-      top: 0
-      right: 0
-      bottom: 0
-      left: 0
-      cursor: default
-      content: ''
+      display: block
 
   &._fullscreen
     padding-left: 20px
-    background-color: var(--color-black-05)
+
+    &::after
+      right: -54px
+      z-index: -1
+      display: block
+      background-color: var(--color-black-05)
 
 .time
   margin-left: 20px

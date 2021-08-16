@@ -232,7 +232,7 @@ export const Player: FC<Props> = memo(({
 
   useEffect(() => {
     const parentEl = parentRef.current
-    const handleContentClick = handleContentClickRef.current
+    const handleContentClick = (ev) => handleContentClickRef.current(ev)
     parentEl?.addEventListener('click', handleContentClick)
     return () => {
       parentEl?.removeEventListener('click', handleContentClick)

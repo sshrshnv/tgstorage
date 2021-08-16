@@ -7,7 +7,7 @@ import { downloadFile, pauseDownloadingFile, refreshMessageWebpage } from '~/cor
 import { useTexts, useDownloadingFile } from '~/core/hooks'
 import { useMemoRef, useUpdatableRef } from '~/tools/hooks'
 import { COPY_TIMEOUT, copyText } from '~/tools/copy-text'
-import { IS_SHARE_SUPPORTED, shareLink } from '~/tools/share-data'
+import { shareLink, checkIsSharingSupported } from '~/tools/share-data'
 import { ContentItemWebpage } from '~/ui/elements/content-item-webpage'
 import { MoveIcon, CopyIcon, CheckIcon, ShareIcon } from '~/ui/icons'
 
@@ -65,7 +65,7 @@ export const StorageContentMessageItemWebpage: FC<Props> = ({
       title: coping ? texts.linkCopiedTitle : texts.linkCopyTitle,
       icon: coping ? <CheckIcon/> : <CopyIcon/>,
       onClick: handleCopyLink
-    }, IS_SHARE_SUPPORTED ? {
+    }, checkIsSharingSupported() ? {
       title: texts.linkShareTitle,
       icon: <ShareIcon/>,
       onClick: handleShareLink

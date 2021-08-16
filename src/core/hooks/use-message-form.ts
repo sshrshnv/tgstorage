@@ -169,7 +169,9 @@ export const useMessageForm = (folder: Folder) => {
       handleCancelMessage()
     } else {
       setMessage(updatedMessage)
-      setSendingMessage(folder.id, updatedMessage)
+      if (sendingMessage) {
+        setSendingMessage(folder.id, updatedMessage)
+      }
       resetUploadingFiles([inputFile])
     }
   }, [messageRef, sendingMessageRef, folder.id, setMessage, handleCancelMessage])

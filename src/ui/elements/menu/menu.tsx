@@ -89,7 +89,7 @@ export const Menu: FC<Props> = memo(({
 
   useEffect(() => {
     const parentEl = parentRef?.current
-    const toggle = toggleRef.current
+    const toggle = (ev?) => toggleRef.current(ev)
 
     if (!parentEl) return
 

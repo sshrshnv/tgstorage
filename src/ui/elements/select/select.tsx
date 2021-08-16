@@ -131,8 +131,8 @@ export const Select: FC<Props> = memo(({
   }, [options, value])
 
   useEffect(() => {
-    const collapse = collapseRef.current
-    const expand = expandRef.current
+    const collapse = () => collapseRef.current()
+    const expand = () => expandRef.current()
     const handleKey = ({ code }) => {
       if (!focused && !expanded) return
       switch (code.toLowerCase()) {

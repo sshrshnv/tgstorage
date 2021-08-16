@@ -7,7 +7,7 @@ import type { Folder, Message } from '~/core/store'
 import { deleteMessage } from '~/core/actions'
 import { useTexts, useQuickEditMessage } from '~/core/hooks'
 import { COPY_TIMEOUT, copyText } from '~/tools/copy-text'
-import { IS_SHARE_SUPPORTED, shareText } from '~/tools/share-data'
+import { shareText, checkIsSharingSupported } from '~/tools/share-data'
 import { checkIsChecklistMessage, checkIsParentFilesMessage, parseParentFilesMessage } from '~/tools/handle-content'
 import { normalizeMessageText } from '~/tools/handle-content-text'
 import { ContentItem } from '~/ui/elements/content-item'
@@ -135,7 +135,7 @@ export const StorageContentMessageItem: FC<Props> = memo(({
       title: coping ? texts.messageCopiedTitle : texts.messageCopyTitle,
       icon: coping ? <CheckIcon/> : <CopyIcon/>,
       onClick: handleCopy
-    } : null, (copingText.length && IS_SHARE_SUPPORTED) ? {
+    } : null, (copingText.length && checkIsSharingSupported()) ? {
       title: texts.messageShareTitle,
       icon: <ShareIcon/>,
       onClick: handleShare

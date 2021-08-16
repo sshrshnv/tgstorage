@@ -7,7 +7,7 @@ import type { Folder } from '~/core/store'
 import { deleteFolder, setActiveFolder, loadFolderMessages } from '~/core/actions'
 import { useTexts, useFolder, useSendingMessage } from '~/core/hooks'
 import { useUpdatableRef } from '~/tools/hooks'
-import { normalizePreviewText } from '~/tools/handle-content'
+import { normalizeMessagePreview } from '~/tools/handle-content'
 import { SidebarItem } from '~/ui/elements/sidebar-item'
 import { EditIcon, DeleteIcon } from '~/ui/icons'
 
@@ -40,9 +40,9 @@ export const StorageSidebarFolderItem: FC<Props> = memo(({
   const loadingDisabledRef = useUpdatableRef(loadingDisabled)
   const { isSendingMessageExist } = useSendingMessage(id)
 
-  const previewMessageText = useMemo(() => {
-    return normalizePreviewText(messages?.[0]?.text || '', { filesTitle: texts.folderFilesDescription })
-  }, [messages?.[0]?.text])
+  const messagePreview = useMemo(() => {
+    return normalizeMessagePreview(messages?.[0])
+  }, [messages?.[0]])
 
   const handleClick = useCallback(() => {
     if (onFolderSelect) {
@@ -104,7 +104,7 @@ export const StorageSidebarFolderItem: FC<Props> = memo(({
   return (
     <SidebarItem
       title={folder.title}
-      description={withoutMessage ? '' : previewMessageText}
+      description={withoutMessage ? '' : messagePreview}
       emptyDescription={withoutMessage ? '' : texts.folderEmptyDescription}
       index={index}
       disabled={disabled}

@@ -3,6 +3,10 @@ declare const self: ServiceWorkerGlobalScope
 import { wb } from './workbox'
 import { getMessageHandler, deleteMessageHandler, handleStream } from './handlers'
 
+const SW_STREAM_PATH = '/sw/stream'
+//const SW_SAVE_PATH = '/sw/save'
+//const SW_SHARE_PATH = '/sw/share'
+
 wb.setCacheNameDetails({ prefix: 'tgstorage' })
 
 self.addEventListener('message', ev => {
@@ -33,7 +37,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 wb.registerRoute(
-  new RegExp('/sw/stream'),
+  new RegExp(SW_STREAM_PATH),
   handleStream
 )
 

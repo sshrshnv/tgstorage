@@ -157,7 +157,7 @@ export const ContentFormInput: FC<Props> = ({
   useEffect(() => {
     if (!hasSelection) return
     const formattingEl = formattingRef.current
-    const cancelSelection = cancelSelectionRef.current
+    const cancelSelection = () => cancelSelectionRef.current()
 
     formattingEl?.addEventListener('mousedown', prevent, { passive: true })
     formattingEl?.addEventListener('touchstart', prevent, { passive: true })

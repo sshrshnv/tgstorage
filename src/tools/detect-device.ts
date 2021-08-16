@@ -1,43 +1,63 @@
 type NavigatorExtended = Navigator & {
   standalone: boolean
+  userAgentData?: {
+    brands?: { brand: string, version: string }[]
+    platform?: string
+    mobile?: boolean
+  }
 }
 
 const navigator = window.navigator as NavigatorExtended
 let { platform, userAgent, maxTouchPoints } = navigator
+const { userAgentData = {} } = navigator
+const { brands } = userAgentData
 
 userAgent = userAgent.toLocaleLowerCase()
 platform = platform?.toLowerCase() || userAgent
 maxTouchPoints = maxTouchPoints || 1
 
-export const checkIsIOS = () => (
-  /ipad|iphone|ipod/i.test(platform) ||
-  (/mac/i.test(platform) && maxTouchPoints > 1)
-) && !window.MSStream
+let isIOS
+export const checkIsIOS = () =>
+  isIOS ??= (/ipad|iphone|ipod/i.test(platform) || (/mac/i.test(platform) && maxTouchPoints > 1)) && !window.MSStream
 
+let isSafari
 export const checkIsSafari = () =>
-  !checkIsChrome() && /safari|mac/i.test(userAgent)
+  isSafari ??= !checkIsChrome() && /safari|mac/i.test(userAgent)
 
+let isIOSSafari
 export const checkIsIOSSafari = () =>
-  checkIsIOS() && !checkIsIOSChrome() && /safari|mac/i.test(userAgent)
+  isIOSSafari ??= checkIsIOS() && !checkIsIOSChrome() && /safari|mac/i.test(userAgent)
 
+let isIOSChrome
 export const checkIsIOSChrome = () =>
-  checkIsIOS() && /crios/i.test(userAgent)
+  isIOSChrome ??= checkIsIOS() && /crios/i.test(userAgent)
 
-export const checkIsAndroid = () => (
-  /android/i.test(platform) || /android/i.test(userAgent)
-) && !window.MSStream
+let isAndroid
+export const checkIsAndroid = () =>
+  isAndroid ??= (/android/i.test(platform) || /android/i.test(userAgent)) && !window.MSStream
 
+let isChrome
+const checkIsChrome = () =>
+  isChrome ??= brands ?
+    brands.some(({ brand }) => brand.toLocaleLowerCase() === 'chromium') :
+    !!(window as any).chrome && /chrome/.test(userAgent)
+
+let isAndroidChrome
 export const checkIsAndroidChrome = () =>
-  checkIsAndroid() && checkIsChrome()
+  isAndroidChrome ??= checkIsAndroid() && checkIsChrome()
 
-export const checkIsChrome = () =>
-  !!(window as any).chrome && /chrome/.test(userAgent)
-
+let isDesktop
 export const checkIsDesktop = () =>
-  !checkIsIOS() && !checkIsAndroid()
+  isDesktop ??= !checkIsIOS() && !checkIsAndroid()
 
+let isDesktopChrome
 export const checkIsDesktopChrome = () =>
-  checkIsDesktop() && checkIsChrome()
+  isDesktopChrome ??= checkIsDesktop() && checkIsChrome()
 
+let chromiumVersion
+export const getChromiumVersion = () =>
+  chromiumVersion ??= +(brands?.find(({ brand }) => brand.toLocaleLowerCase() === 'chromium')?.version || '')
+
+let isInstalled
 export const checkIsInstalled = () =>
-  navigator.standalone || matchMedia('(display-mode: standalone)').matches
+  isInstalled ??= navigator.standalone || matchMedia('(display-mode: standalone)').matches

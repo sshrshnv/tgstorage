@@ -3,5 +3,6 @@
   "generalFolderTitle": "Общее",
   "categoryExistingValue": "Выбрать категорию",
   "categoryNewValue": "Создать категорию",
-  "searchPlaceholder": "Text"
+  "searchPlaceholder": "Text",
+  "folderSelectTitle": "test"
 }

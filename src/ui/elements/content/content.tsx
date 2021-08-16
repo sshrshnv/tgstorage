@@ -53,7 +53,7 @@ export const Content: FC<Props> = memo(({
     }
   }, [dropAvailable, onAddFiles])
 
-  const [_, handlePasteRef] = useCallbackRef((ev: ClipboardEvent) => {
+  const [_handlePaste, handlePasteRef] = useCallbackRef((ev: ClipboardEvent) => {
     if (!dropAvailable) return
 
     const fileList = ev.clipboardData?.files
@@ -76,7 +76,7 @@ export const Content: FC<Props> = memo(({
   }, [dropAvailable, onAddFiles, onAddMessage])
 
   useEffect(() => {
-    const handlePaste = handlePasteRef.current
+    const handlePaste = (ev) => handlePasteRef.current(ev)
     document.addEventListener('paste', handlePaste, { passive: true })
     return () => document.removeEventListener('paste', handlePaste)
   }, [])

@@ -209,7 +209,7 @@ module.exports = [{
   devtool: isDev() ? 'eval-cheap-module-source-map' : 'hidden-source-map',
 
   devServer: {
-    https: true,
+    //https: true,
     host: '0.0.0.0',
     port: 5000,
     hot: true,

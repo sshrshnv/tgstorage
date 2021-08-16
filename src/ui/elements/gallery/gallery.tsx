@@ -49,8 +49,8 @@ export const Gallery: FC<Props> = memo(({
     if (!galleryRef.current) return
 
     const initialIndex = initialIndexRef.current
-    const closeSlide = closeSlideRef.current
-    const onChangeIndex = onChangeIndexRef.current
+    const closeSlide = () => closeSlideRef.current()
+    const onChangeIndex = (index: number) => onChangeIndexRef.current(index)
 
     const gallery = new KeenSlider(galleryRef.current, {
       initial: initialIndex,

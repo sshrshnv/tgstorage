@@ -43,7 +43,7 @@ export const parseVideoFile = (file: File|string|undefined): Promise<{
           await wait(100)
           const canvas = document.createElement('canvas')
           const canvasContext = canvas.getContext('2d', { alpha: false })
-          const imageParams: [number, number, number, number] = [0, 0, videoParams.w, videoParams.h]
+          //const imageParams: [number, number, number, number] = [0, 0, videoParams.w, videoParams.h]
           const canvasParams: [number, number, number, number] = [0, 0, width, height]
 
           if (!canvasContext) {
@@ -53,7 +53,7 @@ export const parseVideoFile = (file: File|string|undefined): Promise<{
 
           canvas.width = width
           canvas.height = height
-          canvasContext.drawImage(video, ...imageParams, ...canvasParams)
+          canvasContext.drawImage(video, ...canvasParams)
 
           canvas.toBlob((blob) => {
             if (!blob) {

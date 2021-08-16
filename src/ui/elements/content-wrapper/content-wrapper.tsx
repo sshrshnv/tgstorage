@@ -11,12 +11,14 @@ import styles from './content-wrapper.styl'
 
 type Props = {
   active: boolean
-  overlayText?: string | false
+  secondary?: boolean
+  overlayText?: string
 }
 
 export const ContentWrapper: FC<Props> = ({
   children,
   active,
+  secondary,
   overlayText
 }) => {
   const closeOverlay = useCallback(() => {
@@ -26,13 +28,13 @@ export const ContentWrapper: FC<Props> = ({
   return (
     <div class={cn(
       styles.root,
-      (active && !overlayText) && styles._active
+      (active && !secondary) && styles._active
     )}>
       {children}
 
       <div class={cn(
         styles.overlay,
-        overlayText && styles._active
+        secondary && styles._active
       )}>
         <Button
           class={styles.overlayButton}

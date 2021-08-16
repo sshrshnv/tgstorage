@@ -32,7 +32,7 @@ export const parseImageFile = (file: File|string|undefined): Promise<{
 
     const canvas = document.createElement('canvas')
     const canvasContext = canvas.getContext('2d', { alpha: false })
-    const imageParams: [number, number, number, number] = [0, 0, imageSize.w, imageSize.h]
+    //const imageParams: [number, number, number, number] = [0, 0, imageSize.w, imageSize.h]
     const canvasParams: [number, number, number, number] = [0, 0, width, height]
 
     if (!canvasContext) {
@@ -42,7 +42,7 @@ export const parseImageFile = (file: File|string|undefined): Promise<{
 
     canvas.width = width
     canvas.height = height
-    canvasContext.drawImage(image, ...imageParams, ...canvasParams)
+    canvasContext.drawImage(image, ...canvasParams)
 
     canvas.toBlob((blob) => {
       if (!blob) {

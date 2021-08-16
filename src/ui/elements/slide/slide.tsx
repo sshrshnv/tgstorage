@@ -62,7 +62,7 @@ export const Slide: FC<Props> = memo(({
   }, [])
 
   useEffect(() => {
-    const handlePopState = handlePopStateRef.current
+    const handlePopState = () => handlePopStateRef.current()
     self.addEventListener('popstate', handlePopState)
     return () => self.removeEventListener('popstate', handlePopState)
   }, [])

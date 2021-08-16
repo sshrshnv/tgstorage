@@ -8,8 +8,8 @@ import { deleteMessage, downloadFile, pauseDownloadingFile, resetDownloadingFile
 import { useTexts, useDownloadingFile } from '~/core/hooks'
 import { getFile } from '~/core/cache'
 import { useStateRef, useCallbackRef, useMemoRef, useUpdatableRef } from '~/tools/hooks'
-import { IS_SHARE_SUPPORTED, shareFile } from '~/tools/share-data'
 import { checkIsIOS } from '~/tools/detect-device'
+import { shareFile, checkIsSharingSupported } from '~/tools/share-data'
 import { ContentItemMediaItem } from '~/ui/elements/content-item-media-item'
 import { DownloadIcon, DeleteIcon, ShareIcon } from '~/ui/icons'
 
@@ -68,6 +68,10 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
   const [downloading, setDownloading, downloadingRef] = useStateRef(!!originalDownloadingFile?.downloading)
   const sharingRef = useRef(false)
 
+  const isSharingSupported = useMemo(() => {
+    return checkIsSharingSupported(originalFile)
+  }, [originalFile.name, originalFile.size, originalFile.type])
+
   const resetConfirmation = useCallback(() => {
     setConfirmation(false)
   }, [setConfirmation])
@@ -75,12 +79,9 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
   const resetSharingConfirmation = useCallback(() => {
     if (sharingRef.current) {
       sharingRef.current = false
-      if (originalDownloadingFile) {
-        resetDownloadingFile(originalDownloadingFile)
-      }
     }
     setSharingConfirmation(false)
-  }, [originalDownloadingFile, setSharingConfirmation])
+  }, [setSharingConfirmation])
 
   const [saveFile, saveFileRef] = useCallbackRef(async () => {
     if (!originalDownloadingFile?.fileKey) return
@@ -93,7 +94,6 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
     saveAs(file, name)
 
     file = undefined
-    resetDownloadingFile(originalDownloadingFile)
     setDownloading(false)
   }, [
     originalDownloadingFile,
@@ -110,7 +110,7 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
     let file = getFile(fileKey)
     if (!file) return
 
-    file = new File([file], name || 'unknown', { lastModified: Date.now(), type: file.type })
+    file = new File([file], name || 'unknown', { type: file.type })
     const error = await shareFile(file as File)?.catch(error => error)
 
     file = undefined
@@ -119,7 +119,6 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
       setSharingConfirmation(true)
     } else {
       sharingRef.current = false
-      resetDownloadingFile(originalDownloadingFile)
     }
   }, [
     originalDownloadingFile,
@@ -185,7 +184,7 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
       title: texts.mediaDownloadTitle,
       icon: <DownloadIcon/>,
       onClick: handleStartDownload
-    } : null, IS_SHARE_SUPPORTED ? {
+    } : null, isSharingSupported ? {
       title: texts.mediaShareTitle,
       icon: <ShareIcon/>,
       onClick: handleShare,
@@ -204,6 +203,7 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
   }), [
     confirmation,
     sharingConfirmation,
+    isSharingSupported,
     texts.mediaShareTitle,
     texts.mediaDownloadTitle,
     texts.confirmDeleteButton,

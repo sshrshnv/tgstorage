@@ -1,9 +1,13 @@
+const SW_STREAM_PATH = '/sw/stream'
+//const SW_SAVE_PATH = '/sw/save'
+
 export const FILE_SIZE = {
   KB64: 65536,
   KB128: 131072,
   KB512: 524288,
   MB1: 1048576,
   MB10: 10485760,
+  MB50: 52428800,
   MB100: 104857600,
   MB750: 786432000,
   MB1500: 1572864000,
@@ -26,7 +30,7 @@ export const generateFileKey = ({ id, size }) =>
   `${id}-${size}`
 
 export const generateStreamFileUrl = ({ id, size, type }) =>
-  `/sw/stream?fileKey=${generateFileKey({ id, size })}&fileSize=${size}&fileType=${type}`
+  `${SW_STREAM_PATH}?fileKey=${generateFileKey({ id, size })}&fileSize=${size}&fileType=${type}`
 
 export const transformToBytes = (file: Blob | undefined) => {
   if (!file) return

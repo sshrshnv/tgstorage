@@ -38,7 +38,8 @@ export const StorageContent: FC<Props> = memo(({
   return (
     <ContentWrapper
       active={!!folder.id}
-      overlayText={!!movingMessageActive && texts.folderSelectTitle}
+      secondary={movingMessageActive}
+      overlayText={movingMessageActive ? texts.folderSelectTitle : ''}
     >
       {!!folder.id && (
         <StorageContentFolderBlock

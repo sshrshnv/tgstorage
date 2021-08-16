@@ -1,17 +1,17 @@
 import { h, Fragment } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
 import { memo } from 'preact/compat'
-import { useCallback, useRef, useMemo } from 'preact/hooks'
+import { useCallback, useMemo } from 'preact/hooks'
 import cn from 'classnames'
 
 import type { InputFile, Message } from '~/core/store'
+import { selectFiles } from '~/tools/select-files'
 import { checkIsParentFilesMessage, parseParentFilesMessage } from '~/tools/handle-content'
 import { ContentFormAttachment } from '~/ui/elements/content-form-attachment'
 import { ContentFormInput } from '~/ui/elements/content-form-input'
-import { FileInput } from '~/ui/elements/file-input'
 import { Loader } from '~/ui/elements/loader'
 import { Button } from '~/ui/elements/button'
-import { SendIcon, CheckboxIcon, FileIcon } from '~/ui/icons'
+import { SendIcon, CheckboxIcon, FileIcon, AttachIcon } from '~/ui/icons'
 
 import styles from './content-form-note.styl'
 
@@ -41,8 +41,6 @@ export const ContentFormNote: FC<Props> = memo(({
   onAddFiles,
   onRemoveFile
 }) => {
-  const inputFileKey = useRef(0)
-
   const isParentFiles = useMemo(() => {
     return checkIsParentFilesMessage(message.text)
   }, [message.text])
@@ -69,11 +67,11 @@ export const ContentFormNote: FC<Props> = memo(({
     onChangeText?.(value)
   }, [onChangeText])
 
-  const addFiles = useCallback((fileKeys: string[]) => {
+  const addFiles = useCallback(async () => {
+    const fileKeys = await selectFiles()
     if (fileKeys?.length) {
       onAddFiles?.(fileKeys)
     }
-    inputFileKey.current += 1
   }, [onAddFiles])
 
   return (
@@ -101,10 +99,10 @@ export const ContentFormNote: FC<Props> = memo(({
         <Loader class={styles.loader} brand/>
       ) : (
         <div class={styles.buttons}>
-          <FileInput
-            key={inputFileKey.current}
+          <Button
             class={styles.button}
-            onChange={addFiles}
+            icon={<AttachIcon/>}
+            onClick={addFiles}
           />
           {isSubmitAvailable ? (
             <Button
