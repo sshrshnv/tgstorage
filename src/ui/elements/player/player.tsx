@@ -17,7 +17,7 @@ import styles from './player.styl'
 
 type Props = {
   class?: string
-  streamFileUrl?: string
+  fileStreamUrl?: string
   thumbFileKey?: string
   fileKey?: string
   duration?: number
@@ -36,7 +36,7 @@ type Props = {
 
 export const Player: FC<Props> = memo(({
   class: className,
-  streamFileUrl,
+  fileStreamUrl,
   thumbFileKey,
   fileKey,
   duration,
@@ -77,7 +77,7 @@ export const Player: FC<Props> = memo(({
     try {
       playerRef.current.play()
     } catch (err) {
-      alert(err)
+      console.error(err)
     }
   }, [])
 
@@ -164,10 +164,10 @@ export const Player: FC<Props> = memo(({
   }, [isFullscreen, controlsHidden, hideControlsAfterTimeout])
 
   useEffect(() => {
-    if (!streamFileUrl) return
-    setUrl(streamFileUrl)
+    if (!fileStreamUrl) return
+    setUrl(fileStreamUrl)
     setStreamLoading(true)
-  }, [streamFileUrl])
+  }, [fileStreamUrl])
 
   useEffect(() => {
     if (!fileKey) return

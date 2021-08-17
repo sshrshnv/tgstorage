@@ -5,7 +5,7 @@ import { useCallback, useMemo } from 'preact/hooks'
 import cn from 'classnames'
 
 import type { InputFile, Message } from '~/core/store'
-import { selectFiles } from '~/tools/select-files'
+import { selectFiles } from '~/tools/handle-file'
 import { checkIsParentFilesMessage, parseParentFilesMessage } from '~/tools/handle-content'
 import { ContentFormAttachment } from '~/ui/elements/content-form-attachment'
 import { ContentFormInput } from '~/ui/elements/content-form-input'

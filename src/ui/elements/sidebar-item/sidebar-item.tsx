@@ -66,6 +66,7 @@ export const SidebarItem: FC<Props> = memo(({
           {...menu}
           class={styles.menu}
           parentRef={elRef}
+          withEvent
         />
       )}
       {loading && (

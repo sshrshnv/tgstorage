@@ -21,7 +21,9 @@ export const ContentItemHeader: FC<Props> = memo(({
 }) => {
   return (
     <div class={styles.root}>
-      {date}{fwd ? fwd.name ? ` / ${fwdFromTitle} ${fwd.name}` : ` / ${fwdTitle}` : ''}
+      <span>
+        {date}{fwd ? fwd.name ? ` / ${fwdFromTitle} ${fwd.name}` : ` / ${fwdTitle}` : ''}
+      </span>
     </div>
   )
 })

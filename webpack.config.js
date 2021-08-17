@@ -260,7 +260,12 @@ module.exports = [{
   plugins: [
     new DotenvPlugin({
       path: `./.env.${process.env.BUILD_ENV}`
-    })
+    }),
+
+    isBundleAnalyzer() ? new BundleAnalyzerPlugin({
+      analyzerHost: '0.0.0.0',
+      analyzerPort: 5003
+    }) : () => {}
   ],
 
   optimization: {

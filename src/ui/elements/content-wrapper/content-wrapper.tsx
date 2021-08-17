@@ -1,8 +1,9 @@
 import type { FunctionComponent as FC } from 'preact'
 import { h } from 'preact'
-import { useCallback } from 'preact/hooks'
+import { useCallback, useEffect, useState } from 'preact/hooks'
 import cn from 'classnames'
 
+import { useCallbackRef } from '~/tools/hooks'
 import { Text } from '~/ui/elements/text'
 import { Button } from '~/ui/elements/button'
 import { CrossIcon } from '~/ui/icons'
@@ -21,14 +22,28 @@ export const ContentWrapper: FC<Props> = ({
   secondary,
   overlayText
 }) => {
+  const [background, setBackground] = useState(false)
+
   const closeOverlay = useCallback(() => {
     self.history.back()
+  }, [])
+
+  const [_handleMenu, handleMenuRef] = useCallbackRef(ev => {
+    setBackground(!ev.detail)
+  }, [setBackground])
+
+  useEffect(() => {
+    const handleMenu = ev => handleMenuRef.current(ev)
+
+    self.document.addEventListener('menu', handleMenu, { passive: true })
+    return () => self.document.removeEventListener('menu', handleMenu)
   }, [])
 
   return (
     <div class={cn(
       styles.root,
-      (active && !secondary) && styles._active
+      (active && !secondary) && styles._active,
+      background && styles._background
     )}>
       {children}
 

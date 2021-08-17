@@ -1,5 +1,10 @@
+import latinize from 'latinize'
+
+import type { DownloadingFile } from '~/core/store'
+import { setFile, getFile } from '~/core/cache'
+
 const SW_STREAM_PATH = '/sw/stream'
-//const SW_SAVE_PATH = '/sw/save'
+const SW_SAVE_PATH = '/sw/save'
 
 export const FILE_SIZE = {
   KB64: 65536,
@@ -29,8 +34,11 @@ export const generateLocalFileKey = ({ name, size, type, lastModified }) =>
 export const generateFileKey = ({ id, size }) =>
   `${id}-${size}`
 
-export const generateStreamFileUrl = ({ id, size, type }) =>
+export const generateFileStreamUrl = ({ id, size, type }) =>
   `${SW_STREAM_PATH}?fileKey=${generateFileKey({ id, size })}&fileSize=${size}&fileType=${type}`
+
+export const generateSaveFileStreamUrl = ({ id, name = '', size, type }) =>
+  `${SW_SAVE_PATH}?fileKey=${generateFileKey({ id, size })}&fileName=${latinize(name)}&fileSize=${size}&fileType=${type}`
 
 export const transformToBytes = (file: Blob | undefined) => {
   if (!file) return
@@ -53,4 +61,61 @@ export const transformToBytes = (file: Blob | undefined) => {
 
     fileReader.readAsArrayBuffer(file)
   })
+}
+
+let fileInput: HTMLInputElement
+export const selectFiles = (): Promise<string[]> => new Promise(resolve => {
+  if (!fileInput) {
+    fileInput = self.document.createElement('input')
+    fileInput.type = 'file'
+    fileInput.multiple = true
+    fileInput.accept = '*'
+  }
+
+  fileInput.onchange = (ev) => {
+    const fileList = Array.from((ev.target as HTMLInputElement).files || [])
+    const fileKeys: string[] = []
+
+    for (let i = 0; i < fileList.length; i++) {
+      const fileKey = setFile(fileList[i])
+      if (fileKey && !fileKeys.includes(fileKey)) {
+        fileKeys.push(fileKey)
+      }
+    }
+
+    resolve(fileKeys)
+    fileInput.value = ''
+    fileInput.onchange = null
+  }
+
+  fileInput.click()
+})
+
+let link: HTMLAnchorElement
+export const saveFile = (downloadingFile: DownloadingFile) => {
+  const file = getFile(downloadingFile.fileKey || '')
+  if (!file) return
+
+  link ??= self.document.createElement('a')
+  link.download = downloadingFile.name || 'file'
+  link.href = URL.createObjectURL(file)
+
+  link.onclick = () => setTimeout(() => {
+    URL.revokeObjectURL(link.href)
+  }, 30 * 1000)
+
+  link.click()
+}
+
+export const saveFileStream = (streamUrl: string) => {
+  const form = self.document.createElement('form')
+  form.action = streamUrl
+  form.method = 'POST'
+  form.style.position = 'fixed'
+  form.style.top = '0'
+  form.style.clip = 'rect(0, 0, 0, 0)'
+
+  self.document.body.appendChild(form)
+  form.submit()
+  form.remove()
 }

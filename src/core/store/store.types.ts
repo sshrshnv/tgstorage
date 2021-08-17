@@ -62,6 +62,7 @@ export type MessageMedia = {
   }
   duration?: number
   type: string
+  ext: string
   originalSize?: number
   dc_id: number
   attributes?: any
@@ -218,6 +219,7 @@ export type StreamingFile = {
   folder: Folder
   messageId: number
   id: string
+  name?: string
   streamKey?: string
   size: number
   duration?: number

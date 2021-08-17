@@ -7,7 +7,10 @@ import { getFilePart, getFileMeta, deleteFile, addBytes, transferBytesToFile } f
 import { api } from '~/api'
 import { wait } from '~/tools/wait'
 import { generateFileMessageMark } from '~/tools/handle-content'
-import { FILE_SIZE, generateFileKey, generateStreamFileUrl, transformToBytes } from '~/tools/handle-file'
+import {
+  FILE_SIZE, transformToBytes, generateFileKey,
+  generateFileStreamUrl, generateSaveFileStreamUrl
+} from '~/tools/handle-file'
 
 import { getActiveFolder } from './folders'
 import { getSendingMessage, setSendingMessage, createMessage, refreshMessage } from './messages'
@@ -337,7 +340,8 @@ export const setStreamingFile = (
 
 export const streamFile = (
   messageId: number,
-  file: DownloadingFile
+  file: DownloadingFile,
+  save?: boolean
 ) => {
   const folder = getActiveFolder() as Folder
   const fileKey = generateFileKey(file)
@@ -354,9 +358,11 @@ export const streamFile = (
     folder,
     messageId
   }
-
   setStreamingFile(streamingFile)
-  return generateStreamFileUrl(streamingFile)
+
+  return save ?
+    generateSaveFileStreamUrl(streamingFile) :
+    generateFileStreamUrl(streamingFile)
 }
 
 export const downloadStreamFilePart = async ({

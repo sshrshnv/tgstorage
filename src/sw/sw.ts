@@ -1,10 +1,13 @@
 declare const self: ServiceWorkerGlobalScope
 
 import { wb } from './workbox'
-import { getMessageHandler, deleteMessageHandler, handleStream } from './handlers'
+import {
+  getMessageHandler, deleteMessageHandler,
+  handleStream, handleSave
+} from './handlers'
 
 const SW_STREAM_PATH = '/sw/stream'
-//const SW_SAVE_PATH = '/sw/save'
+const SW_SAVE_PATH = '/sw/save'
 //const SW_SHARE_PATH = '/sw/share'
 
 wb.setCacheNameDetails({ prefix: 'tgstorage' })
@@ -39,6 +42,12 @@ if (process.env.NODE_ENV === 'production') {
 wb.registerRoute(
   new RegExp(SW_STREAM_PATH),
   handleStream
+)
+
+wb.registerRoute(
+  new RegExp(SW_SAVE_PATH),
+  handleSave,
+  'POST'
 )
 
 export {}

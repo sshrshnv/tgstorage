@@ -14,7 +14,7 @@ import styles from './gallery-item.styl'
 type Props = {
   thumbFileKey?: string
   fileKey?: string
-  streamFileUrl?: string
+  fileStreamUrl?: string
   type: string
   name?: string
   description?: {
@@ -33,7 +33,7 @@ type Props = {
 export const GalleryItem: FC<Props> = memo(({
   thumbFileKey,
   fileKey,
-  streamFileUrl,
+  fileStreamUrl,
   type,
   description,
   duration,
@@ -59,7 +59,7 @@ export const GalleryItem: FC<Props> = memo(({
       {(isVideo || isAudio) ? (
         <Player
           class={styles.player}
-          streamFileUrl={streamFileUrl}
+          fileStreamUrl={fileStreamUrl}
           fileKey={fileKey}
           thumbFileKey={thumbFileKey}
           duration={duration}
@@ -80,7 +80,7 @@ export const GalleryItem: FC<Props> = memo(({
           isFullscreen={isFullscreen}
         />
       )}
-      {(active && !fileKey && !streamFileUrl) && (
+      {(active && !fileKey && !fileStreamUrl) && (
         <Loader
           class={styles.loader}
           progress={progress}

@@ -24,7 +24,7 @@ type Props = {
   onFolderSelect?: (folder: Folder) => void
 }
 
-export const StorageSidebarFolderItem: FC<Props> = memo(({
+export const StorageSidebarFoldersItem: FC<Props> = memo(({
   id,
   index,
   disabled,

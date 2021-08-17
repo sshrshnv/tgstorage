@@ -4,5 +4,6 @@
   "categoryExistingValue": "Выбрать категорию",
   "categoryNewValue": "Создать категорию",
   "searchPlaceholder": "Text",
-  "folderSelectTitle": "test"
+  "folderSelectTitle": "test",
+  "mediaDownloadDescription": "Используйте системное меню для сохранения файла"
 }

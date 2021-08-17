@@ -38,6 +38,7 @@ export const SidebarTitle: FC<Props> = memo(({
           class={styles.menu}
           parentRef={parentRef}
           horizontal
+          withEvent
         />
       )}
     </div>

@@ -1,16 +1,21 @@
 import type { FunctionComponent as FC } from 'preact'
-import { h } from 'preact'
+import { h, Fragment } from 'preact'
 import { useState, useCallback, useMemo, useEffect, useRef } from 'preact/hooks'
-import { saveAs } from 'file-saver'
 
 import type { Folder, Message, MessageMedia, DownloadingFile } from '~/core/store'
-import { deleteMessage, downloadFile, pauseDownloadingFile, resetDownloadingFile } from '~/core/actions'
+import {
+  deleteMessage, streamFile, downloadFile,
+  pauseDownloadingFile, resetDownloadingFile
+} from '~/core/actions'
 import { useTexts, useDownloadingFile } from '~/core/hooks'
 import { getFile } from '~/core/cache'
+import { checkIsSWRegistered } from '~/sw'
 import { useStateRef, useCallbackRef, useMemoRef, useUpdatableRef } from '~/tools/hooks'
-import { checkIsIOS } from '~/tools/detect-device'
+import { checkIsSafari } from '~/tools/detect-device'
+import { saveFile, saveFileStream } from '~/tools/handle-file'
 import { shareFile, checkIsSharingSupported } from '~/tools/share-data'
 import { ContentItemMediaItem } from '~/ui/elements/content-item-media-item'
+import { FilePopup } from '~/ui/elements/file-popup'
 import { DownloadIcon, DeleteIcon, ShareIcon } from '~/ui/icons'
 
 type Props = {
@@ -34,6 +39,7 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
   const [confirmation, setConfirmation] = useState(false)
   const [sharingConfirmation, setSharingConfirmation] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [filePopup, setFilePopup] = useState(false)
   const messageIdRef = useUpdatableRef(message.id)
   const media = message.media as MessageMedia
   const mediaRef = useUpdatableRef(media)
@@ -83,21 +89,19 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
     setSharingConfirmation(false)
   }, [setSharingConfirmation])
 
-  const [saveFile, saveFileRef] = useCallbackRef(async () => {
+  const [trySaveFile, trySaveFileRef] = useCallbackRef(async () => {
     if (!originalDownloadingFile?.fileKey) return
-    const { fileKey, name } = originalDownloadingFile
 
-    let file = getFile(fileKey)
-    if (!file) return
-
-    file = checkIsIOS() ? file.slice() : file
-    saveAs(file, name)
-
-    file = undefined
+    if (checkIsSafari()) {
+      setFilePopup(true)
+    } else {
+      await saveFile(originalDownloadingFile)
+    }
     setDownloading(false)
   }, [
     originalDownloadingFile,
-    setDownloading
+    setDownloading,
+    setFilePopup
   ])
 
   const [tryShareFile, tryShareFileRef] = useCallbackRef(async () => {
@@ -126,12 +130,26 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
     setDownloading
   ])
 
+  const startStreamFile = useCallback(() => {
+    if (originalDownloadingFile?.fileKey) {
+      trySaveFile()
+    } else {
+      const fileStreamUrl = streamFile(message.id, originalFile, true)
+      saveFileStream(fileStreamUrl)
+    }
+  }, [
+    message.id,
+    originalFile,
+    originalDownloadingFile,
+    trySaveFile
+  ])
+
   const startDownloadFile = useCallback(() => {
     if (originalDownloadingFile?.fileKey) {
       if (sharingRef.current) {
         tryShareFile()
       } else {
-        saveFile()
+        trySaveFile()
       }
     } else {
       setDownloading(true)
@@ -142,13 +160,17 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
     originalFile,
     originalDownloadingFile,
     tryShareFile,
-    saveFile,
+    trySaveFile,
     setDownloading
   ])
 
   const handleStartDownload = useCallback(() => {
-    startDownloadFile()
-  }, [startDownloadFile])
+    if (checkIsSWRegistered() && !checkIsSafari()) {
+      startStreamFile()
+    } else {
+      startDownloadFile()
+    }
+  }, [startDownloadFile, startStreamFile])
 
   const handleCancelDownload = useCallback(() => {
     sharingRef.current = false
@@ -156,6 +178,10 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
     resetDownloadingFile(originalDownloadingFile)
     setDownloading(false)
   }, [originalDownloadingFile, setDownloading])
+
+  const handleCloseFilePopup = useCallback(() => {
+    setFilePopup(false)
+  }, [setFilePopup])
 
   const handleShare = useCallback(async () => {
     if (sharingRef.current) {
@@ -242,7 +268,7 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
       if (sharingRef.current) {
         tryShareFileRef.current()
       } else {
-        saveFileRef.current()
+        trySaveFileRef.current()
       }
     }
   }, [originalDownloadingFile?.fileKey])
@@ -262,19 +288,30 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
   }, [])
 
   return (
-    <ContentItemMediaItem
-      media={media}
-      blurPreviewUrl={blurPreviewUrl}
-      hasPreviewFile={!!thumbFile}
-      previewFileKey={thumbDownloadingFile?.fileKey}
-      menu={menu}
-      compact={compact}
-      single={single}
-      loading={loading}
-      downloading={downloading}
-      downloadingProgress={downloading ? originalDownloadingFile?.progress : undefined}
-      onCancelDownload={handleCancelDownload}
-      onPreviewClick={onPreviewClick}
-    />
+    <Fragment>
+      <ContentItemMediaItem
+        media={media}
+        blurPreviewUrl={blurPreviewUrl}
+        hasPreviewFile={!!thumbFile}
+        previewFileKey={thumbDownloadingFile?.fileKey}
+        menu={menu}
+        compact={compact}
+        single={single}
+        loading={loading}
+        downloading={downloading}
+        downloadingProgress={downloading ? originalDownloadingFile?.progress : undefined}
+        onCancelDownload={handleCancelDownload}
+        onPreviewClick={onPreviewClick}
+      />
+
+      {(filePopup && !!originalDownloadingFile?.fileKey) && (
+        <FilePopup
+          fileKey={originalDownloadingFile.fileKey}
+          fileType={originalDownloadingFile.type}
+          description={texts.mediaDownloadDescription}
+          onClose={handleCloseFilePopup}
+        />
+      )}
+    </Fragment>
   )
 }

@@ -18,7 +18,7 @@ type Props = {
   setFolderPopupParams?: (params: FolderPopupParams) => void
 }
 
-export const StorageSidebarFolderCategoryItem: FC<Props> = memo(({
+export const StorageSidebarFoldersCategoryItem: FC<Props> = memo(({
   folder,
   disabled,
   withoutMenu,

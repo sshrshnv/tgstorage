@@ -27,7 +27,7 @@ export const StorageContentMessageItemGalleryItem: FC<Props> = memo(({
 }) => {
   const messageIdRef = useUpdatableRef(messageId)
   const mediaRef = useUpdatableRef(media)
-  const [streamFileUrl, setStreamFileUrl] = useState('')
+  const [fileStreamUrl, setFileStreamUrl] = useState('')
 
   const [isVideo, isVideoRef] = useMemoRef(() => {
     return media.type.startsWith('video')
@@ -69,8 +69,8 @@ export const StorageContentMessageItemGalleryItem: FC<Props> = memo(({
       !checkIsSWRegistered()
     ) return
 
-    const streamFileUrl = streamFile(messageIdRef.current, originalFileRef.current)
-    setStreamFileUrl(streamFileUrl)
+    const fileStreamUrl = streamFile(messageIdRef.current, originalFileRef.current)
+    setFileStreamUrl(fileStreamUrl)
   }, [active])
 
   useEffect(() => {
@@ -104,7 +104,7 @@ export const StorageContentMessageItemGalleryItem: FC<Props> = memo(({
     <GalleryItem
       thumbFileKey={isVideo ? thumbDownloadingFile?.fileKey : undefined}
       fileKey={originalDownloadingFile?.fileKey}
-      streamFileUrl={streamFileUrl}
+      fileStreamUrl={fileStreamUrl}
       type={originalFile.type}
       name={media.name}
       description={media.description}

@@ -6,6 +6,7 @@ import cn from 'classnames'
 
 import { useCallbackRef, useUpdatableRef } from '~/tools/hooks'
 import { wait } from '~/tools/wait'
+import { checkIsDesktop } from '~/tools/detect-device'
 import { Button } from '~/ui/elements/button'
 import { MenuIcon } from '~/ui/icons'
 import { animationClassName } from '~/ui/styles/animation'
@@ -29,6 +30,7 @@ export type Props = {
   parentRef?: RefObject<HTMLDivElement>
   forceOpened?: boolean
   closeTimeout?: number
+  withEvent?: boolean
   onClose?: () => void
 }
 
@@ -39,6 +41,7 @@ export const Menu: FC<Props> = memo(({
   parentRef,
   forceOpened,
   closeTimeout,
+  withEvent,
   onClose
 }) => {
   const [expanded, setExpanded] = useState(false)
@@ -49,9 +52,6 @@ export const Menu: FC<Props> = memo(({
   const itemsCountRef = useUpdatableRef(items.length)
 
   const [toggle, toggleRef] = useCallbackRef(async (ev?) => {
-    /*if (ev?.target.tagName.toLowerCase() !== 'a') {
-      ev?.preventDefault()
-    }*/
     ev?.preventDefault()
     ev?.stopPropagation()
 
@@ -65,6 +65,11 @@ export const Menu: FC<Props> = memo(({
       const menuHeight = top + itemsCountRef.current * ITEM_HEIGHT + OFFSET
       positionYRef.current = menuHeight > self.innerHeight ? 'bottom' : 'top'
     }
+
+    if (withEvent) {
+      self.document.dispatchEvent(new CustomEvent('menu', { detail: expanded }))
+    }
+
     setExpanded(!expanded)
   }, [expanded, onClose])
 
@@ -105,12 +110,16 @@ export const Menu: FC<Props> = memo(({
     }
     const handleContextMenu = (ev) => toggle(ev)
 
-    parentEl.addEventListener('contextmenu', handleContextMenu, { passive: false })
+    if (checkIsDesktop()) {
+      parentEl.addEventListener('contextmenu', handleContextMenu, { passive: false })
+    }
     parentEl.addEventListener('touchstart', handleTouchStart, { passive: true })
     parentEl.addEventListener('touchmove', handleTouchEnd, { passive: true })
     parentEl.addEventListener('touchend', handleTouchEnd, { passive: true })
     return () => {
-      parentEl.removeEventListener('contextmenu', handleContextMenu)
+      if (checkIsDesktop()) {
+        parentEl.removeEventListener('contextmenu', handleContextMenu)
+      }
       parentEl.removeEventListener('touchstart', handleTouchStart)
       parentEl.removeEventListener('touchmove', handleTouchEnd)
       parentEl.removeEventListener('touchend', handleTouchEnd)

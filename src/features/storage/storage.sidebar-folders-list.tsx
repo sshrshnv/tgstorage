@@ -7,8 +7,8 @@ import type { Folder } from '~/core/store'
 import { useFolders, useActiveFolder, useSettings } from '~/core/hooks'
 
 import type { FolderPopupParams } from './storage'
-import { StorageSidebarFolderCategoryItem } from './storage.sidebar-folder-category-item'
-import { StorageSidebarFolderItem } from './storage.sidebar-folder-item'
+import { StorageSidebarFoldersCategoryItem } from './storage.sidebar-folders-category-item'
+import { StorageSidebarFoldersItem } from './storage.sidebar-folders-item'
 
 type Props = {
   loadingDisabled?: boolean
@@ -46,7 +46,7 @@ export const StorageSidebarFoldersList: FC<Props> = memo(({
       {filteredFolders.map((folder, index) => (
         <Fragment key={folder.id}>
           {(!index || folder.category !== filteredFolders[index - 1].category) && (
-            <StorageSidebarFolderCategoryItem
+            <StorageSidebarFoldersCategoryItem
               folder={folder as Folder}
               index={index}
               withoutMenu={withoutMenu}
@@ -54,7 +54,7 @@ export const StorageSidebarFoldersList: FC<Props> = memo(({
             />
           )}
 
-          <StorageSidebarFolderItem
+          <StorageSidebarFoldersItem
             id={folder.id as number}
             index={index}
             loadingDisabled={loadingDisabled}

@@ -26,7 +26,7 @@ type Props = {
   onClose: () => void
 }
 
-const bodyEl = window.document.body
+const bodyEl = self.document.body
 
 export const Gallery: FC<Props> = memo(({
   children,

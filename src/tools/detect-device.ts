@@ -7,7 +7,7 @@ type NavigatorExtended = Navigator & {
   }
 }
 
-const navigator = window.navigator as NavigatorExtended
+const navigator = self.navigator as NavigatorExtended
 let { platform, userAgent, maxTouchPoints } = navigator
 const { userAgentData = {} } = navigator
 const { brands } = userAgentData
@@ -18,7 +18,7 @@ maxTouchPoints = maxTouchPoints || 1
 
 let isIOS
 export const checkIsIOS = () =>
-  isIOS ??= (/ipad|iphone|ipod/i.test(platform) || (/mac/i.test(platform) && maxTouchPoints > 1)) && !window.MSStream
+  isIOS ??= (/ipad|iphone|ipod/i.test(platform) || (/mac/i.test(platform) && maxTouchPoints > 1)) && !self.MSStream
 
 let isSafari
 export const checkIsSafari = () =>
@@ -34,7 +34,7 @@ export const checkIsIOSChrome = () =>
 
 let isAndroid
 export const checkIsAndroid = () =>
-  isAndroid ??= (/android/i.test(platform) || /android/i.test(userAgent)) && !window.MSStream
+  isAndroid ??= (/android/i.test(platform) || /android/i.test(userAgent)) && !self.MSStream
 
 let isChrome
 const checkIsChrome = () =>
