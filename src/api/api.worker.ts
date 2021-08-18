@@ -451,6 +451,12 @@ class Api {
           access_hash: folder.access_hash
         },
         message: message.text,
+        entities: message.entities?.map(entity => ({
+          _: entity.type,
+          offset: entity.offset,
+          length: entity.length,
+          ...(entity.url ? { url: entity.url } : {})
+        })),
         random_id: generateRandomId(),
         no_webpage: false,
         silent: true,

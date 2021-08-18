@@ -3,6 +3,7 @@ export const moveCursorToEnd = (el) => {
 
   setTimeout(() => {
     if (typeof el.selectionStart == 'number') {
+      el.focus()
       el.selectionStart = el.selectionEnd = el.value.length
     } else if (typeof el.createTextRange !== 'undefined') {
       el.focus()

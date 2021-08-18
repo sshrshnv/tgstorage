@@ -1,6 +1,6 @@
 import { h } from 'preact'
 import type { FunctionComponent as FC, RefObject } from 'preact'
-import { useCallback, useEffect } from 'preact/hooks'
+import { useCallback, useEffect, useRef } from 'preact/hooks'
 import cn from 'classnames'
 
 import { useStateRef } from '~/tools/hooks'
@@ -15,7 +15,8 @@ type Props = {
   disabled?: boolean
   textareaRef?: RefObject<HTMLTextAreaElement>
   onInput?: (value: string) => void
-  onStartSelection?: () => void
+  startSelectionRef?: RefObject<(checked?: boolean) => void>
+  cancelSelectionRef?: RefObject<() => void>
 }
 
 export const Textarea: FC<Props> = ({
@@ -26,9 +27,11 @@ export const Textarea: FC<Props> = ({
   disabled,
   textareaRef,
   onInput,
-  onStartSelection
+  startSelectionRef
 }) => {
   const [inputData, setInputData, inputDataRef, setInputDataRef] = useStateRef({ value })
+  const selectionRef = useRef(false)
+  const hasValue = !!inputData.value.length
 
   const handleInput = useCallback(ev => {
     const value = ev.target.value
@@ -45,6 +48,31 @@ export const Textarea: FC<Props> = ({
     setInputDataRef.current({ value })
   }, [value])
 
+  useEffect(() => {
+    if (!hasValue) return
+
+    const textareaEl = textareaRef?.current
+    const onStartSelection = (checked?: boolean) => startSelectionRef?.current?.(checked)
+
+    const handleSelectionChange = () => {
+      const selection = self.document.getSelection()?.toString()
+      const start = textareaEl?.selectionStart || 0
+      const end = textareaEl?.selectionEnd || 0
+
+      if (!selectionRef.current && start !== end && selection) {
+        selectionRef.current = true
+        onStartSelection()
+      }
+
+      if (selectionRef.current && (start === end || !selection)) {
+        selectionRef.current = false
+      }
+    }
+
+    self.document.addEventListener('selectionchange', handleSelectionChange)
+    return () => self.document.removeEventListener('selectionchange', handleSelectionChange)
+  }, [hasValue])
+
   return (
     <div class={cn(
       styles.root,
@@ -58,7 +86,6 @@ export const Textarea: FC<Props> = ({
         maxLength={maxLength}
         onInput={handleInput}
         onPaste={handlePaste}
-        onSelect={onStartSelection}
         {...inputData}
       />
     </div>

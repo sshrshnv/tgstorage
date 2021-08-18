@@ -4,6 +4,7 @@ import { useRef, useEffect, useCallback, useMemo } from 'preact/hooks'
 import cn from 'classnames'
 
 import { useRAFCallback, useCallbackRef, useUpdatableRef, useStateRef } from '~/tools/hooks'
+import { wait } from '~/tools/wait'
 import { normalizeUrl } from '~/tools/normalize-url'
 import { moveCursorToEnd } from '~/tools/manipulate-element'
 import { Textarea } from '~/ui/elements/textarea'
@@ -49,58 +50,62 @@ export const ContentFormInput: FC<Props> = ({
     textareaParentEl.style.height = `${TEXTAREA_PARENT_HEIGHT - TEXTAREA_HEIGHT + scrollHeight}px`
   }, [])
 
-  const [_cancelSelection, cancelSelectionRef] = useCallbackRef(() => {
-    self.getSelection()?.removeAllRanges()
+  const [_cancelSelection, cancelSelectionRef] = useCallbackRef(async () => {
+    await wait(0)
     setHasSelection(false)
     setUrlVisible(false)
     setUrlValue(START_URL)
-    moveCursorToEnd(textareaRef.current)
   }, [setHasSelection, setUrlVisible])
 
   const [_formatSelection, formatSelectionRef] = useCallbackRef((before, after = '') => {
+    const cancelSelection = () => cancelSelectionRef.current()
+
     const textareaEl = textareaRef?.current
     const start = textareaEl?.selectionStart || 0
     const end = textareaEl?.selectionEnd || 0
     const selectedText = textareaEl?.value.substring(start, end)
 
     if (textareaEl && selectedText) {
-      textareaEl.setRangeText(`${before}${selectedText}${after || before}`, start, end, 'end')
-      onInputRef.current?.(textareaEl.value)
+      let value = textareaEl.value
+      value = `${value.slice(0, start)}${before}${value.slice(start, end)}${after || before}${value.slice(end)}`
+      onInputRef.current?.(value)
+      moveCursorToEnd(textareaRef.current)
     }
-    cancelSelectionRef.current()
+    cancelSelection()
   }, [])
 
-  const handleStartSelection = useCallback(() => {
-    const textareaEl = textareaRef?.current
-    const start = textareaEl?.selectionStart || 0
-    const end = textareaEl?.selectionEnd || 0
+  const [_startSelection, startSelectionRef] = useCallbackRef(() => {
+    if (hasSelection) return
+    setHasSelection(true)
+  }, [hasSelection, setHasSelection])
 
-    if (start !== end) {
-      setHasSelection(true)
-    }
-  }, [setHasSelection])
-
-  const handleBoldFormatting = useCallback(() => {
+  const handleBoldFormatting = useCallback((ev) => {
+    ev.preventDefault()
     formatSelectionRef.current('**')
   }, [])
 
-  const handleItalicFormatting = useCallback(() => {
+  const handleItalicFormatting = useCallback((ev) => {
+    ev.preventDefault()
     formatSelectionRef.current('__')
   }, [])
 
-  const handleUnderlineFormatting = useCallback(() => {
+  const handleUnderlineFormatting = useCallback((ev) => {
+    ev.preventDefault()
     formatSelectionRef.current('++')
   }, [])
 
-  const handleStrikethroughFormatting = useCallback(() => {
+  const handleStrikethroughFormatting = useCallback((ev) => {
+    ev.preventDefault()
     formatSelectionRef.current('~~')
   }, [])
 
-  const handleMonospaceFormatting = useCallback(() => {
+  const handleMonospaceFormatting = useCallback((ev) => {
+    ev.preventDefault()
     formatSelectionRef.current('```')
   }, [])
 
-  const handleLinkFormatting = useCallback(() => {
+  const handleLinkFormatting = useCallback((ev) => {
+    ev.preventDefault()
     setUrlVisibleRef.current(true)
   }, [])
 
@@ -110,7 +115,10 @@ export const ContentFormInput: FC<Props> = ({
     return value
   }, [])
 
-  const handleLinkInserting = useCallback(() => {
+  const handleLinkInserting = useCallback((ev) => {
+    ev.preventDefault()
+    ev.stopPropagation()
+    textareaRef.current?.focus()
     formatSelectionRef.current('[', `](${urlValueRef.current})`)
   }, [])
 
@@ -141,7 +149,10 @@ export const ContentFormInput: FC<Props> = ({
     handleMonospaceFormatting
   ])
 
-  const prevent = useCallback(ev => {
+  const prevent = useCallback((ev, passive = false) => {
+    if (!passive) {
+      ev.preventDefault()
+    }
     ev.stopPropagation()
   }, [])
 
@@ -157,15 +168,16 @@ export const ContentFormInput: FC<Props> = ({
   useEffect(() => {
     if (!hasSelection) return
     const formattingEl = formattingRef.current
+    const passivePrevent = (ev) => prevent(ev, true)
     const cancelSelection = () => cancelSelectionRef.current()
 
-    formattingEl?.addEventListener('mousedown', prevent, { passive: true })
-    formattingEl?.addEventListener('touchstart', prevent, { passive: true })
+    formattingEl?.addEventListener('mousedown', passivePrevent, { passive: true })
+    formattingEl?.addEventListener('touchstart', passivePrevent, { passive: true })
     self.document.addEventListener('mousedown', cancelSelection, { passive: true })
     self.document.addEventListener('touchstart', cancelSelection, { passive: true })
     return () => {
-      formattingEl?.removeEventListener('mousedown', prevent)
-      formattingEl?.removeEventListener('touchstart', prevent)
+      formattingEl?.removeEventListener('mousedown', passivePrevent)
+      formattingEl?.removeEventListener('touchstart', passivePrevent)
       self.document.removeEventListener('mousedown', cancelSelection)
       self.document.removeEventListener('touchstart', cancelSelection)
     }
@@ -191,7 +203,8 @@ export const ContentFormInput: FC<Props> = ({
         textareaRef={textareaRef}
         maxLength={4050}
         onInput={onInput}
-        onStartSelection={handleStartSelection}
+        startSelectionRef={startSelectionRef}
+        cancelSelectionRef={cancelSelectionRef}
       />
       <div
         class={cn(
@@ -209,6 +222,8 @@ export const ContentFormInput: FC<Props> = ({
             )}
             square
             onClick={handler}
+            onTouchStart={prevent}
+            onTouchEnd={handler}
           >
             {icon || type}
           </Button>
@@ -229,6 +244,8 @@ export const ContentFormInput: FC<Props> = ({
               icon={<CheckIcon/>}
               square
               onClick={handleLinkInserting}
+              onTouchStart={handleLinkInserting}
+              onTouchEnd={prevent}
             />
           </div>
         )}

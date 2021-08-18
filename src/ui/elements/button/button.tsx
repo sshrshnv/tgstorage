@@ -19,7 +19,9 @@ export type Props = {
   outline?: boolean
   inline?: boolean
   icon?: h.JSX.Element | null
-  onClick?: () => void
+  onClick?: (ev?) => void
+  onTouchStart?: (ev?) => void
+  onTouchEnd?: (ev?) => void
 }
 
 export const Button: FC<Props> = ({
@@ -36,7 +38,9 @@ export const Button: FC<Props> = ({
   outline,
   inline,
   icon,
-  onClick
+  onClick,
+  onTouchStart,
+  onTouchEnd
 }) => {
   return loading ? (
     <Loader brand big/>
@@ -58,6 +62,8 @@ export const Button: FC<Props> = ({
       type={type}
       disabled={disabled}
       onClick={onClick}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
     >
       {icon}
       {children}
