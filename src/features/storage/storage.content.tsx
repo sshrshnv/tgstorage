@@ -3,7 +3,7 @@ import { h } from 'preact'
 import { memo } from 'preact/compat'
 import { useEffect } from 'preact/hooks'
 
-import type { Message } from '~/core/store'
+import type { Message, SharedData } from '~/core/store'
 import { useTexts, useActiveFolder } from '~/core/hooks'
 import { useStateRef, useCallbackRef } from '~/tools/hooks'
 import { Text } from '~/ui/elements/text'
@@ -14,11 +14,15 @@ import { StorageContentSearchPopup } from './storage.content-search-popup'
 
 type Props = {
   movingMessageActive: boolean
+  sharedData: SharedData
+  sharedDataActive: boolean
   setMovingMessage: (message: Message) => void
 }
 
 export const StorageContent: FC<Props> = memo(({
   movingMessageActive,
+  sharedData,
+  sharedDataActive,
   setMovingMessage
 }) => {
   const { texts } = useTexts('storage')
@@ -35,14 +39,21 @@ export const StorageContent: FC<Props> = memo(({
     }
   }, [folder.id])
 
+  useEffect(() => {
+    if (sharedDataActive && searchRef.current) {
+      toggleSearchRef.current()
+    }
+  }, [sharedDataActive])
+
   return (
     <ContentWrapper
       active={!!folder.id}
-      secondary={movingMessageActive}
-      overlayText={movingMessageActive ? texts.folderSelectTitle : ''}
+      secondary={movingMessageActive || sharedDataActive}
+      overlayText={(movingMessageActive || sharedDataActive) ? texts.folderSelectTitle : ''}
     >
       {!!folder.id && (
         <StorageContentFolderBlock
+          sharedData={sharedData}
           dropAvailable={!search}
           toggleSearch={toggleSearch}
           setMovingMessage={setMovingMessage}

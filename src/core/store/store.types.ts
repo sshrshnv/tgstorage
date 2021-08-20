@@ -233,6 +233,11 @@ export type StreamingFile = {
 export type StreamingFiles =
   Map<string, StreamingFile>
 
+export type SharedData = {
+  text?: string
+  fileKeys?: string[]
+} | null
+
 export type State = {
   user: User
   userLoading: boolean
@@ -247,6 +252,7 @@ export type State = {
   streamingFiles: StreamingFiles
   settings: Settings
   texts: Texts
+  sharedData: SharedData
   appUpdateExist: boolean
   appUpdateAccepted: boolean
 }

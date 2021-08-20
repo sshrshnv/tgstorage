@@ -1,10 +1,10 @@
 import type { FunctionComponent as FC } from 'preact'
 import { h } from 'preact'
 import { memo } from 'preact/compat'
-import { useCallback } from 'preact/hooks'
+import { useCallback, useEffect } from 'preact/hooks'
 
-import type { Message } from '~/core/store'
-import { setActiveFolder, loadFolderMessages } from '~/core/actions'
+import type { Message, SharedData } from '~/core/store'
+import { setActiveFolder, loadFolderMessages, setSharedData } from '~/core/actions'
 import { useTexts, useActiveFolder, useMessageForm } from '~/core/hooks'
 import { Content } from '~/ui/elements/content'
 import { ContentHeader } from '~/ui/elements/content-header'
@@ -15,12 +15,14 @@ import { SearchIcon } from '~/ui/icons'
 import { StorageContentMessagesList } from './storage.content-messages-list'
 
 type Props = {
+  sharedData: SharedData
   dropAvailable: boolean
   toggleSearch: () => void
   setMovingMessage: (message: Message) => void
 }
 
 export const StorageContentFolderBlock: FC<Props> = memo(({
+  sharedData,
   dropAvailable,
   toggleSearch,
   setMovingMessage
@@ -50,6 +52,15 @@ export const StorageContentFolderBlock: FC<Props> = memo(({
   const handleClose = useCallback(() => {
     setActiveFolder(0)
   }, [])
+
+  useEffect(() => {
+    if (!sharedData) return
+    handleChangeText(sharedData.text || '')
+    if (sharedData.fileKeys?.length) {
+      handleAddFiles(sharedData.fileKeys)
+    }
+    setSharedData(null)
+  }, [sharedData])
 
   return (
     <Content

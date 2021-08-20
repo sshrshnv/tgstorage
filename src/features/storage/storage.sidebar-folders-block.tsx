@@ -15,6 +15,7 @@ import type { FolderPopupParams } from './storage'
 import { StorageSidebarFoldersList } from './storage.sidebar-folders-list'
 
 type Props = {
+  transparent?: boolean
   mobileTransparent?: boolean
   setFolderPopupParams?: (params: FolderPopupParams) => void
   setProfilePopupVisible?: (value: boolean) => void
@@ -22,6 +23,7 @@ type Props = {
 }
 
 export const StorageSidebarFoldersBlock: FC<Props> = memo(({
+  transparent,
   mobileTransparent,
   setFolderPopupParams,
   setProfilePopupVisible,
@@ -46,6 +48,7 @@ export const StorageSidebarFoldersBlock: FC<Props> = memo(({
   return (
     <Sidebar
       disabled={foldersLoading}
+      transparent={transparent}
       mobileTransparent={mobileTransparent}
     >
       <SidebarHeader>

@@ -5,7 +5,7 @@ const dotenv = require('dotenv')
 const HtmlPlugin = require('html-webpack-plugin')
 const HtmlInjectPreloadPlugin = require('@principalstudio/html-webpack-inject-preload')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-//const CopyPlugin = require('copy-webpack-plugin')
+const CopyPlugin = require('copy-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const DotenvPlugin = require('dotenv-webpack')
@@ -171,19 +171,13 @@ module.exports = [{
       chunkFilename: '[name].[contenthash:8].css'
     }) : () => {},
 
-    /*isProd() ? new CopyPlugin({
+    new CopyPlugin({
       patterns: [
-        { from: './src/app.webmanifest', to: './app-v1.webmanifest' },
-        { from: './src/ui/images/*', to: './[name]-v1[ext]' },
+        { from: './src/core/app.webmanifest', to: './app.v1.webmanifest' },
+        { from: './src/ui/images/*', to: './[name].v1[ext]' }
       ]
-    }) : () => {},*/
-/*
-    !workboxManifestInjected ? new WorkboxPlugin.InjectManifest({
-      swDest: 'sw.js',
-      swSrc: './src/sw/sw.ts',
-      maximumFileSizeToCacheInBytes: 10 * 1024 * 1024
-    }) : () => {},
-*/
+    }),
+
     isDev() ? new webpack.HotModuleReplacementPlugin() : () => {},
 
     isBundleAnalyzer() ? new BundleAnalyzerPlugin({
@@ -215,13 +209,11 @@ module.exports = [{
     hot: true,
     historyApiFallback: true,
     compress: true,
-    overlay: {
-      warnings: false,
-      errors: true
-    },
-    stats: {
-      children: false,
-      modules: false
+    client: {
+      overlay: {
+        warnings: false,
+        errors: true
+      }
     }
   },
 

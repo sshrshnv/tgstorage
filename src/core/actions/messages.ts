@@ -3,6 +3,7 @@ import { store } from '~/core/store'
 import { api } from '~/api'
 import { wait } from '~/tools/wait'
 
+import type { SharedData } from '~/core/store'
 import { setLoadingFolderId, getActiveFolder } from './folders'
 import { uploadFiles, resetUploadingFiles } from './message-media'
 import { logOut } from './user'
@@ -44,6 +45,14 @@ export const setSearchMessages = (
 ) => {
   store.setState({
     searchMessages
+  })
+}
+
+export const setSharedData = (
+  sharedData: SharedData
+) => {
+  store.setState({
+    sharedData
   })
 }
 

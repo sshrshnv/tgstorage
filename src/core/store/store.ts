@@ -44,6 +44,7 @@ const initialDataState = {
   searchMessages: new Map(),
   downloadingFiles: new Map(),
   streamingFiles: new Map(),
+  sharedData: null
 }
 
 const state: State = {

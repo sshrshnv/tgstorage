@@ -36,7 +36,7 @@ export const handleSave = ({
   if (!client) return
 
   const fileKey = url.searchParams.get('fileKey')
-  const fileName = url.searchParams.get('fileName')
+  const fileName = encodeURI(url.searchParams.get('fileName'))
   const fileSize = +url.searchParams.get('fileSize')
   const fileType = url.searchParams.get('fileType')
   const partSize = SAVE_PART_SIZE

@@ -3,11 +3,11 @@ import { Workbox } from 'workbox-window'
 import {
   setAppUpdateExist,
   waitAppUpdateAccepted,
-  downloadStreamFilePart
+  downloadStreamFilePart,
+  setSharedData
 } from '~/core/actions'
-import {
-  checkIsSafari
-} from '~/tools/detect-device'
+import { setFile } from '~/core/cache'
+import { checkIsSafari } from '~/tools/detect-device'
 
 let registration
 
@@ -52,9 +52,23 @@ export const registerSW = async () => {
         })
       }
     }
+
+    if (type === 'receiveSharedData') {
+      const { text, files } = params
+      const fileKeys = files.map(file => setFile(file))
+      setSharedData({
+        text,
+        fileKeys
+      })
+    }
   })
 
   registration = await wb.register()
+
+  if (self.location.search === '?share') {
+    self.history.replaceState('', '', self.location.pathname.replace('?share', ''))
+    wb.messageSW({ messageKey: 'share-ready' })
+  }
 }
 
 export const checkIsSWRegistered = () =>

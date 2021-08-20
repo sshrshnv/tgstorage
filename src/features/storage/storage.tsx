@@ -5,7 +5,7 @@ import { useState, useCallback, useEffect } from 'preact/hooks'
 
 import type { Folder } from '~/core/store'
 import { setUpdates } from '~/core/actions'
-import { useMoveMessage } from '~/core/hooks'
+import { useMoveMessage, useSharedData } from '~/core/hooks'
 import { api } from '~/api'
 import { Layout } from '~/ui/elements/layout'
 
@@ -27,11 +27,21 @@ const Storage: FC = () => {
   const [settingsPopupVisible, setSettingsPopupVisible] = useState(false)
 
   const {
+    active: movingMessageActive,
     loading: movingMessageLoading,
     setMovingMessage,
     selectMovingMessageFolder,
     cancelMovingMessage
   } = useMoveMessage({
+    setFoldersPopupVisible
+  })
+
+  const {
+    sharedData,
+    active: sharedDataActive,
+    selectSharedDataFolder,
+    cancelSharedData
+  } = useSharedData({
     setFoldersPopupVisible
   })
 
@@ -57,20 +67,26 @@ const Storage: FC = () => {
         folderPopupParams={folderPopupParams}
         profilePopupVisible={profilePopupVisible}
         settingsPopupVisible={settingsPopupVisible}
+        foldersPopupVisible={foldersPopupVisible}
         setFolderPopupParams={setFolderPopupParams}
         setProfilePopupVisible={setProfilePopupVisible}
         setSettingsPopupVisible={setSettingsPopupVisible}
         closeFolderPopup={closeFolderPopup}
         closeProfilePopup={closeProfilePopup}
         closeSettingsPopup={closeSettingsPopup}
-        movingMessageActive={foldersPopupVisible}
+        movingMessageActive={movingMessageActive}
         movingMessageLoading={movingMessageLoading}
         selectMovingMessageFolder={selectMovingMessageFolder}
         cancelMovingMessage={cancelMovingMessage}
+        sharedDataActive={sharedDataActive}
+        selectSharedDataFolder={selectSharedDataFolder}
+        cancelSharedData={cancelSharedData}
       />
       <StorageContent
-        movingMessageActive={foldersPopupVisible}
+        movingMessageActive={movingMessageActive}
         setMovingMessage={setMovingMessage}
+        sharedData={sharedData}
+        sharedDataActive={sharedDataActive}
       />
     </Layout>
   )

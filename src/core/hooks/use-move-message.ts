@@ -11,13 +11,14 @@ export const useMoveMessage = ({
   setFoldersPopupVisible
 }: Params) => {
   const movingMessageRef = useRef<Message | null>(null)
+  const active = !!movingMessageRef.current
   const [loading, setLoading] = useState(false)
 
   const setMovingMessage = useCallback((message: Message) => {
     movingMessageRef.current = message
     setLoading(false)
     setFoldersPopupVisible(true)
-  }, [movingMessageRef, setFoldersPopupVisible])
+  }, [setLoading, setFoldersPopupVisible])
 
   const selectMovingMessageFolder = useCallback(async (folder: Folder) => {
     if (!movingMessageRef.current) return
@@ -25,19 +26,21 @@ export const useMoveMessage = ({
     await moveMessage(movingMessageRef.current, folder)
     setLoading(false)
     self.history.back()
-  }, [movingMessageRef])
+  }, [setLoading])
 
   const cancelMovingMessage = useCallback(() => {
     movingMessageRef.current = null
     setFoldersPopupVisible(false)
-  }, [movingMessageRef, setFoldersPopupVisible])
+  }, [setFoldersPopupVisible])
 
   return useMemo(() => ({
+    active,
     loading,
     setMovingMessage,
     selectMovingMessageFolder,
     cancelMovingMessage
   }), [
+    active,
     loading,
     setMovingMessage,
     selectMovingMessageFolder,

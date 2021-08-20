@@ -18,8 +18,10 @@ type Props = {
   folderPopupParams: FolderPopupParams
   profilePopupVisible: boolean
   settingsPopupVisible: boolean
+  foldersPopupVisible: boolean
   movingMessageActive: boolean
   movingMessageLoading: boolean
+  sharedDataActive: boolean
   setFolderPopupParams: (params: FolderPopupParams) => void
   setProfilePopupVisible: (value: boolean) => void
   setSettingsPopupVisible: (value: boolean) => void
@@ -28,6 +30,8 @@ type Props = {
   closeSettingsPopup: () => void
   selectMovingMessageFolder: (folder: Folder) => void
   cancelMovingMessage: () => void
+  selectSharedDataFolder: (folder: Folder) => void
+  cancelSharedData: () => void
 }
 
 export const StorageSidebar: FC<Props> = memo(({
@@ -36,6 +40,7 @@ export const StorageSidebar: FC<Props> = memo(({
   settingsPopupVisible,
   movingMessageActive,
   movingMessageLoading,
+  sharedDataActive,
   setFolderPopupParams,
   setProfilePopupVisible,
   setSettingsPopupVisible,
@@ -43,7 +48,9 @@ export const StorageSidebar: FC<Props> = memo(({
   closeProfilePopup,
   closeSettingsPopup,
   selectMovingMessageFolder,
-  cancelMovingMessage
+  cancelMovingMessage,
+  selectSharedDataFolder,
+  cancelSharedData
 }) => {
   useEffect(() => {
     loadFolders()
@@ -54,6 +61,7 @@ export const StorageSidebar: FC<Props> = memo(({
       mobileTransparent={movingMessageActive}
     >
       <StorageSidebarFoldersBlock
+        transparent={sharedDataActive}
         mobileTransparent={movingMessageActive}
         setFolderPopupParams={setFolderPopupParams}
         setProfilePopupVisible={setProfilePopupVisible}
@@ -84,6 +92,14 @@ export const StorageSidebar: FC<Props> = memo(({
           loading={movingMessageLoading}
           onFolderSelect={selectMovingMessageFolder}
           onClose={cancelMovingMessage}
+          filterActiveFolder
+        />
+      )}
+
+      {sharedDataActive && (
+        <StorageSidebarFoldersPopup
+          onFolderSelect={selectSharedDataFolder}
+          onClose={cancelSharedData}
         />
       )}
     </SidebarWrapper>

@@ -67,18 +67,19 @@ export const Content: FC<Props> = memo(({
       }
     }
 
-    if (fileKeys?.length) {
+    if (fileKeys.length) {
       onAddFiles?.(fileKeys)
     }
-    if (text?.length) {
+    if (text) {
       onAddMessage?.(text)
     }
   }, [dropAvailable, onAddFiles, onAddMessage])
 
   useEffect(() => {
     const handlePaste = (ev) => handlePasteRef.current(ev)
-    document.addEventListener('paste', handlePaste, { passive: true })
-    return () => document.removeEventListener('paste', handlePaste)
+
+    self.document.addEventListener('paste', handlePaste, { passive: true })
+    return () => self.document.removeEventListener('paste', handlePaste)
   }, [])
 
   return (

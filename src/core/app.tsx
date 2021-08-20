@@ -1,7 +1,7 @@
 import 'core-js'
 
-import { h, render, Fragment } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
+import { h, render, Fragment } from 'preact'
 import { Provider } from 'unistore-hooks'
 
 import { registerSW } from '~/sw'
