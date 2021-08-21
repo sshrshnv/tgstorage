@@ -3,7 +3,7 @@ import createSyncTaskQueue from 'sync-task-queue'
 
 import type { Folder, InputMessage, InputFile, DownloadingFile, StreamingFile } from '~/core/store'
 import { store } from '~/core/store'
-import { getFilePart, getFileMeta, deleteFile, addBytes, transferBytesToFile } from '~/core/cache'
+import { getFilePart, getFileMeta, deleteFile, setBytes, createFile } from '~/core/cache'
 import { api } from '~/api'
 import { wait } from '~/tools/wait'
 import { generateFileMessageMark } from '~/tools/handle-content'
@@ -298,14 +298,13 @@ export const downloadFile = async (
 
       let fileKey: string|undefined = generateFileKey(downloadingFile)
       const { type } = downloadingFile
-      const isImage = type.startsWith('image') || !!sizeType
       const progress = Math.round((part + 1) / partsCount * 100)
 
-      addBytes(fileKey, bytes)
+      await setBytes(fileKey, part, bytes)
       bytes = undefined
 
       fileKey = isLastPart ?
-        transferBytesToFile(fileKey, isImage ? 'image/jpeg' : type) :
+        await createFile(fileKey, partsCount, sizeType ? 'image/jpeg' : type) :
         undefined
 
       setDownloadingFile({

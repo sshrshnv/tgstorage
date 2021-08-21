@@ -1,3 +1,5 @@
+import { createStore, getMany, set, clear, } from 'idb-keyval'
+
 import {
   MAX_FILE_SIZE,
   generateLocalFileKey
@@ -10,9 +12,9 @@ type FileMeta = {
   lastModified: number
 }
 
+const database = createStore('tgstorage-files', 'data')
 const fileCache = new Map<string, File|Blob>()
 const fileMetaCache = new Map<string, FileMeta>()
-const bytesCache = new Map<string, Uint8Array>()
 
 export const setFile = (file: File|null|undefined, fileId = '') => {
   if (!file) return
@@ -38,6 +40,16 @@ export const setFile = (file: File|null|undefined, fileId = '') => {
 export const getFile = (fileKey: string) =>
   fileCache.get(fileKey)
 
+export const getFileUrl = (fileKey: string) => {
+  let file = fileCache.get(fileKey)
+  if (!file) return ''
+
+  const fileUrl = URL.createObjectURL(file)
+  file = undefined
+
+  return fileUrl
+}
+
 export const getFilePart = (fileKey: string, { start = 0, end }) => {
   let file = getFile(fileKey)
   if (!file) return
@@ -55,32 +67,17 @@ export const deleteFile = (fileKey: string) => {
   fileMetaCache.delete(fileKey)
 }
 
-export const setBytes = (fileId: string, bytes: Uint8Array) =>
-  bytesCache.set(fileId, bytes)
+export const setBytes = (fileId: string, part: number, bytes: Uint8Array) =>
+  set(`${fileId}-${part}`, bytes, database)
 
-export const addBytes = (fileId: string, nextBytes: Uint8Array|any) => {
-  let prevBytes = getBytes(fileId) || new Uint8Array() as any
-  let bytes = new Uint8Array(prevBytes.length + nextBytes.length) as any
-  bytes.set(prevBytes)
-  bytes.set(nextBytes, prevBytes.length)
-  setBytes(fileId, bytes)
-  prevBytes = undefined
-  nextBytes = undefined
-  bytes = undefined
-}
+export const createFile = async (fileId: string, partsCount: number, type) => {
+  let bytes: Uint8Array[]|undefined = await getMany(
+    [...Array(partsCount).keys()].map(part => `${fileId}-${part}`),
+    database
+  )
+  if (!bytes?.length) return ''
 
-export const getBytes = (fileId: string) =>
-  bytesCache.get(fileId)
-
-export const deleteBytes = (fileId: string) =>
-  bytesCache.delete(fileId)
-
-export const transferBytesToFile = (fileId: string, type) => {
-  let bytes = getBytes(fileId)
-  if (!bytes) return ''
-
-  let file = new Blob([bytes], { type }) as File|undefined
-  deleteBytes(fileId)
+  let file = new Blob(bytes, { type }) as File|undefined
   const fileKey = setFile(file, fileId)
   file = undefined
   bytes = undefined
@@ -91,5 +88,5 @@ export const transferBytesToFile = (fileId: string, type) => {
 export const resetFiles = () => {
   fileCache.clear()
   fileMetaCache.clear()
-  bytesCache.clear()
+  clear(database)
 }

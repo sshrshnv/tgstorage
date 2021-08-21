@@ -4,6 +4,7 @@ import { h } from 'preact'
 import { useState, useCallback, useEffect } from 'preact/hooks'
 
 import type { Folder } from '~/core/store'
+import { resetFiles } from '~/core/cache'
 import { setUpdates } from '~/core/actions'
 import { useMoveMessage, useSharedData } from '~/core/hooks'
 import { api } from '~/api'
@@ -59,6 +60,8 @@ const Storage: FC = () => {
 
   useEffect(() => {
     api.listenUpdates(proxy(setUpdates))
+    self.addEventListener('unload', resetFiles, { passive: true })
+    return () => self.removeEventListener('unload', resetFiles)
   }, [])
 
   return (

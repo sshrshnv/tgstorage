@@ -1,5 +1,4 @@
 export type { MessageMedia } from './mtproto'
 export * from './api'
 export * from './api.helpers'
-export * from './api.cache'
 export * from './api.types'

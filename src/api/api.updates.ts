@@ -1,6 +1,7 @@
 import createSyncTaskQueue from 'sync-task-queue'
 
 import type { Folder, Folders, FolderMessages, FoldersMessages, SearchMessages } from '~/core/store'
+import { dataCache } from '~/core/cache'
 import { FOLDER_POSTFIX } from '~/tools/handle-content'
 
 import {
@@ -10,7 +11,6 @@ import {
   transformMessage,
   findFolderIdByMessageId
 } from './api.helpers'
-import { apiCache } from './api.cache'
 
 export const updatesQueue = createSyncTaskQueue()
 
@@ -93,7 +93,7 @@ const handleMessagesUpdates = async (messagesUpdates) => {
 }
 
 const handleChats = async (chats): Promise<Folders> => {
-  const cachedFolders = await apiCache.getFolders()
+  const cachedFolders = await dataCache.getFolders()
   const updatedFolders: Folder[] = []
   const updatedFolderIds: number[] = []
 
@@ -116,7 +116,7 @@ const handleChats = async (chats): Promise<Folders> => {
   ])
   const folders = new Map(sortedFolders.map(folder => [folder.id, folder]))
 
-  await apiCache.setFolders(folders)
+  await dataCache.setFolders(folders)
 
   return folders
 }
@@ -130,10 +130,10 @@ const handleMessages = async (
     offsetId?: number
   }
 ) => {
-  const user = await apiCache.getUser()
+  const user = await dataCache.getUser()
   const [folders, foldersMessages] = await Promise.all([
-    apiCache.getFolders(),
-    apiCache.getFoldersMessages()
+    dataCache.getFolders(),
+    dataCache.getFoldersMessages()
   ])
   const updates: Map<number, { folderMessages: FolderMessages, isSorted: boolean }> = new Map()
 
@@ -189,7 +189,7 @@ const handleMessages = async (
       folderMessages = new Map(sortMessages([...folderMessages]))
       foldersMessages.set(folderId, folderMessages)
     }
-    return apiCache.setFolderMessages(folderId, folderMessages)
+    return dataCache.setFolderMessages(folderId, folderMessages)
   }))
 
   return foldersMessages
@@ -205,8 +205,8 @@ const handleSearchMessages = async (
 ) => {
   let updated = false
   let sorted = true
-  let searchMessages = await apiCache.getSearchMessages()
-  const user = await apiCache.getUser()
+  let searchMessages = await dataCache.getSearchMessages()
+  const user = await dataCache.getUser()
 
   messages.forEach(message => {
     if (searchMessages.has(message.id)) {
@@ -239,7 +239,7 @@ const handleSearchMessages = async (
       searchMessages = new Map(sortMessages([...searchMessages]))
     }
 
-    apiCache.setSearchMessages(searchMessages)
+    dataCache.setSearchMessages(searchMessages)
     return new Map(searchMessages)
   } else {
     return undefined

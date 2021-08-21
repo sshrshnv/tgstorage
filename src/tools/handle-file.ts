@@ -1,7 +1,7 @@
 import latinize from 'latinize'
 
 import type { DownloadingFile } from '~/core/store'
-import { setFile, getFile } from '~/core/cache'
+import { setFile, getFileUrl } from '~/core/cache'
 
 const SW_STREAM_PATH = '/sw/stream'
 const SW_SAVE_PATH = '/sw/save'
@@ -93,15 +93,16 @@ export const selectFiles = (): Promise<string[]> => new Promise(resolve => {
 
 let link: HTMLAnchorElement
 export const saveFile = (downloadingFile: DownloadingFile) => {
-  const file = getFile(downloadingFile.fileKey || '')
-  if (!file) return
+  let fileUrl = getFileUrl(downloadingFile.fileKey || '')
+  if (!fileUrl) return
 
   link ??= self.document.createElement('a')
   link.download = downloadingFile.name || 'file'
-  link.href = URL.createObjectURL(file)
+  link.href = fileUrl
 
   link.onclick = () => setTimeout(() => {
-    URL.revokeObjectURL(link.href)
+    URL.revokeObjectURL(fileUrl)
+    fileUrl = ''
   }, 30 * 1000)
 
   link.click()

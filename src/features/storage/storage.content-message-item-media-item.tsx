@@ -124,6 +124,10 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
     } else {
       sharingRef.current = false
     }
+
+    if (error) {
+      console.error(error)
+    }
   }, [
     originalDownloadingFile,
     setSharingConfirmation,

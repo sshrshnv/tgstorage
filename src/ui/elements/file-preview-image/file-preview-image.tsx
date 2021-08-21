@@ -4,7 +4,7 @@ import { memo } from 'preact/compat'
 import { useEffect, useState, useCallback } from 'preact/hooks'
 import cn from 'classnames'
 
-import { getFile } from '~/core/cache'
+import { getFileUrl } from '~/core/cache'
 import { useStateRef, useUpdatableRef } from '~/tools/hooks'
 import { PlayIcon, LinkIcon } from '~/ui/icons'
 
@@ -40,11 +40,11 @@ export const FilePreviewImage: FC<Props> = memo(({
   useEffect(() => {
     if (!fileKey || urlRef.current) return
 
-    let file = getFile(fileKey)
-    if (!file) return
+    let url = getFileUrl(fileKey)
+    if (!url) return
 
-    setUrlRef.current(URL.createObjectURL(file))
-    file = undefined
+    setUrlRef.current(url)
+    url = ''
 
     if (!readyRef.current) {
       if (timeoutRef.current) {

@@ -1,4 +1,4 @@
-import { get, set, update, clear } from 'idb-keyval'
+import { createStore, get, set, update, clear } from 'idb-keyval'
 
 import type {
   User,
@@ -9,8 +9,7 @@ import type {
   Settings
 } from '~/core/store'
 
-import { META_KEY } from './api.helpers'
-
+const database = createStore('tgstorage-data', 'data')
 let cache = {}
 let offsetsCache = new Map<number, number | 'end'>()
 
@@ -31,30 +30,30 @@ const setData = async (
   dbData = typeof dbData !== 'undefined' ? dbData : data
 
   if (cache[key]) {
-    update(key, () => dbData).catch(() => {/*nothing*/})
+    update(key, () => dbData, database).catch(() => {/*nothing*/})
   } else {
-    set(key, dbData).catch(() => {/*nothing*/})
+    set(key, dbData, database).catch(() => {/*nothing*/})
   }
   return data
 }
 
 const getData = async (key: string, fallback: any = null) => {
   if (!cache[key]) {
-    cache[key] = await get(key).catch(() => fallback) || fallback
+    cache[key] = await get(key, database).catch(() => fallback) || fallback
   }
   return cache[key]
 }
 
-export const apiCache = {
+export const dataCache = {
   setQueryTime: (queryName: string) => setData(`query-${queryName}`, {
     data: Date.now()
   }),
   getQueryTime: (queryName: string) => getData(`query-${queryName}`, 0),
 
-  setMeta: (meta) => setData(META_KEY, {
+  setMeta: (metaKey, meta) => setData(metaKey, {
     data: meta
   }),
-  getMeta: (initialMeta) => getData(META_KEY, initialMeta),
+  getMeta: (metaKey, initialMeta) => getData(metaKey, initialMeta),
 
   setUser: (user: User) => setData('user', {
     data: user
@@ -78,10 +77,10 @@ export const apiCache = {
   getFolderMessages: (folderId): Promise<FolderMessages> => getData(`messages-${folderId}`, new Map()),
 
   getFoldersMessages: async (): Promise<FoldersMessages> => {
-    const cachedFolders = await apiCache.getFolders()
+    const cachedFolders = await dataCache.getFolders()
     const foldersMessages = new Map()
     await Promise.all([...cachedFolders.values()].map(({ id }) =>
-      apiCache.getFolderMessages(id).then(folderMessages => foldersMessages.set(id, folderMessages))
+      dataCache.getFolderMessages(id).then(folderMessages => foldersMessages.set(id, folderMessages))
     ))
     return foldersMessages
   },
@@ -96,19 +95,19 @@ export const apiCache = {
   }),
   getSearchOffsetId: () => getData('searchOffsetId', 0),
   resetSearch: () => {
-    apiCache.setSearchMessages(null)
-    apiCache.setSearchOffsetId(0)
+    dataCache.setSearchMessages(null)
+    dataCache.setSearchOffsetId(0)
   },
 
   setFolderOffsetId: (folderId: number, offsetId: number | 'end') => offsetsCache.set(folderId, offsetId),
   getFolderOffsetId: (folderId: number) => offsetsCache.get(folderId)
 }
 
-export const resetApiCache = async () => {
-  const settings = await apiCache.getSettings()
+export const resetDataCache = async () => {
+  const settings = await dataCache.getSettings()
 
   cache = {}
   offsetsCache = new Map()
   await clear()
-  apiCache.setSettings(settings)
+  dataCache.setSettings(settings)
 }

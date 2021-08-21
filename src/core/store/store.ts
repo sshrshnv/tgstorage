@@ -1,7 +1,7 @@
 import createStore from 'unistore'
 import devtools from 'unistore/devtools'
 
-import { apiCache } from '~/api'
+import { dataCache } from '~/core/cache'
 import { detectLocale } from '~/tools/detect-locale'
 
 import en from '~/core/app.texts.en.json'
@@ -20,10 +20,10 @@ const [
   FoldersMessages,
   Settings
 ] = await Promise.all([
-  apiCache.getUser(),
-  apiCache.getFolders(),
-  apiCache.getFoldersMessages(),
-  apiCache.getSettings()
+  dataCache.getUser(),
+  dataCache.getFolders(),
+  dataCache.getFoldersMessages(),
+  dataCache.getSettings()
 ])
 
 const initialSettings: Settings = {

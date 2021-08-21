@@ -4,7 +4,7 @@ import { memo } from 'preact/compat'
 import { useState, useEffect, useRef, useCallback, useMemo } from 'preact/hooks'
 import cn from 'classnames'
 
-import { getFile } from '~/core/cache'
+import { getFileUrl } from '~/core/cache'
 import { useCallbackRef, useRAFCallback } from '~/tools/hooks'
 import { checkIsSafari } from '~/tools/detect-device'
 import { formatDuration } from '~/tools/format-time'
@@ -172,11 +172,9 @@ export const Player: FC<Props> = memo(({
   useEffect(() => {
     if (!fileKey) return
 
-    let file = getFile(fileKey)
-    if (!file) return
+    const url = getFileUrl(fileKey)
+    if (!url) return
 
-    const url = URL.createObjectURL(file)
-    file = undefined
     setUrl(url)
 
     return () => URL.revokeObjectURL(url)
@@ -198,13 +196,10 @@ export const Player: FC<Props> = memo(({
   useEffect(() => {
     if (!thumbFileKey || thumbUrl) return
 
-    let thumbFile = getFile(thumbFileKey)
-    if (!thumbFile) return
+    const url = getFileUrl(thumbFileKey)
+    if (!url) return
 
-    const url = URL.createObjectURL(thumbFile)
-    thumbFile = undefined
     setThumbUrl(url)
-
     return () => URL.revokeObjectURL(url)
   }, [thumbFileKey, thumbUrl])
 

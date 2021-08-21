@@ -1,17 +1,18 @@
 import { expose, transfer } from 'comlink'
 
+import { dataCache, resetDataCache } from '~/core/cache'
 import { wait } from '~/tools/wait'
 import { FOLDER_POSTFIX, generateFolderName, stringifyFileMessage } from '~/tools/handle-content'
 import { FILE_SIZE, getFilePartSize } from '~/tools/handle-file'
 
 import type { MethodDeclMap, InputCheckPasswordSRP } from './mtproto'
 import { Client } from './mtproto'
-import { apiCache, resetApiCache } from './api.cache'
 import { handleUpdates } from './api.updates'
 import {
   API_ID,
   API_HASH,
   IS_TEST,
+  META_KEY,
   transformUser,
   transformMessage,
   sortMessages,
@@ -39,7 +40,7 @@ class Api {
   ) => Promise<any>
 
   public async init() {
-    const meta = await apiCache.getMeta(initialMeta)
+    const meta = await dataCache.getMeta(META_KEY, initialMeta)
 
     this.client = new Client({
       APIID: API_ID,
@@ -52,7 +53,7 @@ class Api {
       meta
     })
 
-    this.client.on('metaChanged', meta => apiCache.setMeta(meta))
+    this.client.on('metaChanged', meta => dataCache.setMeta(META_KEY, meta))
 
     this.call = async (method, data = {}, { dc, thread, timeout } = {}) => {
       if (timeout) {
@@ -146,7 +147,7 @@ class Api {
       phone_code_hash
     })
     const normalizedUser = await transformUser(user, country)
-    apiCache.setUser(normalizedUser)
+    dataCache.setUser(normalizedUser)
     return { user: normalizedUser }
   }
 
@@ -162,7 +163,7 @@ class Api {
       password: hash as InputCheckPasswordSRP
     })
     const normalizedUser = await transformUser(user, country)
-    apiCache.setUser(normalizedUser)
+    dataCache.setUser(normalizedUser)
     return { user: normalizedUser }
   }
 
@@ -172,7 +173,7 @@ class Api {
     if (this.logouting) return
     this.logouting = true
     await this.call('auth.logOut')
-    await resetApiCache()
+    await resetDataCache()
     this.logouting = false
     return true
   }
@@ -196,7 +197,7 @@ class Api {
       return this.getFolders([...loadedChats, ...chats])
     }
 
-    const user = await apiCache.getUser()
+    const user = await dataCache.getUser()
 
     return handleUpdates({ chats: [{
       id: user?.id,
@@ -272,7 +273,7 @@ class Api {
     newCategory: string,
     category: string
   ) {
-    const folders = await apiCache.getFolders()
+    const folders = await dataCache.getFolders()
     const editableFolders = [...folders.values()].filter(folder => folder.category === category)
 
     const updates = await Promise.all(editableFolders.map((folder, index) => this.call('channels.editTitle', {
@@ -319,7 +320,7 @@ class Api {
     },
     lastMessageId?: number
   ) {
-    const folderOffsetId = await apiCache.getFolderOffsetId(folder.id) || lastMessageId || 0
+    const folderOffsetId = await dataCache.getFolderOffsetId(folder.id) || lastMessageId || 0
     const isQueryAvailable = folderOffsetId ?
       folderOffsetId !== 'end' :
       await checkIsQueryAvailableByTime(`getMessages-${folder.id}`, 30)
@@ -330,7 +331,7 @@ class Api {
 
     const limit = 20
     const offsetId = folderOffsetId as number
-    const user = await apiCache.getUser()
+    const user = await dataCache.getUser()
 
     const { messages, error } = await this.call('messages.getHistory', {
       peer: folder.id === user?.id ? {
@@ -354,10 +355,10 @@ class Api {
     }
 
     if (messages.length < limit) {
-      apiCache.setFolderOffsetId(folder.id, 'end')
+      dataCache.setFolderOffsetId(folder.id, 'end')
     } else {
       const lastMessage = messages[messages.length - 1]
-      apiCache.setFolderOffsetId(folder.id, lastMessage.id)
+      dataCache.setFolderOffsetId(folder.id, lastMessage.id)
     }
 
     return handleUpdates({ messages }, { offsetId })
@@ -370,7 +371,7 @@ class Api {
     },
     ids: number[]
   ) {
-    const user = await apiCache.getUser()
+    const user = await dataCache.getUser()
     const { messages } = await this.call(
       folder.id === user?.id ?
         'messages.getMessages' :
@@ -437,7 +438,7 @@ class Api {
       access_hash: string
     }
   ) {
-    const user = await apiCache.getUser()
+    const user = await dataCache.getUser()
     const updates = await this.call(
       (message.inputMedia || message.media) ?
         'messages.sendMedia' :
@@ -545,7 +546,7 @@ class Api {
       access_hash: string
     }
   ) {
-    const user = await apiCache.getUser()
+    const user = await dataCache.getUser()
     const updates = await this.call('messages.editMessage', {
       peer: folder.id === user?.id ? {
         _: 'inputPeerSelf'
@@ -595,7 +596,7 @@ class Api {
       access_hash: string
     }
   ) {
-    const user = await apiCache.getUser()
+    const user = await dataCache.getUser()
     const ids = [message.id, ...(message.mediaMessages || []).map(({ id }) => id)]
 
     await this.call(
@@ -802,11 +803,11 @@ class Api {
     },
     addtional?: boolean
   ) {
-    const offsetId = await apiCache.getSearchOffsetId()
+    const offsetId = await dataCache.getSearchOffsetId()
     if (offsetId === 'end') return
 
     const limit = 20
-    const user = await apiCache.getUser()
+    const user = await dataCache.getUser()
 
     const { messages } = await this.call('messages.search', {
       peer: folder.id === user?.id ? {
@@ -835,7 +836,7 @@ class Api {
     }
 
     let searchMessages = offsetId ?
-      await apiCache.getSearchMessages() :
+      await dataCache.getSearchMessages() :
       new Map()
     const searchOffsetId = messages.length < limit ? 'end' : messages[messages.length - 1].id
     const parentIds: number[] = []
@@ -866,25 +867,25 @@ class Api {
     })
 
     searchMessages = new Map(sortMessages([...searchMessages]))
-    apiCache.setSearchMessages(searchMessages)
-    apiCache.setSearchOffsetId(searchOffsetId)
+    dataCache.setSearchMessages(searchMessages)
+    dataCache.setSearchOffsetId(searchOffsetId)
 
     return searchMessages
   }
 
   public resetSearch() {
-    apiCache.resetSearch()
+    dataCache.resetSearch()
   }
 }
 
 const checkIsQueryAvailableByTime = async (queryTimeKey: string, time = 60) => {
-  const queryTime = await apiCache.getQueryTime(queryTimeKey)
+  const queryTime = await dataCache.getQueryTime(queryTimeKey)
 
   if ((Date.now() - queryTime) < time * 1000) {
     return false
   }
 
-  await apiCache.setQueryTime(queryTimeKey)
+  await dataCache.setQueryTime(queryTimeKey)
 
   return true
 }

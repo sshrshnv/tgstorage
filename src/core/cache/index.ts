@@ -1,1 +1,2 @@
-export * from './files'
+export * from './cache'
+export * from './cache.files'

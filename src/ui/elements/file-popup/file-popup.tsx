@@ -3,7 +3,7 @@ import { h } from 'preact'
 import { memo, createPortal } from 'preact/compat'
 import { useMemo, useState, useEffect, useCallback, useRef } from 'preact/hooks'
 
-import { getFile } from '~/core/cache'
+import { getFileUrl } from '~/core/cache'
 import { Slide, useSlide } from '~/ui/elements/slide'
 import { Button } from '~/ui/elements/button'
 import { CrossIcon } from '~/ui/icons'
@@ -51,8 +51,7 @@ export const FilePopup: FC<Props> = memo(({
   }, [])
 
   useEffect(() => {
-    const file = getFile(fileKey)
-    const url = URL.createObjectURL(file)
+    const url = getFileUrl(fileKey)
     setUrl(url)
 
     return () => URL.revokeObjectURL(url)

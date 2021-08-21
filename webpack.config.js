@@ -174,7 +174,7 @@ module.exports = [{
     new CopyPlugin({
       patterns: [
         { from: './src/core/app.webmanifest', to: './app.v1.webmanifest' },
-        { from: './src/ui/images/*', to: './[name].v1[ext]' }
+        //{ from: './src/ui/images/*', to: './[name].v1[ext]' }
       ]
     }),
 

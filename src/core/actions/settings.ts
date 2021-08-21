@@ -1,6 +1,6 @@
 import type { Settings, Theme, Locale } from '~/core/store'
 import { store } from '~/core/store'
-import { apiCache } from '~/api'
+import { dataCache } from '~/core/cache'
 
 export const setSettings = (
   partialSettings: Partial<Settings>
@@ -11,7 +11,7 @@ export const setSettings = (
     ...partialSettings
   }
   store.setState({ settings })
-  apiCache.setSettings(settings)
+  dataCache.setSettings(settings)
 }
 
 export const getTheme = () =>

@@ -213,7 +213,7 @@ export const ContentFormInput: FC<Props> = ({
         )}
         ref={formattingRef}
       >
-        {!urlVisible && formattingItems.map(({ icon, type, handler }) => (
+        {hasSelection && !urlVisible && formattingItems.map(({ icon, type, handler }) => (
           <Button
             key={type}
             class={cn(

@@ -1,7 +1,7 @@
 import type { FolderMessages, Message } from '~/core/store'
 
 export const SEPARATOR = '::'
-export const POSTFIX = 'tgs'
+export const POSTFIX = 'tgstorage'
 
 
 export const FOLDER_POSTFIX = `${SEPARATOR}${POSTFIX}`
