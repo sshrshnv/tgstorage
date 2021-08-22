@@ -3,7 +3,7 @@ const path = require('path')
 const webpack = require('webpack')
 const dotenv = require('dotenv')
 const HtmlPlugin = require('html-webpack-plugin')
-const HtmlInjectPreloadPlugin = require('@principalstudio/html-webpack-inject-preload')
+//const HtmlPreloadPlugin = require('@vue/preload-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CopyPlugin = require('copy-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
@@ -159,12 +159,11 @@ module.exports = [{
       }
     }),
 
-    new HtmlInjectPreloadPlugin({
-      files: [{
-        match: /app*\.css$/,
-        attributes: { as: 'style' }
-      }]
-    }),
+    /*new HtmlPreloadPlugin({
+      rel: 'preload',
+      include: 'allAssets',
+      fileBlacklist: [/^[0-9]*\./, /\.map/, /\.jpe?g/]
+    }),*/
 
     isProd() ? new MiniCssExtractPlugin({
       filename: '[name].[contenthash:8].css',

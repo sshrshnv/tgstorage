@@ -2,6 +2,7 @@ import { expose, transfer } from 'comlink'
 
 import { dataCache, resetDataCache } from '~/core/cache'
 import { wait } from '~/tools/wait'
+import { getAnnouncementsChannelInvite } from '~/tools/handle-channels'
 import { FOLDER_POSTFIX, generateFolderName, stringifyFileMessage } from '~/tools/handle-content'
 import { FILE_SIZE, getFilePartSize } from '~/tools/handle-file'
 
@@ -97,6 +98,7 @@ class Api {
       const handledUpdates = await handleUpdates(updates)
       callback(handledUpdates)
     })
+    this.client.updates.fetch()
   }
 
   public async getCountry() {
@@ -199,16 +201,42 @@ class Api {
 
     const user = await dataCache.getUser()
 
-    return handleUpdates({ chats: [{
-      id: user?.id,
-      access_hash: user?.access_hash,
-      title: '',
-      category: '',
-      general: true
-    },
-    ...loadedChats,
-    ...chats
-    ]})
+    return handleUpdates({ chats: [
+      ...(user ? [{
+        id: user.id,
+        access_hash: user.access_hash,
+        title: '',
+        category: '',
+        general: true
+      }] : []),
+      ...loadedChats,
+      ...chats
+    ]}, {
+      offsetId: 0
+    })
+  }
+
+  public async joinAnnouncementsChannel() {
+    const isQueryAvailable = await checkIsQueryAvailableByTime('getAnnouncementsChannel', 24 * 60 * 60)
+    if (!isQueryAvailable) return
+
+    const user = await dataCache.getUser()
+    const announcementsChannelInvite = getAnnouncementsChannelInvite(user?.country)
+    if (!announcementsChannelInvite) return
+
+    const { _, chat } = await this.call('messages.checkChatInvite', {
+      hash: announcementsChannelInvite
+    })
+
+    if (_ === 'chatInviteAlready') {
+      return chat._ === 'channel' ? chat : undefined
+    }
+
+    const { chats } = await this.call('messages.importChatInvite', {
+      hash: announcementsChannelInvite
+    }).catch(() => ({ chats: [] }))
+
+    return chats?.[0]
   }
 
   public async createFolder(
@@ -875,6 +903,23 @@ class Api {
 
   public resetSearch() {
     dataCache.resetSearch()
+  }
+
+  public markMessageRead(
+    folder: {
+      id: number
+      access_hash: string
+    },
+    messageIds: number[]
+  ) {
+    this.call('channels.readMessageContents', {
+      channel: {
+        _: 'inputChannel',
+        channel_id: folder.id,
+        access_hash: folder.access_hash
+      },
+      id: messageIds
+    })
   }
 }
 

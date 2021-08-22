@@ -1,13 +1,11 @@
-import { proxy } from 'comlink'
 import type { FunctionComponent as FC } from 'preact'
 import { h } from 'preact'
 import { useState, useCallback, useEffect } from 'preact/hooks'
 
 import type { Folder } from '~/core/store'
 import { resetFiles } from '~/core/cache'
-import { setUpdates } from '~/core/actions'
+import { loadFolders, listenUpdates, joinAnnouncementsChannel } from '~/core/actions'
 import { useMoveMessage, useSharedData } from '~/core/hooks'
-import { api } from '~/api'
 import { Layout } from '~/ui/elements/layout'
 
 import { StorageSidebar } from './storage.sidebar'
@@ -59,7 +57,9 @@ const Storage: FC = () => {
   }, [setSettingsPopupVisible])
 
   useEffect(() => {
-    api.listenUpdates(proxy(setUpdates))
+    loadFolders()
+    listenUpdates()
+    joinAnnouncementsChannel()
     self.addEventListener('unload', resetFiles, { passive: true })
     return () => self.removeEventListener('unload', resetFiles)
   }, [])

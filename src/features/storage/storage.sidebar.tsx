@@ -1,10 +1,8 @@
 import type { FunctionComponent as FC } from 'preact'
 import { h } from 'preact'
 import { memo } from 'preact/compat'
-import { useEffect } from 'preact/hooks'
 
 import type { Folder } from '~/core/store'
-import { loadFolders } from '~/core/actions'
 import { SidebarWrapper } from '~/ui/elements/sidebar-wrapper'
 
 import type { FolderPopupParams } from './storage'
@@ -52,10 +50,6 @@ export const StorageSidebar: FC<Props> = memo(({
   selectSharedDataFolder,
   cancelSharedData
 }) => {
-  useEffect(() => {
-    loadFolders()
-  }, [])
-
   return (
     <SidebarWrapper
       mobileTransparent={movingMessageActive}

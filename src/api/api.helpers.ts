@@ -32,7 +32,7 @@ export const transformUser = (user, country) => {
       local_id: user.photo.photo_small.local_id,
       dc_id: user.photo.dc_id
     } : undefined,
-    country
+    country: country.toLowerCase()
   }
 }
 

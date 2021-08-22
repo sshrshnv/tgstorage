@@ -196,4 +196,6 @@ export type Api = {
   ) => Promise<SearchMessages|undefined>
 
   resetSearch: () => void
+
+  joinAnnouncementsChannel: () => void
 }

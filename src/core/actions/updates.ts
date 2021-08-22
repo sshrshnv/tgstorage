@@ -1,4 +1,7 @@
+import { proxy } from 'comlink'
+
 import type { Updates } from '~/api'
+import { api } from '~/api'
 
 import { setFolders } from './folders'
 import { setFoldersMessages, setSearchMessages } from './messages'
@@ -17,4 +20,8 @@ export const setUpdates = ({
   if (searchMessages) {
     setSearchMessages(searchMessages)
   }
+}
+
+export const listenUpdates = () => {
+  api.listenUpdates(proxy(setUpdates))
 }

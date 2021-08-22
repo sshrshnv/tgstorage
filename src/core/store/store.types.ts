@@ -45,6 +45,7 @@ export type Folder = {
   access_hash: string
   title: string
   category: string
+  announcements?: boolean
   general?: boolean
 }
 

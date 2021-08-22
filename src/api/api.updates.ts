@@ -38,7 +38,7 @@ export const handleUpdates = async (
   let searchMessages
 
   if (chats?.length) {
-    folders = await handleChats(chats)
+    folders = await handleChats(chats, options)
   }
   if (messages?.length) {
     [foldersMessages, searchMessages] = await Promise.all([
@@ -92,14 +92,14 @@ const handleMessagesUpdates = async (messagesUpdates) => {
   return [foldersMessages, searchMessages]
 }
 
-const handleChats = async (chats): Promise<Folders> => {
-  const cachedFolders = await dataCache.getFolders()
+const handleChats = async (chats, options?): Promise<Folders> => {
+  const cachedFolders = options?.offsetId === 0 ? new Map() : await dataCache.getFolders()
   const updatedFolders: Folder[] = []
   const updatedFolderIds: number[] = []
 
   chats.forEach(chat => {
-    const { _, title, left, general } = chat
-    if (general || title.endsWith(FOLDER_POSTFIX)) {
+    const { _, title, left, creator, general } = chat
+    if (general || (creator && title.endsWith(FOLDER_POSTFIX))) {
       updatedFolderIds.push(chat.id)
 
       if (!left && !_?.endsWith('Forbidden')) {

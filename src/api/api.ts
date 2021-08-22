@@ -11,11 +11,4 @@ const api: ApiInstance = await new Api()
 
 await api.init()
 
-//const listenUpdates = (handler: (message: any) => void) =>
-//  api.listenUpdates(proxy(handler))
-
-const listenUpdates = () => {
-  //
-}
-
-export { api, listenUpdates }
+export { api }
