@@ -1,4 +1,6 @@
-import { wrap } from 'comlink'
+import { wrap, proxy } from 'comlink'
+
+import { handleApiError } from '~/core/actions'
 
 import type { Api as ApiInstance } from './api.types'
 import ApiWorker from './api.worker.ts'
@@ -9,6 +11,8 @@ const apiWorker = new ApiWorker();
 const Api: any = wrap(apiWorker)
 const api: ApiInstance = await new Api()
 
-await api.init()
+const initApi = async () => {
+  await api.init(proxy(handleApiError))
+}
 
-export { api }
+export { api, initApi }

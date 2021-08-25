@@ -98,8 +98,8 @@ const handleChats = async (chats, options?): Promise<Folders> => {
   const updatedFolderIds: number[] = []
 
   chats.forEach(chat => {
-    const { _, title, left, creator, general } = chat
-    if (general || (creator && title.endsWith(FOLDER_POSTFIX))) {
+    const { _, id, title, left, creator, general } = chat
+    if (general || (creator && title.endsWith(FOLDER_POSTFIX)) || cachedFolders.has(id)) {
       updatedFolderIds.push(chat.id)
 
       if (!left && !_?.endsWith('Forbidden')) {

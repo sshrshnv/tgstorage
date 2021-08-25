@@ -1,5 +1,6 @@
 import type { FunctionComponent as FC } from 'preact'
 import { h } from 'preact'
+import { memo } from 'preact/compat'
 import { useState, useEffect } from 'preact/hooks'
 
 import { Layout } from '~/ui/elements/layout'
@@ -29,7 +30,7 @@ const initialCountry: Country = ({
 
 let timeoutId = 0
 
-const Auth: FC = () => {
+const Auth: FC = memo(() => {
   const [step, setStep] = useState<Step>('phone')
   const [country, setCountry] = useState<Country>(initialCountry)
   const [phone, setPhone] = useState('+')
@@ -102,6 +103,6 @@ const Auth: FC = () => {
       <Break size={48} px/>
     </Layout>
   )
-}
+})
 
 export default Auth

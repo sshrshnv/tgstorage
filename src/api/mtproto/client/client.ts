@@ -245,7 +245,7 @@ export default class Client {
           if (this.rpc.requests[id].headers.dc === cfg.dc
             && this.rpc.requests[id].headers.thread === cfg.thread
             && this.rpc.requests[id].headers.transport === cfg.transport) {
-            // message should wait for dh exchange if auth is processing
+            // message should timeout for dh exchange if auth is processing
             if (this.authState[cfg.dc] === 2) {
               const message = this.encrypt(this.rpc.requests[id].message, this.rpc.requests[id].headers.dc)
               this.getInstance(cfg.transport, cfg.dc, cfg.thread).send(message)

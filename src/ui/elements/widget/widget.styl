@@ -1,0 +1,83 @@
+.root
+  position: absolute
+  left: 0
+  bottom: 0
+  z-index: 5
+  display: flex
+  flex-direction: column
+  align-items: center
+  width: 100%
+  padding: 0 20px
+  background-color: var(--widget-background-color)
+  box-shadow: 0 -1px 2px 0px var(--widget-shadow-color)
+
+  @media $desktop
+    min-width: $sidebar-width
+    width: 20vw
+
+.header
+  display: flex
+  align-items: center
+  width: 100%
+  max-width: $widget-width
+  height: 48px
+  font-size: 17px
+
+.description
+  max-width: $widget-width
+  font-size: 15px
+
+.button
+  max-width: $widget-width
+
+.closeButton
+  position: absolute
+  top: 0
+  right: 0
+  height: 48px
+
+  > svg
+    fill: var(--color-light-2)
+
+._error
+  z-index: 17
+  background-color: var(--color-red)
+  box-shadow: 0 -1px 2px 0px var(--color-black-012)
+
+  .header
+  .description
+    color: var(--color-black)
+
+  .button
+    border-color: var(--color-black)
+    color: var(--color-black)
+
+  .closeButton > svg
+    fill: var(--color-black)
+
+._animation
+  &.root
+    will-change: transform, opacity
+    transform: translateY(40px)
+    opacity: 0
+
+  &._performance
+    -webkit-backface-visibility: hidden
+    -webkit-transform-style: preserve-3d
+    -webkit-perspective: 1200px
+
+._animationFallback
+  &.root
+    will-change: transform, opacity
+    animation-name: slideIn
+    animation-duration: .2s
+    animation-timing-function: ease-in-out
+    animation-fill-mode: forwards
+
+@keyframes slideIn
+  0%
+    transform: translateY(40px)
+    opacity: 0
+  100%
+    transform: translateY(0)
+    opacity: 1

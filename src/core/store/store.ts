@@ -2,12 +2,10 @@ import createStore from 'unistore'
 import devtools from 'unistore/devtools'
 
 import { dataCache } from '~/core/cache'
-import { detectLocale } from '~/tools/detect-locale'
+import { checkIsStandalone } from '~/tools/detect-standalone'
+import { AVALIABLE_LOCALES, detectLocale } from '~/tools/detect-locale'
 
-import en from '~/core/app.texts.en.json'
-import ru from '~/core/app.texts.ru.json'
-
-import type { State, Settings, User, Folders, FoldersMessages } from './store.types'
+import type { State, Texts, Settings, User, Folders, FoldersMessages } from './store.types'
 
 const [
   user,
@@ -56,12 +54,12 @@ const state: State = {
     ...initialSettings,
     ...settings
   },
-  texts: {
-    en,
-    ru
-  },
-  appUpdateExist: false,
-  appUpdateAccepted: false
+  texts: AVALIABLE_LOCALES.reduce((obj, locale) => ({ ...obj, [locale]: {} }), {} as Texts),
+  appUpdateExists: false,
+  appUpdateAccepted: false,
+  appInstallAvailable: false,
+  appInstalled: checkIsStandalone(),
+  appErrorExists: false
 }
 
 const store = process.env.NODE_ENV === 'production' ?

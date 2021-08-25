@@ -1,5 +1,6 @@
 import type { FunctionComponent as FC } from 'preact'
 import { h } from 'preact'
+import { memo } from 'preact/compat'
 import { useState, useCallback, useEffect } from 'preact/hooks'
 
 import type { Folder } from '~/core/store'
@@ -19,7 +20,7 @@ export type FolderPopupParams = {
   isEditCategory?: boolean
 } | null
 
-const Storage: FC = () => {
+const Storage: FC = memo(() => {
   const [folderPopupParams, setFolderPopupParams] = useState<FolderPopupParams>(null)
   const [foldersPopupVisible, setFoldersPopupVisible] = useState(false)
   const [profilePopupVisible, setProfilePopupVisible] = useState(false)
@@ -93,6 +94,6 @@ const Storage: FC = () => {
       />
     </Layout>
   )
-}
+})
 
 export default Storage

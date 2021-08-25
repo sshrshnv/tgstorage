@@ -6,7 +6,7 @@ import cn from 'classnames'
 
 import { useUpdatableRef, useCallbackRef } from '~/tools/hooks'
 import { checkIsIOS } from '~/tools/detect-device'
-import { animationClassName } from '~/ui/styles/animation'
+import { animationClassName } from '~/ui/styles'
 
 import styles from './slide.styl'
 

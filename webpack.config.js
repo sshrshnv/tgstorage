@@ -108,7 +108,7 @@ module.exports = [{
           loader: 'stylus-loader',
           options: {
             stylusOptions: {
-              import: [path.resolve('./src/ui/styles/vars.styl')],
+              import: [path.resolve('./src/ui/styles/styles.vars.styl')],
             },
             sourceMap: isDev()
           }

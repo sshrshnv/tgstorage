@@ -4,13 +4,15 @@ import { memo } from 'preact/compat'
 import { useState, useCallback, useRef, useEffect, useMemo } from 'preact/hooks'
 import cn from 'classnames'
 
-import { useTexts } from '~/core/hooks'
+import { useSettings } from '~/core/hooks'
 import { useCallbackRef } from '~/tools/hooks'
 import { Input } from '~/ui/elements/input'
 import { Loader } from '~/ui/elements/loader'
 import { ArrowIcon } from '~/ui/icons'
-import { animationClassName } from '~/ui/styles/animation'
+import { animationClassName } from '~/ui/styles'
 
+import en from './select.texts.en.json'
+import ru from './select.texts.ru.json'
 import styles from './select.styl'
 
 type Option = {
@@ -42,13 +44,18 @@ export const Select: FC<Props> = memo(({
   search = false,
   onSelect
 }) => {
-  const { texts } = useTexts()
+  const { locale } = useSettings()
   const inputRef = useRef<HTMLInputElement>(null)
   const optionsRef = useRef<HTMLDivElement>(null)
   const [expanded, setExpanded] = useState(false)
   const [focused, setFocused] = useState(false)
   const [selected, setSelected] = useState(false)
   const [searchValue, setSearchValue] = useState('')
+
+  const texts = useMemo(() => {
+    const texts = { en, ru }
+    return texts[locale]
+  }, [locale])
 
   const filteredOptions = useMemo(() => options.filter(option => (
     option &&

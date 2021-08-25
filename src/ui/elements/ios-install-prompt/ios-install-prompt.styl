@@ -1,0 +1,213 @@
+$font-family = -apple-system, BlinkMacSystemFont, "Helvetica Neue"
+
+$overlay-background-color-modern-light = rgba(10, 10, 10, 0.5)
+$overlay-background-color-modern-dark = rgba(10, 10, 10, 0.5)
+$overlay-background-color-legacy = rgba(0, 0, 0, 0.8)
+
+$background-color-modern-light = rgba(255, 255, 255, 0.6)
+$background-color-modern-dark = rgba(65, 65, 65, 0.7)
+$background-color-legacy = rgba(250, 250, 250, 0.8)
+
+$border-color-modern-light = rgba(60, 60, 67, 0.29)
+$border-color-modern-dark = rgba(140, 140, 140, 0.7)
+$border-color-legacy = rgba(0, 0, 0, 0.1)
+
+$font-color-modern-light = rgba(60, 60, 67, 0.6)
+$font-color-modern-dark = rgba(235, 235, 245, 0.6)
+$font-color-legacy = rgb(123, 123, 122)
+
+$title-color-modern-light = rgba(0, 0, 0, 1)
+$title-color-modern-dark = rgba(255, 255, 255, 1)
+$title-color-legacy = rgb(51, 51, 51)
+
+$blue-color-modern-light = rgba(0, 85, 179, 1)
+$blue-color-modern-dark = rgba(9, 132, 255, 1)
+$blue-color-legacy = rgb(45, 124, 246)
+
+.wrapper
+.overlay
+.root
+  position: absolute
+  right: 0
+  bottom: 0
+  left: 0
+
+.wrapper
+  top: 0
+  z-index: 20
+  display: none
+
+.overlay
+  top: 0
+  min-height: 100vh
+  min-height: -webkit-fill-available
+  background-color: $overlay-background-color-legacy
+  opacity: 0
+  will-change: opacity
+  transition: opacity .2s ease-in
+  -webkit-backface-visibility: hidden
+  -webkit-transform-style: preserve-3d
+  -webkit-perspective: 1200px
+
+.root
+  margin: 0 8px 10px
+  width: calc(100vw - 16px)
+  border-radius: 10px
+  overflow: hidden
+  color: black
+  background-color: $background-color-legacy
+  -webkit-backdrop-filter: blur(10px)
+  backdrop-filter: blur(10px)
+  filter: brightness(1.1)
+  font-family: $font-family
+  will-change: transform
+  transform: translateY(calc(100% + 10px))
+  transition: transform .4s cubic-bezier(0.4, 0.24, 0.3, 1)
+  -webkit-backface-visibility: hidden
+  -webkit-transform-style: preserve-3d
+  -webkit-perspective: 1200px
+
+.header
+  display: flex
+  flex-flow: row nowrap
+  justify-content: space-between
+  align-items: center
+  padding: 13px 16px
+  border-bottom: 1px solid $border-color-legacy
+  border-top: 0px
+  border-left: 0px
+  border-right: 0px
+  border-width: 0.5px
+
+.title
+  margin: 0
+  padding: 0
+  color: $title-color-legacy
+  font-family: $font-family
+  font-size: 18px
+  font-weight: 500
+  line-height: 1.125
+
+.cancel
+  margin: 0
+  padding: 0
+  border: 0
+  background: transparent
+  color: $blue-color-legacy
+  font-size: 16px
+
+.body
+  display: flex
+  width: 100%
+
+.description
+  margin: 0 16px
+  width: 100%
+  padding: 16px
+  border-top: 1px solid $border-color-legacy
+  border-bottom: 0px
+  border-left: 0px
+  border-right: 0px
+  border-width: 0.5px
+  color: inherit
+
+.text
+  margin: 0
+  padding: 0
+  color: $font-color-legacy
+  font-family: $font-family
+  font-size: 13px
+  line-height: 17px
+
+  &._bold
+    font-weight: 600
+
+.instruction
+  margin: 0 16px
+  padding: 16px
+  color: inherit
+
+.instructionStep
+  margin-bottom: 16px
+  display: flex
+  flex-flow: row nowrap
+  justify-content: flex-start
+  align-items: center
+  text-align: left
+
+  &:last-of-type
+    margin-bottom: 0
+
+.shareIcon
+.homeScreenIcon
+  margin-right: 32px
+  flex: 0 0 auto
+  width: 25px
+  height: 30px
+
+.shareIcon
+  color: $blue-color-legacy
+  fill: $blue-color-legacy
+
+&._modern
+  .overlay
+    background-color: $overlay-background-color-modern-light
+    @media $dark
+      background-color: $overlay-background-color-modern-dark
+
+  .root
+    background-color: $background-color-modern-light
+    filter: brightness(1.6)
+    @media $dark
+      background-color: $background-color-modern-dark
+      filter: brightness(1.1)
+
+  .header
+    border-color: $border-color-modern-light
+    @media $dark
+      border-color: $border-color-modern-dark
+
+  .title
+    color: $title-color-modern-light
+    @media $dark
+      color: $title-color-modern-dark
+
+  .cancel
+    color: $blue-color-modern-light
+    @media $dark
+      color: $blue-color-modern-dark
+
+  .description
+    border-color: $border-color-modern-light
+    @media $dark
+      color: $border-color-modern-light
+
+  .title
+    color: $font-color-modern-light
+    @media $dark
+      border-color: $font-color-modern-dark
+      color: $font-color-modern-dark
+
+  .shareIcon
+    color: $blue-color-modern-light
+    fill: $blue-color-modern-light
+    @media $dark
+      color: $blue-color-modern-dark
+      fill: $blue-color-modern-dark
+
+  .homeScreenIcon
+    color: black
+    fill: black
+    @media $dark
+      color: white
+      fill: white
+
+&._rendered
+  display: block
+
+&._visible
+  .overlay
+    opacity: 1
+
+  .root
+    transform: translateY(0)

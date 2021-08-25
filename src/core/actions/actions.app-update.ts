@@ -1,8 +1,8 @@
 import { store } from '~/core/store'
 
-export const setAppUpdateExist = () => {
+export const setAppUpdateExists = () => {
   store.setState({
-    appUpdateExist: true
+    appUpdateExists: true
   })
 }
 
@@ -12,7 +12,9 @@ export const setAppUpdateAccepted = () => {
   })
 }
 
-export const waitAppUpdateAccepted = (cb) => {
+export const waitAppUpdateAccepted = (
+  cb: () => void
+) => {
   const unsubscribe = store.subscribe(state => {
     if (state.appUpdateAccepted) {
       unsubscribe()

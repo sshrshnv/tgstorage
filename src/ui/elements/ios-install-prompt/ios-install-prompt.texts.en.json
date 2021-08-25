@@ -1,0 +1,7 @@
+{
+  "title": "Installation",
+  "description": "This action is only available in the main Safari (not the embedded browser in third-party applications).",
+  "cancel": "Cancel",
+  "shareStep": "Press the 'Share' button on the menu bar below.",
+  "homeScreenStep": "Press 'Add to Home Screen'."
+}

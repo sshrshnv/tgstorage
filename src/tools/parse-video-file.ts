@@ -1,5 +1,5 @@
 import { getFile, setFile } from '~/core/cache'
-import { wait } from '~/tools/wait'
+import { timer } from '~/tools/timer'
 
 //const THUMB_MAX_SIZE = 1280
 
@@ -37,10 +37,10 @@ export const parseVideoFile = (file: File|string|undefined): Promise<{
     const height = videoParams.h // ratio >= 1 ? Math.floor(THUMB_MAX_SIZE / ratio) : THUMB_MAX_SIZE
 
     const thumbFileKey = await Promise.race([
-      wait(2500),
+      timer(2500),
       new Promise(resolve => {
         video.onseeked = async () => {
-          await wait(100)
+          await timer(100)
           const canvas = document.createElement('canvas')
           const canvasContext = canvas.getContext('2d', { alpha: false })
           //const imageParams: [number, number, number, number] = [0, 0, videoParams.w, videoParams.h]

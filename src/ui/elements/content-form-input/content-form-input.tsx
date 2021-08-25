@@ -4,7 +4,7 @@ import { useRef, useEffect, useCallback, useMemo } from 'preact/hooks'
 import cn from 'classnames'
 
 import { useRAFCallback, useCallbackRef, useUpdatableRef, useStateRef } from '~/tools/hooks'
-import { wait } from '~/tools/wait'
+import { timer } from '~/tools/timer'
 import { normalizeUrl } from '~/tools/normalize-url'
 import { moveCursorToEnd } from '~/tools/manipulate-element'
 import { Textarea } from '~/ui/elements/textarea'
@@ -51,7 +51,7 @@ export const ContentFormInput: FC<Props> = ({
   }, [])
 
   const [_cancelSelection, cancelSelectionRef] = useCallbackRef(async () => {
-    await wait(0)
+    await timer(0)
     setHasSelection(false)
     setUrlVisible(false)
     setUrlValue(START_URL)

@@ -10,6 +10,12 @@ import type {
   InputMessage
 } from '~/core/store'
 
+export type ApiError = {
+  type: 'rpc' | 'network' | 'transport' | 'internal'
+  code: number
+  message?: string
+}
+
 export type Country = {
   country: string
 }
@@ -40,7 +46,9 @@ export type Updates = {
 }
 
 export type Api = {
-  init: () => Promise<void>
+  init: (
+    handleError: (error: ApiError) => void
+  ) => Promise<void>
 
   listenUpdates: (
     arg: ProxyMarked

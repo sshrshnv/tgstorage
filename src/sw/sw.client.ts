@@ -1,7 +1,7 @@
 import { Workbox } from 'workbox-window'
 
 import {
-  setAppUpdateExist,
+  setAppUpdateExists,
   waitAppUpdateAccepted,
   downloadStreamFilePart,
   setSharedData
@@ -26,7 +26,7 @@ export const registerSW = async () => {
   wb.addEventListener('waiting', () => {
     if (process.env.NODE_ENV === 'production') {
       waitAppUpdateAccepted(update)
-      setAppUpdateExist()
+      setAppUpdateExists()
     } else {
       update()
     }

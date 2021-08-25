@@ -1,6 +1,6 @@
+import type { FunctionComponent as FC } from 'preact'
 import { h } from 'preact'
 import { Suspense, lazy } from 'preact/compat'
-import type { FunctionComponent as FC } from 'preact'
 
 type Props = {
   class?: string

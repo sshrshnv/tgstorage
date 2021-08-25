@@ -5,15 +5,15 @@ import type { Folder, InputMessage, InputFile, DownloadingFile, StreamingFile } 
 import { store } from '~/core/store'
 import { getFilePart, getFileMeta, deleteFile, setBytes, createFile } from '~/core/cache'
 import { api } from '~/api'
-import { wait } from '~/tools/wait'
+import { timer } from '~/tools/timer'
 import { generateFileMessageMark } from '~/tools/handle-content'
 import {
   FILE_SIZE, transformToBytes, generateFileKey,
   generateFileStreamUrl, generateSaveFileStreamUrl
 } from '~/tools/handle-file'
 
-import { getActiveFolder } from './folders'
-import { getSendingMessage, setSendingMessage, createMessage, refreshMessage } from './messages'
+import { getActiveFolder } from './actions.folders'
+import { getSendingMessage, setSendingMessage, createMessage, refreshMessage } from './actions.messages'
 
 export const uploadFiles = async (
   message: InputMessage,
@@ -214,7 +214,7 @@ const downloadingQueue = {
     const currentIndex = this.nextIndex
     this.queues[currentIndex].enqueue(async () => {
       await fn()
-      return wait(DOWNLOADING_TIMEOUT)
+      return timer(DOWNLOADING_TIMEOUT)
     })
     this.nextIndex = currentIndex === MAX_DOWNLOADING_COUNT - 1 ? 0 : currentIndex + 1
   }

@@ -1,5 +1,5 @@
 import type { AvailableLocales } from '~/tools/detect-locale'
-import type { AvailableThemes } from '~/ui/styles/theme'
+import type { AvailableThemes } from '~/ui/styles'
 
 export type Locale = AvailableLocales
 export type Theme = AvailableThemes
@@ -254,6 +254,9 @@ export type State = {
   settings: Settings
   texts: Texts
   sharedData: SharedData
-  appUpdateExist: boolean
+  appUpdateExists: boolean
   appUpdateAccepted: boolean
+  appInstallAvailable: boolean
+  appInstalled: boolean
+  appErrorExists: boolean
 }

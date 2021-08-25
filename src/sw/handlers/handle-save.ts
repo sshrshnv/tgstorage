@@ -2,7 +2,7 @@ declare const self: ServiceWorkerGlobalScope
 
 import createSyncTaskQueue from 'sync-task-queue'
 
-import { wait } from '~/tools/wait'
+import { timer } from '~/tools/timer'
 
 import { addMessageHandler } from './handlers'
 
@@ -22,7 +22,7 @@ const savingQueue = {
     const currentIndex = this.nextIndex
     this.queues[currentIndex].enqueue(async () => {
       await fn()
-      return wait(SAVING_TIMEOUT)
+      return timer(SAVING_TIMEOUT)
     })
     this.nextIndex = currentIndex === MAX_SAVING_COUNT - 1 ? 0 : currentIndex + 1
   }

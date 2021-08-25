@@ -4,7 +4,7 @@ import { useState, useCallback, useMemo, useEffect, useRef } from 'preact/hooks'
 
 import type { Folder, Message, MessageMedia, DownloadingFile } from '~/core/store'
 import {
-  deleteMessage, streamFile, downloadFile,
+  sendAppError, deleteMessage, streamFile, downloadFile,
   pauseDownloadingFile, resetDownloadingFile
 } from '~/core/actions'
 import { useTexts, useDownloadingFile } from '~/core/hooks'
@@ -123,10 +123,10 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
       setSharingConfirmation(true)
     } else {
       sharingRef.current = false
-    }
 
-    if (error) {
-      console.error(error)
+      if (error) {
+        sendAppError(error)
+      }
     }
   }, [
     originalDownloadingFile,

@@ -3,8 +3,8 @@ import { proxy } from 'comlink'
 import type { Updates } from '~/api'
 import { api } from '~/api'
 
-import { setFolders } from './folders'
-import { setFoldersMessages, setSearchMessages } from './messages'
+import { setFolders } from './actions.folders'
+import { setFoldersMessages, setSearchMessages } from './actions.messages'
 
 export const setUpdates = ({
   folders,

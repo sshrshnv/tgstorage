@@ -30,8 +30,14 @@ export const loadPhoto = async () => {
   photoLoading = false
 }
 
+let logouting = false
 export const logOut = async () => {
+  if (logouting) return
+  logouting = true
+
   await api.logOut()
   resetStore()
   resetFiles()
+
+  logouting = false
 }

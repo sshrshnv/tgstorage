@@ -5,11 +5,11 @@ import { useState, useEffect, useRef } from 'preact/hooks'
 import cn from 'classnames'
 
 import { useCallbackRef, useUpdatableRef } from '~/tools/hooks'
-import { wait } from '~/tools/wait'
+import { timer } from '~/tools/timer'
 import { checkIsDesktop } from '~/tools/detect-device'
 import { Button } from '~/ui/elements/button'
 import { MenuIcon } from '~/ui/icons'
-import { animationClassName } from '~/ui/styles/animation'
+import { animationClassName } from '~/ui/styles'
 
 import styles from './menu.styl'
 
@@ -57,7 +57,7 @@ export const Menu: FC<Props> = memo(({
 
     if (expanded) {
       if (closeTimeout) {
-        await wait(closeTimeout)
+        await timer(closeTimeout)
       }
       onClose?.()
     } else {

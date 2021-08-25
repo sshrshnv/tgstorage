@@ -13,6 +13,7 @@ export type Props = {
   loading?: boolean
   brand?: boolean
   light?: boolean
+  error?: boolean
   uppercase?: boolean
   round?: boolean
   square?: boolean
@@ -32,6 +33,7 @@ export const Button: FC<Props> = ({
   loading,
   brand,
   light,
+  error,
   uppercase,
   round,
   square,
@@ -53,6 +55,7 @@ export const Button: FC<Props> = ({
         loading && styles._loading,
         brand && styles._brand,
         light && styles._light,
+        error && styles._error,
         uppercase && styles._uppercase,
         round && styles._round,
         square && styles._square,

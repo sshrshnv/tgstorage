@@ -4,7 +4,7 @@ import { useStoreState } from 'unistore-hooks'
 import type { State } from '~/core/store'
 import { useSettings } from '~/core/hooks'
 
-export const useTexts = (feature?: 'intro'|'auth'|'storage') => {
+export const useTexts = (feature?: 'intro'|'auth'|'storage'|'widgets') => {
   const { locale } = useSettings()
 
   const {

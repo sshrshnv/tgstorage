@@ -4,6 +4,7 @@ import { memo } from 'preact/compat'
 import { useState, useEffect, useRef, useCallback, useMemo } from 'preact/hooks'
 import cn from 'classnames'
 
+import { sendAppError } from '~/core/actions'
 import { getFileUrl } from '~/core/cache'
 import { useCallbackRef, useRAFCallback } from '~/tools/hooks'
 import { checkIsSafari } from '~/tools/detect-device'
@@ -76,8 +77,8 @@ export const Player: FC<Props> = memo(({
   const [_play, playRef] = useCallbackRef(() => {
     try {
       playerRef.current.play()
-    } catch (err) {
-      console.error(err)
+    } catch (error) {
+      sendAppError(error)
     }
   }, [])
 

@@ -17,6 +17,7 @@ light-theme()
   --color-black: #000000
   --color-black-0025: alpha(#000000, 0.025)
   --color-black-01: alpha(#000000, 0.1)
+  --color-black-012: alpha(#000000, 0.12)
   --color-black-02: alpha(#000000, 0.2)
   --color-black-05: alpha(#000000, 0.5)
   --color-red: #da5b4f
@@ -38,6 +39,7 @@ light-theme()
   --color-blue-1-d25: darken(#81909f, 25%)
   --color-blue-1-d95: darken(#81909f, 80%)
   --color-blue-4: #f7f9fa
+  --color-blue-4-d6: darken(#f7f9fa, 6%)
 
   --default-font-color: var(--color-black)
   --disabled-font-color: var(--color-light-3)
@@ -47,6 +49,7 @@ light-theme()
   --content-background-color: var(--color-light-4)
   --content-background-color-08: var(--color-light-4-08)
   --content-form-background-color: var(--color-blue-4)
+  --content-form-shadow-color: var(--color-blue-4-d6)
   --content-item-background-color: var(--color-white)
   --content-monospace-background-color: var(--color-black-0025)
   --content-link-color: var(--color-blue-1-d25)
@@ -64,11 +67,15 @@ light-theme()
   --scrollbar-color: var(--color-light-3)
   --progress-background-color: var(--color-light-3)
   --gallery-controls-background-color: var(--color-white-05)
+  --widget-background-color: var(--color-blue-4)
+  --widget-shadow-color: var(--color-blue-4-d6)
 
 dark-theme()
   color-scheme: dark
 
   --font-family-content: -apple-system, BlinkMacSystemFont, "Segoe UI Light", "Roboto", "Arial", system-ui, sans-serif
+
+  --color-white: #fafafa
 
   --default-font-color: var(--color-white)
   --disabled-font-color: var(--color-dark-3-l10)
@@ -78,6 +85,7 @@ dark-theme()
   --content-background-color: var(--color-dark-1)
   --content-background-color-08: var(--color-dark-1-08)
   --content-form-background-color: var(--color-dark-3)
+  --content-form-shadow-color: var(--color-black-012)
   --content-item-background-color: var(--color-dark-2)
   --content-monospace-background-color: var(--color-black-01)
   --content-link-color: var(--color-blue-1)
@@ -95,7 +103,8 @@ dark-theme()
   --scrollbar-color: var(--color-dark-2)
   --progress-background-color: var(--color-dark-2)
   --gallery-controls-background-color: var(--color-black-02)
-
+  --widget-background-color: var(--color-dark-3)
+  --widget-shadow-color: var(--color-black-012)
 
 :root
   light-theme()

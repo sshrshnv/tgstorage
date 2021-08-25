@@ -1,12 +1,12 @@
 import { expose, transfer } from 'comlink'
 
 import { dataCache, resetDataCache } from '~/core/cache'
-import { wait } from '~/tools/wait'
+import { timer } from '~/tools/timer'
 import { getAnnouncementsChannelInvite } from '~/tools/handle-channels'
 import { FOLDER_POSTFIX, generateFolderName, stringifyFileMessage } from '~/tools/handle-content'
 import { FILE_SIZE, getFilePartSize } from '~/tools/handle-file'
 
-import type { MethodDeclMap, InputCheckPasswordSRP } from './mtproto'
+import type { MethodDeclMap, InputCheckPasswordSRP, ClientError } from './mtproto'
 import { Client } from './mtproto'
 import { handleUpdates } from './api.updates'
 import {
@@ -40,7 +40,7 @@ class Api {
     }
   ) => Promise<any>
 
-  public async init() {
+  public async init(handleError: (error: ClientError) => void) {
     const meta = await dataCache.getMeta(META_KEY, initialMeta)
 
     this.client = new Client({
@@ -48,9 +48,11 @@ class Api {
       APIHash: API_HASH,
       APILayer: 121,
       test: IS_TEST,
+      debug: IS_TEST,
       dc: meta.baseDC,
+      ssl: true,
       autoConnect: true,
-      debug: true,
+      deviceModel: self.navigator.userAgent,
       meta
     })
 
@@ -58,7 +60,7 @@ class Api {
 
     this.call = async (method, data = {}, { dc, thread, timeout } = {}) => {
       if (timeout) {
-        await wait(timeout)
+        await timer(timeout)
       }
 
       return new Promise((resolve, reject) => this.client.call(method, data, { dc, thread }, async (err, res) => {
@@ -67,11 +69,11 @@ class Api {
           return
         }
 
+        handleError({ ...err, message: `${method}: ${err.message || ''}` })
         const { code, message = '' } = err
 
         if (code === 420) {
           const [, delay] = message.split('FLOOD_WAIT_')
-          console.error(`==> FLOOD WAIT ${delay}: ${method}`)
           resolve(this.call(method, data, { dc, thread, timeout: +delay * 1000 }))
           return
         }
@@ -170,7 +172,6 @@ class Api {
   }
 
   private logouting = false
-
   public async logOut() {
     if (this.logouting) return
     this.logouting = true
@@ -187,13 +188,9 @@ class Api {
       return null
     }
 
-    const { _, chats, error } = await this.call('messages.getAllChats', {
+    const { _, chats } = await this.call('messages.getAllChats', {
       except_ids: loadedChats.map(chat => chat.id)
-    }).catch(error => ({ error }))
-
-    if (error) {
-      return error
-    }
+    })
 
     if (_ === 'chatsSlice') {
       return this.getFolders([...loadedChats, ...chats])
@@ -361,7 +358,7 @@ class Api {
     const offsetId = folderOffsetId as number
     const user = await dataCache.getUser()
 
-    const { messages, error } = await this.call('messages.getHistory', {
+    const { messages } = await this.call('messages.getHistory', {
       peer: folder.id === user?.id ? {
         _: 'inputPeerSelf'
       } : {
@@ -376,11 +373,7 @@ class Api {
       min_id: 0,
       hash: 0,
       limit
-    }).catch(error => ({ error }))
-
-    if (error) {
-      return error
-    }
+    })
 
     if (messages.length < limit) {
       dataCache.setFolderOffsetId(folder.id, 'end')
@@ -542,12 +535,6 @@ class Api {
         }} : {})
       }
     )
-
-    // 400 	MESSAGE_EMPTY
-    // 400 	MESSAGE_TOO_LONG
-
-    // 400 	WEBPAGE_CURL_FAILED
-    // 400 	WEBPAGE_MEDIA_EMPTY
 
     return handleUpdates(updates)
   }

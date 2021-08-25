@@ -8,7 +8,7 @@ import type { Props as MenuProps } from '~/ui/elements/menu'
 import { Menu } from '~/ui/elements/menu'
 import { Loader } from '~/ui/elements/loader'
 import { FolderIcon } from '~/ui/icons'
-import { getColor } from '~/ui/styles/theme'
+import { getColor } from '~/ui/styles'
 
 import styles from './sidebar-item.styl'
 

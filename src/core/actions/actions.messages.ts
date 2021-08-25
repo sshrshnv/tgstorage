@@ -1,13 +1,12 @@
 import type { Folder, FoldersMessages, SearchMessages, Message, InputMessage } from '~/core/store'
 import { store } from '~/core/store'
 import { api } from '~/api'
-import { wait } from '~/tools/wait'
+import { timer } from '~/tools/timer'
 
 import type { SharedData } from '~/core/store'
-import { setLoadingFolderId, getActiveFolder } from './folders'
-import { uploadFiles, resetUploadingFiles } from './message-media'
-import { logOut } from './user'
-import { setUpdates } from './updates'
+import { setLoadingFolderId, getActiveFolder } from './actions.folders'
+import { uploadFiles, resetUploadingFiles } from './actions.message-media'
+import { setUpdates } from './actions.updates'
 
 export const loadFolderMessages = async (
   folder: Folder,
@@ -15,12 +14,7 @@ export const loadFolderMessages = async (
 ) => {
   setLoadingFolderId(folder.id, true)
   const updates = await api.getMessages(folder, lastMessageId)
-    .catch(({ code }) => {
-      if (code === 401) {
-        logOut()
-      }
-      return null
-    })
+    .catch(() => null)
 
   if (!updates) {
     setLoadingFolderId(folder.id, false)
@@ -218,7 +212,7 @@ export const refreshMessageWebpage = async (
   refreshMessage(folder, id, 1000, async () => {
     const webpage = getMessageWebpage(folder, id)
     if (webpage?.pending) {
-      await wait(500)
+      await timer(500)
       refreshMessageWebpage(folder, id)
     }
   })

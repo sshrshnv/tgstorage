@@ -1,8 +1,7 @@
 import { useCallback, useMemo, useRef } from 'preact/hooks'
 
 import { useStateRef, useCallbackRef } from '~/tools/hooks'
-import { useResizeObserver } from '~/ui/hooks/use-resize-observer'
-import { useIntersectionObserver } from '~/ui/hooks/use-intersection-observer'
+import { useResizeObserver, useIntersectionObserver } from '~/ui/hooks'
 
 export const PADDING = 20
 export const PREVISIBILE_COUNT = 10

@@ -2,19 +2,13 @@ import type { Folder, Folders } from '~/core/store'
 import { store } from '~/core/store'
 import { api } from '~/api'
 
-import { setUpdates } from './updates'
-import { logOut } from './user'
+import { setUpdates } from './actions.updates'
 
 export const loadFolders = async () => {
   waitFolders(true)
 
   const updates = await api.getFolders()
-    .catch(({ code }) => {
-      if (code === 401) {
-        logOut()
-      }
-      return null
-    })
+    .catch(() => null)
 
   if (updates?.folders) {
     setUpdates(updates)

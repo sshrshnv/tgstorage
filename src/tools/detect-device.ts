@@ -1,5 +1,4 @@
 type NavigatorExtended = Navigator & {
-  standalone: boolean
   userAgentData?: {
     brands?: { brand: string, version: string }[]
     platform?: string
@@ -54,10 +53,10 @@ let isDesktopChrome
 export const checkIsDesktopChrome = () =>
   isDesktopChrome ??= checkIsDesktop() && checkIsChrome()
 
+let iosVersion
+export const getIOSVersion = () =>
+  iosVersion ??= +(userAgent.substr(userAgent.indexOf('OS ') + 3, 3).replace('_', '.') || '')
+
 let chromiumVersion
 export const getChromiumVersion = () =>
   chromiumVersion ??= +(brands?.find(({ brand }) => brand.toLocaleLowerCase() === 'chromium')?.version || '')
-
-let isInstalled
-export const checkIsInstalled = () =>
-  isInstalled ??= navigator.standalone || matchMedia('(display-mode: standalone)').matches
