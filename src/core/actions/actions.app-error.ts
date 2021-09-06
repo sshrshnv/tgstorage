@@ -47,7 +47,7 @@ export const sendAppError = async (error: ApiError|Error) => {
   } catch (err) {}
   console.error(error)
 
-  if (process.env.NODE_ENV !== 'production') return
+  if (process.env.NODE_ENV !== 'production' || !process.env.SENTRY_DSN) return
 
   try {
     const Sentry = await loadSentry() as BrowserClient

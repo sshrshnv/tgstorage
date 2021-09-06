@@ -13,7 +13,7 @@
   },
   "homepage": "https://github.com/sh-a-v/tgstorage#readme",
   "engines": {
-    "node": ">=16.0.0",
+    "node": ">=14.0.0",
     "npm": ">=7.0.0"
   },
   "scripts": {
