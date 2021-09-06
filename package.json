@@ -12,14 +12,9 @@
     "url": "https://github.com/sh-a-v/tgstorage/issues"
   },
   "homepage": "https://github.com/sh-a-v/tgstorage#readme",
-  "engines": {
-    "node": ">=14.0.0",
-    "npm": ">=6.0.0"
-  },
   "scripts": {
     "dev": "npm run clean && BUILD_ENV=dev NODE_ENV=development webpack serve --progress",
-    "prod": "npm run clean && BUILD_ENV=prod NODE_ENV=production webpack serve --progress",
-    "build": "npm run clean && BUILD_ENV=prod NODE_ENV=production webpack && npm run inject-sw-manifest",
+    "build": "BUILD_ENV=prod NODE_ENV=production webpack && npm run inject-sw-manifest",
     "clean": "rimraf build",
     "lint": "eslint src --ext .js,.ts,.tsx",
     "analyze-bundle": "npm run clean && BUNDLE_ANALYZER=true BUILD_ENV=stage NODE_ENV=production webpack",
