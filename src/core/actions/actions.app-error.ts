@@ -31,7 +31,8 @@ export const handleApiError = (error: ApiError) => {
 
   if (code === 303) return
 
-  if (code === 401 && !HANDLED_ERRORS.includes(message)) {
+  if (code === 401) {
+    if (HANDLED_ERRORS.includes(message)) return
     logOut()
     return
   }
