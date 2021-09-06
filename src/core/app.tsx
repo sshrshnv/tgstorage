@@ -25,7 +25,8 @@ import '~/ui/styles/styles.global.styl'
 
 const App: FC = () => {
   const { isIntroAppRoute } = useAppRoute()
-  const { user } = useUser()
+  const user = null
+  //const { user } = useUser()
 
   return (
     <Fragment>
