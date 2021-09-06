@@ -9,10 +9,12 @@ import { useTexts, useAppInstall } from '~/core/hooks'
 import { Widget } from '~/ui/elements/widget'
 
 type Props = {
+  visible: boolean
   setVisible: StateUpdater<boolean>
 }
 
 export const WidgetsAppInstall: FC<Props> = memo(({
+  visible,
   setVisible
 }) => {
   const { texts } = useTexts('widgets')
@@ -36,7 +38,7 @@ export const WidgetsAppInstall: FC<Props> = memo(({
     setVisible(false)
   }, [appInstalled, setVisible])
 
-  return (
+  return visible ? (
     <Widget
       title={texts.installTitle}
       description={texts.installDescription}
@@ -44,5 +46,5 @@ export const WidgetsAppInstall: FC<Props> = memo(({
       onClick={handleClick}
       onClose={handleClose}
     />
-  )
+  ) : null
 })

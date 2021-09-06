@@ -10,11 +10,13 @@ import { Widget } from '~/ui/elements/widget'
 
 type Props = {
   popup: boolean
+  visible: boolean
   setVisible: StateUpdater<boolean>
 }
 
 export const WidgetsAppUpdate: FC<Props> = memo(({
   popup,
+  visible,
   setVisible
 }) => {
   const { texts } = useTexts('widgets')
@@ -31,7 +33,7 @@ export const WidgetsAppUpdate: FC<Props> = memo(({
     setVisible(true)
   }, [appUpdateExists, setVisible])
 
-  return (
+  return visible ? (
     <Widget
       title={texts.updateTitle}
       description={texts.updateDescription}
@@ -40,5 +42,5 @@ export const WidgetsAppUpdate: FC<Props> = memo(({
       popup={popup}
       onClick={handleClick}
     />
-  )
+  ) : null
 })

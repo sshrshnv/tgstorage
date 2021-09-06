@@ -21,21 +21,20 @@ const Widgets: FC = memo(() => {
 
   return (
     <Fragment>
-      {errorVisible ? (
-        <WidgetsAppError
-          setVisible={setErrorVisible}
-          popup={isIntroAppRoute || !user}
-        />
-      ) : updateVisible ? (
-        <WidgetsAppUpdate
-          setVisible={setUpdateVisible}
-          popup={isIntroAppRoute || !user}
-        />
-      ) : (installVisible && !isIntroAppRoute && !!user) ? (
-        <WidgetsAppInstall
-          setVisible={setInstallVisible}
-        />
-      ) : null}
+      <WidgetsAppError
+        setVisible={setErrorVisible}
+        popup={isIntroAppRoute || !user}
+        visible={errorVisible}
+      />
+      <WidgetsAppUpdate
+        setVisible={setUpdateVisible}
+        popup={isIntroAppRoute || !user}
+        visible={updateVisible && !errorVisible}
+      />
+      <WidgetsAppInstall
+        setVisible={setInstallVisible}
+        visible={installVisible && !errorVisible && !updateVisible}
+      />
     </Fragment>
   )
 })
