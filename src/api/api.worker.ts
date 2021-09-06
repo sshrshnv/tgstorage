@@ -50,7 +50,7 @@ class Api {
       APIHash: API_HASH,
       APILayer: 121,
       test: IS_TEST,
-      debug: true,
+      debug: IS_TEST,
       dc: meta.baseDC,
       ssl: true,
       autoConnect: true,
