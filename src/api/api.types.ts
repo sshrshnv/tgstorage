@@ -14,6 +14,7 @@ export type ApiError = {
   type: 'rpc' | 'network' | 'transport' | 'internal'
   code: number
   message?: string
+  method: string
 }
 
 export type Country = {

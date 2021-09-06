@@ -40,7 +40,7 @@ class Api {
     }
   ) => Promise<any>
 
-  private handleError: (error: ClientError) => void
+  private handleError: (error: ClientError & { method: string }) => void
 
   public async init() {
     const meta = await dataCache.getMeta(META_KEY, initialMeta)
@@ -71,7 +71,7 @@ class Api {
           return
         }
 
-        this.handleError({ ...err, message: `${method}: ${err.message || ''}` })
+        this.handleError({ ...err, method })
         const { code, message = '' } = err
 
         if (code === 420) {
