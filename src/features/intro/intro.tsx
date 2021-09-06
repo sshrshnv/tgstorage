@@ -20,7 +20,7 @@ const SCREEN_TYPES = ['avif', 'webp', 'png']
 const Intro: FC = () => {
   const { texts } = useTexts('intro')
   const { locale } = useSettings()
-  const { appInstallAvailable } = useAppInstall()
+  const { appInstallAvailable, appInstalled } = useAppInstall()
 
   const handleContinue = useCallback(() => {
     setAppRoute('/app')
@@ -86,7 +86,7 @@ const Intro: FC = () => {
             >GitHub</a>.
           </Text>
           <Text>{texts.appDescription1}</Text>
-          {appInstallAvailable && (
+          {(appInstallAvailable && !appInstalled) && (
             <Button
               uppercase
               brand
@@ -98,7 +98,7 @@ const Intro: FC = () => {
           <Button
             uppercase
             brand
-            outline={appInstallAvailable}
+            outline={appInstallAvailable && !appInstalled}
             onClick={handleContinue}
           >
             {texts.continueButton}

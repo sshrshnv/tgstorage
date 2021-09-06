@@ -5,14 +5,18 @@ import type { State } from '~/core/store'
 
 export const useAppInstall = () => {
   const {
-    appInstallAvailable
+    appInstallAvailable,
+    appInstalled
   }: {
     appInstallAvailable: State['appInstallAvailable']
+    appInstalled: State['appInstalled']
   } = useStoreState(state => ({
-    appInstallAvailable: state.appInstallAvailable
+    appInstallAvailable: state.appInstallAvailable,
+    appInstalled: state.appInstalled
   }))
 
   return useMemo(() => ({
-    appInstallAvailable
-  }), [appInstallAvailable])
+    appInstallAvailable,
+    appInstalled
+  }), [appInstallAvailable, appInstalled])
 }

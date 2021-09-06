@@ -16,7 +16,7 @@ export const WidgetsAppInstall: FC<Props> = memo(({
   setVisible
 }) => {
   const { texts } = useTexts('widgets')
-  const { appInstallAvailable } = useAppInstall()
+  const { appInstallAvailable, appInstalled } = useAppInstall()
 
   const handleClick = useCallback(() => {
     installApp()
@@ -30,6 +30,11 @@ export const WidgetsAppInstall: FC<Props> = memo(({
     if (!appInstallAvailable) return
     setVisible(true)
   }, [appInstallAvailable, setVisible])
+
+  useEffect(() => {
+    if (!appInstalled) return
+    setVisible(false)
+  }, [appInstalled, setVisible])
 
   return (
     <Widget
