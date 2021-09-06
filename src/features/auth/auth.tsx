@@ -3,6 +3,7 @@ import { h } from 'preact'
 import { memo } from 'preact/compat'
 import { useState, useEffect } from 'preact/hooks'
 
+import { listenApiErrors } from '~/core/actions'
 import { Layout } from '~/ui/elements/layout'
 import { Logo } from '~/ui/elements/logo'
 import { Break } from '~/ui/elements/break'
@@ -60,11 +61,15 @@ const Auth: FC = memo(() => {
     }
   }, [timeout])
 
+  useEffect(() => {
+    listenApiErrors()
+  }, [])
+
   return (
-    <Layout center>
-      <Break size={48} px/>
+    <Layout scroll center>
+      <Break mSize={48} dSize={72} px/>
       <Logo/>
-      <Break size={40} px/>
+      <Break mSize={40} dSize={64} px/>
 
       { step === 'phone' && (
         <AuthFormPhone
@@ -100,7 +105,7 @@ const Auth: FC = memo(() => {
         />
       )}
 
-      <Break size={48} px/>
+      <Break mSize={48} dSize={72} px/>
     </Layout>
   )
 })

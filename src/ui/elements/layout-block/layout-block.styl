@@ -1,0 +1,76 @@
+.root
+  margin: 0 auto
+  width: 100%
+
+._narrow
+  max-width: 350px
+
+  @media screen and (max-width: 369px) {
+    max-width: calc(100% - 20px)
+  }
+
+._group
+  display: flex
+  flex-direction: column
+
+  > picture
+    flex-shrink: 0
+
+  > div
+    > span
+      font-family: var(--font-family-content)
+
+    > button
+      margin-bottom: 20px
+      max-width: 280px
+
+  @media $mobile
+    align-items: center
+
+    > picture
+      margin-bottom: 36px
+
+    > div
+      width: calc(100% - 40px)
+      max-width: 480px
+
+      > span
+        //font-size: 15px
+
+        &:not(:last-child)
+          margin-bottom: 12px
+
+      > button
+        margin-left: auto
+        margin-right: auto
+
+        &:first-of-type
+          margin-top: 40px
+
+  @media $desktop
+    flex-direction: row
+    justify-content: center
+
+    > div
+      margin-left: 40px
+      display: flex
+      flex-direction: column
+      justify-content: center
+      align-items: center
+      width: 50%
+
+      > span
+        margin-bottom: 20px
+
+      > button
+        align-self: flex-start
+
+        &:first-of-type
+          margin-top: 20px
+
+    &._reverse
+      flex-direction: row-reverse
+
+      > div
+        margin-left: 0
+        margin-right: 40px

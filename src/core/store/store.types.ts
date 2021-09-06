@@ -254,6 +254,7 @@ export type State = {
   settings: Settings
   texts: Texts
   sharedData: SharedData
+  appRoute: string
   appUpdateExists: boolean
   appUpdateAccepted: boolean
   appInstallAvailable: boolean

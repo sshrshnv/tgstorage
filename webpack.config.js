@@ -10,12 +10,17 @@ const TerserPlugin = require('terser-webpack-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const DotenvPlugin = require('dotenv-webpack')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
+const SentryPlugin = require('@sentry/webpack-plugin')
 const autoprefixer = require('autoprefixer')
 
 const isProd = () => process.env.NODE_ENV === 'production'
 const isDev = () => !isProd()
 const isStage = () => process.env.BUILD_ENV === 'stage'
 const isBundleAnalyzer = () => !!process.env.BUNDLE_ANALYZER
+
+const appEnv = dotenv.config({
+  path: `./.env.${process.env.BUILD_ENV}`
+})
 
 const resolveOptions = {
   extensions: [
@@ -132,7 +137,7 @@ module.exports = [{
           }
         }]
       }, {
-        test: /\.(woff2?|jpe?g|png|gif|mp4)$/,
+        test: /\.(avif|webp|png)$/,
         type: 'asset/resource'
       }, {
         test: /\.svg$/,
@@ -173,11 +178,19 @@ module.exports = [{
     new CopyPlugin({
       patterns: [
         { from: './src/core/app.webmanifest', to: './app.v1.webmanifest' },
-        //{ from: './src/ui/images/*', to: './[name].v1[ext]' }
+        { from: './src/ui/images/*', to: './[name].v1[ext]' }
       ]
     }),
 
-    isDev() ? new webpack.HotModuleReplacementPlugin() : () => {},
+    (isProd() && !isBundleAnalyzer()) ? new SentryPlugin({
+      authToken: appEnv.SENTRY_TOKEN,
+      org: 'alexander-shershnev',
+      project: 'tgstorage',
+      include: './build',
+      deploy: {
+        env: process.env.BUILD_ENV
+      }
+    }) : () => {},
 
     isBundleAnalyzer() ? new BundleAnalyzerPlugin({
       analyzerHost: '0.0.0.0',

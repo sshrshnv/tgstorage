@@ -1,1 +1,11 @@
-{}
+{
+  "title": "Free. Unlimited. Secure.",
+  "description": "Store your notes, checklists, links, photos and any documents in Telegram.",
+  "faqDescription0": "Archives (archived private channels) combined into groups will be created in your account. You will have access to them in the official app as well.",
+  "faqDescription1": "Also, you will be automatically subscribed to the TgStorage channel, which will publish news, polls, announcements, as well as advertising posts, both personal, which will cover the costs of developing this application, and from Telegram, previously announced by Pavel Durov to pay for servers.",
+  "appDescription0": "This web application only works in your browser and communicates directly with Telegram servers. Your information is not stored anywhere else and is not transferred anywhere.\n You can check it in the sources:",
+  "appDescription1": "The app can be installed on the device without downloading it from AppStore, PlayStore or MicrosoftStore.",
+  "support": "For bugs, questions and suggestions, please contact",
+  "installButton": "Install",
+  "continueButton": "Continue"
+}

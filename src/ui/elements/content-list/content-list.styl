@@ -1,10 +1,11 @@
 .root
   position: relative
+  top: env(safe-area-inset-top, 0)
   display: flex
   flex-direction: column
   align-items: center
   width: 100%
-  height: calc(100% - 96px)
+  height: calc(100% - 96px - env(safe-area-inset-bottom, 0) - env(safe-area-inset-top, 0))
 
   overflow-y: scroll
   overflow-y: overlay
@@ -36,4 +37,4 @@
       border-radius: 8px
 
 ._fullHeight
-  height: calc(100% - 48px)
+  height: calc(100% - 48px - env(safe-area-inset-bottom, 0) - env(safe-area-inset-top, 0))

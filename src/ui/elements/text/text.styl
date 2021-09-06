@@ -5,12 +5,20 @@
   padding: 0
   white-space: pre-line
 
+  > a
+    text-decoration: none
+    color: var(--content-link-color)
+
   > svg
     margin-left: 8px
     width: 20px
     height: 20px
     fill: var(--color-light-2)
     cursor: pointer
+
+._withLink
+  display: inline-block
+  width: 100%
 
 ._large
   font-size: 18px
@@ -22,6 +30,7 @@
   font-weight: 500
 
 ._center
+  justify-content: center
   text-align: center
 
 ._grey
@@ -29,6 +38,7 @@
 
 ._uppercase
   text-transform: uppercase
+  word-spacing: 4px
 
 ._ellipsis
   display: block

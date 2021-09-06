@@ -14,6 +14,9 @@ const Fallback: FC = ({ children }) => (
   </Suspense>
 )
 
+const AppSVG: FC = lazy(() => import('./app.svg'))
+export const AppIcon: FC<Props> = () => <Fallback><AppSVG/></Fallback>
+
 const ArrowSVG: FC = lazy(() => import('./arrow.svg'))
 export const ArrowIcon: FC<Props> = () => <Fallback><ArrowSVG/></Fallback>
 
@@ -24,16 +27,13 @@ const CrossSVG: FC = lazy(() => import('./cross.svg'))
 export const CrossIcon: FC<Props> = () => <Fallback><CrossSVG/></Fallback>
 
 const EditSVG: FC = lazy(() => import('./edit.svg'))
-export const EditIcon: FC<Props> = () => <Fallback><EditSVG/></Fallback>
+export const EditIcon: FC<Props> = (props) => <Fallback><EditSVG {...props}/></Fallback>
 
 const EyeClosedSVG: FC = lazy(() => import('./eye-closed.svg'))
 export const EyeClosedIcon: FC<Props> = () => <Fallback><EyeClosedSVG/></Fallback>
 
 const EyeOpenedSVG: FC = lazy(() => import('./eye-opened.svg'))
 export const EyeOpenedIcon: FC<Props> = () => <Fallback><EyeOpenedSVG/></Fallback>
-
-const FolderLogoSVG: FC = lazy(() => import('./folder-logo.svg'))
-export const FolderLogoIcon: FC<Props> = () => <Fallback><FolderLogoSVG/></Fallback>
 
 const FolderPlusSVG: FC = lazy(() => import('./folder-plus.svg'))
 export const FolderPlusIcon: FC<Props> = () => <Fallback><FolderPlusSVG/></Fallback>

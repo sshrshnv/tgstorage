@@ -7,7 +7,7 @@
   flex-direction: column
   align-items: center
   width: 100%
-  padding: 0 20px
+  padding: 0 calc(20px + env(safe-area-inset-right, 0)) env(safe-area-inset-bottom, 0) calc(20px + env(safe-area-inset-left, 0))
   background-color: var(--widget-background-color)
   box-shadow: 0 -1px 2px 0px var(--widget-shadow-color)
 

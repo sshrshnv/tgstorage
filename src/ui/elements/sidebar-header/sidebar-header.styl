@@ -4,16 +4,16 @@
   display: flex
   align-items: center
   flex-shrink: 0
-  padding: 0 20px 0 9px
-  height: 48px
+  height: calc(48px + env(safe-area-inset-top, 0))
+  padding: env(safe-area-inset-top, 0) calc(env(safe-area-inset-right, 0) + 20px) 0 calc(9px + env(safe-area-inset-left, 0))
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.12)
   background-color: var(--sidebar-header-background-color)
 
   &::before
     position: absolute
     z-index 0
-    top: 16px
-    right: 12px
+    top: calc(16px + env(safe-area-inset-top, 0))
+    right: calc(12px + env(safe-area-inset-right, 0))
     display: block
     width: 64px
     height: 64px
@@ -25,8 +25,8 @@
   &::after
     position: absolute
     z-index 0
-    top: 49px
-    right: 12px
+    top: calc(49px + env(safe-area-inset-top, 0))
+    right: calc(12px + env(safe-area-inset-right, 0))
     width: 64px
     height: 32px
     background-color: var(--sidebar-background-color)

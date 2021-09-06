@@ -24,6 +24,17 @@
     color: var(--default-font-color)
     background-color: var(--default-background-color)
 
+    &::after
+      position: absolute
+      z-index: 30
+      left: 0
+      right: 0
+      bottom: 0
+      height: env(safe-area-inset-bottom, 0)
+      background-color: transparent
+      pointer-events: none
+      content: ''
+
   div
   input
   textarea
@@ -32,4 +43,5 @@
   main
   form
   label
+  picture
     box-sizing: border-box

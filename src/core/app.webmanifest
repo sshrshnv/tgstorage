@@ -1,22 +1,39 @@
 {
   "name": "TgStorage",
   "short_name": "TgStorage",
+  "description": "Free unlimited storage for notes, links and files based on Telegram.",
+  "categories": ["storage", "notes", "files", "free", "telegram"],
   "orientation": "portrait-primary",
   "display": "standalone",
   "start_url": "/app",
-  "background_color": "#313131",
-  "theme_color": "#313131",
-  "icons": [{
-    "src": "/manifest-icon-192.v1.png",
-    "sizes": "192x192",
-    "type": "image/png",
-    "purpose": "maskable any"
-  }, {
-    "src": "/manifest-icon-512.v1.png",
-    "sizes": "512x512",
-    "type": "image/png",
-    "purpose": "maskable any"
-  }],
+  "background_color": "#179CDE",
+  "theme_color": "#26292c",
+  "icons": [
+    {
+      "src": "/manifest-icon-192.v1.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/manifest-icon-192-maskable.v1.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/manifest-icon-512.v1.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/manifest-icon-512-maskable.v1.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
   "share_target": {
     "action": "/sw/share",
     "method": "POST",
@@ -25,10 +42,14 @@
       "title": "title",
       "text": "text",
       "url": "url",
-      "files": [{
-        "name": "files",
-        "accept": ["*/*"]
-      }]
+      "files": [
+        {
+          "name": "files",
+          "accept": [
+            "*/*"
+          ]
+        }
+      ]
     }
   }
 }

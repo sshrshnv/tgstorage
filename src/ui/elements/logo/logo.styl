@@ -1,36 +1,35 @@
 .root
-  //margin-right: -4px
+  margin-right: -4px
   display: flex
-  //flex-direction: column
   align-items: center
 
   @media $desktop
-    //margin-right: -6px
+    margin-right: -6px
 
 .icon
-  margin-right: 4px
+  margin-right: 8px
+  flex-shrink: 0
   display: flex
   align-items: center
   justify-content: center
   width: 40px
   height: 40px
-  border-radius: 50%
+  border-radius: 8px
   background-color: var(--color-brand)
 
   > svg
-    width: 24px
-    height: 24px
+    width: 32px
+    height: 32px
     fill: var(--color-white)
 
   @media $desktop
     margin-right: 16px
-    //margin-bottom: 20px
     width: 56px
     height: 56px
 
     > svg
-      width: 36px
-      height: 36px
+      width: 44px
+      height: 44px
 
 .text
   position: relative
@@ -38,7 +37,7 @@
   padding: 0
   flex-shrink: 0
   color: transparent
-  //text-transform: uppercase
+  text-transform: uppercase
   font-weight: 400
   line-height: 1
   font-size: 24px
@@ -52,7 +51,8 @@
   &::before
     left: 0
     color: var(--color-brand)
-    content: 'tg'
+    content: 'Tg'
+    font-weight: bold
 
   &::after
     right: 0
@@ -60,5 +60,5 @@
     content: 'Storage'
 
   @media $desktop
-    font-size: 40px
-    letter-spacing: 4px
+    font-size: 35px
+    letter-spacing: 6px

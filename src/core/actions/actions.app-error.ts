@@ -1,8 +1,10 @@
 import type { BrowserClient } from '@sentry/browser'
+import { proxy } from 'comlink'
 
-import type { ApiError } from '~/api'
 import { store } from '~/core/store'
 import { logOut } from '~/core/actions'
+import type { ApiError } from '~/api'
+import { api } from '~/api'
 
 const HANDLED_ERRORS = [
   'PHONE_NUMBER_BANNED',
@@ -53,9 +55,13 @@ export const sendAppError = async (error: ApiError|Error) => {
   } catch (err) {}
 }
 
-export const listenAppError = () => {
+export const listenAppErrors = () => {
   self.addEventListener('error', ({ error }) => sendAppError(error))
   self.addEventListener('unhandledrejection', ({ reason }) => sendAppError(reason))
+}
+
+export const listenApiErrors = () => {
+  api.listenErrors(proxy(handleApiError))
 }
 
 let Sentry

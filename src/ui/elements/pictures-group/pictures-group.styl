@@ -1,0 +1,20 @@
+.root
+  display: flex
+  align-items: center
+  flex-shrink: 0
+  width: 100%
+  height: 416px
+  padding: 8px 0
+
+  overflow: auto
+  -webkit-overflow-scrolling: touch
+  scroll-behavior: smooth
+  scrollbar-width: none
+  &::-webkit-scrollbar
+    display: none
+
+  > picture
+    margin: 0 20px
+
+  @media screen and (min-width: 795px)
+    justify-content: center

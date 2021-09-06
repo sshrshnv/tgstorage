@@ -3,6 +3,7 @@ import { h } from 'preact'
 import { Suspense, lazy } from 'preact/compat'
 
 import { getLocale, setTexts } from '~/core/actions'
+import { FallbackSidebar } from '~/ui/elements/fallback-sidebar'
 
 const Storage = lazy(async () => {
   const locale = getLocale()
@@ -16,7 +17,7 @@ const Storage = lazy(async () => {
 
 export const StorageLazy: FC = () => {
   return (
-    <Suspense fallback={<div/>}>
+    <Suspense fallback={<FallbackSidebar/>}>
       <Storage/>
     </Suspense>
   )

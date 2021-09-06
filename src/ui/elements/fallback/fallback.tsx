@@ -9,10 +9,11 @@ import { Loader } from '~/ui/elements/loader'
 export const Fallback: FC = () => {
   return (
     <Layout center>
-      <Break size={10} vh/>
+      <Break mSize={48} dSize={72} px/>
       <Logo/>
-      <Break size={10} vh/>
-      <Loader/>
+      <Break mSize={40} dSize={64} px/>
+      <Loader brand big/>
+      <Break mSize={48} dSize={72} px/>
     </Layout>
   )
 }

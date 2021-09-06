@@ -5,22 +5,32 @@ import cn from 'classnames'
 import styles from './layout.styl'
 
 type Props = {
+  scroll?: boolean
   center?: boolean
+  wide?: boolean
 }
 
 export const Layout: FC<Props> = ({
   children,
-  center
+  scroll,
+  center,
+  wide
 }) => {
 
   return (
     <div
       class={cn(
         styles.root,
-        center && styles._center
+        scroll && styles._scroll
       )}
     >
-      {children}
+      <div class={cn(
+        styles.inner,
+        center && styles._center,
+        wide && styles._wide
+      )}>
+        {children}
+      </div>
     </div>
   )
 }

@@ -1,5 +1,6 @@
 .root
   width: 100%
+  flex-shrink: 0
 
 for i in range(0px, 48px, 4)
   ._size-px-{i}
@@ -7,11 +8,11 @@ for i in range(0px, 48px, 4)
 
   @media $mobile
     ._mSize-px-{i}
-        height: i
+      height: i
 
   @media $desktop
     ._dSize-px-{i}
-        height: i
+      height: i
 
 for i in range(0vh, 10vh, 1)
   ._size-vh-{i}
@@ -19,8 +20,18 @@ for i in range(0vh, 10vh, 1)
 
   @media $mobile
     ._mSize-vh-{i}
-        height: i
+      height: i
 
   @media $desktop
     ._dSize-vh-{i}
-        height: i
+      height: i
+
+@media $desktop
+  ._dSize-px-60
+    height: 60px
+
+  ._dSize-px-64
+    height: 64px
+
+  ._dSize-px-72
+    height: 72px

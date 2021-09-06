@@ -46,9 +46,11 @@ export type Updates = {
 }
 
 export type Api = {
-  init: (
-    handleError: (error: ApiError) => void
-  ) => Promise<void>
+  init: () => Promise<void>
+
+  listenErrors: (
+    arg: ProxyMarked
+  ) => void
 
   listenUpdates: (
     arg: ProxyMarked
@@ -205,5 +207,5 @@ export type Api = {
 
   resetSearch: () => void
 
-  joinAnnouncementsChannel: () => void
+  joinAnnouncementsChannel: () => Promise<void>
 }

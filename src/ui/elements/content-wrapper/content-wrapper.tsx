@@ -11,7 +11,7 @@ import { CrossIcon } from '~/ui/icons'
 import styles from './content-wrapper.styl'
 
 type Props = {
-  active: boolean
+  active?: boolean
   secondary?: boolean
   overlayText?: string
 }

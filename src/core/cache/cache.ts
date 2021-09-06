@@ -108,6 +108,6 @@ export const resetDataCache = async () => {
 
   cache = {}
   offsetsCache = new Map()
-  await clear()
+  await clear(database)
   dataCache.setSettings(settings)
 }

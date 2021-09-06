@@ -40,7 +40,9 @@ class Api {
     }
   ) => Promise<any>
 
-  public async init(handleError: (error: ClientError) => void) {
+  private handleError: (error: ClientError) => void
+
+  public async init() {
     const meta = await dataCache.getMeta(META_KEY, initialMeta)
 
     this.client = new Client({
@@ -48,7 +50,7 @@ class Api {
       APIHash: API_HASH,
       APILayer: 121,
       test: IS_TEST,
-      debug: IS_TEST,
+      debug: true,
       dc: meta.baseDC,
       ssl: true,
       autoConnect: true,
@@ -69,7 +71,7 @@ class Api {
           return
         }
 
-        handleError({ ...err, message: `${method}: ${err.message || ''}` })
+        this.handleError({ ...err, message: `${method}: ${err.message || ''}` })
         const { code, message = '' } = err
 
         if (code === 420) {
@@ -93,6 +95,10 @@ class Api {
         reject(err)
       }))
     }
+  }
+
+  public async listenErrors(callback) {
+    this.handleError = (error: ClientError) => callback(error)
   }
 
   public async listenUpdates(callback) {

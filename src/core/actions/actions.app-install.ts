@@ -34,19 +34,17 @@ export const installApp = async () => {
     const isAppInstalled = outcome === 'accepted'
     setAppInstalled(isAppInstalled)
     return isAppInstalled
-  } catch(error) {
+  } catch(error: any) {
     sendAppError(error)
   }
 }
 
 export const listenAppInstall = async () => {
-  self.addEventListener('load', () => {
-    self.addEventListener('beforeinstallprompt', (ev) => {
-      ev.preventDefault()
-      setAppInstallEvent(ev)
-    })
-    self.addEventListener('appinstalled', () => setAppInstalled(true))
+  self.addEventListener('beforeinstallprompt', (ev) => {
+    ev.preventDefault()
+    setAppInstallEvent(ev)
   })
+  self.addEventListener('appinstalled', () => setAppInstalled(true))
 
   if (checkIsIOSSafari() && !checkIsStandalone()) {
     await timer(10000)

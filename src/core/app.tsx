@@ -4,15 +4,15 @@ import type { FunctionComponent as FC } from 'preact'
 import { h, render, Fragment } from 'preact'
 import { Provider } from 'unistore-hooks'
 
-import { listenAppError } from '~/core/actions'
-listenAppError()
+import { listenAppErrors, listenAppInstall } from '~/core/actions'
+listenAppErrors()
+listenAppInstall()
 
 import { store } from '~/core/store'
-import { useUser } from '~/core/hooks'
-import { listenAppInstall } from '~/core/actions'
+import { useAppRoute, useUser } from '~/core/hooks'
 import { checkIsIOSSafari } from '~/tools/detect-device'
 import { registerSW } from '~/sw'
-import { initApi } from '~/api'
+import { IntroLazy } from '~/features/intro'
 import { AuthLazy } from '~/features/auth'
 import { StorageLazy } from '~/features/storage'
 import { WidgetsLazy } from '~/widgets'
@@ -24,11 +24,14 @@ import {
 import '~/ui/styles/styles.global.styl'
 
 const App: FC = () => {
+  const { isIntroAppRoute } = useAppRoute()
   const { user } = useUser()
 
   return (
     <Fragment>
-      {user ? (
+      {isIntroAppRoute ? (
+        <IntroLazy/>
+      ) : user ? (
         <StorageLazy/>
       ) : (
         <AuthLazy/>
@@ -50,8 +53,6 @@ const App: FC = () => {
 }
 
 registerSW()
-listenAppInstall()
-await initApi()
 
 render(
   <Provider value={store}>

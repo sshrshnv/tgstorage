@@ -77,7 +77,7 @@ export const Player: FC<Props> = memo(({
   const [_play, playRef] = useCallbackRef(() => {
     try {
       playerRef.current.play()
-    } catch (error) {
+    } catch (error: any) {
       sendAppError(error)
     }
   }, [])

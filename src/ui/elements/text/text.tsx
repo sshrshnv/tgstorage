@@ -6,6 +6,7 @@ import styles from './text.styl'
 
 type Props = {
   class?: string
+  withLink?: boolean
   large?: boolean
   small?: boolean
   uppercase?: boolean
@@ -20,6 +21,7 @@ type Props = {
 export const Text: FC<Props> = ({
   children,
   class: className,
+  withLink,
   large,
   small,
   uppercase,
@@ -34,6 +36,7 @@ export const Text: FC<Props> = ({
     <span class={cn(
       className,
       styles.root,
+      withLink && styles._withLink,
       large && styles._large,
       small && styles._small,
       uppercase && styles._uppercase,

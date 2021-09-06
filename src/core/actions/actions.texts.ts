@@ -9,8 +9,7 @@ export const loadTexts = async (
   let texts = loadedTexts[locale]
 
   if (!texts) {
-    const [app, intro, auth, storage, widgets] = await Promise.all([
-      import(`~/core/app.texts.${locale}.json`),
+    const [intro, auth, storage, widgets] = await Promise.all([
       import(`~/features/intro/intro.texts.${locale}.json`),
       import(`~/features/auth/auth.texts.${locale}.json`),
       import(`~/features/storage/storage.texts.${locale}.json`),
@@ -18,7 +17,6 @@ export const loadTexts = async (
     ])
 
     texts = {
-      app: app.default,
       intro: intro.default,
       auth: auth.default,
       storage: storage.default,

@@ -3,11 +3,9 @@ import type { StateUpdater } from 'preact/hooks'
 import { h } from 'preact'
 import { memo } from 'preact/compat'
 import { useCallback, useEffect, useState } from 'preact/hooks'
-import { useStoreState } from 'unistore-hooks'
 
-import type { State } from '~/core/store'
 import { setAppUpdateAccepted } from '~/core/actions'
-import { useTexts } from '~/core/hooks'
+import { useTexts, useAppUpdate } from '~/core/hooks'
 import { Widget } from '~/ui/elements/widget'
 
 type Props = {
@@ -18,13 +16,7 @@ export const WidgetsAppUpdate: FC<Props> = memo(({
   setVisible
 }) => {
   const { texts } = useTexts('widgets')
-  const {
-    appUpdateExists
-  }: {
-    appUpdateExists: State['appUpdateExists']
-  } = useStoreState(state => ({
-    appUpdateExists: state.appUpdateExists
-  }))
+  const { appUpdateExists } = useAppUpdate()
   const [loading, setLoading] = useState(false)
 
   const handleClick = useCallback(() => {

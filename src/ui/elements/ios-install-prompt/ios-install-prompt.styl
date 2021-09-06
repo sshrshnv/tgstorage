@@ -50,8 +50,8 @@ $blue-color-legacy = rgb(45, 124, 246)
   -webkit-perspective: 1200px
 
 .root
-  margin: 0 8px 10px
-  width: calc(100vw - 16px)
+  margin: 0 calc(8px + env(safe-area-inset-right, 0)) calc(10px + env(safe-area-inset-bottom, 0)) calc(8px + env(safe-area-inset-left, 0))
+  width: calc(100vw - 16px - env(safe-area-inset-right, 0) - env(safe-area-inset-left, 0))
   border-radius: 10px
   overflow: hidden
   color: black
