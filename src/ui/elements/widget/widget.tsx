@@ -20,6 +20,7 @@ type Props = {
   button?: string
   loading?: boolean
   error?: boolean
+  popup?: boolean
   onClick?: () => void
   onClose?: () => void
 }
@@ -30,6 +31,7 @@ export const Widget: FC<Props> = memo(({
   button,
   loading,
   error,
+  popup,
   onClick,
   onClose
 }) => {
@@ -65,7 +67,8 @@ export const Widget: FC<Props> = memo(({
         styles.root,
         styles[animationClassName],
         isPerformance && styles._performance,
-        error && styles._error
+        error && styles._error,
+        popup && styles._popup
       )}
       ref={widgetRef}
     >

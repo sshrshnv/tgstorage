@@ -9,10 +9,12 @@ import { useTexts, useAppError } from '~/core/hooks'
 import { Widget } from '~/ui/elements/widget'
 
 type Props = {
+  popup?: boolean
   setVisible: StateUpdater<boolean>
 }
 
 export const WidgetsAppError: FC<Props> = memo(({
+  popup,
   setVisible
 }) => {
   const { texts } = useTexts('widgets')
@@ -33,6 +35,7 @@ export const WidgetsAppError: FC<Props> = memo(({
       title={texts.errorTitle}
       description={texts.errorDescription}
       button={texts.errorButton}
+      popup={popup}
       error
       onClose={handleClose}
     />

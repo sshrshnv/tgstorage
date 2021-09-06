@@ -9,10 +9,12 @@ import { useTexts, useAppUpdate } from '~/core/hooks'
 import { Widget } from '~/ui/elements/widget'
 
 type Props = {
+  popup: boolean
   setVisible: StateUpdater<boolean>
 }
 
 export const WidgetsAppUpdate: FC<Props> = memo(({
+  popup,
   setVisible
 }) => {
   const { texts } = useTexts('widgets')
@@ -35,6 +37,7 @@ export const WidgetsAppUpdate: FC<Props> = memo(({
       description={texts.updateDescription}
       button={texts.updateButton}
       loading={loading}
+      popup={popup}
       onClick={handleClick}
     />
   )
