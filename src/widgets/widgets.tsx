@@ -33,7 +33,7 @@ const Widgets: FC = memo(() => {
       />
       <WidgetsAppInstall
         setVisible={setInstallVisible}
-        visible={installVisible && !errorVisible && !updateVisible}
+        visible={installVisible && !errorVisible && !updateVisible && !isIntroAppRoute && !!user}
       />
     </Fragment>
   )
