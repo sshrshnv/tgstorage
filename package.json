@@ -14,7 +14,7 @@
   "homepage": "https://github.com/sh-a-v/tgstorage#readme",
   "engines": {
     "node": ">=14.0.0",
-    "npm": ">=7.0.0"
+    "npm": ">=6.0.0"
   },
   "scripts": {
     "dev": "npm run clean && BUILD_ENV=dev NODE_ENV=development webpack serve --progress",
