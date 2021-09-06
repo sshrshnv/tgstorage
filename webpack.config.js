@@ -191,7 +191,7 @@ module.exports = [{
       ]
     }),
 
-    /*(isProd() && !isBundleAnalyzer()) ? new SentryPlugin({
+    (isProd() && !isBundleAnalyzer()) ? new SentryPlugin({
       authToken: appEnv.SENTRY_TOKEN || process.env.SENTRY_AUTH_TOKEN,
       org: 'alexander-shershnev',
       project: 'tgstorage',
@@ -199,7 +199,7 @@ module.exports = [{
       deploy: {
         env: process.env.BUILD_ENV
       }
-    }) : () => {},*/
+    }) : () => {},
 
     isBundleAnalyzer() ? new BundleAnalyzerPlugin({
       analyzerHost: '0.0.0.0',
