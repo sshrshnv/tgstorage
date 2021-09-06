@@ -8,7 +8,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CopyPlugin = require('copy-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
-const DotenvPlugin = require('dotenv-webpack')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const SentryPlugin = require('@sentry/webpack-plugin')
 const autoprefixer = require('autoprefixer')
@@ -18,9 +17,21 @@ const isDev = () => !isProd()
 const isStage = () => process.env.BUILD_ENV === 'stage'
 const isBundleAnalyzer = () => !!process.env.BUNDLE_ANALYZER
 
-const appEnv = dotenv.config({
+const appEnv = isDev() ? dotenv.config({
   path: `./.env.${process.env.BUILD_ENV}`
-})
+}) : process.env
+
+const defineEnvConfig = {
+  'process.env.BUILD_ENV': JSON.stringify(appEnv.BUILD_ENV),
+  'process.env.NODE_ENV': JSON.stringify(appEnv.NODE_ENV),
+  'process.env.API_ID': JSON.stringify(appEnv.API_ID),
+  'process.env.API_HASH': JSON.stringify(appEnv.API_HASH),
+  'process.env.API_TEST': JSON.stringify(appEnv.API_TEST),
+  'process.env.INVITE_RU': JSON.stringify(appEnv.INVITE_RU),
+  'process.env.INVITE_EN': JSON.stringify(appEnv.INVITE_EN),
+  'process.env.SENTRY_DSN': JSON.stringify(appEnv.SENTRY_DSN),
+  'process.env.SENTRY_AUTH_TOKEN': JSON.stringify(appEnv.SENTRY_AUTH_TOKEN)
+}
 
 const resolveOptions = {
   extensions: [
@@ -147,9 +158,7 @@ module.exports = [{
   },
 
   plugins: [
-    new DotenvPlugin({
-      path: `./.env.${process.env.BUILD_ENV}`
-    }),
+    new webpack.DefinePlugin(defineEnvConfig),
 
     new HtmlPlugin({
       template: './src/core/app.html',
@@ -262,9 +271,7 @@ module.exports = [{
   },
 
   plugins: [
-    new DotenvPlugin({
-      path: `./.env.${process.env.BUILD_ENV}`
-    }),
+    new webpack.DefinePlugin(defineEnvConfig),
 
     isBundleAnalyzer() ? new BundleAnalyzerPlugin({
       analyzerHost: '0.0.0.0',
