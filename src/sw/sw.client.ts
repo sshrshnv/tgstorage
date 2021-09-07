@@ -71,12 +71,6 @@ export const registerSW = async () => {
     self.history.replaceState('', '', self.location.pathname.replace('?share', ''))
     wb.messageSW({ messageKey: 'share-ready' })
   }
-
-  if (registration) {
-    self.setInterval(() => {
-      registration.update?.().catch(() => {/*nothing*/})
-    }, CHECK_UPDATE_INTERVAL)
-  }
 }
 
 export const checkIsSWRegistered = () =>
