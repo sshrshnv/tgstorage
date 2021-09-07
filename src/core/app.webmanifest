@@ -6,29 +6,29 @@
   "orientation": "portrait-primary",
   "display": "standalone",
   "start_url": "/app",
-  "background_color": "#179CDE",
+  "background_color": "#0082C8",
   "theme_color": "#26292c",
   "icons": [
     {
-      "src": "/manifest-icon-192.v1.png",
+      "src": "/manifest-icon-192.v2.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/manifest-icon-192-maskable.v1.png",
+      "src": "/manifest-icon-192-maskable.v2.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/manifest-icon-512.v1.png",
+      "src": "/manifest-icon-512.v2.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/manifest-icon-512-maskable.v1.png",
+      "src": "/manifest-icon-512-maskable.v2.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

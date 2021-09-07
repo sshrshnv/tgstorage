@@ -50,7 +50,7 @@ class Api {
       APIHash: API_HASH,
       APILayer: 121,
       test: IS_TEST,
-      debug: true,
+      debug: IS_TEST,
       dc: meta.baseDC,
       ssl: true,
       autoConnect: true,
@@ -107,6 +107,15 @@ class Api {
       callback(handledUpdates)
     })
     this.client.updates.fetch()
+
+    const intervalId = self.setInterval(async () => {
+      const user = await dataCache.getUser()
+      if (user) {
+        this.client.updates.fetch()
+      } else {
+        self.clearInterval(intervalId)
+      }
+    }, 30000)
   }
 
   public async getCountry() {

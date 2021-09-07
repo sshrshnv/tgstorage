@@ -10,6 +10,11 @@
     &::-webkit-scrollbar
       display: none
 
+  &._fullHeight
+    position: absolute
+    z-index: 1
+    top: 0
+
 .inner
   display: flex
   width: 100%
@@ -22,8 +27,17 @@
     align-items: center
     width: 300px
 
+  &._row
+    flex-direction: row
+
+    &._center
+      justify-content: center
+
   &._wide
     width: 100%
 
     @media $desktop
       max-width: 980px
+
+  &._paddingTop
+    padding-top: 24px

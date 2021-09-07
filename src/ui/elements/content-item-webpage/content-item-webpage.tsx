@@ -1,7 +1,7 @@
 import type { FunctionComponent as FC } from 'preact'
 import { h, Fragment } from 'preact'
 import { memo } from 'preact/compat'
-import { useRef } from 'preact/hooks'
+import { useRef, useMemo } from 'preact/hooks'
 import cn from 'classnames'
 
 import type { MessageWebpage } from '~/core/store'
@@ -37,18 +37,25 @@ export const ContentItemWebpage: FC<Props> = memo(({
 }) => {
   const elRef = useRef<HTMLDivElement>(null)
 
+  const webpageDescription = useMemo(() => {
+    const description = webpage.description || ''
+    const maxLength = hasPreviewFile ? 150 : 200
+    return description.length > maxLength ? `${description.slice(0, maxLength - 1)}…` : description
+  }, [webpage.description, hasPreviewFile])
+
   return (
     <Fragment>
       <div
         class={cn(
           styles.root,
-          single && styles._single
+          single && styles._single,
         )}
         ref={elRef}
       >
         <a
           class={cn(
             styles.preview,
+            !hasPreviewFile && styles._icon,
             !webpage.url && styles._disabled
           )}
           href={webpage.url}
@@ -75,14 +82,23 @@ export const ContentItemWebpage: FC<Props> = memo(({
           )}
         </a>
 
-        <div class={styles.description}>
-          <Text class={styles.title} grey small ellipsis>
+        <div class={cn(
+          styles.description,
+          !hasPreviewFile && styles._wide
+        )}>
+          <Text class={styles.title} small>
             {webpage.title || webpage.displayUrl}
           </Text>
           <div class={styles.footer}>
-            <Text grey ellipsis capitalize={!webpage.siteName && !!webpage.type}>
-              {webpage.siteName || webpage.type || webpage.url}
-            </Text>
+            {!!webpageDescription ? (
+              <Text small grey>
+                {webpageDescription}
+              </Text>
+            ) : (
+              <Text grey ellipsis capitalize={!webpage.siteName && !!webpage.type}>
+                {webpage.siteName || webpage.type || webpage.url}
+              </Text>
+            )}
           </div>
         </div>
 

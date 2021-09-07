@@ -4,7 +4,9 @@ import { memo } from 'preact/compat'
 import { useMemo } from 'preact/hooks'
 
 import type { Folder } from '~/core/store'
-import { useFolders, useActiveFolder, useSettings } from '~/core/hooks'
+import { useTexts, useFolders, useActiveFolder, useSettings } from '~/core/hooks'
+import { Layout } from '~/ui/elements/layout'
+import { Text } from '~/ui/elements/text'
 
 import type { FolderPopupParams } from './storage'
 import { StorageSidebarFoldersCategoryItem } from './storage.sidebar-folders-category-item'
@@ -27,6 +29,7 @@ export const StorageSidebarFoldersList: FC<Props> = memo(({
   setFolderPopupParams,
   onFolderSelect
 }) => {
+  const { texts } = useTexts('storage')
   const { folders } = useFolders()
   const { folder } = useActiveFolder()
   const filterGeneralFolder = !useSettings().generalFolder
@@ -65,6 +68,16 @@ export const StorageSidebarFoldersList: FC<Props> = memo(({
           />
         </Fragment>
       ))}
+      {!filteredFolders.length && (
+        <Layout
+          center
+          paddingTop={!filterGeneralFolder}
+        >
+          <Text small grey>
+            {texts.folderEmptyDescription}
+          </Text>
+        </Layout>
+      )}
     </Fragment>
   )
 })

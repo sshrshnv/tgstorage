@@ -7,27 +7,36 @@ import styles from './layout.styl'
 type Props = {
   scroll?: boolean
   center?: boolean
+  row?: boolean
   wide?: boolean
+  fullHeight?: boolean
+  paddingTop?: boolean
 }
 
 export const Layout: FC<Props> = ({
   children,
   scroll,
   center,
-  wide
+  row,
+  wide,
+  fullHeight,
+  paddingTop
 }) => {
 
   return (
     <div
       class={cn(
         styles.root,
-        scroll && styles._scroll
+        scroll && styles._scroll,
+        fullHeight && styles._fullHeight
       )}
     >
       <div class={cn(
         styles.inner,
         center && styles._center,
-        wide && styles._wide
+        row && styles._row,
+        wide && styles._wide,
+        paddingTop && styles._paddingTop
       )}>
         {children}
       </div>

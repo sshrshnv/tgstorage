@@ -8,6 +8,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const CopyPlugin = require('copy-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
+const HTMLInlineCSSPlugin = require("html-inline-css-webpack-plugin").default
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const SentryPlugin = require('@sentry/webpack-plugin')
 const autoprefixer = require('autoprefixer')
@@ -19,11 +20,11 @@ const isBundleAnalyzer = () => !!process.env.BUNDLE_ANALYZER
 
 const appEnv = isDev() ? dotenv.config({
   path: `./.env.${process.env.BUILD_ENV}`
-}) : process.env
+})?.parsed : process.env
 
 const defineEnvConfig = {
-  'process.env.BUILD_ENV': JSON.stringify(appEnv.BUILD_ENV),
-  'process.env.NODE_ENV': JSON.stringify(appEnv.NODE_ENV),
+  'process.env.BUILD_ENV': JSON.stringify(process.env.BUILD_ENV),
+  'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
   'process.env.API_ID': JSON.stringify(appEnv.API_ID),
   'process.env.API_HASH': JSON.stringify(appEnv.API_HASH),
   'process.env.API_TEST': JSON.stringify(appEnv.API_TEST),
@@ -63,7 +64,8 @@ module.exports = [{
   target: 'web',
 
   entry: {
-    app: './src/core/app.tsx'
+    app: './src/core/app.tsx',
+    inline: './src/ui/styles/styles.global.styl'
   },
 
   output: {
@@ -160,6 +162,11 @@ module.exports = [{
   plugins: [
     new webpack.DefinePlugin(defineEnvConfig),
 
+    isProd() ? new MiniCssExtractPlugin({
+      filename: '[name].[contenthash:8].css',
+      chunkFilename: '[name].[contenthash:8].css'
+    }) : () => {},
+
     new HtmlPlugin({
       template: './src/core/app.html',
       filename: 'index.html',
@@ -169,9 +176,13 @@ module.exports = [{
         keepClosingSlash: true,
         minifyCSS: true,
         minifyJS: true,
-        removeComments: true
+        removeComments: false
       }
     }),
+
+    isProd() ? new HTMLInlineCSSPlugin({
+      filter: (filename) => filename.includes('inline') || filename.includes('index')
+    }) : () => {},
 
     /*new HtmlPreloadPlugin({
       rel: 'preload',
@@ -179,20 +190,15 @@ module.exports = [{
       fileBlacklist: [/^[0-9]*\./, /\.map/, /\.jpe?g/]
     }),*/
 
-    isProd() ? new MiniCssExtractPlugin({
-      filename: '[name].[contenthash:8].css',
-      chunkFilename: '[name].[contenthash:8].css'
-    }) : () => {},
-
     new CopyPlugin({
       patterns: [
-        { from: './src/core/app.webmanifest', to: './app.v1.webmanifest' },
-        { from: './src/ui/images/*', to: './[name].v1[ext]' }
+        { from: './src/core/app.webmanifest', to: './app.v2.webmanifest' },
+        { from: './src/ui/images/*', to: './[name].v2[ext]' }
       ]
     }),
 
-    (isProd() && !isBundleAnalyzer()) ? new SentryPlugin({
-      authToken: appEnv.SENTRY_TOKEN || process.env.SENTRY_AUTH_TOKEN,
+    (isProd() && !isBundleAnalyzer() && !!appEnv.SENTRY_AUTH_TOKEN) ? new SentryPlugin({
+      authToken: appEnv.SENTRY_AUTH_TOKEN,
       org: 'alexander-shershnev',
       project: 'tgstorage',
       include: './build',

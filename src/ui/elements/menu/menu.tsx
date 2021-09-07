@@ -52,7 +52,9 @@ export const Menu: FC<Props> = memo(({
   const itemsCountRef = useUpdatableRef(items.length)
 
   const [toggle, toggleRef] = useCallbackRef(async (ev?) => {
-    ev?.preventDefault()
+    if (ev?.target?.nodeName.toLowerCase() !== 'a') {
+      ev?.preventDefault()
+    }
     ev?.stopPropagation()
 
     if (expanded) {

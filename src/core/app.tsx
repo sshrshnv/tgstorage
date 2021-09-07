@@ -21,7 +21,7 @@ import {
   PreventContextMenu, PreventScale, PreventDragAndDrop,
   ApplyTheme, ApplyLocale
 } from '~/ui/handlers'
-import '~/ui/styles/styles.global.styl'
+//import '~/ui/styles/styles.global.styl'
 
 const App: FC = () => {
   const { isIntroAppRoute } = useAppRoute()

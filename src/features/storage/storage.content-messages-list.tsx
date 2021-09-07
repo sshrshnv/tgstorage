@@ -1,7 +1,7 @@
 import type { FunctionComponent as FC } from 'preact'
 import { h } from 'preact'
 import { memo } from 'preact/compat'
-import { useEffect } from 'preact/hooks'
+import { useEffect, useState } from 'preact/hooks'
 
 import type { Folder, Message } from '~/core/store'
 import { useUpdatableRef } from '~/tools/hooks'
@@ -20,6 +20,8 @@ type Props = {
   onEditMessage?: (message: Message) => void
   onMoveMessage?: (message: Message) => void
 }
+
+const RENDER_TIMEOUT = 100
 
 export const StorageContentMessagesList: FC<Props> = memo(({
   folder,
@@ -43,6 +45,7 @@ export const StorageContentMessagesList: FC<Props> = memo(({
   const lastMessageIdRef = useUpdatableRef(lastMessageId)
   const messagesLoadingRef = useUpdatableRef(messagesLoading)
   const loadMessagesRef = useUpdatableRef(loadMessages)
+  const [renderAvailable, setRenderAvailable] = useState(false)
 
   useEffect(() => {
     countRef.current = messages.length
@@ -61,7 +64,15 @@ export const StorageContentMessagesList: FC<Props> = memo(({
     }
   }, [messages.length, visibility.lastIndex])
 
-  return (
+  useEffect(() => {
+    const timeoutId = self.setTimeout(() => {
+      setRenderAvailable(true)
+    }, RENDER_TIMEOUT)
+
+    return () => self.clearTimeout(timeoutId)
+  }, [])
+
+  return renderAvailable ? (
     <ContentList
       intersectionRef={intersectionRef}
       fullHeight={fullHeight}
@@ -89,5 +100,5 @@ export const StorageContentMessagesList: FC<Props> = memo(({
         )
       })}
     </ContentList>
-  )
+  ) : null
 })
