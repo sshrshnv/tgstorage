@@ -74,7 +74,6 @@ export const registerSW = async () => {
 
   if (registration) {
     self.setInterval(() => {
-      console.log('check sw update')
       registration.update?.().catch(() => {/*nothing*/})
     }, CHECK_UPDATE_INTERVAL)
   }
