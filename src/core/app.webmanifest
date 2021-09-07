@@ -7,7 +7,7 @@
   "display": "standalone",
   "start_url": "/app",
   "background_color": "#0082C8",
-  "theme_color": "#26292c",
+  "theme_color": "#35363a",
   "icons": [
     {
       "src": "/manifest-icon-192.v2.png",
