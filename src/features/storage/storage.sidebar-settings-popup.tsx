@@ -24,19 +24,19 @@ export const StorageSidebarSettingsPopup: FC<Props> = memo(({
   const [localeLoading, setLocaleLoading] = useState(false)
 
   const themeOptions = useMemo(() => AVALIABLE_THEMES.map(value => ({
-    text: `${value.charAt(0).toUpperCase()}${value.slice(1)}`,
+    text: texts[`settingsTheme_${value}`],
     value
-  })), [])
+  })), [texts.settingsThemeLabel])
 
   const localeOptions = useMemo(() => AVALIABLE_LOCALES.map(value => ({
-    text: `${value.charAt(0).toUpperCase()}${value.slice(1)}`,
+    text: texts[`settingsLocale_${value}`],
     value
-  })), [])
+  })), [texts.settingsLocaleLabel])
 
   const generalFolderOptions = useMemo(() => [
-    { text: texts.settingsFolderTrueLabel, value: 'true' },
-    { text: texts.settingsFolderFalseLabel, value: 'false' }
-  ], [])
+    { text: texts.settingsFolder_true, value: 'true' },
+    { text: texts.settingsFolder_false, value: 'false' }
+  ], [texts.settingsFolderLabel])
 
   const handleChangeThemeValue = useCallback((theme) => {
     setTheme(theme)

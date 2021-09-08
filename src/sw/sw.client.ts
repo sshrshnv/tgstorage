@@ -9,8 +9,6 @@ import {
 import { setFile } from '~/core/cache'
 import { checkIsSafari } from '~/tools/detect-device'
 
-const CHECK_UPDATE_INTERVAL = 60000
-
 let registration
 
 export const registerSW = async () => {

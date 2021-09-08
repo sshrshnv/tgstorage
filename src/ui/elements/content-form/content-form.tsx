@@ -4,7 +4,7 @@ import { memo } from 'preact/compat'
 import { useMemo, useCallback, useRef } from 'preact/hooks'
 import cn from 'classnames'
 
-import type { Texts, InputFile } from '~/core/store'
+import type { Texts, InputFile, MessageMedia } from '~/core/store'
 import {
   CHECKLIST_UNCHECKED_MARK,
   checkIsChecklistMessage,
@@ -23,6 +23,7 @@ type Props = {
     id?: number
     text: string
     inputFiles?: InputFile[]
+    media?: MessageMedia
   }
   texts: Texts['en']
   loading?: boolean
@@ -50,8 +51,8 @@ export const ContentForm: FC<Props> = memo(({
   }, [message.text])
 
   const filled = useMemo(() => {
-    return !!message.text || !!message.inputFiles?.length
-  }, [message.text, message.inputFiles?.length])
+    return !!message.text || !!message.inputFiles?.length || !!message.media
+  }, [message.text, message.inputFiles?.length, message.media])
 
   const scrollToBottom = useCallback(() => {
     elRef?.current?.scrollTo(0, elRef.current.offsetHeight)

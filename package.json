@@ -14,6 +14,7 @@
   "homepage": "https://github.com/sh-a-v/tgstorage#readme",
   "scripts": {
     "dev": "npm run clean && BUILD_ENV=dev NODE_ENV=development webpack serve --progress",
+    "prod": "npm run clean && BUILD_ENV=prod NODE_ENV=production webpack serve --progress",
     "build": "BUILD_ENV=prod NODE_ENV=production webpack && npm run inject-sw-manifest",
     "clean": "rimraf build",
     "lint": "eslint src --ext .js,.ts,.tsx",
@@ -34,7 +35,7 @@
     "copy-to-clipboard": "3.3.1",
     "core-js": "3.17.2",
     "drag-drop-touch": "1.3.1",
-    "idb-keyval": "5.1.5",
+    "idb-keyval": "6.0.1",
     "keen-slider": "5.5.1",
     "latinize": "0.5.0",
     "pako": "2.0.4",
@@ -89,7 +90,7 @@
     "webpack": "5.52.0",
     "webpack-bundle-analyzer": "4.4.2",
     "webpack-cli": "4.8.0",
-    "webpack-dev-server": "4.1.0",
+    "webpack-dev-server": "4.1.1",
     "workbox-cli": "6.2.4",
     "worker-loader": "3.0.8"
   }
