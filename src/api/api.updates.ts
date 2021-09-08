@@ -152,6 +152,11 @@ const handleMessages = async (
     let isUpdated = false
     let isSorted = true
 
+    if (options?.offsetId === 0 && index === 0) {
+      isUpdated = true
+      isSorted = false
+    }
+
     if (_ === 'message' && folders.has(folderId)) {
       message = !options?.deleted ? transformMessage(message, user) : message
       if (!message) {

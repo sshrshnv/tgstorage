@@ -106,17 +106,54 @@ class Api {
       const handledUpdates = await handleUpdates(updates)
       callback(handledUpdates)
     })
-    this.client.updates.fetch()
+    this.fetchUpdatesState()
 
     const intervalId = self.setInterval(async () => {
       const user = await dataCache.getUser()
       if (user) {
-        this.client.updates.fetch()
+        this.fetchUpdatesState()
       } else {
         self.clearInterval(intervalId)
       }
-    }, 30000)
+    }, 5 * 60 * 1000)
   }
+
+  private async fetchUpdatesState() {
+    this.client.updates.fetch(async (err, res) => {
+      if (err || !res) return
+      //this.fetchUpdates(callback, res)
+    })
+  }
+
+  /*private async fetchUpdates(callback, {
+    pts, qts, date, seq
+  }: UpdatesState.updatesState) {
+    if (!seq) return
+
+    const {
+      new_messages: messages,
+      other_updates: updates,
+      chats,
+      state,
+      intermediate_state
+    } = await this.call('updates.getDifference', {
+      pts, date, qts
+    })
+    if (!state || !intermediate_state) return
+
+    const handledNewMessagesUpdates = await handleUpdates({ messages }, { new: true })
+    callback(handledNewMessagesUpdates)
+
+    const handledFoldersUpdates = await handleUpdates({ chats })
+    callback(handledFoldersUpdates)
+
+    const handledUpdates = await handleUpdates({ updates })
+    callback(handledUpdates)
+
+    if (intermediate_state) {
+      this.fetchUpdates(callback, intermediate_state)
+    }
+  }*/
 
   public async getCountry() {
     return this.call('help.getNearestDc')

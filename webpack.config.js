@@ -15,10 +15,10 @@ const autoprefixer = require('autoprefixer')
 
 const isProd = () => process.env.NODE_ENV === 'production'
 const isDev = () => !isProd()
-const isStage = () => process.env.BUILD_ENV === 'stage'
+const isDevEnv = () => process.env.BUILD_ENV === 'dev'
 const isBundleAnalyzer = () => !!process.env.BUNDLE_ANALYZER
 
-const appEnv = isDev() ? dotenv.config({
+const appEnv = isDevEnv() ? dotenv.config({
   path: `./.env.${process.env.BUILD_ENV}`
 })?.parsed : process.env
 
