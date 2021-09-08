@@ -4,7 +4,7 @@
   "phoneLabel": "Номер телефона",
   "countryLabel": "Страна",
   "codeDescription:auth.sentCodeTypeApp": "Мы отправили вам сообщение с кодом в Telegram.",
-  "codeDescription:auth.sentCodeTypeSms": "Мыотправили вам\n СМС с кодом.",
+  "codeDescription:auth.sentCodeTypeSms": "Мы отправили вам\n СМС с кодом.",
   "codeDescription:auth.sentCodeTypeCall": "Вы получите автоматический вызов с синтезированным голосом, который сообщит вам код подтверждения.",
   "codeDescription:auth.sentCodeTypeFlashCall": "Вы получите автоматический вызов с синтезированным голосом, который сообщит вам код подтверждения.",
   "codeLabel": "Код",

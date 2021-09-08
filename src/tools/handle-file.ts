@@ -68,7 +68,7 @@ export const selectFiles = (): Promise<string[]> => new Promise(resolve => {
     fileInput = self.document.createElement('input')
     fileInput.type = 'file'
     fileInput.multiple = true
-    fileInput.accept = '*/*'
+    fileInput.accept = '*'
   }
 
   fileInput.onchange = (ev) => {
