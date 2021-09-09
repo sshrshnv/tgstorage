@@ -1,7 +1,7 @@
 import { inflate } from 'pako/lib/inflate'
 
 import { logs } from '../utils/log'
-import { Message } from '../message'
+import { Message, PlainMessage } from '../message'
 import { ab2i, Reader32 } from '../serialization'
 import { RPCHeaders, ClientError, ClientInterface, ClientConfig, RequestRPC, PlainCallback, MessageHeaders } from './types'
 import { parse } from '../tl'
@@ -243,11 +243,14 @@ export default class RPCService {
   processBadMsgNotification(result: BadMsgNotification.bad_msg_notification, headers: RPCHeaders) {
     debug(this.client.cfg, headers.dc, '-> bad_msg_notification', result.bad_msg_id, result.error_code, 'sec:', result.bad_msg_seqno)
 
+    if ([16, 17].includes(result.error_code)) {
+      PlainMessage.SyncServerTime(headers.id)
+      this.resend(result.bad_msg_id, false)
+    }
+
     if (result.error_code === 32) {
       this.resend(result.bad_msg_id, true)
     }
-
-    // To Do: sync server time
 
     if (headers.id) this.ackMsg(headers.transport, headers.dc, headers.thread, headers.id)
   }

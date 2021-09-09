@@ -152,6 +152,10 @@ export default class Message {
     return parse(this.reader)
   }
 
+  static SyncServerTime(correctId: string): number {
+    return PlainMessage.SyncServerTime(correctId)
+  }
+
   /**
    * Generates unique message identificator depending on current time
    */

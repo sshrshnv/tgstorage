@@ -1,9 +1,12 @@
 /* eslint-disable no-mixed-operators */
+import BigInt from 'big-integer'
+
 import { Writer32, Reader32, i2h, i2ab } from '../serialization'
 import { parse } from '../tl'
 
 let lastGeneratedLo = 0
 let lastGeneratedHi = 0
+let serverTimeOffset = 0
 
 /**
  * MessagePlain is a buffer with 20 byte padding, which should not be encrypted.
@@ -99,11 +102,25 @@ export default class PlainMessage {
     return parse(this.reader)
   }
 
+  static SyncServerTime(correctId: string) {
+    const oldServerTimeOffset = serverTimeOffset
+    const nowTime = Math.floor(Date.now() / 1000)
+    const correctTime = BigInt(parseInt(correctId, 16)).shiftRight(BigInt(32)) as unknown
+    serverTimeOffset = (correctTime as number) - nowTime
+
+    if (serverTimeOffset !== oldServerTimeOffset) {
+      lastGeneratedHi = 0
+      lastGeneratedLo = 0
+    }
+
+    return serverTimeOffset
+  }
+
   /**
    * Generates unique message identificator depending on current time
    */
   static GenerateID(): string {
-    const time = Date.now()
+    const time = Date.now() + serverTimeOffset * 1000
     const nanosecond = Math.floor(time % 1000)
     const second = Math.floor(time / 1000)
 
