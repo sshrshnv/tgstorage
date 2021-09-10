@@ -67,7 +67,7 @@ const Storage: FC = memo(() => {
   }, [])
 
   return (
-    <Layout>
+    <Layout outer>
       <StorageSidebar
         folderPopupParams={folderPopupParams}
         profilePopupVisible={profilePopupVisible}

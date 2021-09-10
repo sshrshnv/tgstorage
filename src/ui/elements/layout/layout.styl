@@ -15,6 +15,13 @@
     z-index: 1
     top: 0
 
+  &._outer
+    @media $standalone
+      height: 100vh
+
+      > .inner
+        height: 100vh
+
 .inner
   display: flex
   width: 100%

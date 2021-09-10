@@ -5,6 +5,7 @@ import cn from 'classnames'
 import styles from './layout.styl'
 
 type Props = {
+  outer?: boolean
   scroll?: boolean
   center?: boolean
   row?: boolean
@@ -15,6 +16,7 @@ type Props = {
 
 export const Layout: FC<Props> = ({
   children,
+  outer,
   scroll,
   center,
   row,
@@ -27,6 +29,7 @@ export const Layout: FC<Props> = ({
     <div
       class={cn(
         styles.root,
+        outer && styles._outer,
         scroll && styles._scroll,
         fullHeight && styles._fullHeight
       )}

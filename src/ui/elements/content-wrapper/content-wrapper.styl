@@ -14,8 +14,11 @@
     width: auto
     background-color: var(--content-background-color)
 
-  @media (hover: hover)
+  @media $hover
     user-select: text
+
+  @media $standalone
+    height: 100vh
 
 ._active
   z-index: 10

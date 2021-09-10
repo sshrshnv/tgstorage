@@ -8,7 +8,7 @@ import { Loader } from '~/ui/elements/loader'
 
 export const Fallback: FC = () => {
   return (
-    <Layout center>
+    <Layout center outer>
       <Break mSize={48} dSize={72} px/>
       <Logo/>
       <Break mSize={40} dSize={64} px/>

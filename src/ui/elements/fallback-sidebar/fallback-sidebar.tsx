@@ -11,7 +11,7 @@ import { Loader } from '~/ui/elements/loader'
 
 export const FallbackSidebar: FC = () => {
   return (
-    <Layout>
+    <Layout outer>
       <SidebarWrapper>
         <Sidebar>
           <SidebarHeader/>

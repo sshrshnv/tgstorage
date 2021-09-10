@@ -66,7 +66,7 @@ const Auth: FC = memo(() => {
   }, [])
 
   return (
-    <Layout scroll center>
+    <Layout scroll center outer>
       <Break mSize={48} dSize={72} px/>
       <Logo/>
       <Break mSize={40} dSize={64} px/>

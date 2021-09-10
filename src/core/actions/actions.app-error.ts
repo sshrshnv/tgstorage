@@ -1,4 +1,3 @@
-import type { BrowserClient } from '@sentry/browser'
 import { proxy } from 'comlink'
 
 import { store } from '~/core/store'
@@ -32,8 +31,9 @@ export const handleApiError = (error: ApiError) => {
   if (code === 303) return
 
   if (code === 401) {
-    if (HANDLED_ERRORS.includes(message)) return
-    logOut()
+    if (!HANDLED_ERRORS.includes(message)) {
+      logOut()
+    }
     return
   }
 
@@ -51,8 +51,15 @@ export const sendAppError = async (error: ApiError|Error) => {
   if (process.env.NODE_ENV !== 'production' || !process.env.SENTRY_DSN) return
 
   try {
-    const Sentry = await loadSentry() as BrowserClient
-    Sentry.captureException(error)
+    const Sentry = await loadSentry()
+    if ((error as ApiError).method && !!Sentry.withScope) {
+      Sentry.withScope(scope => {
+        scope.setFingerprint([JSON.stringify(error)])
+        Sentry.captureException(error)
+      })
+    } else {
+      Sentry.captureException(error)
+    }
   } catch (err) {}
 }
 
