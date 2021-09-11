@@ -10,7 +10,6 @@ import { Content } from '~/ui/elements/content'
 import { ContentHeader } from '~/ui/elements/content-header'
 import { ContentForm } from '~/ui/elements/content-form'
 import { Button } from '~/ui/elements/button'
-import { SearchIcon } from '~/ui/icons'
 
 import { StorageContentMessagesList } from './storage.content-messages-list'
 
@@ -74,7 +73,7 @@ export const StorageContentFolderBlock: FC<Props> = memo(({
         title={folder.title}
         button={(
           <Button
-            icon={<SearchIcon/>}
+            icon="search"
             square
             onClick={toggleSearch}
           />

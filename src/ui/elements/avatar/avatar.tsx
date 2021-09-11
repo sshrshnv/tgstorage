@@ -3,7 +3,7 @@ import { h } from 'preact'
 import { useMemo, useCallback } from 'preact/hooks'
 import cn from 'classnames'
 
-import { UserIcon } from '~/ui/icons'
+import { Icon } from '~/ui/elements/icon'
 
 import styles from './avatar.styl'
 
@@ -48,7 +48,7 @@ export const Avatar: FC<Props> = ({
       )}
       onClick={onClick}
     >
-      <UserIcon/>
+      <Icon icon="user"/>
     </div>
   )
 }

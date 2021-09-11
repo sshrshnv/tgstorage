@@ -6,7 +6,7 @@ import cn from 'classnames'
 
 import { getFileUrl } from '~/core/cache'
 import { useStateRef, useUpdatableRef } from '~/tools/hooks'
-import { PlayIcon, LinkIcon } from '~/ui/icons'
+import { Icon } from '~/ui/elements/icon'
 
 import styles from './file-preview-image.styl'
 
@@ -78,10 +78,10 @@ export const FilePreviewImage: FC<Props> = memo(({
           isLink && styles._transform
         )}>
           {isPlay && (
-            <PlayIcon/>
+            <Icon icon="play"/>
           )}
           {isLink && (
-            <LinkIcon/>
+            <Icon icon="link"/>
           )}
         </div>
       )}

@@ -13,7 +13,7 @@ import { Text } from '~/ui/elements/text'
 import { Break } from '~/ui/elements/break'
 import { Input } from '~/ui/elements/input'
 import { Button } from '~/ui/elements/button'
-import { EditIcon } from '~/ui/icons'
+import { Icon } from '~/ui/elements/icon'
 
 import type { Step, Country } from './auth'
 
@@ -104,7 +104,7 @@ export const AuthFormCode: FC<Props> = memo(({
   return (
     <Form onSubmit={handleSubmit} center>
       <Text
-        icon={<EditIcon onClick={handlePhoneChange}/>}
+        icon={<Icon icon="edit" onClick={handlePhoneChange}/>}
         uppercase
         bold
       >

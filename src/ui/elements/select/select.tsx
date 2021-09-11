@@ -7,8 +7,6 @@ import cn from 'classnames'
 import { useSettings } from '~/core/hooks'
 import { useCallbackRef } from '~/tools/hooks'
 import { Input } from '~/ui/elements/input'
-import { Loader } from '~/ui/elements/loader'
-import { ArrowIcon } from '~/ui/icons'
 import { animationClassName } from '~/ui/styles'
 
 import en from './select.texts.en.json'
@@ -175,7 +173,8 @@ export const Select: FC<Props> = memo(({
         error={error}
         disabled={disabled || loading}
         readonly={!search || disabled || loading}
-        icon={loading ? <Loader class={styles.icon}/> : <ArrowIcon class={styles.icon}/>}
+        icon={loading ? 'loader' : 'arrow'}
+        iconClass={styles.icon}
         forwardedRef={inputRef}
         fakeFocus={expanded}
         onInput={handleSearch}

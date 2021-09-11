@@ -7,7 +7,6 @@ import { Button } from '~/ui/elements/button'
 import { Input } from '~/ui/elements/input'
 import { useSlide } from '~/ui/elements/slide'
 import { Loader } from '~/ui/elements/loader'
-import { BackIcon } from '~/ui/icons'
 
 import styles from './content-header.styl'
 
@@ -39,7 +38,7 @@ export const ContentHeader: FC<Props> = memo(({
     )}>
       <Button
         class={styles.backButton}
-        icon={<BackIcon/>}
+        icon="back"
         square
         onClick={closeSlide}
       />

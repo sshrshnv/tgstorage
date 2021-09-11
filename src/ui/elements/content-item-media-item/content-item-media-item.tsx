@@ -15,7 +15,7 @@ import { FilePreviewIcon } from '~/ui/elements/file-preview-icon'
 import { Loader } from '~/ui/elements/loader'
 import { Button } from '~/ui/elements/button'
 import { Break } from '~/ui/elements/break'
-import { CrossIcon } from '~/ui/icons'
+import { Icon } from '~/ui/elements/icon'
 
 import styles from './content-item-media-item.styl'
 
@@ -132,7 +132,7 @@ export const ContentItemMediaItem: FC<Props> = memo(({
             inline
             onClick={onCancelDownload}
           >
-            <CrossIcon/>
+            <Icon icon="cross"/>
           </Button>
         )}
 

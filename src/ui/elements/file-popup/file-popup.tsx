@@ -6,7 +6,6 @@ import { useMemo, useState, useEffect, useCallback, useRef } from 'preact/hooks'
 import { getFileUrl } from '~/core/cache'
 import { Slide, useSlide } from '~/ui/elements/slide'
 import { Button } from '~/ui/elements/button'
-import { CrossIcon } from '~/ui/icons'
 
 import styles from './file-popup.styl'
 
@@ -67,7 +66,7 @@ export const FilePopup: FC<Props> = memo(({
         {description}
         <Button
           class={styles.button}
-          icon={<CrossIcon/>}
+          icon="cross"
           square
           onClick={closeSlide}
         />

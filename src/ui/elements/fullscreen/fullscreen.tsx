@@ -6,7 +6,6 @@ import cn from 'classnames'
 import { useUpdatableRef } from '~/tools/hooks'
 import { checkIsLandscape } from '~/tools/detect-screen'
 import { Button } from '~/ui/elements/button'
-import { FullscreenIcon, FullscreenExitIcon } from '~/ui/icons'
 
 import styles from './fullscreen.styl'
 
@@ -126,7 +125,7 @@ export const Fullscreen: FC<Props> = ({
         className,
         styles.root
       )}
-      icon={isFullscreen? <FullscreenExitIcon/> : <FullscreenIcon/>}
+      icon={isFullscreen? 'fullscreen-exit' : 'fullscreen'}
       square
       onClick={isFullscreen ? exitFullscreen : requestFullscreen}
     />

@@ -8,8 +8,6 @@ import { Sidebar } from '~/ui/elements/sidebar'
 import { SidebarHeader } from '~/ui/elements/sidebar-header'
 import { SidebarActionButton } from '~/ui/elements/sidebar-action-button'
 import { Button } from '~/ui/elements/button'
-import { Loader } from '~/ui/elements/loader'
-import { UserIcon, SettingsIcon, FolderPlusIcon } from '~/ui/icons'
 
 import type { FolderPopupParams } from './storage'
 import { StorageSidebarFoldersList } from './storage.sidebar-folders-list'
@@ -53,19 +51,19 @@ export const StorageSidebarFoldersBlock: FC<Props> = memo(({
     >
       <SidebarHeader>
         <Button
-          icon={<UserIcon/>}
+          icon="user"
           square
           onClick={openProfilePopup}
         />
         <Button
-          icon={<SettingsIcon/>}
+          icon="settings"
           square
           onClick={openSettingsPopup}
         />
       </SidebarHeader>
 
       <SidebarActionButton
-        icon={foldersLoading ? <Loader/> : <FolderPlusIcon/>}
+        icon={foldersLoading ? 'loader' : 'folder-plus'}
         onClick={foldersLoading ? undefined : openFolderPopup}
       />
 

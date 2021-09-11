@@ -11,7 +11,7 @@ import { ContentFormAttachment } from '~/ui/elements/content-form-attachment'
 import { ContentFormInput } from '~/ui/elements/content-form-input'
 import { Loader } from '~/ui/elements/loader'
 import { Button } from '~/ui/elements/button'
-import { SendIcon, CheckboxIcon, FileIcon, AttachIcon } from '~/ui/icons'
+import { Icon } from '~/ui/elements/icon'
 
 import styles from './content-form-note.styl'
 
@@ -101,7 +101,7 @@ export const ContentFormNote: FC<Props> = memo(({
         <div class={styles.buttons}>
           <Button
             class={styles.button}
-            icon={<AttachIcon/>}
+            icon="attach"
             onClick={addFiles}
           />
           {isSubmitAvailable ? (
@@ -111,12 +111,12 @@ export const ContentFormNote: FC<Props> = memo(({
                 styles.button,
                 styles._primary
               )}
-              icon={<SendIcon/>}
+              icon="send"
             />
           ) : (
             <Button
               class={styles.button}
-              icon={<CheckboxIcon/>}
+              icon="checkbox"
               onClick={enableChecklist}
             />
           )}
@@ -125,7 +125,7 @@ export const ContentFormNote: FC<Props> = memo(({
 
       {mediaCount > 0 && (
         <div class={styles.mediaCount}>
-          <FileIcon/> {mediaCount}
+          <Icon icon="file"/> {mediaCount}
         </div>
       )}
     </Fragment>

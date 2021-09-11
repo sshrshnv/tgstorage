@@ -7,7 +7,6 @@ import { Sidebar } from '~/ui/elements/sidebar'
 import { SidebarHeader } from '~/ui/elements/sidebar-header'
 import { SidebarActionButton } from '~/ui/elements/sidebar-action-button'
 import { ContentWrapper } from '~/ui/elements/content-wrapper'
-import { Loader } from '~/ui/elements/loader'
 
 export const FallbackSidebar: FC = () => {
   return (
@@ -16,7 +15,7 @@ export const FallbackSidebar: FC = () => {
         <Sidebar>
           <SidebarHeader/>
           <SidebarActionButton
-            icon={<Loader/>}
+            icon="loader"
           />
         </Sidebar>
       </SidebarWrapper>

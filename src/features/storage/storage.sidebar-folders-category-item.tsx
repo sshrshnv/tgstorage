@@ -6,7 +6,6 @@ import { useCallback, useMemo } from 'preact/hooks'
 import type { Folder } from '~/core/store'
 import { useTexts } from '~/core/hooks'
 import { SidebarTitle } from '~/ui/elements/sidebar-title'
-import { EditIcon, FolderPlusIcon } from '~/ui/icons'
 
 import type { FolderPopupParams } from './storage'
 
@@ -42,11 +41,11 @@ export const StorageSidebarFoldersCategoryItem: FC<Props> = memo(({
   const menu = useMemo(() => ({
     items: [folder.category ? {
       title: texts.categoryEditTitle,
-      icon: <EditIcon/>,
+      icon: 'edit',
       onClick: editCategory
     } : null, {
       title: texts.folderAddTitle,
-      icon: <FolderPlusIcon/>,
+      icon: 'folder-plus',
       onClick: addFolder
     }]
   }), [

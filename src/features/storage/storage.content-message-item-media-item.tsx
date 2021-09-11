@@ -16,7 +16,6 @@ import { saveFile, saveFileStream } from '~/tools/handle-file'
 import { shareFile, checkIsSharingSupported } from '~/tools/share-data'
 import { ContentItemMediaItem } from '~/ui/elements/content-item-media-item'
 import { FilePopup } from '~/ui/elements/file-popup'
-import { DownloadIcon, DeleteIcon, ShareIcon } from '~/ui/icons'
 
 type Props = {
   folder: Folder
@@ -212,15 +211,15 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
   const menu = useMemo(() => ({
     items: [!sharingConfirmation ? {
       title: texts.mediaDownloadTitle,
-      icon: <DownloadIcon/>,
+      icon: 'download',
       onClick: handleStartDownload
     } : null, isSharingSupported ? {
       title: texts.mediaShareTitle,
-      icon: <ShareIcon/>,
+      icon: 'share',
       onClick: handleShare,
     } : null, !sharingConfirmation ? {
       title: confirmation ? texts.confirmDeleteButton : texts.mediaDeleteTitle,
-      icon: <DeleteIcon/>,
+      icon: 'delete',
       warning: !confirmation,
       danger: confirmation,
       onClick: handleDelete

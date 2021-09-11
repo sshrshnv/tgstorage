@@ -8,7 +8,7 @@ import { useMemoRef, useUpdatableRef } from '~/tools/hooks'
 import { CHECKLIST_CHECK_MARK_LENGTH } from '~/tools/handle-content'
 import { Input } from '~/ui/elements/input'
 import { Button } from '~/ui/elements/button'
-import { DragIcon, CrossIcon } from '~/ui/icons/'
+import { Icon } from '~/ui/elements/icon'
 
 import styles from './content-form-checklist-item.styl'
 
@@ -131,7 +131,7 @@ export const ContentFormChecklistItem: FC<Props> = memo(({
           draggable={!isLastItem}
         >
           {!isLastItem && (
-            <DragIcon/>
+            <Icon icon="drag"/>
           )}
         </div>
         <Input
@@ -145,7 +145,7 @@ export const ContentFormChecklistItem: FC<Props> = memo(({
         {!isLastItem && (
           <Button
             class={styles.button}
-            icon={<CrossIcon/>}
+            icon="cross"
             onClick={handleDelete}
           />
         )}

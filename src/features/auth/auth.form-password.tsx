@@ -12,7 +12,7 @@ import { Text } from '~/ui/elements/text'
 import { Break } from '~/ui/elements/break'
 import { Input } from '~/ui/elements/input'
 import { Button } from '~/ui/elements/button'
-import { EyeOpenedIcon, EyeClosedIcon } from '~/ui/icons'
+import { Icon } from '~/ui/elements/icon'
 
 import type { Step, Country } from './auth'
 
@@ -78,7 +78,7 @@ export const AuthFormPassword: FC<Props> = memo(({
         value={password}
         error={error && (texts[error] || texts.error)}
         readonly={loading}
-        icon={passwordVisible ? <EyeOpenedIcon/> : <EyeClosedIcon/>}
+        icon={passwordVisible ? 'eye-opened' : 'eye-closed'}
         autoFocus
         onIconClick={togglePasswordVisibility}
         onInput={handlePasswordChange}

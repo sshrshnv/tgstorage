@@ -3,8 +3,6 @@ import { h } from 'preact'
 import { memo } from 'preact/compat'
 import { useMemo } from 'preact/hooks'
 
-import { FileIcon, PlayIcon } from '~/ui/icons'
-
 import styles from './file-preview-icon.styl'
 
 type Props = {
@@ -22,7 +20,7 @@ export const FilePreviewIcon: FC<Props> = memo(({
 
   return (
     <div class={styles.root}>
-      {isAudio ? <PlayIcon/> : <FileIcon/>}
+      {isAudio ? 'play' : 'file'}
       {extention}
     </div>
   )

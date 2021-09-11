@@ -1,7 +1,7 @@
 import type { FunctionComponent as FC } from 'preact'
 import { h } from 'preact'
 
-import { AppIcon } from '~/ui/icons'
+import { Icon } from '~/ui/elements/icon'
 
 import styles from './logo.styl'
 
@@ -16,7 +16,7 @@ export const Logo: FC<Props> = ({
 }) => {
   return (
     <div class={styles.root}>
-      {icon && <div class={styles.icon}><AppIcon/></div>}
+      {icon && <div class={styles.icon}><Icon icon="app"/></div>}
       {text && <h1 class={styles.text}>TgStorage</h1>}
     </div>
   )

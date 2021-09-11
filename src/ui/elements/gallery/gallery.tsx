@@ -10,7 +10,6 @@ import { useStateRef, useUpdatableRef } from '~/tools/hooks'
 import { Slide, useSlide } from '~/ui/elements/slide'
 import { Button } from '~/ui/elements/button'
 import { Text } from '~/ui/elements/text'
-import { BackIcon, CrossIcon, ArrowIcon } from '~/ui/icons'
 
 import styles from './gallery.styl'
 
@@ -105,7 +104,7 @@ export const Gallery: FC<Props> = memo(({
       <div class={styles.header}>
         <Button
           class={styles.backButton}
-          icon={<BackIcon/>}
+          icon="back"
           square
           onClick={closeSlide}
         />
@@ -114,7 +113,7 @@ export const Gallery: FC<Props> = memo(({
         </Text>
         <Button
           class={styles.closeButton}
-          icon={<CrossIcon/>}
+          icon="cross"
           square
           onClick={closeSlide}
         />
@@ -123,7 +122,7 @@ export const Gallery: FC<Props> = memo(({
       {currentIndex !== 0 && (
         <Button
           class={cn(styles.navButton, styles._left)}
-          icon={<ArrowIcon/>}
+          icon="arrow"
           square
           onClick={gallery?.prev}
         />
@@ -131,7 +130,7 @@ export const Gallery: FC<Props> = memo(({
       {currentIndex !== size - 1 && (
         <Button
           class={cn(styles.navButton, styles._right)}
-          icon={<ArrowIcon/>}
+          icon="arrow"
           square
           onClick={gallery?.next}
         />

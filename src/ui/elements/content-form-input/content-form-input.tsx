@@ -10,7 +10,7 @@ import { moveCursorToEnd } from '~/tools/manipulate-element'
 import { Textarea } from '~/ui/elements/textarea'
 import { Input } from '~/ui/elements/input'
 import { Button } from '~/ui/elements/button'
-import { LinkIcon, CheckIcon } from '~/ui/icons'
+import { Icon } from '~/ui/elements/icon'
 
 import styles from './content-form-input.styl'
 
@@ -139,7 +139,7 @@ export const ContentFormInput: FC<Props> = ({
     handler: handleMonospaceFormatting
   }, {
     type: 'link',
-    icon: <LinkIcon/>,
+    icon: 'link',
     handler: handleLinkFormatting
   }], [
     handleBoldFormatting,
@@ -225,7 +225,7 @@ export const ContentFormInput: FC<Props> = ({
             onTouchStart={prevent}
             onTouchEnd={handler}
           >
-            {icon || type}
+            {icon ? <Icon icon={icon}/> : type}
           </Button>
         ))}
         {urlVisible && (
@@ -241,7 +241,7 @@ export const ContentFormInput: FC<Props> = ({
             />
             <Button
               class={styles.linkButton}
-              icon={<CheckIcon/>}
+              icon="check"
               square
               onClick={handleLinkInserting}
               onTouchStart={handleLinkInserting}

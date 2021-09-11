@@ -7,7 +7,7 @@ import cn from 'classnames'
 import type { Props as MenuProps } from '~/ui/elements/menu'
 import { Menu } from '~/ui/elements/menu'
 import { Loader } from '~/ui/elements/loader'
-import { FolderIcon } from '~/ui/icons'
+import { Icon } from '~/ui/elements/icon'
 import { getColor } from '~/ui/styles'
 
 import styles from './sidebar-item.styl'
@@ -49,7 +49,7 @@ export const SidebarItem: FC<Props> = memo(({
         class={styles.icon}
         style={{ borderColor: color }}
       >
-        <FolderIcon style={{ fill: color }}/>
+        <Icon icon="folder" style={{ fill: color }}/>
       </div>
       <div class={styles.content}>
         <div class={styles.title}>
