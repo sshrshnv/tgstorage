@@ -9,7 +9,6 @@ import { useTexts, useFolder, useSendingMessage } from '~/core/hooks'
 import { useUpdatableRef } from '~/tools/hooks'
 import { normalizeMessagePreview } from '~/tools/handle-content'
 import { SidebarItem } from '~/ui/elements/sidebar-item'
-import { EditIcon, DeleteIcon } from '~/ui/icons'
 
 import type { FolderPopupParams } from './storage'
 
@@ -75,11 +74,11 @@ export const StorageSidebarFoldersItem: FC<Props> = memo(({
   const menu = useMemo(() => ({
     items: folder.general ? [] : [{
       title: texts.folderEditTitle,
-      icon: <EditIcon/>,
+      icon: 'edit',
       onClick: handleEdit
     }, {
       title: confirmation ? texts.confirmDeleteButton : texts.folderDeleteTitle,
-      icon: <DeleteIcon/>,
+      icon: 'delete',
       warning: !confirmation,
       danger: confirmation,
       onClick: handleDelete

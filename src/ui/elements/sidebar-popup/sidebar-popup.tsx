@@ -6,7 +6,6 @@ import cn from 'classnames'
 import { Slide, useSlide } from '~/ui/elements/slide'
 import { Button } from '~/ui/elements/button'
 import { Loader } from '~/ui/elements/loader'
-import { BackIcon } from '~/ui/icons'
 
 import styles from './sidebar-popup.styl'
 
@@ -35,7 +34,7 @@ export const SidebarPopup: FC<Props> = memo(({
       <div class={styles.header}>
         <Button
           class={styles.backButton}
-          icon={<BackIcon/>}
+          icon="back"
           square
           onClick={closeSlide}
         />

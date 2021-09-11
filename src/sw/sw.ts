@@ -30,6 +30,18 @@ if (process.env.NODE_ENV === 'production') {
   wb.cleanupOutdatedCaches()
 
   wb.registerRoute(
+    ({ request }) => /\.[0-9a-z]{8}\.(avif|webp|png|jpe?g)/.test(request.url),
+    new wb.CacheFirst({
+      cacheName: 'images',
+      plugins: [
+        new wb.ExpirationPlugin({
+          maxAgeSeconds: 365 * 24 * 60 * 60
+        })
+      ]
+    })
+  )
+
+  wb.registerRoute(
     new wb.NavigationRoute(
       wb.createHandlerBoundToURL('/index.html'),
       { allowlist: [/^(?!\/__)/] }

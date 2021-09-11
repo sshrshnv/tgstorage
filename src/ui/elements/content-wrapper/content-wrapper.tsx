@@ -6,7 +6,6 @@ import cn from 'classnames'
 import { useCallbackRef } from '~/tools/hooks'
 import { Text } from '~/ui/elements/text'
 import { Button } from '~/ui/elements/button'
-import { CrossIcon } from '~/ui/icons'
 
 import styles from './content-wrapper.styl'
 
@@ -53,7 +52,7 @@ export const ContentWrapper: FC<Props> = ({
       )}>
         <Button
           class={styles.overlayButton}
-          icon={<CrossIcon/>}
+          icon="cross"
           square
           onClick={closeOverlay}
         />

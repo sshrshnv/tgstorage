@@ -9,7 +9,6 @@ import { Text } from '~/ui/elements/text'
 import { Button } from '~/ui/elements/button'
 import { Break } from '~/ui/elements/break'
 import { Loader } from '~/ui/elements/loader'
-import { CrossIcon } from '~/ui/icons'
 import { animationClassName } from '~/ui/styles'
 
 import styles from './widget.styl'
@@ -107,7 +106,7 @@ export const Widget: FC<Props> = memo(({
       {onClose && (
         <Button
           class={styles.closeButton}
-          icon={<CrossIcon/>}
+          icon="cross"
           square
           onClick={close}
         />

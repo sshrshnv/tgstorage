@@ -3,11 +3,10 @@ const path = require('path')
 const webpack = require('webpack')
 const dotenv = require('dotenv')
 const HtmlPlugin = require('html-webpack-plugin')
-//const HtmlPreloadPlugin = require('@vue/preload-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const CopyPlugin = require('copy-webpack-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
+const HtmlSkipAssetsPlugin = require('html-webpack-skip-assets-plugin').HtmlWebpackSkipAssetsPlugin
 const HTMLInlineCSSPlugin = require("html-inline-css-webpack-plugin").default
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 const SentryPlugin = require('@sentry/webpack-plugin')
@@ -21,6 +20,9 @@ const isBundleAnalyzer = () => !!process.env.BUNDLE_ANALYZER
 const appEnv = isDevEnv() ? dotenv.config({
   path: `./.env.${process.env.BUILD_ENV}`
 })?.parsed : process.env
+
+const isSentryAvailable = () =>
+  isProd() && !(isBundleAnalyzer() || isDevEnv()) && !!appEnv.SENTRY_AUTH_TOKEN
 
 const defineEnvConfig = {
   'process.env.BUILD_ENV': JSON.stringify(process.env.BUILD_ENV),
@@ -72,6 +74,7 @@ module.exports = [{
     path: path.resolve('./build'),
     filename: isDev() ? `[name].js` : `[name].[contenthash:8].js`,
     chunkFilename: isDev() ? `[name].js` : `[name].[contenthash:8].js`,
+    assetModuleFilename: '[name].[hash:8][ext]',
     publicPath: process.env.ASSETS_HOST || '/'
   },
 
@@ -153,6 +156,10 @@ module.exports = [{
         test: /\.(avif|webp|png)$/,
         type: 'asset/resource'
       }, {
+        test: /\.webmanifest$/,
+        use: 'webpack-webmanifest-loader',
+        type: 'asset/resource'
+      }, {
         test: /\.svg$/,
         use: ['preact-svg-loader'],
       }
@@ -184,20 +191,11 @@ module.exports = [{
       filter: (filename) => filename.includes('inline') || filename.includes('index')
     }) : () => {},
 
-    /*new HtmlPreloadPlugin({
-      rel: 'preload',
-      include: 'allAssets',
-      fileBlacklist: [/^[0-9]*\./, /\.map/, /\.jpe?g/]
-    }),*/
+    isProd() ? new HtmlSkipAssetsPlugin({
+      skipAssets: [asset => /\/inline.*.js/.test(asset.attributes?.src || '')],
+    }) : () => {},
 
-    new CopyPlugin({
-      patterns: [
-        { from: './src/core/app.webmanifest', to: './app.v2.webmanifest' },
-        { from: './src/ui/images/*', to: './[name].v2[ext]' }
-      ]
-    }),
-
-    (isProd() && !isBundleAnalyzer() && !!appEnv.SENTRY_AUTH_TOKEN) ? new SentryPlugin({
+    isSentryAvailable() ? new SentryPlugin({
       authToken: appEnv.SENTRY_AUTH_TOKEN,
       org: 'alexander-shershnev',
       project: 'tgstorage',

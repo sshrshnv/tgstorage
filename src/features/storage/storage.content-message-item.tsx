@@ -14,7 +14,6 @@ import { ContentItem } from '~/ui/elements/content-item'
 import { ContentItemHeader } from '~/ui/elements/content-item-header'
 import { ContentItemText } from '~/ui/elements/content-item-text'
 import { ContentItemChecklist } from '~/ui/elements/content-item-checklist'
-import { EditIcon, MoveIcon, CopyIcon, ShareIcon, DeleteIcon, CheckIcon } from '~/ui/icons'
 
 import { StorageContentMessageItemMediaList } from './storage.content-message-item-media-list'
 import { StorageContentMessageItemMediaItem } from './storage.content-message-item-media-item'
@@ -125,23 +124,23 @@ export const StorageContentMessageItem: FC<Props> = memo(({
   const menu = useMemo(() => ({
     items: [!message.fwd ? {
       title: texts.messageEditTitle,
-      icon: <EditIcon/>,
+      icon: 'edit',
       onClick: handleEdit
     } : null, {
       title: texts.messageMoveTitle,
-      icon: <MoveIcon/>,
+      icon: 'move',
       onClick: handleMove
     }, copingText.length ? {
       title: coping ? texts.messageCopiedTitle : texts.messageCopyTitle,
-      icon: coping ? <CheckIcon/> : <CopyIcon/>,
+      icon: coping ? 'check' : 'copy',
       onClick: handleCopy
     } : null, (copingText.length && checkIsSharingSupported()) ? {
       title: texts.messageShareTitle,
-      icon: <ShareIcon/>,
+      icon: 'share',
       onClick: handleShare
     }: null, {
       title: confirmation ? texts.confirmDeleteButton : texts.messageDeleteTitle,
-      icon: <DeleteIcon/>,
+      icon: 'delete',
       warning: !confirmation,
       danger: confirmation,
       onClick: handleDelete

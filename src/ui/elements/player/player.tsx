@@ -12,7 +12,6 @@ import { formatDuration } from '~/tools/format-time'
 import { Button } from '~/ui/elements/button'
 import { Range } from '~/ui/elements/range'
 import { Loader } from '~/ui/elements/loader'
-import { PlayIcon, PauseIcon } from '~/ui/icons'
 
 import styles from './player.styl'
 
@@ -316,7 +315,7 @@ export const Player: FC<Props> = memo(({
             controlsHidden && styles._hidden,
             isAudio && styles._border
           )}
-          icon={playing ? <PauseIcon/> : <PlayIcon/>}
+          icon={playing ? 'pause' : 'play'}
           square
           onClick={togglePlay}
         />
@@ -343,7 +342,7 @@ export const Player: FC<Props> = memo(({
       >
         {!isFullscreen && (
           <Button
-            icon={playing ? <PauseIcon/> : <PlayIcon/>}
+            icon={playing ? 'pause' : 'play'}
             square
             onClick={togglePlay}
           />

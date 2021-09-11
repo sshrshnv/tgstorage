@@ -14,7 +14,6 @@ import { ContentFormNote } from '~/ui/elements/content-form-note'
 import { ContentFormChecklist } from '~/ui/elements/content-form-checklist'
 import { Form } from '~/ui/elements/form'
 import { Button } from '~/ui/elements/button'
-import { CrossIcon } from '~/ui/icons'
 
 import styles from './content-form.styl'
 
@@ -75,7 +74,7 @@ export const ContentForm: FC<Props> = memo(({
           }
           <Button
             class={styles.button}
-            icon={<CrossIcon/>}
+            icon="cross"
             onClick={onCancel}
           />
         </div>

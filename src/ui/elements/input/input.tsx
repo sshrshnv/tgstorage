@@ -6,7 +6,8 @@ import cn from 'classnames'
 
 import { useUpdatableRef } from '~/tools/hooks'
 import { moveCursorToEnd } from '~/tools/manipulate-element'
-import { CrossIcon } from '~/ui/icons'
+import { Loader } from '~/ui/elements/loader'
+import { Icon } from '~/ui/elements/icon'
 
 import styles from './input.styl'
 
@@ -18,7 +19,8 @@ type Props = {
   value?: string
   placeholder?: string
   forwardedRef?: RefObject<HTMLInputElement>
-  icon?: h.JSX.Element | null
+  icon?: string
+  iconClass?: string
   autoComplete?: string
   type?: string
   disabled?: boolean
@@ -43,6 +45,7 @@ export const Input: FC<Props> = memo(({
   disabled,
   border = true,
   icon,
+  iconClass: iconClassName,
   forwardedRef,
   maxLength = 50,
   autoFocus,
@@ -123,7 +126,16 @@ export const Input: FC<Props> = memo(({
       />
       {(icon || (clear && inputData.value)) && (
         <div class={styles.icon} onClick={icon ? onIconClick : handleClear}>
-          {icon || <CrossIcon/>}
+          {icon === 'loader' ? (
+            <Loader
+              class={cn(iconClassName)}
+            />
+          ) : (
+            <Icon
+              class={cn(iconClassName)}
+              icon={icon || 'cross'}
+            />
+          )}
         </div>
       )}
       {(label || error) && (

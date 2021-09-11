@@ -8,7 +8,7 @@ import {
   CHECKLIST_CHECK_MARK_LENGTH,
   CHECKLIST_CHECKED_MARK
 } from '~/tools/handle-content'
-import { CheckIcon } from '~/ui/icons'
+import { Icon } from '~/ui/elements/icon'
 
 import styles from './content-item-checklist-item.styl'
 
@@ -46,7 +46,7 @@ export const ContentItemChecklistItem: FC<Props> = memo(({
       onClick={loading ? undefined : toggle}
     >
       {isChecked && (
-        <CheckIcon/>
+        <Icon icon="check"/>
       )}
       <span>{text}</span>
     </div>

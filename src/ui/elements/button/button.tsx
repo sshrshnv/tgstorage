@@ -3,6 +3,7 @@ import { h } from 'preact'
 import cn from 'classnames'
 
 import { Loader } from '~/ui/elements/loader'
+import { Icon } from '~/ui/elements/icon'
 
 import styles from './button.styl'
 
@@ -19,7 +20,7 @@ export type Props = {
   square?: boolean
   outline?: boolean
   inline?: boolean
-  icon?: h.JSX.Element | null
+  icon?: string
   onClick?: (ev?) => void
   onTouchStart?: (ev?) => void
   onTouchEnd?: (ev?) => void
@@ -68,7 +69,11 @@ export const Button: FC<Props> = ({
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
-      {icon}
+      {icon === 'loader' ? (
+        <Loader/>
+      ) : icon ? (
+        <Icon icon={icon}/>
+      ) : null}
       {children}
     </button>
   )

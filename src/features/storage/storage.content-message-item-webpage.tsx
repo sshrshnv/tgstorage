@@ -9,7 +9,6 @@ import { useMemoRef, useUpdatableRef } from '~/tools/hooks'
 import { COPY_TIMEOUT, copyText } from '~/tools/copy-text'
 import { shareLink, checkIsSharingSupported } from '~/tools/share-data'
 import { ContentItemWebpage } from '~/ui/elements/content-item-webpage'
-import { MoveIcon, CopyIcon, CheckIcon, ShareIcon } from '~/ui/icons'
 
 type Props = {
   folder: Folder
@@ -59,15 +58,15 @@ export const StorageContentMessageItemWebpage: FC<Props> = ({
   const menu = useMemo(() => ({
     items: [{
       title: texts.linkOpenTitle,
-      icon: <MoveIcon/>,
+      icon: 'move',
       url: webpage.url
     }, {
       title: coping ? texts.linkCopiedTitle : texts.linkCopyTitle,
-      icon: coping ? <CheckIcon/> : <CopyIcon/>,
+      icon: coping ? 'check' : 'copy',
       onClick: handleCopyLink
     }, checkIsSharingSupported() ? {
       title: texts.linkShareTitle,
-      icon: <ShareIcon/>,
+      icon: 'share',
       onClick: handleShareLink
     }: null],
     closeTimeout: coping ? COPY_TIMEOUT : 0,

@@ -14,7 +14,6 @@ import { useDragReorder } from '~/ui/hooks/hooks.use-drag-reoder'
 import { Input } from '~/ui/elements/input'
 import { Loader } from '~/ui/elements/loader'
 import { Button } from '~/ui/elements/button'
-import { SendIcon } from '~/ui/icons/'
 
 import styles from './content-form-checklist.styl'
 
@@ -143,7 +142,7 @@ export const ContentFormChecklist: FC<Props> = memo(({
             styles.button,
             isSubmitAvailable && styles._primary
           )}
-          icon={<SendIcon/>}
+          icon="send"
           disabled={!isSubmitAvailable}
           onClick={handleSubmit}
         />

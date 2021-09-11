@@ -8,7 +8,7 @@ import { useCallbackRef, useUpdatableRef } from '~/tools/hooks'
 import { timer } from '~/tools/timer'
 import { checkIsDesktop } from '~/tools/detect-device'
 import { Button } from '~/ui/elements/button'
-import { MenuIcon } from '~/ui/icons'
+import { Icon } from '~/ui/elements/icon'
 import { animationClassName } from '~/ui/styles'
 
 import styles from './menu.styl'
@@ -20,7 +20,7 @@ export type Props = {
   class?: string
   items: ({
     title: string
-    icon?: h.JSX.Element | null
+    icon?: string
     url?: string
     warning?: boolean
     danger?: boolean
@@ -144,7 +144,7 @@ export const Menu: FC<Props> = memo(({
     >
       <Button
         class={styles.button}
-        icon={<MenuIcon/>}
+        icon="menu"
         inline
       />
       {expanded && (
@@ -160,7 +160,9 @@ export const Menu: FC<Props> = memo(({
               rel="noopener noreferrer"
               target="_blank"
             >
-              {item.icon}
+              {item.icon && (
+                <Icon icon={item.icon}/>
+              )}
               {item.title}
             </a>
           ) : item ? (
@@ -173,7 +175,9 @@ export const Menu: FC<Props> = memo(({
               )}
               onClick={item.onClick}
             >
-              {item.icon}
+              {item.icon && (
+                <Icon icon={item.icon}/>
+              )}
               {item.title}
             </div>
           ) : null)}
