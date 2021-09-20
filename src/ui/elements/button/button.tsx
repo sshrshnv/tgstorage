@@ -1,5 +1,6 @@
 import type { FunctionComponent as FC } from 'preact'
 import { h } from 'preact'
+import { memo } from 'preact/compat'
 import cn from 'classnames'
 
 import { Loader } from '~/ui/elements/loader'
@@ -26,7 +27,7 @@ export type Props = {
   onTouchEnd?: (ev?) => void
 }
 
-export const Button: FC<Props> = ({
+export const Button: FC<Props> = memo(({
   children,
   class: className,
   type = 'button',
@@ -77,4 +78,4 @@ export const Button: FC<Props> = ({
       {children}
     </button>
   )
-}
+})

@@ -65,7 +65,6 @@ export const parseVideoFile = (file: File|string|undefined): Promise<{
             let thumbFile = new File([blob], '', { type: 'image/jpeg', lastModified: Date.now() }) as File|undefined
             const thumbFileKey = setFile(thumbFile)
             thumbFile = undefined
-
             resolve(thumbFileKey)
           }, 'image/jpeg')
         }

@@ -16,9 +16,8 @@
   "settingsLocaleLabel": "Language",
   "settingsLocale_en": "English",
   "settingsLocale_ru": "Русский",
-  "settingsFolderLabel": "General folder",
-  "settingsFolder_true": "Visible",
-  "settingsFolder_false": "Hidden",
+  "settingsFolderText": "Show general folder",
+  "settingsErrorText": "Show error notifications",
   "notificationsTitle": "Notifications",
   "profileTitle": "Profile",
   "profilePhoneLabel": "Phone number",
@@ -65,5 +64,6 @@
   "linkOpenTitle": "Open link",
   "linkCopyTitle": "Copy link",
   "linkCopiedTitle": "Copied",
-  "linkShareTitle": "Share link"
+  "linkShareTitle": "Share link",
+  "sendingMessagesWarning": "You have unsent messages, do you confirm the exit?"
 }

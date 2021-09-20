@@ -27,7 +27,8 @@ const [
 const initialSettings: Settings = {
   theme: 'system',
   locale: detectLocale(),
-  generalFolder: true
+  generalFolderEnabled: true,
+  errorWidgetEnabled: false
 }
 
 const initialDataState = {

@@ -1,5 +1,6 @@
 import type { FunctionComponent as FC } from 'preact'
 import { h } from 'preact'
+import { memo } from 'preact/compat'
 import cn from 'classnames'
 
 import styles from './text.styl'
@@ -18,7 +19,7 @@ type Props = {
   icon?: h.JSX.Element | null
 }
 
-export const Text: FC<Props> = ({
+export const Text: FC<Props> = memo(({
   children,
   class: className,
   withLink,
@@ -50,4 +51,4 @@ export const Text: FC<Props> = ({
       {icon}
     </span>
   )
-}
+})

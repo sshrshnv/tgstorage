@@ -11,6 +11,7 @@ import { Layout } from '~/ui/elements/layout'
 
 import { StorageSidebar } from './storage.sidebar'
 import { StorageContent } from './storage.content'
+import { StorageListeners } from './storage.listeners'
 
 export type FolderPopupParams = {
   folder?: Folder
@@ -93,6 +94,8 @@ const Storage: FC = memo(() => {
         sharedData={sharedData}
         sharedDataActive={sharedDataActive}
       />
+
+      <StorageListeners/>
     </Layout>
   )
 })

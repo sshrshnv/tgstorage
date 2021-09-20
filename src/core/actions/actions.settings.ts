@@ -27,4 +27,7 @@ export const setLocale = (locale: Locale) =>
   setSettings({ locale })
 
 export const setGeneralFolder = (value: boolean) =>
-  setSettings({ generalFolder: value })
+  setSettings({ generalFolderEnabled: value })
+
+export const setErrorWidget = (value: boolean) =>
+  setSettings({ errorWidgetEnabled: value })

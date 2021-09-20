@@ -16,9 +16,8 @@
   "settingsLocaleLabel": "Язык",
   "settingsLocale_en": "English",
   "settingsLocale_ru": "Русский",
-  "settingsFolderLabel": "Общая папка",
-  "settingsFolder_true": "Видимая",
-  "settingsFolder_false": "Скрытая",
+  "settingsFolderText": "Показывать общую папку",
+  "settingsErrorText": "Показывать уведомления об ошибках",
   "notificationsTitle": "Уведомления",
   "profileTitle": "Аккаунт",
   "profilePhoneLabel": "Номер телефона",
@@ -65,5 +64,6 @@
   "linkOpenTitle": "Открыть ссылку",
   "linkCopyTitle": "Скопировать ссылку",
   "linkCopiedTitle": "Скопировано",
-  "linkShareTitle": "Отправить ссылку"
+  "linkShareTitle": "Отправить ссылку",
+  "sendingMessagesWarning": "У вас есть неотправленные сообщения, вы подтверждаете выход?"
 }

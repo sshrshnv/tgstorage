@@ -1,0 +1,41 @@
+.root
+  display: flex
+  justify-content: space-between
+  width: 100%
+
+.text
+  flex-shrink: 1
+  padding: 0 20px 0 4px
+  font-size: 15px
+
+.control
+  position: relative
+  flex-shrink: 0
+  width: 48px
+  height: 24px
+  border-radius: 24px
+  border: 1px solid var(--color-light-2)
+  transition: border-color .2s ease-in-out
+  cursor: pointer
+
+  &::after
+    position: absolute
+    top: -1px
+    left: -1px
+    display: block
+    width: 24px
+    height: 24px
+    border-radius: 50%
+    background-color: var(--color-light-2)
+    content: ''
+    transform: translateX(0)
+    transition: .2s ease-in-out
+    transition-property: background, transform
+
+&._active
+  .control
+    border-color: var(--color-brand)
+
+    &::after
+      background-color: var(--color-brand)
+      transform: translateX(24px)

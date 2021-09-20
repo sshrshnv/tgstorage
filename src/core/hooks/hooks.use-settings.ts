@@ -5,25 +5,30 @@ import type { State } from '~/core/store'
 import { useUpdatableRef } from '~/tools/hooks'
 
 export const useSettings = () => {
-  const { theme, locale, generalFolder }: {
+  const { theme, locale, generalFolderEnabled, errorWidgetEnabled }: {
     theme: State['settings']['theme']
     locale: State['settings']['locale']
-    generalFolder: State['settings']['generalFolder']
+    generalFolderEnabled: State['settings']['generalFolderEnabled']
+    errorWidgetEnabled: State['settings']['generalFolderEnabled']
   } = useStoreState(state => ({
     theme: state.settings.theme,
     locale: state.settings.locale,
-    generalFolder: state.settings.generalFolder
+    generalFolderEnabled: state.settings.generalFolderEnabled,
+    errorWidgetEnabled: state.settings.errorWidgetEnabled,
   }))
   const themeRef = useUpdatableRef(theme)
   const localeRef = useUpdatableRef(locale)
-  const generalFolderRef = useUpdatableRef(generalFolder)
+  const generalFolderEnabledRef = useUpdatableRef(generalFolderEnabled)
+  const errorWidgetEnabledRef = useUpdatableRef(errorWidgetEnabled)
 
   return useMemo(() => ({
     theme,
     themeRef,
     locale,
     localeRef,
-    generalFolder,
-    generalFolderRef
-  }), [theme, locale, generalFolder])
+    generalFolderEnabled,
+    generalFolderEnabledRef,
+    errorWidgetEnabled,
+    errorWidgetEnabledRef
+  }), [theme, locale, generalFolderEnabled, errorWidgetEnabled])
 }

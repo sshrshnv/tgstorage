@@ -32,7 +32,7 @@ export const StorageSidebarFoldersList: FC<Props> = memo(({
   const { texts } = useTexts('storage')
   const { folders } = useFolders()
   const { folder } = useActiveFolder()
-  const filterGeneralFolder = !useSettings().generalFolder
+  const filterGeneralFolder = !useSettings().generalFolderEnabled
 
   const filteredFolders = useMemo(() => {
     if (filterActiveFolder) {

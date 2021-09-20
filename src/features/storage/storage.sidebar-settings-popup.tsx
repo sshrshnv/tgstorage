@@ -3,13 +3,14 @@ import { h } from 'preact'
 import { memo } from 'preact/compat'
 import { useCallback, useMemo, useState } from 'preact/hooks'
 
-import { setTheme, setLocale, setGeneralFolder, loadTexts } from '~/core/actions'
+import { setTheme, setLocale, setGeneralFolder, setErrorWidget, loadTexts } from '~/core/actions'
 import { useTexts, useSettings } from '~/core/hooks'
 import { AVALIABLE_LOCALES } from '~/tools/detect-locale'
 import { AVALIABLE_THEMES } from '~/ui/styles'
 import { SidebarPopup } from '~/ui/elements/sidebar-popup'
 import { Form } from '~/ui/elements/form'
 import { Select } from '~/ui/elements/select'
+import { Switch } from '~/ui/elements/switch'
 import { Break } from '~/ui/elements/break'
 
 type Props = {
@@ -20,7 +21,7 @@ export const StorageSidebarSettingsPopup: FC<Props> = memo(({
   onClose
 }) => {
   const { texts } = useTexts('storage')
-  const { theme, locale, generalFolder } = useSettings()
+  const { theme, locale, generalFolderEnabled, errorWidgetEnabled } = useSettings()
   const [localeLoading, setLocaleLoading] = useState(false)
 
   const themeOptions = useMemo(() => AVALIABLE_THEMES.map(value => ({
@@ -32,11 +33,6 @@ export const StorageSidebarSettingsPopup: FC<Props> = memo(({
     text: texts[`settingsLocale_${value}`],
     value
   })), [texts.settingsLocaleLabel])
-
-  const generalFolderOptions = useMemo(() => [
-    { text: texts.settingsFolder_true, value: 'true' },
-    { text: texts.settingsFolder_false, value: 'false' }
-  ], [texts.settingsFolderLabel])
 
   const handleChangeThemeValue = useCallback((theme) => {
     setTheme(theme)
@@ -50,7 +46,11 @@ export const StorageSidebarSettingsPopup: FC<Props> = memo(({
   }, [])
 
   const handleChangeGeneralFolderValue = useCallback((value) => {
-    setGeneralFolder(value === 'true')
+    setGeneralFolder(value)
+  }, [])
+
+  const handleChangeErrorWidgetValue = useCallback((value) => {
+    setErrorWidget(value)
   }, [])
 
   return (
@@ -80,12 +80,17 @@ export const StorageSidebarSettingsPopup: FC<Props> = memo(({
         />
         <Break size={28} px/>
 
-        <Select
-          name={texts.settingsFolderLabel}
-          label={texts.settingsFolderLabel}
-          value={`${generalFolder}`}
-          options={generalFolderOptions}
-          onSelect={handleChangeGeneralFolderValue}
+        <Switch
+          text={texts.settingsFolderText}
+          active={generalFolderEnabled}
+          onChange={handleChangeGeneralFolderValue}
+        />
+        <Break size={28} px/>
+
+        <Switch
+          text={texts.settingsErrorText}
+          active={errorWidgetEnabled}
+          onChange={handleChangeErrorWidgetValue}
         />
         <Break size={28} px/>
       </Form>

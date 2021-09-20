@@ -4,6 +4,7 @@ import { memo } from 'preact/compat'
 import { useMemo } from 'preact/hooks'
 
 import styles from './file-preview-icon.styl'
+import { Icon } from '~/ui/elements/icon'
 
 type Props = {
   name?: string
@@ -20,7 +21,7 @@ export const FilePreviewIcon: FC<Props> = memo(({
 
   return (
     <div class={styles.root}>
-      {isAudio ? 'play' : 'file'}
+      <Icon icon={isAudio ? 'play' : 'file'}/>
       {extention}
     </div>
   )

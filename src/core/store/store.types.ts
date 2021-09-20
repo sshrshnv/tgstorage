@@ -17,7 +17,8 @@ export type Viewport = {
 export type Settings = {
   locale: Locale
   theme: Theme
-  generalFolder: boolean
+  generalFolderEnabled: boolean
+  errorWidgetEnabled: boolean
 }
 
 export type User = {

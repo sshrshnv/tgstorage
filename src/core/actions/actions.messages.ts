@@ -133,7 +133,13 @@ export const setSendingMessage = (
   message: InputMessage | undefined
 ) => {
   const sendingMessages = new Map(store.getState().sendingMessages)
-  sendingMessages.set(folderId, message)
+
+  if (message) {
+    sendingMessages.set(folderId, message)
+  } else {
+    sendingMessages.delete(folderId)
+  }
+
   store.setState({
     sendingMessages
   })
