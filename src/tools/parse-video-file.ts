@@ -1,5 +1,6 @@
 import { getFile, setFile } from '~/core/cache'
 import { timer } from '~/tools/timer'
+import { checkIsSafari } from '~/tools/detect-device'
 
 //const THUMB_MAX_SIZE = 1280
 
@@ -17,9 +18,10 @@ export const parseVideoFile = (file: File|string|undefined): Promise<{
     resolve(undefined)
   }
 
+  const isSafari = checkIsSafari()
+  const video = document.createElement('video')
   const fileUrl = URL.createObjectURL(file)
   file = undefined
-  const video = document.createElement('video')
 
   const clear = () => {
     URL.revokeObjectURL(fileUrl)
@@ -39,7 +41,7 @@ export const parseVideoFile = (file: File|string|undefined): Promise<{
     const thumbFileKey = await Promise.race([
       timer(2500),
       new Promise(resolve => {
-        video.onseeked = async () => {
+        video[isSafari ? 'oncanplaythrough' : 'onseeked'] = async () => {
           await timer(100)
           const canvas = document.createElement('canvas')
           const canvasContext = canvas.getContext('2d', { alpha: false })
@@ -73,7 +75,7 @@ export const parseVideoFile = (file: File|string|undefined): Promise<{
           resolve(undefined)
         }
 
-        video.currentTime = Math.min(videoParams.duration, 2)
+        video.currentTime = Math.min(videoParams.duration, 0.1)
       })
     ]).catch(() => {
       clear()
@@ -90,6 +92,13 @@ export const parseVideoFile = (file: File|string|undefined): Promise<{
   video.onerror = () => {
     clear()
     resolve(undefined)
+  }
+
+  if (isSafari) {
+    video.preload = 'auto'
+    video.autoplay = true
+    video.playsInline = true
+    video.controls = true
   }
 
   video.volume = 0
