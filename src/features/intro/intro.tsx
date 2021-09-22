@@ -1,9 +1,10 @@
-import type { FunctionComponent as FC } from 'preact'
-import { h } from 'preact'
+import { FunctionComponent as FC } from 'preact'
+import { Fragment, h } from 'preact'
 import { useCallback } from 'preact/hooks'
 
 import { installApp, setAppRoute } from '~/core/actions'
 import { useTexts, useSettings, useAppInstall } from '~/core/hooks'
+import { checkIsDesktop, checkIsWindows, checkIsIOS, checkIsAndroid } from '~/tools/detect-device'
 import { Layout } from '~/ui/elements/layout'
 import { LayoutBlock } from '~/ui/elements/layout-block'
 import { Logo } from '~/ui/elements/logo'
@@ -65,6 +66,7 @@ const Intro: FC = () => {
           type,
           src: screens[`channel-${locale}.${type}`]
         }))}/>
+
         <div>
           <Text>{texts.faqDescription0}</Text>
           <Text>{texts.faqDescription1}</Text>
@@ -77,6 +79,7 @@ const Intro: FC = () => {
           type,
           src: screens[`install-${locale}.${type}`]
         }))}/>
+
         <div>
           <Text withLink>
             {texts.appDescription0} <a
@@ -85,7 +88,8 @@ const Intro: FC = () => {
               rel="noopener noreferrer"
             >GitHub</a>.
           </Text>
-          <Text>{texts.appDescription1}</Text>
+          <Text>{texts.installDescription}</Text>
+
           {(appInstallAvailable && !appInstalled) && (
             <Button
               uppercase
@@ -95,6 +99,7 @@ const Intro: FC = () => {
               {texts.installButton}
             </Button>
           )}
+
           <Button
             uppercase
             brand
@@ -103,6 +108,55 @@ const Intro: FC = () => {
           >
             {texts.continueButton}
           </Button>
+
+          {(!appInstallAvailable && !appInstalled) && (
+            <Fragment>
+              <Break mSize={16} dSize={20} px/>
+              <Text mCenter withLink small>
+                {texts.installBrowsers}
+                {checkIsDesktop() && (
+                  <Fragment>
+                    <br/>
+                    <a
+                      href="https://www.microsoft.com/edge"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >- Microsoft Edge</a>
+                  </Fragment>
+                )}
+                {checkIsWindows() && (
+                  <Fragment>
+                    <br/>
+                    <a
+                      href="https://www.google.com/chrome"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >- Google Chrome</a>
+                  </Fragment>
+                )}
+                {checkIsAndroid() && (
+                  <Fragment>
+                    <br/>
+                    <a
+                      href="market://details?id=com.android.chrome"
+                      target="_top"
+                      rel="noopener noreferrer"
+                    >- Google Chrome</a>
+                  </Fragment>
+                )}
+                {checkIsIOS() && (
+                  <Fragment>
+                    <br/>
+                    <a
+                      href="https://www.apple.com/safari"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >- Safari</a>
+                  </Fragment>
+                )}
+              </Text>
+            </Fragment>
+          )}
         </div>
       </LayoutBlock>
       <Break mSize={48} dSize={72} px/>

@@ -5,7 +5,7 @@
   "errorTitle": "Error",
   "errorDescription": "Something went wrong. The error was sent to the developer.",
   "errorButton": "Ok",
-  "installTitle": "Application",
+  "installTitle": "Installation",
   "installDescription": "Install this application for more convenient use.",
   "installButton": "Install"
 }

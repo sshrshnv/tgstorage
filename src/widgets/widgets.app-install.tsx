@@ -4,7 +4,7 @@ import { h } from 'preact'
 import { memo } from 'preact/compat'
 import { useCallback, useEffect } from 'preact/hooks'
 
-import { installApp } from '~/core/actions'
+import { installApp, cancelAppInstall } from '~/core/actions'
 import { useTexts, useAppInstall } from '~/core/hooks'
 import { Widget } from '~/ui/elements/widget'
 
@@ -26,6 +26,7 @@ export const WidgetsAppInstall: FC<Props> = memo(({
 
   const handleClose = useCallback(() => {
     setVisible(false)
+    cancelAppInstall()
   }, [setVisible])
 
   useEffect(() => {

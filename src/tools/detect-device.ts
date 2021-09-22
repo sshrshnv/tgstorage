@@ -17,7 +17,7 @@ maxTouchPoints = maxTouchPoints || 1
 
 let isIOS
 export const checkIsIOS = () =>
-  isIOS ??= (/ipad|iphone|ipod/i.test(platform) || (/mac/i.test(platform) && maxTouchPoints > 1)) && !self.MSStream
+  isIOS ??= (/ipad|iphone|ipod/i.test(platform) || (/mac/i.test(platform) && maxTouchPoints > 1)) && !(self as any).MSStream
 
 let isSafari
 export const checkIsSafari = () =>
@@ -33,17 +33,43 @@ export const checkIsIOSChrome = () =>
 
 let isAndroid
 export const checkIsAndroid = () =>
-  isAndroid ??= (/android/i.test(platform) || /android/i.test(userAgent)) && !self.MSStream
+  isAndroid ??= (/android/i.test(platform) || /android/i.test(userAgent)) && !(self as any).MSStream
+
+let isMicrosoftEdge
+export const checkIsMicrosoftEdge = () =>
+  isMicrosoftEdge ??= brands ?
+    brands.some(({ brand }) => brand.toLocaleLowerCase() === 'microsoft edge') :
+    /edg/i.test(userAgent)
+
+let isYandex
+export const checkIsYandex = () =>
+  isYandex ??= /yabrowser/i.test(userAgent)
+
+let isSamsung
+export const checkIsSamsung = () =>
+  isSamsung ??= /samsung/i.test(userAgent)
 
 let isChrome
-const checkIsChrome = () =>
-  isChrome ??= brands ?
+export const checkIsChrome = () =>
+  isChrome ??= !checkIsMicrosoftEdge() && !checkIsYandex() && !checkIsSamsung() && (brands ?
     brands.some(({ brand }) => brand.toLocaleLowerCase() === 'chromium') :
     !!(window as any).chrome && /chrome/.test(userAgent)
+  )
 
 let isAndroidChrome
 export const checkIsAndroidChrome = () =>
   isAndroidChrome ??= checkIsAndroid() && checkIsChrome()
+
+let isWindows
+export const checkIsWindows = () =>
+  isWindows ??= (
+    userAgentData.platform?.toLocaleLowerCase() === 'windows' ||
+    /win/i.test(platform) || /windows/i.test(userAgent)
+  )
+
+let isMac
+export const checkIsMac = () =>
+  isMac ??= /mac/i.test(platform) || /mac/i.test(userAgent)
 
 let isDesktop
 export const checkIsDesktop = () =>

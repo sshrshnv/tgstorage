@@ -1,7 +1,7 @@
 import type { Ref } from 'preact/hooks'
 import { useRef, useMemo } from 'preact/hooks'
 
-import { usePrevious } from './use-previous'
+import { usePrevious } from './hooks.use-previous'
 
 export const useUpdatableRef = <T>(value: T): Ref<T> => {
   const ref = useRef(value)

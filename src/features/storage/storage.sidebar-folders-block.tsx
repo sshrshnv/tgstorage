@@ -3,7 +3,7 @@ import { h } from 'preact'
 import { memo } from 'preact/compat'
 import { useCallback } from 'preact/hooks'
 
-import { useFolders } from '~/core/hooks'
+import { useFolders, useAppInstall } from '~/core/hooks'
 import { Sidebar } from '~/ui/elements/sidebar'
 import { SidebarHeader } from '~/ui/elements/sidebar-header'
 import { SidebarActionButton } from '~/ui/elements/sidebar-action-button'
@@ -18,6 +18,7 @@ type Props = {
   setFolderPopupParams?: (params: FolderPopupParams) => void
   setProfilePopupVisible?: (value: boolean) => void
   setSettingsPopupVisible?: (value: boolean) => void
+  setInstallPopupVisible?: (value: boolean) => void
 }
 
 export const StorageSidebarFoldersBlock: FC<Props> = memo(({
@@ -25,8 +26,10 @@ export const StorageSidebarFoldersBlock: FC<Props> = memo(({
   mobileTransparent,
   setFolderPopupParams,
   setProfilePopupVisible,
-  setSettingsPopupVisible
+  setSettingsPopupVisible,
+  setInstallPopupVisible
 }) => {
+  const { appInstalled } = useAppInstall()
   const { foldersLoading } = useFolders()
 
   const openFolderPopup = useCallback(() => {
@@ -42,6 +45,10 @@ export const StorageSidebarFoldersBlock: FC<Props> = memo(({
   const openSettingsPopup = useCallback(() => {
     setSettingsPopupVisible?.(true)
   }, [setSettingsPopupVisible])
+
+  const openInstallPopup = useCallback(() => {
+    setInstallPopupVisible?.(true)
+  }, [setInstallPopupVisible])
 
   return (
     <Sidebar
@@ -60,6 +67,13 @@ export const StorageSidebarFoldersBlock: FC<Props> = memo(({
           square
           onClick={openSettingsPopup}
         />
+        {!appInstalled && (
+          <Button
+            icon="device"
+            square
+            onClick={openInstallPopup}
+          />
+        )}
       </SidebarHeader>
 
       <SidebarActionButton

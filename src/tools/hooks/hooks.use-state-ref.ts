@@ -1,7 +1,7 @@
 import type { StateUpdater, Ref } from 'preact/hooks'
 import { useRef, useState, useMemo } from 'preact/hooks'
 
-import { usePrevious } from './use-previous'
+import { usePrevious } from './hooks.use-previous'
 
 export const useStateRef = <T>(initialValue: T | (() => T)): [
   T,

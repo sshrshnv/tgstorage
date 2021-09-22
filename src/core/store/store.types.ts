@@ -19,6 +19,7 @@ export type Settings = {
   theme: Theme
   generalFolderEnabled: boolean
   errorWidgetEnabled: boolean
+  installWidgetEnabled: boolean
 }
 
 export type User = {

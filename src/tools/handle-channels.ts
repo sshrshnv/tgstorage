@@ -1,4 +1,4 @@
-const CIS = ['ru', 'ua', 'by', 'ge', 'az', 'kz', 'uz', 'tj', 'kg']
+import { CIS } from '~/tools/detect-locale'
 
 const getAnnouncementsChannelLocale = (country) =>
   CIS.includes(country.toLowerCase()) ? 'ru' : 'en'

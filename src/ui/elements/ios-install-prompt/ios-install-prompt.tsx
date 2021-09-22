@@ -9,7 +9,7 @@ import { useCallbackRef } from '~/tools/hooks'
 import { getIOSVersion } from '~/tools/detect-device'
 
 import {
-  ShareIcon, ShareModernIcon,
+  SafariIcon, ShareIcon, ShareModernIcon,
   HomeScreenIcon, HomeScreenModernIcon
 } from './icons'
 import en from './ios-install-prompt.texts.en.json'
@@ -83,6 +83,16 @@ const IOSInstallPrompt: FC = memo(() => {
 
         <div class={styles.instruction}>
           <div class={styles.instructionStep}>
+            <SafariIcon class={styles.safariIcon}/>
+            <p class={cn(
+              styles.text,
+              styles._bold
+            )}>
+              {texts.safariStep}
+            </p>
+          </div>
+
+          <div class={styles.instructionStep}>
             {isModern ?
               <ShareModernIcon class={styles.shareIcon}/> :
               <ShareIcon class={styles.shareIcon}/>
@@ -105,17 +115,6 @@ const IOSInstallPrompt: FC = memo(() => {
               styles._bold
             )}>
               {texts.homeScreenStep}
-            </p>
-          </div>
-        </div>
-
-        <div class={styles.body}>
-          <div class={styles.description}>
-            <p
-              class={styles.text}
-              id="prompt-description"
-            >
-              {texts.description}
             </p>
           </div>
         </div>

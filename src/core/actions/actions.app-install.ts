@@ -1,13 +1,18 @@
 import { store } from '~/core/store'
-import { sendAppError } from '~/core/actions'
-import { checkIsIOSSafari } from '~/tools/detect-device'
-import { checkIsStandalone } from '~/tools/detect-standalone'
+import { sendAppError, setInstallWidget } from '~/core/actions'
 import { timer } from '~/tools/timer'
+import { checkIsStandalone } from '~/tools/detect-standalone'
+import {
+  checkIsDesktop, checkIsChrome, checkIsMicrosoftEdge,
+  checkIsIOSSafari, checkIsAndroidChrome
+} from '~/tools/detect-device'
 
 let appInstallEvent
 export const setAppInstallEvent = (ev) => {
   appInstallEvent = ev
-  setAppInstallAvailable(true)
+  if ((checkIsDesktop() && (checkIsChrome() || checkIsMicrosoftEdge())) || checkIsAndroidChrome()) {
+    setAppInstallAvailable(true)
+  }
 }
 
 export const setAppInstallAvailable = (value: boolean) => {
@@ -50,4 +55,8 @@ export const listenAppInstall = async () => {
     await timer(10000)
     setAppInstallAvailable(true)
   }
+}
+
+export const cancelAppInstall = () => {
+  setInstallWidget(false)
 }

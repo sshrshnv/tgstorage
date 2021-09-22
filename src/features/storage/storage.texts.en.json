@@ -65,5 +65,10 @@
   "linkCopyTitle": "Copy link",
   "linkCopiedTitle": "Copied",
   "linkShareTitle": "Share link",
-  "sendingMessagesWarning": "You have unsent messages, do you confirm the exit?"
+  "sendingMessagesWarning": "You have unsent messages, do you confirm the exit?",
+  "installTitle": "Installation",
+  "installDescription": "The app can be installed on the device without downloading it from AppStore, PlayStore or MicrosoftStore.",
+  "installBrowsers": "Installation is available only in browsers:",
+  "installHelp": "If the browser did not prompt you to install the application automatically, you can install it manually through the browser menu.",
+  "installButton": "Install"
 }

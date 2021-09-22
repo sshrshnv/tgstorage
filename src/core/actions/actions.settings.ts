@@ -31,3 +31,6 @@ export const setGeneralFolder = (value: boolean) =>
 
 export const setErrorWidget = (value: boolean) =>
   setSettings({ errorWidgetEnabled: value })
+
+export const setInstallWidget = (value: boolean) =>
+  setSettings({ installWidgetEnabled: value })

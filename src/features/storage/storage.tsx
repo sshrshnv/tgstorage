@@ -26,6 +26,7 @@ const Storage: FC = memo(() => {
   const [foldersPopupVisible, setFoldersPopupVisible] = useState(false)
   const [profilePopupVisible, setProfilePopupVisible] = useState(false)
   const [settingsPopupVisible, setSettingsPopupVisible] = useState(false)
+  const [installPopupVisible, setInstallPopupVisible] = useState(false)
 
   const {
     active: movingMessageActive,
@@ -58,6 +59,10 @@ const Storage: FC = memo(() => {
     setSettingsPopupVisible(false)
   }, [setSettingsPopupVisible])
 
+  const closeInstallPopup = useCallback(() => {
+    setInstallPopupVisible(false)
+  }, [setInstallPopupVisible])
+
   useEffect(() => {
     listenApiErrors()
     loadFolders()
@@ -73,13 +78,16 @@ const Storage: FC = memo(() => {
         folderPopupParams={folderPopupParams}
         profilePopupVisible={profilePopupVisible}
         settingsPopupVisible={settingsPopupVisible}
+        installPopupVisible={installPopupVisible}
         foldersPopupVisible={foldersPopupVisible}
         setFolderPopupParams={setFolderPopupParams}
         setProfilePopupVisible={setProfilePopupVisible}
         setSettingsPopupVisible={setSettingsPopupVisible}
+        setInstallPopupVisible={setInstallPopupVisible}
         closeFolderPopup={closeFolderPopup}
         closeProfilePopup={closeProfilePopup}
         closeSettingsPopup={closeSettingsPopup}
+        closeInstallPopup={closeInstallPopup}
         movingMessageActive={movingMessageActive}
         movingMessageLoading={movingMessageLoading}
         selectMovingMessageFolder={selectMovingMessageFolder}

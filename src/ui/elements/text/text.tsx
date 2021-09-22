@@ -8,8 +8,10 @@ import styles from './text.styl'
 type Props = {
   class?: string
   withLink?: boolean
+  mCenter?: boolean
   large?: boolean
   small?: boolean
+  medium?: boolean
   uppercase?: boolean
   ellipsis?: boolean
   capitalize?: boolean
@@ -23,8 +25,10 @@ export const Text: FC<Props> = memo(({
   children,
   class: className,
   withLink,
+  mCenter,
   large,
   small,
+  medium,
   uppercase,
   ellipsis,
   capitalize,
@@ -38,8 +42,10 @@ export const Text: FC<Props> = memo(({
       className,
       styles.root,
       withLink && styles._withLink,
+      mCenter && styles._mCenter,
       large && styles._large,
       small && styles._small,
+      medium && styles._medium,
       uppercase && styles._uppercase,
       ellipsis && styles._ellipsis,
       capitalize && styles._capitalize,

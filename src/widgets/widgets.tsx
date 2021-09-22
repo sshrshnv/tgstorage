@@ -14,14 +14,14 @@ import { WidgetsAppError } from './widgets.app-error'
 
 const Widgets: FC = memo(() => {
   const { user } = useUser()
-  const { errorWidgetEnabled } = useSettings()
+  const { errorWidgetEnabled, installWidgetEnabled } = useSettings()
   const { isIntroAppRoute } = useAppRoute()
   const { appErrorExists } = useAppError()
   const { appUpdateExists } = useAppUpdate()
   const { appInstallAvailable, appInstalled } = useAppInstall()
   const [errorVisible, setErrorVisible] = useState(errorWidgetEnabled && appErrorExists)
   const [updateVisible, setUpdateVisible] = useState(appUpdateExists)
-  const [installVisible, setInstallVisible] = useState(appInstallAvailable && !appInstalled)
+  const [installVisible, setInstallVisible] = useState(installWidgetEnabled && appInstallAvailable && !appInstalled)
 
   return (
     <Fragment>
@@ -37,10 +37,12 @@ const Widgets: FC = memo(() => {
         popup={isIntroAppRoute || !user}
         visible={updateVisible && !errorVisible}
       />
-      <WidgetsAppInstall
-        setVisible={setInstallVisible}
-        visible={installVisible && !errorVisible && !updateVisible && !isIntroAppRoute && !!user}
-      />
+      {installWidgetEnabled && (
+        <WidgetsAppInstall
+          setVisible={setInstallVisible}
+          visible={installVisible && !errorVisible && !updateVisible && !isIntroAppRoute && !!user}
+        />
+      )}
     </Fragment>
   )
 })
