@@ -21,7 +21,7 @@ export const checkIsIOS = () =>
 
 let isSafari
 export const checkIsSafari = () =>
-  isSafari ??= !checkIsChrome() && /safari|mac/i.test(userAgent)
+  isSafari ??= !checkIsChromium() && /safari|mac/i.test(userAgent)
 
 let isIOSSafari
 export const checkIsIOSSafari = () =>
@@ -49,12 +49,15 @@ let isSamsung
 export const checkIsSamsung = () =>
   isSamsung ??= /samsung/i.test(userAgent)
 
+let isChromium
+export const checkIsChromium = () =>
+  isChromium ??= brands ?
+    brands.some(({ brand }) => brand.toLocaleLowerCase() === 'chromium') :
+    !!(window as any).chrome && /chrome/i.test(userAgent)
+
 let isChrome
 export const checkIsChrome = () =>
-  isChrome ??= !checkIsMicrosoftEdge() && !checkIsYandex() && !checkIsSamsung() && (brands ?
-    brands.some(({ brand }) => brand.toLocaleLowerCase() === 'chromium') :
-    !!(window as any).chrome && /chrome/.test(userAgent)
-  )
+  isChrome ??= !checkIsMicrosoftEdge() && !checkIsYandex() && !checkIsSamsung() && checkIsChromium()
 
 let isAndroidChrome
 export const checkIsAndroidChrome = () =>
