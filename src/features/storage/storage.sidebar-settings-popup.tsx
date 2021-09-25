@@ -3,7 +3,10 @@ import { h } from 'preact'
 import { memo } from 'preact/compat'
 import { useCallback, useMemo, useState } from 'preact/hooks'
 
-import { setTheme, setLocale, setGeneralFolder, setErrorWidget, loadTexts } from '~/core/actions'
+import {
+  setTheme, setLocale, setGeneralFolder,
+  setErrorWidget, setErrorSending, loadTexts
+} from '~/core/actions'
 import { useTexts, useSettings } from '~/core/hooks'
 import { AVALIABLE_LOCALES } from '~/tools/detect-locale'
 import { AVALIABLE_THEMES } from '~/ui/styles'
@@ -21,7 +24,10 @@ export const StorageSidebarSettingsPopup: FC<Props> = memo(({
   onClose
 }) => {
   const { texts } = useTexts('storage')
-  const { theme, locale, generalFolderEnabled, errorWidgetEnabled } = useSettings()
+  const {
+    theme, locale, generalFolderEnabled,
+    errorWidgetEnabled, errorSendingEnabled
+  } = useSettings()
   const [localeLoading, setLocaleLoading] = useState(false)
 
   const themeOptions = useMemo(() => AVALIABLE_THEMES.map(value => ({
@@ -51,6 +57,10 @@ export const StorageSidebarSettingsPopup: FC<Props> = memo(({
 
   const handleChangeErrorWidgetValue = useCallback((value) => {
     setErrorWidget(value)
+  }, [])
+
+  const handleChangeErrorSendingValue = useCallback((value) => {
+    setErrorSending(value)
   }, [])
 
   return (
@@ -88,7 +98,14 @@ export const StorageSidebarSettingsPopup: FC<Props> = memo(({
         <Break size={28} px/>
 
         <Switch
-          text={texts.settingsErrorText}
+          text={texts.settingsErrorSendingText}
+          active={errorSendingEnabled}
+          onChange={handleChangeErrorSendingValue}
+        />
+        <Break size={28} px/>
+
+        <Switch
+          text={texts.settingsErrorWidgetText}
           active={errorWidgetEnabled}
           onChange={handleChangeErrorWidgetValue}
         />

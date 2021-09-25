@@ -1,7 +1,7 @@
 import { proxy } from 'comlink'
 
 import { store } from '~/core/store'
-import { logOut } from '~/core/actions'
+import { logOut, getErrorSending } from '~/core/actions'
 import type { ApiError } from '~/api'
 import { api } from '~/api'
 
@@ -48,7 +48,11 @@ export const sendAppError = async (error: ApiError|Error) => {
   } catch (err) {}
   console.error(error)
 
-  if (process.env.NODE_ENV !== 'production' || !process.env.SENTRY_DSN) return
+  if (
+    process.env.NODE_ENV !== 'production' ||
+    !process.env.SENTRY_DSN ||
+    !getErrorSending()
+  ) return
 
   try {
     const Sentry = await loadSentry()

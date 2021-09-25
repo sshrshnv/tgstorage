@@ -23,6 +23,9 @@ export const setTheme = (theme: Theme) =>
 export const getLocale = () =>
   store.getState().settings.locale
 
+export const getErrorSending = () =>
+  store.getState().settings.errorSendingEnabled
+
 export const setLocale = (locale: Locale) =>
   setSettings({ locale })
 
@@ -31,6 +34,9 @@ export const setGeneralFolder = (value: boolean) =>
 
 export const setErrorWidget = (value: boolean) =>
   setSettings({ errorWidgetEnabled: value })
+
+export const setErrorSending = (value: boolean) =>
+  setSettings({ errorSendingEnabled: value })
 
 export const setInstallWidget = (value: boolean) =>
   setSettings({ installWidgetEnabled: value })

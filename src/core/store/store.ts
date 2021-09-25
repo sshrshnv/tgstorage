@@ -29,6 +29,7 @@ const initialSettings: Settings = {
   locale: detectLocale(),
   generalFolderEnabled: true,
   errorWidgetEnabled: false,
+  errorSendingEnabled: true,
   installWidgetEnabled: true
 }
 
