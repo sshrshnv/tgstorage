@@ -45,14 +45,21 @@ export const installApp = async () => {
 }
 
 export const listenAppInstall = async () => {
-  self.addEventListener('beforeinstallprompt', (ev) => {
-    ev.preventDefault()
-    setAppInstallEvent(ev)
-  })
+  if (!!(self as any).appInstallEvent) {
+    setAppInstallEvent((self as any).appInstallEvent)
+    delete (self as any).appInstallEvent
+  } else {
+    self.addEventListener('beforeinstallprompt', (ev) => {
+      ev.preventDefault()
+      ev.stopPropagation()
+      setAppInstallEvent(ev)
+    })
+  }
+
   self.addEventListener('appinstalled', () => setAppInstalled(true))
 
   if (checkIsIOSSafari() && !checkIsStandalone()) {
-    await timer(10000)
+    await timer(1000)
     setAppInstallAvailable(true)
   }
 }

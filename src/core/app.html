@@ -60,5 +60,11 @@
   </head>
   <body>
     <noscript>Enable JavaScript in the browser settings.</noscript>
+    <script>
+      self.addEventListener('beforeinstallprompt', (ev) => {
+        ev.preventDefault()
+        self.appInstallEvent = ev
+      })
+    </script>
   </body>
 </html>
