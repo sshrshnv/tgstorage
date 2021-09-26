@@ -1,9 +1,9 @@
 {
   "name": "TgStorage",
   "short_name": "TgStorage",
-  "description": "Free unlimited storage for notes, links and files based on Telegram.",
+  "description": "Store your notes, checklists, links, photos and any documents in Telegram.",
   "categories": ["storage", "notes", "files", "free", "telegram"],
-  "orientation": "portrait-primary",
+  "orientation": "any",
   "display": "standalone",
   "start_url": "/app",
   "background_color": "#0082C8",
