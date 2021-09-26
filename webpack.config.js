@@ -158,7 +158,10 @@ module.exports = [{
       }, {
         test: /\.webmanifest$/,
         use: 'webpack-webmanifest-loader',
-        type: 'asset/resource'
+        type: 'asset/resource',
+        generator : {
+          filename : '[name][ext]',
+        }
       }, {
         test: /\.svg$/,
         use: ['preact-svg-loader'],
