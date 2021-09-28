@@ -3,7 +3,6 @@
   "short_name": "TgStorage",
   "description": "Store your notes, checklists, links, photos and any documents in Telegram.",
   "categories": ["storage", "notes", "files", "free", "telegram"],
-  "orientation": "any",
   "display": "standalone",
   "start_url": "/app",
   "background_color": "#0082C8",
