@@ -72,7 +72,7 @@ const uploadFile = async (folder: Folder, inputFile: InputFile) => {
     const uploadPart = async (part: number) => {
       if (part > partsCount - 1) return
 
-      progress = Math.max(progress, Math.ceil((part + 1) / partsCount * 10000) / 100)
+      progress = Math.max(progress, Math.round((part + 1) / partsCount * 10000) / 100)
       await uploadFilePart(folder, fileKey, fileParams, isMainFile, part, progress)
       return uploadPart(part + 2)
     }

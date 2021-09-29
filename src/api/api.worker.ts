@@ -751,7 +751,7 @@ class Api {
     const fileId = generateRandomId()
     const isLarge = fileSize > FILE_SIZE.MB10
     const partSize = getFilePartSize(fileSize)
-    const lastPartSize = fileSize % partSize
+    const lastPartSize = fileSize % partSize || partSize
     const partsCount = Math.ceil(fileSize / partSize)
 
     return {
