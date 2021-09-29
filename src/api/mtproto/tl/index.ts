@@ -24,7 +24,7 @@ export interface MethodDeclMap extends MtprotoMethodDeclMap, LayerMethodDeclMap 
 
 export const parse = (reader: Reader32) => parseMtproto(reader, parseLayer)
 
-const sharedBuffer = new Uint32Array(128 * 1024)
+const sharedBuffer = new Uint32Array(256 * 1024)
 const writer = new Writer32(sharedBuffer)
 
 export const build = (o: any) => {

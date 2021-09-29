@@ -66,35 +66,21 @@ const uploadFile = async (folder: Folder, inputFile: InputFile) => {
     if (!fileMeta || !checkIsUploading(folder, fileKey)) return
 
     const fileParams = await api.prepareUploadingFile(fileMeta)
-    const { partSize, lastPartSize, partsCount } = fileParams
+    const { partsCount } = fileParams
+    let progress = 0
 
-    for (let part = 0; part < partsCount; part++) {
-      if (!checkIsUploading(folder, fileKey)) return
+    const uploadPart = async (part: number) => {
+      if (part > partsCount - 1) return
 
-      const isLastPart = part === partsCount - 1
-
-      let filePart = getFilePart(fileKey, {
-        start: part * partSize,
-        end: part * partSize + (isLastPart ? lastPartSize : partSize)
-      })
-
-      let filePartBytes = await transformToBytes(filePart) as ArrayBuffer|undefined
-      filePart = undefined
-
-      if (!filePartBytes) return
-
-      await api.uploadFilePart(transfer(filePartBytes, [filePartBytes]), {
-        ...fileParams,
-        part
-      })
-
-      filePartBytes = undefined
-
-      if (isMainFile) {
-        const progress = Math.round((part + 1) / partsCount * 100)
-        onUploadPart(folder, fileKey, progress)
-      }
+      progress = Math.max(progress, Math.ceil((part + 1) / partsCount * 10000) / 100)
+      await uploadFilePart(folder, fileKey, fileParams, isMainFile, part, progress)
+      return uploadPart(part + 2)
     }
+
+    await Promise.all([
+      uploadPart(0),
+      uploadPart(1)
+    ])
 
     return fileParams
   }));
@@ -122,6 +108,48 @@ const uploadFile = async (folder: Folder, inputFile: InputFile) => {
       isLarge: thumbFileParams.isLarge,
       partsCount: thumbFileParams.partsCount
     } : undefined
+  }
+}
+
+const uploadFilePart = async (
+  folder: Folder,
+  fileKey: string,
+  fileParams: {
+    fileId: string
+    fileName: string
+    fileType: string
+    isLarge: boolean
+    partSize: number
+    lastPartSize: number
+    partsCount: number
+  },
+  isMainFile: boolean,
+  part: number,
+  progress: number
+) => {
+  if (!checkIsUploading(folder, fileKey)) return
+  const { partSize, lastPartSize, partsCount } = fileParams
+  const isLastPart = part === partsCount - 1
+
+  let filePart = getFilePart(fileKey, {
+    start: part * partSize,
+    end: part * partSize + (isLastPart ? lastPartSize : partSize)
+  })
+
+  let filePartBytes = await transformToBytes(filePart) as ArrayBuffer|undefined
+  filePart = undefined
+
+  if (!filePartBytes) return
+
+  await api.uploadFilePart(transfer(filePartBytes, [filePartBytes]), {
+    ...fileParams,
+    part
+  })
+
+  filePartBytes = undefined
+
+  if (isMainFile) {
+    onUploadPart(folder, fileKey, progress)
   }
 }
 

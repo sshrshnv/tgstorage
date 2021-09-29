@@ -73,7 +73,7 @@ export const ContentFormAttachment: FC<Props> = memo(({
           grey
           ellipsis
         >
-          {inputFile?.progress}%
+          {inputFile?.progress.toLocaleString('en-EN', { maximumFractionDigits: 2, minimumFractionDigits: 2 })}%
         </Text>
       </div>
       <Button
