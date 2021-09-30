@@ -67,7 +67,7 @@ const Storage: FC = memo(() => {
     listenApiErrors()
     loadFolders()
     listenUpdates()
-    joinAnnouncementsChannel()
+    joinAnnouncementsChannel({ timeout: true })
     self.addEventListener('unload', resetFiles, { passive: true })
     return () => self.removeEventListener('unload', resetFiles)
   }, [])
