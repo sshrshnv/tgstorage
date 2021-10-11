@@ -13,7 +13,7 @@
   display: flex
   align-items: center
   flex-shrink: 0
-  padding: 0 20px 0 0
+  padding: 0 20px 0 env(safe-area-inset-left, 0)
   height: 48px
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.12)
   background-color: var(--sidebar-header-background-color)
@@ -30,7 +30,7 @@
   position: relative
   flex-grow: 1
   background-color: inherit
-  padding: 0 0 40px
+  padding: 0 0 40px env(safe-area-inset-left, 0)
 
   overflow: auto
   -webkit-overflow-scrolling: touch
@@ -40,7 +40,7 @@
     display: none
 
   &._paddings
-    padding: 0 20px 40px
+    padding: 0 20px 40px calc(20px + env(safe-area-inset-left, 0))
 
   &._disabled
     &::after

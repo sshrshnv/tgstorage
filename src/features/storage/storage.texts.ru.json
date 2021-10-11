@@ -61,7 +61,7 @@
   "mediaShareTitle": "Отправить файл",
   "mediaDeleteTitle": "Удалить файл",
   "mediaDownloadTitle": "Сохранить файл",
-  "mediaDownloadDescription": "Используйте системное меню для сохранения файла",
+  "mediaDownloadDescription": "Сохранение возможно только в iOS >= 14.8",
   "linkOpenTitle": "Открыть ссылку",
   "linkCopyTitle": "Скопировать ссылку",
   "linkCopiedTitle": "Скопировано",

@@ -41,7 +41,7 @@
 .navButton
   position: absolute
   top: 48px
-  height: calc(100% - 96px)
+  height: calc(100% - 96px - env(safe-area-inset-bottom, 0) - env(safe-area-inset-top, 0))
   border-radius: 0
   background-color: transparent
 
@@ -56,12 +56,6 @@
 
     > svg
       transform: rotate(270deg)
-
-.fullscreenButton
-  position: absolute
-  right: 0
-  bottom: 0
-  height: 48px
 
 :global(.fullscreen)
   background-color: var(--color-black)

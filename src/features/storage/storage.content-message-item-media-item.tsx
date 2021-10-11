@@ -11,7 +11,7 @@ import { useTexts, useDownloadingFile } from '~/core/hooks'
 import { getFile } from '~/core/cache'
 import { checkIsSWRegistered } from '~/sw'
 import { useStateRef, useCallbackRef, useMemoRef, useUpdatableRef } from '~/tools/hooks'
-import { checkIsSafari } from '~/tools/detect-device'
+import { checkIsSafari, checkIsIOS, getIOSVersion } from '~/tools/detect-device'
 import { saveFile, saveFileStream } from '~/tools/handle-file'
 import { shareFile, checkIsSharingSupported } from '~/tools/share-data'
 import { ContentItemMediaItem } from '~/ui/elements/content-item-media-item'
@@ -91,7 +91,7 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
   const [trySaveFile, trySaveFileRef] = useCallbackRef(async () => {
     if (!originalDownloadingFile?.fileKey) return
 
-    if (checkIsSafari()) {
+    if (checkIsIOS() && getIOSVersion() < 14.8) {
       setFilePopup(true)
     } else {
       await saveFile(originalDownloadingFile)

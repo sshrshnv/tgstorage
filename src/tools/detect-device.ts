@@ -84,7 +84,7 @@ export const checkIsDesktopChrome = () =>
 
 let iosVersion
 export const getIOSVersion = () =>
-  iosVersion ??= +(userAgent.substr(userAgent.indexOf('OS ') + 3, 3).replace('_', '.') || '')
+  iosVersion ??= +(userAgent.substr(userAgent.indexOf('os ') + 3, 4).replace('_', '.') || '')
 
 let chromiumVersion
 export const getChromiumVersion = () =>

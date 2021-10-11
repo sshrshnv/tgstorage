@@ -16,7 +16,7 @@
 .image
 .player
   max-width: 100%
-  max-height: calc(100% - 96px)
+  max-height: calc(100% - 96px - env(safe-area-inset-bottom, 0) - env(safe-area-inset-top, 0))
   -webkit-touch-callout: default
 
 .image
@@ -31,4 +31,4 @@
 :global(.fullscreen)
   .image
   .player
-    max-height: 100%
+    max-height: calc(100% - env(safe-area-inset-bottom, 0) - env(safe-area-inset-top, 0))

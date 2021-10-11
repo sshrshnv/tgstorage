@@ -2,7 +2,7 @@
   width: 100%
   height: auto
   max-width: 100%
-  max-height: 100%
+  max-height: calc(100% - env(safe-area-inset-bottom, 0) - env(safe-area-inset-top, 0))
 
   &._hidden
     display: none
@@ -26,8 +26,9 @@
   align-items: center
   justify-content: center
   width: 100%
-  height: calc(100% - 96px)
+  height: calc(100% - 96px - env(safe-area-inset-bottom, 0) - env(safe-area-inset-top, 0))
   max-width: calc(100% - 96px)
+  padding: 0 env(safe-area-inset-right, 0) 0 env(safe-area-inset-left, 0)
   transition: opacity .3s ease-in-out
 
   &._transparent
@@ -77,7 +78,8 @@
   justify-content: space-between
   align-items: center
   width: calc(100% - 54px)
-  height: 48px
+  height: calc(48px + env(safe-area-inset-bottom, 0))
+  padding: 0 env(safe-area-inset-right, 0) env(safe-area-inset-bottom, 0) env(safe-area-inset-left, 0)
   opacity: 1
   transition: opacity .3s ease-in-out
 
@@ -105,7 +107,7 @@
       display: block
 
   &._fullscreen
-    padding-left: 20px
+    padding-left: calc(20px + env(safe-area-inset-left, 0))
 
     &::after
       right: -54px

@@ -10,7 +10,7 @@
 
   @media $desktop
     min-width: $sidebar-width
-    width: 20vw
+    width: calc(20vw + env(safe-area-inset-left, 0))
 
   @media $standalone
     height: 100vh

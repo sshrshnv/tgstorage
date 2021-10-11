@@ -61,7 +61,7 @@
   "mediaShareTitle": "Share file",
   "mediaDeleteTitle": "Delete file",
   "mediaDownloadTitle": "Save file",
-  "mediaDownloadDescription": "Use system menu to save file",
+  "mediaDownloadDescription": "Downloading is only possible on iOS >= 14.8",
   "linkOpenTitle": "Open link",
   "linkCopyTitle": "Copy link",
   "linkCopiedTitle": "Copied",
