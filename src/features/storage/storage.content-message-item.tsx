@@ -25,6 +25,7 @@ type Props = {
   message: Message
   offset: number | undefined
   visible: boolean
+  last: boolean
   resizeObserver: ResizeObserver
   intersectionObserver: IntersectionObserver | undefined
   onEdit?: (message: Message) => void
@@ -37,6 +38,7 @@ export const StorageContentMessageItem: FC<Props> = memo(({
   message,
   offset,
   visible,
+  last,
   resizeObserver,
   intersectionObserver,
   onEdit,
@@ -172,6 +174,7 @@ export const StorageContentMessageItem: FC<Props> = memo(({
       message={message}
       offset={offset}
       visible={visible}
+      last={last}
       resizeObserver={resizeObserver}
       intersectionObserver={intersectionObserver}
       loading={loading || editing}

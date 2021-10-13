@@ -14,6 +14,7 @@ const initialVisibility = {
 export const useVirtualList = () => {
   const [offsets, _setOffsets, offsetsRef, setOffsetsRef] = useStateRef<Map<number, number>>(new Map())
   const [visibility, _setVisibility, visibilityRef, setVisibilityRef] = useStateRef(initialVisibility)
+  const [finished, _setFinished, _finishedRef, setFinishedRef] = useStateRef(false)
   const heightsRef = useRef<Map<number, number>>(new Map())
   const intersectingsRef = useRef<Map<number, boolean>>(new Map())
   const countRef = useRef(PREVISIBILE_COUNT)
@@ -112,8 +113,12 @@ export const useVirtualList = () => {
 
   const [_handleIntersectionObserver, handleIntersectionObserverRef] = useCallbackRef((el: IntersectionObserverEntry) => {
     const id = +el.target.id
-    setIntersectingRef.current(el.isIntersecting, id)
-  }, [setIntersectingRef])
+    if (id) {
+      setIntersectingRef.current(el.isIntersecting, id)
+    } else {
+      setFinishedRef.current(el.isIntersecting)
+    }
+  }, [setIntersectingRef, setFinishedRef])
 
   const { resizeObserver } = useResizeObserver(handleResizeObserverRef)
   const { intersectionRef, intersectionObserver } = useIntersectionObserver(handleIntersectionObserverRef)
@@ -121,10 +126,11 @@ export const useVirtualList = () => {
   return useMemo(() => ({
     offsets,
     visibility,
+    finished,
     resizeObserver,
     intersectionObserver,
     countRef,
     intersectionRef,
     onDeleteMessage
-  }), [offsets, visibility, resizeObserver, intersectionObserver, intersectionRef, onDeleteMessage])
+  }), [offsets, visibility, finished, resizeObserver, intersectionObserver, intersectionRef, onDeleteMessage])
 }

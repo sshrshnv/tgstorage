@@ -37,6 +37,7 @@ export const StorageContentMessagesList: FC<Props> = memo(({
     offsets,
     resizeObserver,
     visibility,
+    finished,
     intersectionObserver,
     countRef,
     intersectionRef,
@@ -52,17 +53,16 @@ export const StorageContentMessagesList: FC<Props> = memo(({
   }, [messages.length])
 
   useEffect(() => {
-    const lastMessageId = lastMessageIdRef.current
-    const messagesLoading = messagesLoadingRef.current
-    const loadMessages = loadMessagesRef.current
-    if (
-      !messagesLoading &&
-      typeof lastMessageId !== 'undefined' &&
+    const loadMessages = () => loadMessagesRef.current?.()
+    const checkIsLoadAvailable = () => (
+      !messagesLoadingRef.current &&
+      typeof lastMessageIdRef.current !== 'undefined' &&
       visibility.lastIndex === messages.length - 1
-    ) {
-      loadMessages?.()
+    )
+    if (checkIsLoadAvailable()) {
+      loadMessages()
     }
-  }, [messages.length, visibility.lastIndex])
+  }, [messages.length, visibility.lastIndex, finished])
 
   useEffect(() => {
     const timeoutId = self.setTimeout(() => {
@@ -78,6 +78,7 @@ export const StorageContentMessagesList: FC<Props> = memo(({
       fullHeight={fullHeight}
     >
       {messages.map((message, index) => {
+        const last = index === messages.length - 1
         const offset = offsets.get(message.id)
         const visible = (
           (index >= visibility.firstIndex && index <= visibility.lastIndex) ||
@@ -91,6 +92,7 @@ export const StorageContentMessagesList: FC<Props> = memo(({
             message={message}
             offset={offset}
             visible={visible}
+            last={last}
             resizeObserver={resizeObserver}
             intersectionObserver={intersectionObserver}
             onEdit={onEditMessage}

@@ -16,6 +16,7 @@ type Props = {
   message: Message
   offset: number | undefined
   visible: boolean
+  last: boolean
   resizeObserver: ResizeObserver
   intersectionObserver: IntersectionObserver | undefined
   loading?: boolean
@@ -29,6 +30,7 @@ export const ContentItem: FC<Props> = memo(({
   message,
   offset,
   visible,
+  last,
   resizeObserver,
   intersectionObserver,
   loading,
@@ -36,6 +38,7 @@ export const ContentItem: FC<Props> = memo(({
   onDelete,
 }) => {
   const elRef = useRef<HTMLDivElement>(null)
+  const finishMarkerRef = useRef<HTMLDivElement>(null)
   const messageIdRef = useUpdatableRef(message.id)
   const onDeleteRef = useUpdatableRef(onDelete)
 
@@ -56,6 +59,15 @@ export const ContentItem: FC<Props> = memo(({
 
     return () => intersectionObserver.unobserve(el)
   }, [intersectionObserver])
+
+  useEffect(() => {
+    if (!last || !intersectionObserver || !finishMarkerRef.current) return
+
+    const el = finishMarkerRef.current
+    intersectionObserver.observe(el)
+
+    return () => intersectionObserver.unobserve(el)
+  }, [last, intersectionObserver])
 
   useEffect(() => () => {
     onDeleteRef.current?.(messageIdRef.current)
@@ -87,6 +99,13 @@ export const ContentItem: FC<Props> = memo(({
             {...menu}
             class={styles.menu}
             parentRef={elRef}
+          />
+        )}
+
+        {last && (
+          <div
+            class={styles.finishMarker}
+            ref={finishMarkerRef}
           />
         )}
       </div>
