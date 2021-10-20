@@ -5,18 +5,11 @@
   flex-shrink: 0
   width: 100%
   max-width: 100%
-  max-height: 100%
+  max-height: 80%
   padding: 0 calc(6px + env(safe-area-inset-right, 0)) env(safe-area-inset-bottom, 0) calc(16px + env(safe-area-inset-left, 0))
   background-color: var(--content-form-background-color)
   box-shadow: 0 -1px 2px 0 var(--content-form-shadow-color)
   user-select: none
-
-  overflow: auto
-  -webkit-overflow-scrolling: touch
-  scroll-behavior: smooth
-  scrollbar-width: none
-  &::-webkit-scrollbar
-    display: none
 
   @media screen and (min-width: $sidebar-width + $content-width + 64px)
     min-width: $content-width + 32px
@@ -44,7 +37,7 @@
 
     > div:first-child
       margin-right: 40px
-      margin-bottom: -12px
+      //margin-bottom: -12px
 
   @media screen and (min-width: $sidebar-width + $content-width + 64px)
     border-radius: 8px 8px 0 0

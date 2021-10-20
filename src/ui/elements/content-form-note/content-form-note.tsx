@@ -28,6 +28,7 @@ type Props = {
   onChangeText?: (note: string) => void
   onAddFiles?: (fileKeys: string[]) => void
   onRemoveFile?: (file: InputFile) => void
+  onReoderFiles?: () => void
 }
 
 export const ContentFormNote: FC<Props> = memo(({
@@ -39,7 +40,8 @@ export const ContentFormNote: FC<Props> = memo(({
   enableChecklist,
   onChangeText,
   onAddFiles,
-  onRemoveFile
+  onRemoveFile,
+  onReoderFiles
 }) => {
   const isParentFiles = useMemo(() => {
     return checkIsParentFilesMessage(message.text)
@@ -48,6 +50,10 @@ export const ContentFormNote: FC<Props> = memo(({
   const mediaCount = useMemo(() => {
     return (message.mediaMessages?.length || 0) + +!!message.media?.originalSize
   }, [message.media?.originalSize, message.mediaMessages?.length])
+
+  const attachmentsCount = useMemo(() => {
+    return message.inputFiles?.length || 0
+  }, [message.inputFiles?.length])
 
   const normalizedText = useMemo(() => {
     return isParentFiles ? parseParentFilesMessage(message.text).text : message.text
@@ -82,17 +88,21 @@ export const ContentFormNote: FC<Props> = memo(({
           placeholder={loading ? sendingPlaceholder : placeholder}
           disabled={loading}
           filled={filled}
+          hasAttachments={!!attachmentsCount}
           onInput={handleInput}
         />
-        {message.inputFiles?.map((inputFile, index) => (
-          <ContentFormAttachment
-            key={inputFile.fileKey}
-            index={index}
-            inputFile={inputFile}
-            loading={loading}
-            onRemoveFile={onRemoveFile}
-          />
-        ))}
+        <div class={styles.attachments}>
+          {message.inputFiles?.map((inputFile, index) => (
+            <ContentFormAttachment
+              key={inputFile.fileKey}
+              index={index}
+              inputFile={inputFile}
+              loading={loading}
+              last={index === attachmentsCount - 1}
+              onRemoveFile={onRemoveFile}
+            />
+          ))}
+        </div>
       </div>
 
       {loading ? (
@@ -123,11 +133,23 @@ export const ContentFormNote: FC<Props> = memo(({
         </div>
       )}
 
-      {mediaCount > 0 && (
+      {(loading && attachmentsCount > 0) ? (
+        <div class={styles.mediaCount}>
+          <Icon icon="file"/> {attachmentsCount} <Loader grey small/>
+        </div>
+      ) : attachmentsCount > 0 ? (
+        <div class={cn(
+          styles.mediaCount,
+          attachmentsCount > 1 && styles._withButton
+        )}>
+          {attachmentsCount > 1 ? <Button icon="reoder" onClick={onReoderFiles}/> : null}
+          <Icon icon="file"/> {mediaCount ? `${mediaCount} + ` : ''}{attachmentsCount}
+        </div>
+      ) : mediaCount > 0 ? (
         <div class={styles.mediaCount}>
           <Icon icon="file"/> {mediaCount}
         </div>
-      )}
+      ) : null}
     </Fragment>
   )
 })

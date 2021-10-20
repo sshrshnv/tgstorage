@@ -41,6 +41,7 @@ export const StorageContentSearchPopup: FC<Props> = ({
     handleChangeText,
     handleAddFiles,
     handleRemoveFile,
+    handleReoderFiles
   } = useMessageForm(folder)
 
   const isFormVisible = !!messages.length && formEditing
@@ -109,6 +110,7 @@ export const StorageContentSearchPopup: FC<Props> = ({
           onChangeText={handleChangeText}
           onAddFiles={handleAddFiles}
           onRemoveFile={handleRemoveFile}
+          onReoderFiles={handleReoderFiles}
           onCancel={handleCancelMessage}
         />
       )}

@@ -31,8 +31,9 @@
   &:focus
     outline: none
 
-  &:active
-    opacity: .5
+  &:not(._fixScroll)
+    &:active
+      opacity: .5
 
 &._disabled
   opacity: .5

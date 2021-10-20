@@ -150,8 +150,8 @@ export const useMessageForm = (folder: Folder) => {
     setMessage({
       ...message,
       inputFiles: [
-        ...(message.inputFiles || []),
-        ...uniqInputFiles.map((uniqFile) => ({ ...uniqFile, id: '', progress: 0 }))
+        ...uniqInputFiles.map((uniqFile) => ({ ...uniqFile, id: '', progress: 0 })),
+        ...(message.inputFiles || [])
       ]
     })
   }, [messageRef, setMessage])
@@ -175,6 +175,15 @@ export const useMessageForm = (folder: Folder) => {
       resetUploadingFiles([inputFile])
     }
   }, [messageRef, sendingMessageRef, folder.id, setMessage, handleCancelMessage])
+
+  const handleReoderFiles = useCallback(() => {
+    const message = messageRef.current
+    const updatedMessage = {
+      ...message,
+      inputFiles: message.inputFiles?.reverse()
+    }
+    setMessage(updatedMessage)
+  }, [messageRef, setMessage])
 
   useEffect(() => {
     if (sendingMessage && sendingMessage.folderId === folderRef.current.id) {
@@ -203,7 +212,8 @@ export const useMessageForm = (folder: Folder) => {
     handleCancelMessage,
     handleChangeText,
     handleAddFiles,
-    handleRemoveFile
+    handleRemoveFile,
+    handleReoderFiles
   }), [
     message,
     loading,
@@ -213,6 +223,7 @@ export const useMessageForm = (folder: Folder) => {
     handleCancelMessage,
     handleChangeText,
     handleAddFiles,
-    handleRemoveFile
+    handleRemoveFile,
+    handleReoderFiles
   ])
 }

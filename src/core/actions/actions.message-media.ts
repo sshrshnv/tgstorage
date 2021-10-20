@@ -22,12 +22,12 @@ export const uploadFiles = async (
 ) => {
   const { inputFiles = [] } = message
 
-  for (let i = 0; i < inputFiles.length; i++) {
+  for (let i = inputFiles.length - 1; i >= 0; i--) {
     const sendingMessage = getSendingMessage(folder.id)
     if (!sendingMessage) return
 
     const inputFile = inputFiles[i]
-    const final = i === inputFiles.length - 1
+    const final = i === 0
 
     const uploadedFile = await uploadFile(folder, inputFile)
     if (!uploadedFile) continue

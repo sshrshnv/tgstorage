@@ -11,6 +11,7 @@ type Props = {
   grey?: boolean
   white?: boolean
   big?: boolean
+  small?: boolean
   progress?: number
   contrast?: boolean
 }
@@ -21,6 +22,7 @@ export const Loader: FC<Props> = memo(({
   grey,
   white,
   big,
+  small,
   progress,
   contrast
 }) => {
@@ -29,6 +31,7 @@ export const Loader: FC<Props> = memo(({
       className,
       styles.root,
       big && styles._big,
+      small && styles._small,
       contrast && styles._contrast
     )}>
       <div class={cn(

@@ -1,7 +1,7 @@
 import { h, Fragment } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
 import { memo } from 'preact/compat'
-import { useCallback, useMemo } from 'preact/hooks'
+import { useCallback, useMemo, useRef } from 'preact/hooks'
 import cn from 'classnames'
 
 import {
@@ -24,7 +24,6 @@ type Props = {
   loading?: boolean
   onChangeText?: (note: string) => void
   onSubmit?: () => void
-  scrollToBottom?: () => void
 }
 
 export const ContentFormChecklist: FC<Props> = memo(({
@@ -33,16 +32,18 @@ export const ContentFormChecklist: FC<Props> = memo(({
   itemPlaceholder,
   loading,
   onChangeText,
-  onSubmit,
-  scrollToBottom
+  onSubmit
 }) => {
+  const itemsElRef = useRef<HTMLDivElement>(null)
+
   const parsedChecklist = useMemo(() => {
     return parseChecklistMessage(text, { empty: true })
   }, [text])
 
-  const isSubmitAvailable = useMemo(() => {
+  const itemsCount = useMemo(() => {
     return parsedChecklist.items
-      .some(item => !!item.slice(CHECKLIST_CHECK_MARK_LENGTH).length)
+      .filter(item => !!item.slice(CHECKLIST_CHECK_MARK_LENGTH).length)
+      .length
   }, [parsedChecklist])
 
   const handleReorder = useCallback((items) => {
@@ -88,8 +89,8 @@ export const ContentFormChecklist: FC<Props> = memo(({
   }, [text, onChangeText, onSubmit])
 
   const handleLastMount = useCallback(() => {
-    scrollToBottom?.()
-  }, [scrollToBottom])
+    itemsElRef?.current?.scrollTo(0, itemsElRef.current.scrollHeight)
+  }, [])
 
   const {
     draggingIndex,
@@ -115,24 +116,29 @@ export const ContentFormChecklist: FC<Props> = memo(({
           border={false}
           onInput={handleInputTitle}
         />
-        {parsedChecklist.items.map((item, index) => (
-          <ContentFormChecklistItem
-            key={index}
-            item={item}
-            index={index}
-            length={parsedChecklist.items.length}
-            itemPlaceholder={itemPlaceholder}
-            draggingIndex={draggingIndex}
-            draggingValue={typeof draggingIndex === 'number' ? parsedChecklist.items[draggingIndex] : ''}
-            enteringIndex={enteringIndex}
-            handleInputItem={handleInputItem}
-            handleDeleteItem={handleDeleteItem}
-            handleDragStartItem={handleDragStart}
-            handleDragEnterItem={handleDragEnter}
-            handleDragEndItem={handleDragEnd}
-            handleLastMount={handleLastMount}
-          />
-        ))}
+        <div
+          class={styles.items}
+          ref={itemsElRef}
+        >
+          {parsedChecklist.items.map((item, index) => (
+            <ContentFormChecklistItem
+              key={index}
+              item={item}
+              index={index}
+              length={parsedChecklist.items.length}
+              itemPlaceholder={itemPlaceholder}
+              draggingIndex={draggingIndex}
+              draggingValue={typeof draggingIndex === 'number' ? parsedChecklist.items[draggingIndex] : ''}
+              enteringIndex={enteringIndex}
+              handleInputItem={handleInputItem}
+              handleDeleteItem={handleDeleteItem}
+              handleDragStartItem={handleDragStart}
+              handleDragEnterItem={handleDragEnter}
+              handleDragEndItem={handleDragEnd}
+              handleLastMount={handleLastMount}
+            />
+          ))}
+        </div>
       </div>
       {loading ? (
         <Loader class={styles.loader} brand/>
@@ -140,12 +146,17 @@ export const ContentFormChecklist: FC<Props> = memo(({
         <Button
           class={cn(
             styles.button,
-            isSubmitAvailable && styles._primary
+            !!itemsCount && styles._primary
           )}
           icon="send"
-          disabled={!isSubmitAvailable}
+          disabled={!itemsCount}
           onClick={handleSubmit}
         />
+      )}
+      {!!itemsCount && (
+        <div class={styles.itemsCount}>
+          # {itemsCount}
+        </div>
       )}
     </Fragment>
   )

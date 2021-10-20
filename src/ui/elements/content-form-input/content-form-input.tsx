@@ -19,6 +19,7 @@ type Props = {
   placeholder?: string
   disabled?: boolean
   filled?: boolean
+  hasAttachments?: boolean
   onInput?: (value: string) => void
 }
 
@@ -31,6 +32,7 @@ export const ContentFormInput: FC<Props> = ({
   placeholder,
   disabled,
   filled,
+  hasAttachments,
   onInput
 }) => {
   const [hasSelection, setHasSelection, hasSelectionRef] = useStateRef(false)
@@ -196,7 +198,11 @@ export const ContentFormInput: FC<Props> = ({
   return (
     <Fragment>
       <Textarea
-        class={styles.textarea}
+        class={cn(
+          styles.textarea,
+          filled && styles._filled,
+          hasAttachments && styles._hasAttachments
+        )}
         value={value}
         placeholder={placeholder}
         disabled={disabled}

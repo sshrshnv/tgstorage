@@ -29,6 +29,7 @@ type Props = {
   onSubmit?: () => void
   onAddFiles?: (fileKeys: string[]) => void
   onRemoveFile?: (inputFile: InputFile) => void
+  onReoderFiles?: () => void
   onChangeText?: (note: string) => void
   onCancel?: () => void
 }
@@ -40,6 +41,7 @@ export const ContentForm: FC<Props> = memo(({
   onSubmit,
   onAddFiles,
   onRemoveFile,
+  onReoderFiles,
   onChangeText,
   onCancel
 }) => {
@@ -52,10 +54,6 @@ export const ContentForm: FC<Props> = memo(({
   const filled = useMemo(() => {
     return !!message.text || !!message.inputFiles?.length || !!message.media
   }, [message.text, message.inputFiles?.length, message.media])
-
-  const scrollToBottom = useCallback(() => {
-    elRef?.current?.scrollTo(0, elRef.current.offsetHeight)
-  }, [elRef])
 
   const enableChecklist = useCallback(() => {
     onChangeText?.(stringifyChecklistMessage('', [CHECKLIST_UNCHECKED_MARK]))
@@ -82,7 +80,7 @@ export const ContentForm: FC<Props> = memo(({
       <Form
         class={cn(
           styles.form,
-          !isChecklist && filled && styles._vertical
+          filled && styles._vertical
         )}
         onSubmit={onSubmit}
       >
@@ -94,7 +92,6 @@ export const ContentForm: FC<Props> = memo(({
             loading={loading}
             onChangeText={onChangeText}
             onSubmit={onSubmit}
-            scrollToBottom={scrollToBottom}
           />
         ) : (
           <ContentFormNote
@@ -107,6 +104,7 @@ export const ContentForm: FC<Props> = memo(({
             onChangeText={onChangeText}
             onAddFiles={onAddFiles}
             onRemoveFile={onRemoveFile}
+            onReoderFiles={onReoderFiles}
           />
         )}
       </Form>

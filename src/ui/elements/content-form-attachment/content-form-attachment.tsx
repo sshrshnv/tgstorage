@@ -16,13 +16,14 @@ type Props = {
   inputFile?: InputFile
   index: number
   loading?: boolean
+  last?: boolean
   onRemoveFile?: (file: InputFile) => void
 }
 
 export const ContentFormAttachment: FC<Props> = memo(({
   inputFile,
-  index,
   loading,
+  last,
   onRemoveFile
 }) => {
   const previewUrl = useMemo(() => {
@@ -67,7 +68,7 @@ export const ContentFormAttachment: FC<Props> = memo(({
         <Text
           class={cn(
             styles.progress,
-            (loading && index === 0) && styles._active
+            (loading && last) && styles._active
           )}
           small
           grey
@@ -79,6 +80,7 @@ export const ContentFormAttachment: FC<Props> = memo(({
       <Button
         class={styles.button}
         icon="cross"
+        fixScroll
         onClick={removeFile}
       />
     </div>

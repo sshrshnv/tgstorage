@@ -41,7 +41,8 @@ export const StorageContentFolderBlock: FC<Props> = memo(({
     handleCancelMessage,
     handleChangeText,
     handleAddFiles,
-    handleRemoveFile
+    handleRemoveFile,
+    handleReoderFiles
   } = useMessageForm(folder)
 
   const loadMessages = useCallback(() => {
@@ -102,6 +103,7 @@ export const StorageContentFolderBlock: FC<Props> = memo(({
         onChangeText={handleChangeText}
         onAddFiles={handleAddFiles}
         onRemoveFile={handleRemoveFile}
+        onReoderFiles={handleReoderFiles}
         onCancel={handleCancelMessage}
       />
     </Content>
