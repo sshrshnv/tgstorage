@@ -38,14 +38,20 @@ export const handleApiError = (error: ApiError) => {
   }
 
   if (code !== 400 || !HANDLED_ERRORS.includes(message)) {
-    sendAppError(error)
+    sendAppError(error, code < 500)
   }
 }
 
-export const sendAppError = async (error: ApiError|Error) => {
-  try {
-    setAppErrorExists(true)
-  } catch (err) {}
+export const sendAppError = async (
+  error: ApiError|Error,
+  errorExists = true
+) => {
+  if (errorExists) {
+    try {
+      setAppErrorExists(true)
+    } catch (err) {}
+  }
+
   console.error(error)
 
   if (

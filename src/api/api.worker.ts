@@ -37,6 +37,7 @@ class Api {
       dc?: number
       thread?: number
       timeout?: number
+      attempt?: number
     }
   ) => Promise<any>
 
@@ -60,7 +61,7 @@ class Api {
 
     this.client.on('metaChanged', meta => dataCache.setMeta(META_KEY, meta))
 
-    this.call = async (method, data = {}, { dc, thread, timeout } = {}) => {
+    this.call = async (method, data = {}, { dc, thread, timeout, attempt = 0 } = {}) => {
       if (timeout) {
         await timer(timeout)
       }
@@ -88,7 +89,12 @@ class Api {
             this.client.dc.setBaseDC(dc)
           }
 
-          resolve(this.call(method, data, { dc }))
+          resolve(this.call(method, data, { dc, thread }))
+          return
+        }
+
+        if (code >= 500) {
+          resolve(this.call(method, data, { dc, thread, timeout: attempt * 100, attempt: ++attempt }))
           return
         }
 
