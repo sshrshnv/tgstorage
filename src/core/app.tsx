@@ -12,7 +12,7 @@ listenAppInstall()
 import { store } from '~/core/store'
 import { updateUser } from '~/core/actions'
 import { useAppRoute, useUser } from '~/core/hooks'
-import { checkIsIOSSafari } from '~/tools/detect-device'
+import { checkIsIOS, checkIsIOSSafari } from '~/tools/detect-device'
 import { registerSW } from '~/sw'
 import { IntroLazy } from '~/features/intro'
 import { AuthLazy } from '~/features/auth'
@@ -21,7 +21,7 @@ import { WidgetsLazy } from '~/widgets'
 import { IOSInstallPromptLazy } from '~/ui/elements/ios-install-prompt'
 import { FallbackSidebar } from '~/ui/elements/fallback-sidebar'
 import {
-  PreventContextMenu, PreventScale, PreventDragAndDrop,
+  PreventContextMenu, PreventScale, PreventDragAndDrop, PreventIOSScroll,
   ApplyTheme, ApplyLocale
 } from '~/ui/handlers'
 
@@ -53,6 +53,9 @@ const App: FC = () => {
       <PreventContextMenu/>
       <PreventScale/>
       <PreventDragAndDrop/>
+      {checkIsIOS() && (
+        <PreventIOSScroll/>
+      )}
 
       {checkIsIOSSafari() && (
         <IOSInstallPromptLazy/>

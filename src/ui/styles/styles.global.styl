@@ -17,10 +17,6 @@
     -webkit-tap-highlight-color: rgba(0,0,0,0)
     -webkit-touch-callout: none
 
-    @media $standalone
-      height: 100vh
-      height: -webkit-fill-available
-
   body
     font-family: var(--font-family-ui)
     font-weight: var(--font-weight-ui)
@@ -28,6 +24,10 @@
     line-height: 1.25
     color: var(--default-font-color)
     background-color: var(--default-background-color)
+
+    &.ios
+      position: fixed
+      top: 0
 
     &::after
       position: absolute

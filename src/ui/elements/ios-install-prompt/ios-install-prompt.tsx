@@ -42,7 +42,7 @@ const IOSInstallPrompt: FC = memo(() => {
   }, [setVisible])
 
   useEffect(() => {
-    const handleInstall = () => handleInstallRef.current()
+    const handleInstall = () => handleInstallRef.current?.()
     self.document.addEventListener('install', handleInstall, { passive: true })
     return () => self.document.removeEventListener('install', handleInstall)
   }, [])
