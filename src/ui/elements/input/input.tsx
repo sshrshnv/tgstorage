@@ -37,7 +37,7 @@ type Props = {
 }
 
 export const Input: FC<Props> = memo(({
-  class: className,
+  class: outerStyles,
   label,
   value,
   placeholder,
@@ -102,7 +102,7 @@ export const Input: FC<Props> = memo(({
   return (
     <div class={cn(
       styles.root,
-      className,
+      outerStyles,
       (focused || fakeFocus) && styles._focused,
       disabled && styles._disabled,
       error && styles._error

@@ -48,7 +48,7 @@ export type Folder = {
   access_hash: string
   title: string
   category: string
-  announcements?: boolean
+  annc?: boolean
   general?: boolean
 }
 
@@ -263,4 +263,5 @@ export type State = {
   appInstallAvailable: boolean
   appInstalled: boolean
   appErrorExists: boolean
+  anncChannelAvailable: boolean
 }

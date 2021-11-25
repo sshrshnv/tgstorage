@@ -7,6 +7,7 @@ import cn from 'classnames'
 import { checkIsIOS } from '~/tools/detect-device'
 import { Text } from '~/ui/elements/text'
 import { Button } from '~/ui/elements/button'
+import { Link } from '~/ui/elements/link'
 import { Break } from '~/ui/elements/break'
 import { Loader } from '~/ui/elements/loader'
 import { animationClassName } from '~/ui/styles'
@@ -17,6 +18,7 @@ type Props = {
   title?: string
   description?: string
   button?: string
+  link?: string
   loading?: boolean
   error?: boolean
   popup?: boolean
@@ -28,6 +30,7 @@ export const Widget: FC<Props> = memo(({
   title,
   description,
   button,
+  link,
   loading,
   error,
   popup,
@@ -88,6 +91,17 @@ export const Widget: FC<Props> = memo(({
         <Fragment>
           {loading ? (
             <Loader brand big/>
+          ) : link ? (
+            <Link
+              class={styles.button}
+              href={link}
+              brand={!error}
+              outline
+              uppercase
+              onClick={handleClick}
+            >
+              {button}
+            </Link>
           ) : (
             <Button
               class={styles.button}

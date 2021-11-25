@@ -63,7 +63,8 @@ const state: State = {
   appUpdateAccepted: false,
   appInstallAvailable: false,
   appInstalled: checkIsStandalone(),
-  appErrorExists: false
+  appErrorExists: false,
+  anncChannelAvailable: false
 }
 
 const store = process.env.NODE_ENV === 'production' ?

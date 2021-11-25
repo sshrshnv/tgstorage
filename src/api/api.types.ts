@@ -208,5 +208,10 @@ export type Api = {
 
   resetSearch: () => void
 
-  joinAnnouncementsChannel: () => Promise<void>
+  checkAnncChannelJoining: () => Promise<{
+    joiningAvailable?: boolean
+    joined?: boolean
+  }>
+
+  joinAnncChannel: () => Promise<void>
 }

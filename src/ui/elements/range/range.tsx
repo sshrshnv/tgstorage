@@ -18,7 +18,7 @@ type Props = {
 }
 
 export const Range: FC<Props> = memo(({
-  class: className,
+  class: outerStyles,
   value,
   min,
   max,
@@ -42,7 +42,7 @@ export const Range: FC<Props> = memo(({
 
   return (
     <div class={cn(
-      className,
+      outerStyles,
       styles.root
     )}>
       <progress

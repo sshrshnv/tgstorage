@@ -17,7 +17,7 @@ type Props = {
 }
 
 export const Fullscreen: FC<Props> = ({
-  class: className,
+  class: outerStyles,
   isFullscreen,
   forwardedRef,
   onChange
@@ -122,7 +122,7 @@ export const Fullscreen: FC<Props> = ({
   return (
     <Button
       class={cn(
-        className,
+        outerStyles,
         styles.root
       )}
       icon={isFullscreen? 'fullscreen-exit' : 'fullscreen'}

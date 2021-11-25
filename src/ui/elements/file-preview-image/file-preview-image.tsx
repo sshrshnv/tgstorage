@@ -20,7 +20,7 @@ type Props = {
 }
 
 export const FilePreviewImage: FC<Props> = memo(({
-  class: className,
+  class: outerStyles,
   fileKey,
   timeout,
   isFullscreen,
@@ -64,7 +64,7 @@ export const FilePreviewImage: FC<Props> = memo(({
     <Fragment>
       <img
         class={cn(
-          className,
+          outerStyles,
           styles.root,
           ready && styles._visible,
           hidden && styles._hidden

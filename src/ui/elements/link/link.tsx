@@ -4,13 +4,12 @@ import { memo } from 'preact/compat'
 import cn from 'classnames'
 
 import { Loader } from '~/ui/elements/loader'
-import { Icon } from '~/ui/elements/icon'
 
-import styles from './button.styl'
+import styles from './link.styl'
 
 export type Props = {
   class?: string
-  type?: 'button' | 'submit'
+  href: string
   disabled?: boolean
   loading?: boolean
   brand?: boolean
@@ -21,17 +20,13 @@ export type Props = {
   square?: boolean
   outline?: boolean
   inline?: boolean
-  icon?: string
-  fixScroll?: boolean
   onClick?: (ev?) => void
-  onTouchStart?: (ev?) => void
-  onTouchEnd?: (ev?) => void
 }
 
-export const Button: FC<Props> = memo(({
+export const Link: FC<Props> = memo(({
   children,
   class: outerStyles,
-  type = 'button',
+  href,
   disabled,
   loading,
   brand,
@@ -42,16 +37,12 @@ export const Button: FC<Props> = memo(({
   square,
   outline,
   inline,
-  icon,
-  fixScroll,
-  onClick,
-  onTouchStart,
-  onTouchEnd
+  onClick
 }) => {
   return loading ? (
     <Loader brand big/>
   ) : (
-    <button
+    <a
       class={cn(
         styles.root,
         outerStyles,
@@ -64,21 +55,15 @@ export const Button: FC<Props> = memo(({
         round && styles._round,
         square && styles._square,
         outline && styles._outline,
-        inline && styles._inline,
-        fixScroll && styles._fixScroll
+        inline && styles._inline
       )}
-      type={type}
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
       disabled={disabled}
       onClick={onClick}
-      onTouchStart={onTouchStart}
-      onTouchEnd={onTouchEnd}
     >
-      {icon === 'loader' ? (
-        <Loader/>
-      ) : icon ? (
-        <Icon icon={icon}/>
-      ) : null}
       {children}
-    </button>
+    </a>
   )
 })

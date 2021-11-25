@@ -35,7 +35,7 @@ type Props = {
 }
 
 export const Player: FC<Props> = memo(({
-  class: className,
+  class: outerStyles,
   fileStreamUrl,
   thumbFileKey,
   fileKey,
@@ -255,7 +255,7 @@ export const Player: FC<Props> = memo(({
         <video
           ref={playerRef}
           class={cn(
-            className,
+            outerStyles,
             styles.video,
             hidden && styles._hidden
           )}
@@ -275,7 +275,7 @@ export const Player: FC<Props> = memo(({
         <audio
           ref={playerRef}
           class={cn(
-            className,
+            outerStyles,
             styles.audio,
             hidden && styles._hidden
           )}

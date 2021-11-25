@@ -20,7 +20,7 @@ type Props = {
 }
 
 export const Textarea: FC<Props> = ({
-  class: className,
+  class: outerStyles,
   value = '',
   placeholder,
   maxLength,
@@ -76,7 +76,7 @@ export const Textarea: FC<Props> = ({
   return (
     <div class={cn(
       styles.root,
-      className
+      outerStyles
     )}>
       <textarea
         class={styles.textarea}

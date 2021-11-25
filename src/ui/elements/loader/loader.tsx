@@ -17,7 +17,7 @@ type Props = {
 }
 
 export const Loader: FC<Props> = memo(({
-  class: className,
+  class: outerStyles,
   brand,
   grey,
   white,
@@ -28,7 +28,7 @@ export const Loader: FC<Props> = memo(({
 }) => {
   return (
     <div class={cn(
-      className,
+      outerStyles,
       styles.root,
       big && styles._big,
       small && styles._small,

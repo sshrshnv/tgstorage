@@ -14,7 +14,7 @@ type Props = {
 
 export const Form: FC<Props> = ({
   children,
-  class: className,
+  class: outerStyles,
   center,
   forwardedRef,
   onSubmit
@@ -27,7 +27,7 @@ export const Form: FC<Props> = ({
   return (
     <form
       class={cn(
-        className,
+        outerStyles,
         styles.root,
         center && styles._center
       )}

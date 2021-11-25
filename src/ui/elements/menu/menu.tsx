@@ -35,7 +35,7 @@ export type Props = {
 }
 
 export const Menu: FC<Props> = memo(({
-  class: className,
+  class: outerStyles,
   items,
   horizontal,
   parentRef,
@@ -131,7 +131,7 @@ export const Menu: FC<Props> = memo(({
   return !items.length ? null : (
     <div
       class={cn(
-        className,
+        outerStyles,
         styles.root,
         styles[animationClassName],
         styles[`_position-${positionXRef.current}`],

@@ -109,6 +109,6 @@ const generateResponse = ({
 const calcOffsetSize = (from: number, partSize: number) =>
   from - (from % partSize)
 
-const calcPartSize = (from: number, to: number) => to && to < STREAMING_PART_SIZE ?
+const calcPartSize = (from: number, to: number) => (to && to < STREAMING_PART_SIZE) ?
   Math.min(2 ** Math.ceil(Math.log(to - from + 1) / Math.log(2)), STREAMING_PART_SIZE) :
   STREAMING_PART_SIZE

@@ -7,5 +7,8 @@
   "errorButton": "Ok",
   "installTitle": "Installation",
   "installDescription": "Install this application for more convenient use.",
-  "installButton": "Install"
+  "installButton": "Install",
+  "anncChannelTitle": "Channel",
+  "anncChannelDescription": "Join the TgStorage channel to stay up to date with all the news.",
+  "anncChannelButton": "Join"
 }

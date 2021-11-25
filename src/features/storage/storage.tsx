@@ -5,7 +5,7 @@ import { useState, useCallback, useEffect } from 'preact/hooks'
 
 import type { Folder } from '~/core/store'
 import { resetFiles } from '~/core/cache'
-import { loadFolders, listenUpdates, listenApiErrors, joinAnnouncementsChannel } from '~/core/actions'
+import { loadFolders, listenUpdates, listenApiErrors, checkAnncChannelJoining } from '~/core/actions'
 import { useMoveMessage, useSharedData } from '~/core/hooks'
 import { Layout } from '~/ui/elements/layout'
 
@@ -67,7 +67,7 @@ const Storage: FC = memo(() => {
     listenApiErrors()
     loadFolders()
     listenUpdates()
-    joinAnnouncementsChannel({ timeout: true })
+    checkAnncChannelJoining({ timeout: true })
     self.addEventListener('unload', resetFiles, { passive: true })
     return () => self.removeEventListener('unload', resetFiles)
   }, [])

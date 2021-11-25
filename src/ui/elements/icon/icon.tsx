@@ -16,7 +16,7 @@ type Props = SVGProps & {
 }
 
 export const Icon: FC<Props> = ({
-  class: className,
+  class: outerStyles,
   style,
   icon,
   onClick
@@ -40,7 +40,7 @@ export const Icon: FC<Props> = ({
 
   return LoadedIcon ? (
     <LoadedIcon.default
-      class={cn(className)}
+      class={cn(outerStyles)}
       style={style}
       onClick={onClick}
     />

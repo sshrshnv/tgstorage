@@ -1,7 +1,10 @@
 import { CIS } from '~/tools/detect-locale'
 
-const getAnnouncementsChannelLocale = (country) =>
-  CIS.includes(country.toLowerCase()) ? 'ru' : 'en'
+const getAnncChannelLocale = (country) =>
+  CIS.includes(country?.toLowerCase()) ? 'ru' : 'en'
 
-export const getAnnouncementsChannelInvite = (country) =>
-  getAnnouncementsChannelLocale(country) === 'ru' ? process.env.INVITE_RU : process.env.INVITE_EN
+export const getAnncChannelInvite = (country) =>
+  getAnncChannelLocale(country) === 'ru' ? process.env.INVITE_RU : process.env.INVITE_EN
+
+export const getAnncChannelInviteLink = (country) =>
+  `https://t.me/+${getAnncChannelInvite(country)}`

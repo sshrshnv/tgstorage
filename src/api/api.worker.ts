@@ -2,7 +2,7 @@ import { expose, transfer } from 'comlink'
 
 import { dataCache, resetDataCache } from '~/core/cache'
 import { timer } from '~/tools/timer'
-import { getAnnouncementsChannelInvite } from '~/tools/handle-channels'
+import { getAnncChannelInvite } from '~/tools/handle-channels'
 import { FOLDER_POSTFIX, generateFolderName, stringifyFileMessage } from '~/tools/handle-content'
 import { FILE_SIZE, getFilePartSize } from '~/tools/handle-file'
 
@@ -271,16 +271,34 @@ class Api {
     })
   }
 
-  public async joinAnnouncementsChannel() {
-    const isQueryAvailable = await checkIsQueryAvailableByTime('getAnnouncementsChannel', 24 * 60 * 60)
+  public async checkAnncChannelJoining() {
+    const isQueryAvailable = await checkIsQueryAvailableByTime('checkAnncChannelJoining', 7 * 24 * 60 * 60)
+    if (!isQueryAvailable) return { joiningAvailable: false }
+
+    const user = await dataCache.getUser()
+    const anncChannelInvite = getAnncChannelInvite(user?.country)
+    if (!anncChannelInvite) return { joiningAvailable: false }
+
+    const { _ } = await this.call('messages.checkChatInvite', {
+      hash: anncChannelInvite
+    })
+
+    return {
+      joined: _ === 'chatInviteAlready',
+      joiningAvailable: true
+    }
+  }
+
+  public async joinAnncChannel() {
+    const isQueryAvailable = await checkIsQueryAvailableByTime('joinAnncChannel', 24 * 60 * 60)
     if (!isQueryAvailable) return
 
     const user = await dataCache.getUser()
-    const announcementsChannelInvite = getAnnouncementsChannelInvite(user?.country)
-    if (!announcementsChannelInvite) return
+    const anncChannelInvite = getAnncChannelInvite(user?.country)
+    if (!anncChannelInvite) return
 
     const { _, chat } = await this.call('messages.checkChatInvite', {
-      hash: announcementsChannelInvite
+      hash: anncChannelInvite
     })
 
     if (_ === 'chatInviteAlready') {
@@ -288,7 +306,7 @@ class Api {
     }
 
     const { chats } = await this.call('messages.importChatInvite', {
-      hash: announcementsChannelInvite
+      hash: anncChannelInvite
     }).catch(() => ({ chats: [] }))
 
     return chats?.[0]

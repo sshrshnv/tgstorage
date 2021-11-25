@@ -16,7 +16,7 @@ type Props = {
 }
 
 export const Picture: FC<Props> = memo(({
-  class: className,
+  class: outerStyles,
   sources,
   alt = ''
 }) => {
@@ -28,7 +28,7 @@ export const Picture: FC<Props> = memo(({
 
   return (
     <picture class={cn(
-      className,
+      outerStyles,
       styles.root
     )}>
       {otherSources.map(({ type, src }) => (

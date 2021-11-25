@@ -23,7 +23,7 @@ export const Slide: FC<Props> = memo(({
   children,
   id,
   name,
-  class: className,
+  class: outerStyles,
   onClose
 }) => {
   const slideRef = useRef<HTMLDivElement>(null)
@@ -71,7 +71,7 @@ export const Slide: FC<Props> = memo(({
     <div
       id={id}
       class={cn(
-        className,
+        outerStyles,
         styles.root,
         styles[animationClassName],
         isPerformance && styles._performance

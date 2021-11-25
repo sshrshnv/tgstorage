@@ -23,7 +23,7 @@ type Props = {
 
 export const Text: FC<Props> = memo(({
   children,
-  class: className,
+  class: outerStyles,
   withLink,
   mCenter,
   large,
@@ -39,7 +39,7 @@ export const Text: FC<Props> = memo(({
 }) => {
   return (
     <span class={cn(
-      className,
+      outerStyles,
       styles.root,
       withLink && styles._withLink,
       mCenter && styles._mCenter,

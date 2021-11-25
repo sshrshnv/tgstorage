@@ -59,20 +59,14 @@ const Intro: FC = () => {
           />
         ))}
       </PicturesGroup>
-      <Break mSize={40} dSize={64} px/>
+      <Break mSize={36} dSize={60} px/>
 
-      <LayoutBlock group reverse>
-        <Picture sources={SCREEN_TYPES.map(type => ({
-          type,
-          src: screens[`channel-${locale}.${type}`]
-        }))}/>
-
-        <div>
-          <Text>{texts.faqDescription0}</Text>
-          <Text>{texts.faqDescription1}</Text>
-        </div>
+      <LayoutBlock narrow>
+        <Text center>
+          {texts.faqDescription0}
+        </Text>
       </LayoutBlock>
-      <Break mSize={36} dSize={48} px/>
+      <Break mSize={40} dSize={60} px/>
 
       <LayoutBlock group>
         <Picture sources={SCREEN_TYPES.map(type => ({
@@ -81,14 +75,16 @@ const Intro: FC = () => {
         }))}/>
 
         <div>
-          <Text withLink>
+          <Text center withLink>
             {texts.appDescription0} <a
               href="https://github.com/sh-a-v/tgstorage"
               target="_blank"
               rel="noopener noreferrer"
             >GitHub</a>.
           </Text>
-          <Text>{texts.installDescription}</Text>
+          <Text center>
+            {texts.installDescription}
+          </Text>
 
           {(appInstallAvailable && !appInstalled) && (
             <Button

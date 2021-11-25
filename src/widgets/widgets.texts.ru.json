@@ -7,5 +7,8 @@
   "errorButton": "Ок",
   "installTitle": "Установка",
   "installDescription": "Установите приложение для более удобного использования.",
-  "installButton": "Установить"
+  "installButton": "Установить",
+  "anncChannelTitle": "Канал",
+  "anncChannelDescription": "Подпишитесь на канал TgStorage, чтобы быть в курсе всех новостей.",
+  "anncChannelButton": "Подписаться"
 }
