@@ -125,11 +125,11 @@ export const deleteMessage = async (
   return true
 }
 
-export const getSendingMessage = (folderId: number) =>
+export const getSendingMessage = (folderId: string) =>
   store.getState().sendingMessages.get(folderId)
 
 export const setSendingMessage = (
-  folderId: number,
+  folderId: string,
   message: InputMessage | undefined
 ) => {
   const sendingMessages = new Map(store.getState().sendingMessages)
@@ -146,7 +146,7 @@ export const setSendingMessage = (
 }
 
 export const resetSendingMessage = (
-  folderId: number
+  folderId: string
 ) => {
   const sendingMessage = getSendingMessage(folderId)
   if (sendingMessage?.inputFiles) {
@@ -156,7 +156,7 @@ export const resetSendingMessage = (
 }
 
 const refreshMessages: {
-  [folderId: number]: {
+  [folderId: string]: {
     timeoutId: number
     waitIds: number[]
     sendingIds: number[]

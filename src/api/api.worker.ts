@@ -24,7 +24,7 @@ const initialMeta = {
   pfs: false,
   baseDC: 2,
   dcs: {},
-  userID: 0
+  userID: ''
 }
 
 class Api {
@@ -49,7 +49,7 @@ class Api {
     this.client = new Client({
       APIID: API_ID,
       APIHash: API_HASH,
-      APILayer: 121,
+      APILayer: 133,
       test: IS_TEST,
       debug: IS_TEST,
       dc: meta.baseDC,
@@ -239,6 +239,25 @@ class Api {
     return true
   }
 
+  public async updateUser() {
+    const [oldUser, oldMeta] = await Promise.all([
+      dataCache.getUser(),
+      dataCache.getMeta(META_KEY, initialMeta)
+    ])
+
+    const { user } = await this.call('users.getFullUser', {
+      id: { _: 'inputUserSelf' }
+    })
+    const normalizedUser = await transformUser(user, oldUser?.country)
+    dataCache.setUser(normalizedUser)
+    dataCache.setMeta(META_KEY, {
+      ...oldMeta,
+      userID: user.id
+    })
+    dataCache.resetQueryTime()
+    return { user: normalizedUser }
+  }
+
   public async getFolders(loadedChats: any[] = []) {
     const isQueryAvailable = await checkIsQueryAvailableByTime('getFolders')
 
@@ -332,7 +351,7 @@ class Api {
 
   private async archiveFolder(
     folder?: {
-      id: number
+      id: string
       access_hash: string
     }
   ) {
@@ -354,7 +373,7 @@ class Api {
   public async editFolder(
     name: string,
     folder: {
-      id: number
+      id: string
       access_hash: string
     }
   ) {
@@ -399,7 +418,7 @@ class Api {
 
   public async deleteFolder(
     folder: {
-      id: number
+      id: string
       access_hash: string
     }
   ) {
@@ -416,7 +435,7 @@ class Api {
 
   public async getMessages(
     folder: {
-      id: number
+      id: string
       access_hash: string
     },
     lastMessageId?: number
@@ -447,7 +466,7 @@ class Api {
       add_offset: 0,
       max_id: 0,
       min_id: 0,
-      hash: 0,
+      hash: '',
       limit
     })
 
@@ -463,7 +482,7 @@ class Api {
 
   public async refreshMessages(
     folder: {
-      id: number
+      id: string
       access_hash: string
     },
     ids: number[]
@@ -531,7 +550,7 @@ class Api {
       }
     },
     folder: {
-      id: number
+      id: string
       access_hash: string
     }
   ) {
@@ -633,7 +652,7 @@ class Api {
       }
     },
     folder: {
-      id: number
+      id: string
       access_hash: string
     }
   ) {
@@ -683,7 +702,7 @@ class Api {
       mediaMessages?: { id: number }[]
     },
     folder: {
-      id: number
+      id: string
       access_hash: string
     }
   ) {
@@ -726,11 +745,11 @@ class Api {
       mediaMessages?: { id: number, message: string }[]
     },
     fromFolder: {
-      id: number
+      id: string
       access_hash: string
     },
     toFolder: {
-      id: number
+      id: string
       access_hash: string
     }
   ) {
@@ -859,37 +878,10 @@ class Api {
     return transfer(bytes, [bytes.buffer])
   }
 
-  public async downloadPhotoFile({
-    volume_id,
-    local_id,
-    dc_id
-  }) {
-    let file = await this.call('upload.getFile', {
-      location: {
-        _: 'inputPeerPhotoFileLocation',
-        peer: { _: 'inputPeerSelf' },
-        volume_id,
-        local_id
-      },
-      cdn_supported: false,
-      limit: FILE_SIZE.MB1,
-      offset: 0,
-    }, {
-      dc: dc_id,
-      thread: 2
-    })
-
-    const bytes = new Uint8Array(file.bytes)
-    const type = file.type._.replace('storage.file', '').toLowerCase()
-    file = undefined
-
-    return transfer({ bytes, type }, [bytes.buffer])
-  }
-
   public async searchMessages(
     query: string,
     folder: {
-      id: number
+      id: string
       access_hash: string
     },
     addtional?: boolean
@@ -918,7 +910,7 @@ class Api {
       add_offset: 0,
       max_id: 0,
       min_id: 0,
-      hash: 0,
+      hash: '',
       limit
     })
 
@@ -970,7 +962,7 @@ class Api {
 
   public markMessageRead(
     folder: {
-      id: number
+      id: string
       access_hash: string
     },
     messageIds: number[]

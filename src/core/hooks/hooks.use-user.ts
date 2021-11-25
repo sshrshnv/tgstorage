@@ -2,6 +2,7 @@ import { useMemo } from 'preact/hooks'
 import { useStoreState } from 'unistore-hooks'
 
 import type { State } from '~/core/store'
+import { checkIsLegacyUser } from '~/tools/handle-user'
 
 export const useUser = () => {
   const { user, userLoading }: {
@@ -14,6 +15,7 @@ export const useUser = () => {
 
   return useMemo(() => ({
     user,
-    userLoading
+    userLoading,
+    isLegacyUser: checkIsLegacyUser(user)
   }), [user, userLoading])
 }

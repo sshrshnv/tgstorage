@@ -135,7 +135,7 @@ const handleMessages = async (
     dataCache.getFolders(),
     dataCache.getFoldersMessages()
   ])
-  const updates: Map<number, { folderMessages: FolderMessages, isSorted: boolean }> = new Map()
+  const updates: Map<string, { folderMessages: FolderMessages, isSorted: boolean }> = new Map()
 
   messages.forEach(async (message, index) => {
     if (typeof message === 'number') {
@@ -143,7 +143,7 @@ const handleMessages = async (
     }
     const { _, peer_id } = message
     const { channel_id, user_id, chat_id } = peer_id || {}
-    const folderId: number = channel_id || user_id || chat_id || findFolderIdByMessageId(foldersMessages, message.id)
+    const folderId: string = channel_id || user_id || chat_id || findFolderIdByMessageId(foldersMessages, message.id)
 
     const folderMessages: FolderMessages =
       (options?.offsetId === 0 && index === 0) ? new Map() :

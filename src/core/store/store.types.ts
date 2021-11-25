@@ -24,18 +24,12 @@ export type Settings = {
 }
 
 export type User = {
-  id: number
+  id: string
   access_hash: string
   phone: string
   username?: string
   firstName: string
   lastName?: string
-  photo?: {
-    id: number
-    volume_id: number
-    local_id: number
-    dc_id: number
-  }
   photoFile?: {
     bytes: Uint8Array
     type: string
@@ -44,7 +38,7 @@ export type User = {
 } | null
 
 export type Folder = {
-  id: number
+  id: string
   access_hash: string
   title: string
   category: string
@@ -53,7 +47,7 @@ export type Folder = {
 }
 
 export type Folders =
-  Map<number, Folder>
+  Map<string, Folder>
 
 export type MessageMedia = {
   id: string
@@ -137,7 +131,7 @@ export type FolderMessages =
   Map<number, Message>
 
 export type FoldersMessages =
-  Map<number, FolderMessages>
+  Map<string, FolderMessages>
 
 export type SearchMessages =
   Map<number, Message>
@@ -188,7 +182,7 @@ export type InputMessage = {
 }
 
 export type SendingMessages =
-  Map<number, InputMessage | undefined>
+  Map<string, InputMessage | undefined>
 
 export type DownloadingFile = {
   id: string
@@ -248,8 +242,8 @@ export type State = {
   folders: Folders
   foldersLoading: boolean
   foldersMessages: FoldersMessages
-  activeFolderId: number
-  loadingFolderIds: Map<number, boolean>
+  activeFolderId: string
+  loadingFolderIds: Map<string, boolean>
   sendingMessages: SendingMessages
   searchMessages: SearchMessages
   downloadingFiles: DownloadingFiles

@@ -11,8 +11,8 @@
 /* Do not make changes to this file unless you know what you are doing -- modify           */
 /* the tool instead.                                                                       */
 /*                                                                                         */
-/* Source: layer121.json (md5: fac17987c903ff370719ede4ea52153f)                           */
-/* Time: Thursday, 01 April 2021 11:12:36 (UTC)                                            */
+/* Source: layer133.json (md5: 4a01d9211c08eeb56142ca61c1117812)                           */
+/* Time: Thursday, 25 November 2021 10:31:53 (UTC)                                         */
 /*                                                                                         */
 /*******************************************************************************************/
 
@@ -41,7 +41,7 @@ const _error = (o: any) => {
 }
 
 const _inputPeerChat = (o: any) => {
-  i32(o.chat_id)
+  i64(o.chat_id)
 }
 
 const _inputPhoneContact = (o: any) => {
@@ -125,24 +125,24 @@ const _inputFileLocation = (o: any) => {
 }
 
 const _peerUser = (o: any) => {
-  i32(o.user_id)
+  i64(o.user_id)
 }
 
 const _peerChat = (o: any) => {
-  i32(o.chat_id)
+  i64(o.chat_id)
 }
 
 const _userEmpty = (o: any) => {
-  i32(o.id)
+  i64(o.id)
 }
 
 const _userProfilePhoto = (o: any) => {
   const flags =
       has(o.has_video)
+    | (has(o.stripped_thumb) << 1)
   i32(flags)
   i64(o.photo_id)
-  obj(o.photo_small)
-  obj(o.photo_big)
+  flag(bytes, o.stripped_thumb)
   i32(o.dc_id)
 }
 
@@ -155,7 +155,7 @@ const _userStatusOffline = (o: any) => {
 }
 
 const _chatEmpty = (o: any) => {
-  i32(o.id)
+  i64(o.id)
 }
 
 const _chat = (o: any) => {
@@ -166,11 +166,12 @@ const _chat = (o: any) => {
     | (has(o.deactivated) << 5)
     | (has(o.call_active) << 23)
     | (has(o.call_not_empty) << 24)
+    | (has(o.noforwards) << 25)
     | (has(o.migrated_to) << 6)
     | (has(o.admin_rights) << 14)
     | (has(o.default_banned_rights) << 18)
   i32(flags)
-  i32(o.id)
+  i64(o.id)
   str(o.title)
   obj(o.photo)
   i32(o.participants_count)
@@ -182,7 +183,7 @@ const _chat = (o: any) => {
 }
 
 const _chatForbidden = (o: any) => {
-  i32(o.id)
+  i64(o.id)
   str(o.title)
 }
 
@@ -191,24 +192,33 @@ const _chatFull = (o: any) => {
       (has(o.can_set_username) << 7)
     | (has(o.has_scheduled) << 8)
     | (has(o.chat_photo) << 2)
+    | (has(o.exported_invite) << 13)
     | (has(o.bot_info) << 3)
     | (has(o.pinned_msg_id) << 6)
     | (has(o.folder_id) << 11)
+    | (has(o.call) << 12)
+    | (has(o.ttl_period) << 14)
+    | (has(o.groupcall_default_join_as) << 15)
+    | (has(o.theme_emoticon) << 16)
   i32(flags)
-  i32(o.id)
+  i64(o.id)
   str(o.about)
   obj(o.participants)
   flag(obj, o.chat_photo)
   obj(o.notify_settings)
-  obj(o.exported_invite)
+  flag(obj, o.exported_invite)
   flagVector(obj, o.bot_info)
   flag(i32, o.pinned_msg_id)
   flag(i32, o.folder_id)
+  flag(obj, o.call)
+  flag(i32, o.ttl_period)
+  flag(obj, o.groupcall_default_join_as)
+  flag(str, o.theme_emoticon)
 }
 
 const _chatParticipant = (o: any) => {
-  i32(o.user_id)
-  i32(o.inviter_id)
+  i64(o.user_id)
+  i64(o.inviter_id)
   i32(o.date)
 }
 
@@ -216,12 +226,12 @@ const _chatParticipantsForbidden = (o: any) => {
   const flags =
       has(o.self_participant)
   i32(flags)
-  i32(o.chat_id)
+  i64(o.chat_id)
   flag(obj, o.self_participant)
 }
 
 const _chatParticipants = (o: any) => {
-  i32(o.chat_id)
+  i64(o.chat_id)
   vector(obj, o.participants)
   i32(o.version)
 }
@@ -229,14 +239,19 @@ const _chatParticipants = (o: any) => {
 const _chatPhoto = (o: any) => {
   const flags =
       has(o.has_video)
+    | (has(o.stripped_thumb) << 1)
   i32(flags)
-  obj(o.photo_small)
-  obj(o.photo_big)
+  i64(o.photo_id)
+  flag(bytes, o.stripped_thumb)
   i32(o.dc_id)
 }
 
 const _messageEmpty = (o: any) => {
+  const flags =
+      has(o.peer_id)
+  i32(flags)
   i32(o.id)
+  flag(obj, o.peer_id)
 }
 
 const _message = (o: any) => {
@@ -250,6 +265,7 @@ const _message = (o: any) => {
     | (has(o.legacy) << 19)
     | (has(o.edit_hide) << 21)
     | (has(o.pinned) << 24)
+    | (has(o.noforwards) << 26)
     | (has(o.from_id) << 8)
     | (has(o.fwd_from) << 2)
     | (has(o.via_bot_id) << 11)
@@ -264,12 +280,13 @@ const _message = (o: any) => {
     | (has(o.post_author) << 16)
     | (has(o.grouped_id) << 17)
     | (has(o.restriction_reason) << 22)
+    | (has(o.ttl_period) << 25)
   i32(flags)
   i32(o.id)
   flag(obj, o.from_id)
   obj(o.peer_id)
   flag(obj, o.fwd_from)
-  flag(i32, o.via_bot_id)
+  flag(i64, o.via_bot_id)
   flag(obj, o.reply_to)
   i32(o.date)
   str(o.message)
@@ -283,6 +300,7 @@ const _message = (o: any) => {
   flag(str, o.post_author)
   flag(i64, o.grouped_id)
   flagVector(obj, o.restriction_reason)
+  flag(i32, o.ttl_period)
 }
 
 const _messageService = (o: any) => {
@@ -295,6 +313,7 @@ const _messageService = (o: any) => {
     | (has(o.legacy) << 19)
     | (has(o.from_id) << 8)
     | (has(o.reply_to) << 3)
+    | (has(o.ttl_period) << 25)
   i32(flags)
   i32(o.id)
   flag(obj, o.from_id)
@@ -302,6 +321,7 @@ const _messageService = (o: any) => {
   flag(obj, o.reply_to)
   i32(o.date)
   obj(o.action)
+  flag(i32, o.ttl_period)
 }
 
 const _messageMediaPhoto = (o: any) => {
@@ -322,12 +342,12 @@ const _messageMediaContact = (o: any) => {
   str(o.first_name)
   str(o.last_name)
   str(o.vcard)
-  i32(o.user_id)
+  i64(o.user_id)
 }
 
 const _messageActionChatCreate = (o: any) => {
   str(o.title)
-  vector(i32, o.users)
+  vector(i64, o.users)
 }
 
 const _messageActionChatEditTitle = (o: any) => {
@@ -339,11 +359,11 @@ const _messageActionChatEditPhoto = (o: any) => {
 }
 
 const _messageActionChatAddUser = (o: any) => {
-  vector(i32, o.users)
+  vector(i64, o.users)
 }
 
 const _messageActionChatDeleteUser = (o: any) => {
-  i32(o.user_id)
+  i64(o.user_id)
 }
 
 const _dialog = (o: any) => {
@@ -390,7 +410,6 @@ const _photoSizeEmpty = (o: any) => {
 
 const _photoSize = (o: any) => {
   str(o.type)
-  obj(o.location)
   i32(o.w)
   i32(o.h)
   i32(o.size)
@@ -398,7 +417,6 @@ const _photoSize = (o: any) => {
 
 const _photoCachedSize = (o: any) => {
   str(o.type)
-  obj(o.location)
   i32(o.w)
   i32(o.h)
   bytes(o.bytes)
@@ -434,7 +452,7 @@ const _authAuthorization = (o: any) => {
 }
 
 const _authExportedAuthorization = (o: any) => {
-  i32(o.id)
+  i64(o.id)
   bytes(o.bytes)
 }
 
@@ -498,10 +516,6 @@ const _wallPaper = (o: any) => {
   flag(obj, o.settings)
 }
 
-const _inputReportReasonOther = (o: any) => {
-  str(o.text)
-}
-
 const _userFull = (o: any) => {
   const flags =
       has(o.blocked)
@@ -515,6 +529,8 @@ const _userFull = (o: any) => {
     | (has(o.bot_info) << 3)
     | (has(o.pinned_msg_id) << 6)
     | (has(o.folder_id) << 11)
+    | (has(o.ttl_period) << 14)
+    | (has(o.theme_emoticon) << 15)
   i32(flags)
   obj(o.user)
   flag(str, o.about)
@@ -525,20 +541,22 @@ const _userFull = (o: any) => {
   flag(i32, o.pinned_msg_id)
   i32(o.common_chats_count)
   flag(i32, o.folder_id)
+  flag(i32, o.ttl_period)
+  flag(str, o.theme_emoticon)
 }
 
 const _contact = (o: any) => {
-  i32(o.user_id)
+  i64(o.user_id)
   bool(o.mutual)
 }
 
 const _importedContact = (o: any) => {
-  i32(o.user_id)
+  i64(o.user_id)
   i64(o.client_id)
 }
 
 const _contactStatus = (o: any) => {
-  i32(o.user_id)
+  i64(o.user_id)
   obj(o.status)
 }
 
@@ -637,13 +655,13 @@ const _updateDeleteMessages = (o: any) => {
 }
 
 const _updateUserTyping = (o: any) => {
-  i32(o.user_id)
+  i64(o.user_id)
   obj(o.action)
 }
 
 const _updateChatUserTyping = (o: any) => {
-  i32(o.chat_id)
-  i32(o.user_id)
+  i64(o.chat_id)
+  obj(o.from_id)
   obj(o.action)
 }
 
@@ -652,19 +670,19 @@ const _updateChatParticipants = (o: any) => {
 }
 
 const _updateUserStatus = (o: any) => {
-  i32(o.user_id)
+  i64(o.user_id)
   obj(o.status)
 }
 
 const _updateUserName = (o: any) => {
-  i32(o.user_id)
+  i64(o.user_id)
   str(o.first_name)
   str(o.last_name)
   str(o.username)
 }
 
 const _updateUserPhoto = (o: any) => {
-  i32(o.user_id)
+  i64(o.user_id)
   i32(o.date)
   obj(o.photo)
   bool(o.previous)
@@ -711,17 +729,19 @@ const _updateShortMessage = (o: any) => {
     | (has(o.via_bot_id) << 11)
     | (has(o.reply_to) << 3)
     | (has(o.entities) << 7)
+    | (has(o.ttl_period) << 25)
   i32(flags)
   i32(o.id)
-  i32(o.user_id)
+  i64(o.user_id)
   str(o.message)
   i32(o.pts)
   i32(o.pts_count)
   i32(o.date)
   flag(obj, o.fwd_from)
-  flag(i32, o.via_bot_id)
+  flag(i64, o.via_bot_id)
   flag(obj, o.reply_to)
   flagVector(obj, o.entities)
+  flag(i32, o.ttl_period)
 }
 
 const _updateShortChatMessage = (o: any) => {
@@ -734,18 +754,20 @@ const _updateShortChatMessage = (o: any) => {
     | (has(o.via_bot_id) << 11)
     | (has(o.reply_to) << 3)
     | (has(o.entities) << 7)
+    | (has(o.ttl_period) << 25)
   i32(flags)
   i32(o.id)
-  i32(o.from_id)
-  i32(o.chat_id)
+  i64(o.from_id)
+  i64(o.chat_id)
   str(o.message)
   i32(o.pts)
   i32(o.pts_count)
   i32(o.date)
   flag(obj, o.fwd_from)
-  flag(i32, o.via_bot_id)
+  flag(i64, o.via_bot_id)
   flag(obj, o.reply_to)
   flagVector(obj, o.entities)
+  flag(i32, o.ttl_period)
 }
 
 const _updateShort = (o: any) => {
@@ -883,6 +905,7 @@ const _helpAppUpdate = (o: any) => {
       has(o.can_not_skip)
     | (has(o.document) << 1)
     | (has(o.url) << 2)
+    | (has(o.sticker) << 3)
   i32(flags)
   i32(o.id)
   str(o.version)
@@ -890,6 +913,7 @@ const _helpAppUpdate = (o: any) => {
   vector(obj, o.entities)
   flag(obj, o.document)
   flag(str, o.url)
+  flag(obj, o.sticker)
 }
 
 const _helpInviteText = (o: any) => {
@@ -924,8 +948,8 @@ const _encryptedChatWaiting = (o: any) => {
   i32(o.id)
   i64(o.access_hash)
   i32(o.date)
-  i32(o.admin_id)
-  i32(o.participant_id)
+  i64(o.admin_id)
+  i64(o.participant_id)
 }
 
 const _encryptedChatRequested = (o: any) => {
@@ -936,8 +960,8 @@ const _encryptedChatRequested = (o: any) => {
   i32(o.id)
   i64(o.access_hash)
   i32(o.date)
-  i32(o.admin_id)
-  i32(o.participant_id)
+  i64(o.admin_id)
+  i64(o.participant_id)
   bytes(o.g_a)
 }
 
@@ -945,13 +969,16 @@ const _encryptedChat = (o: any) => {
   i32(o.id)
   i64(o.access_hash)
   i32(o.date)
-  i32(o.admin_id)
-  i32(o.participant_id)
+  i64(o.admin_id)
+  i64(o.participant_id)
   bytes(o.g_a_or_b)
   i64(o.key_fingerprint)
 }
 
 const _encryptedChatDiscarded = (o: any) => {
+  const flags =
+      has(o.history_deleted)
+  i32(flags)
   i32(o.id)
 }
 
@@ -1033,16 +1060,16 @@ const _inputEncryptedFileBigUploaded = (o: any) => {
 }
 
 const _updateChatParticipantAdd = (o: any) => {
-  i32(o.chat_id)
-  i32(o.user_id)
-  i32(o.inviter_id)
+  i64(o.chat_id)
+  i64(o.user_id)
+  i64(o.inviter_id)
   i32(o.date)
   i32(o.version)
 }
 
 const _updateChatParticipantDelete = (o: any) => {
-  i32(o.chat_id)
-  i32(o.user_id)
+  i64(o.chat_id)
+  i64(o.user_id)
   i32(o.version)
 }
 
@@ -1069,9 +1096,11 @@ const _inputMediaUploadedDocument = (o: any) => {
 const _inputMediaDocument = (o: any) => {
   const flags =
       has(o.ttl_seconds)
+    | (has(o.query) << 1)
   i32(flags)
   obj(o.id)
   flag(i32, o.ttl_seconds)
+  flag(str, o.query)
 }
 
 const _messageMediaDocument = (o: any) => {
@@ -1180,11 +1209,11 @@ const _inputPrivacyValueDisallowUsers = (o: any) => {
 }
 
 const _privacyValueAllowUsers = (o: any) => {
-  vector(i32, o.users)
+  vector(i64, o.users)
 }
 
 const _privacyValueDisallowUsers = (o: any) => {
-  vector(i32, o.users)
+  vector(i64, o.users)
 }
 
 const _accountPrivacyRules = (o: any) => {
@@ -1198,7 +1227,7 @@ const _accountDaysTTL = (o: any) => {
 }
 
 const _updateUserPhone = (o: any) => {
-  i32(o.user_id)
+  i64(o.user_id)
   str(o.phone)
 }
 
@@ -1245,7 +1274,7 @@ const _documentAttributeFilename = (o: any) => {
 }
 
 const _messagesStickers = (o: any) => {
-  i32(o.hash)
+  i64(o.hash)
   vector(obj, o.stickers)
 }
 
@@ -1255,7 +1284,7 @@ const _stickerPack = (o: any) => {
 }
 
 const _messagesAllStickers = (o: any) => {
-  i32(o.hash)
+  i64(o.hash)
   vector(obj, o.sets)
 }
 
@@ -1344,6 +1373,8 @@ const _authorization = (o: any) => {
       has(o.current)
     | (has(o.official_app) << 1)
     | (has(o.password_pending) << 2)
+    | (has(o.encrypted_requests_disabled) << 3)
+    | (has(o.call_requests_disabled) << 4)
   i32(flags)
   i64(o.hash)
   str(o.device_model)
@@ -1373,6 +1404,7 @@ const _accountPassword = (o: any) => {
     | (has(o.srp_id) << 2)
     | (has(o.hint) << 3)
     | (has(o.email_unconfirmed_pattern) << 4)
+    | (has(o.pending_reset_date) << 5)
   i32(flags)
   flag(obj, o.current_algo)
   flag(bytes, o.srp_B)
@@ -1382,6 +1414,7 @@ const _accountPassword = (o: any) => {
   obj(o.new_algo)
   obj(o.new_secure_algo)
   bytes(o.secure_random)
+  flag(i32, o.pending_reset_date)
 }
 
 const _accountPasswordSettings = (o: any) => {
@@ -1435,7 +1468,21 @@ const _receivedNotifyMessage = (o: any) => {
 }
 
 const _chatInviteExported = (o: any) => {
+  const flags =
+      has(o.revoked)
+    | (has(o.permanent) << 5)
+    | (has(o.start_date) << 4)
+    | (has(o.expire_date) << 1)
+    | (has(o.usage_limit) << 2)
+    | (has(o.usage) << 3)
+  i32(flags)
   str(o.link)
+  i64(o.admin_id)
+  i32(o.date)
+  flag(i32, o.start_date)
+  flag(i32, o.expire_date)
+  flag(i32, o.usage_limit)
+  flag(i32, o.usage)
 }
 
 const _chatInviteAlready = (o: any) => {
@@ -1457,7 +1504,7 @@ const _chatInvite = (o: any) => {
 }
 
 const _messageActionChatJoinedByLink = (o: any) => {
-  i32(o.inviter_id)
+  i64(o.inviter_id)
 }
 
 const _updateReadMessagesContents = (o: any) => {
@@ -1482,16 +1529,18 @@ const _stickerSet = (o: any) => {
     | (has(o.masks) << 3)
     | (has(o.animated) << 5)
     | has(o.installed_date)
-    | (has(o.thumb) << 4)
+    | (has(o.thumbs) << 4)
     | (has(o.thumb_dc_id) << 4)
+    | (has(o.thumb_version) << 4)
   i32(flags)
   flag(i32, o.installed_date)
   i64(o.id)
   i64(o.access_hash)
   str(o.title)
   str(o.short_name)
-  flag(obj, o.thumb)
+  flagVector(obj, o.thumbs)
   flag(i32, o.thumb_dc_id)
+  flag(i32, o.thumb_version)
   i32(o.count)
   i32(o.hash)
 }
@@ -1518,6 +1567,7 @@ const _user = (o: any) => {
     | (has(o.support) << 23)
     | (has(o.scam) << 24)
     | (has(o.apply_min_photo) << 25)
+    | (has(o.fake) << 26)
     | has(o.access_hash)
     | (has(o.first_name) << 1)
     | (has(o.last_name) << 2)
@@ -1530,7 +1580,7 @@ const _user = (o: any) => {
     | (has(o.bot_inline_placeholder) << 19)
     | (has(o.lang_code) << 22)
   i32(flags)
-  i32(o.id)
+  i64(o.id)
   flag(i64, o.access_hash)
   flag(str, o.first_name)
   flag(str, o.last_name)
@@ -1550,7 +1600,7 @@ const _botCommand = (o: any) => {
 }
 
 const _botInfo = (o: any) => {
-  i32(o.user_id)
+  i64(o.user_id)
   str(o.description)
   vector(obj, o.commands)
 }
@@ -1573,7 +1623,9 @@ const _replyKeyboardForceReply = (o: any) => {
   const flags =
       (has(o.single_use) << 1)
     | (has(o.selective) << 2)
+    | (has(o.placeholder) << 3)
   i32(flags)
+  flag(str, o.placeholder)
 }
 
 const _replyKeyboardMarkup = (o: any) => {
@@ -1581,17 +1633,19 @@ const _replyKeyboardMarkup = (o: any) => {
       has(o.resize)
     | (has(o.single_use) << 1)
     | (has(o.selective) << 2)
+    | (has(o.placeholder) << 3)
   i32(flags)
   vector(obj, o.rows)
+  flag(str, o.placeholder)
 }
 
 const _inputPeerUser = (o: any) => {
-  i32(o.user_id)
+  i64(o.user_id)
   i64(o.access_hash)
 }
 
 const _inputUser = (o: any) => {
-  i32(o.user_id)
+  i64(o.user_id)
   i64(o.access_hash)
 }
 
@@ -1657,6 +1711,7 @@ const _updateShortSentMessage = (o: any) => {
       (has(o.out) << 1)
     | (has(o.media) << 9)
     | (has(o.entities) << 7)
+    | (has(o.ttl_period) << 25)
   i32(flags)
   i32(o.id)
   i32(o.pts)
@@ -1664,19 +1719,20 @@ const _updateShortSentMessage = (o: any) => {
   i32(o.date)
   flag(obj, o.media)
   flagVector(obj, o.entities)
+  flag(i32, o.ttl_period)
 }
 
 const _inputChannel = (o: any) => {
-  i32(o.channel_id)
+  i64(o.channel_id)
   i64(o.access_hash)
 }
 
 const _peerChannel = (o: any) => {
-  i32(o.channel_id)
+  i64(o.channel_id)
 }
 
 const _inputPeerChannel = (o: any) => {
-  i32(o.channel_id)
+  i64(o.channel_id)
   i64(o.access_hash)
 }
 
@@ -1696,6 +1752,9 @@ const _channel = (o: any) => {
     | (has(o.slowmode_enabled) << 22)
     | (has(o.call_active) << 23)
     | (has(o.call_not_empty) << 24)
+    | (has(o.fake) << 25)
+    | (has(o.gigagroup) << 26)
+    | (has(o.noforwards) << 27)
     | (has(o.access_hash) << 13)
     | (has(o.username) << 6)
     | (has(o.restriction_reason) << 9)
@@ -1704,13 +1763,12 @@ const _channel = (o: any) => {
     | (has(o.default_banned_rights) << 18)
     | (has(o.participants_count) << 17)
   i32(flags)
-  i32(o.id)
+  i64(o.id)
   flag(i64, o.access_hash)
   str(o.title)
   flag(str, o.username)
   obj(o.photo)
   i32(o.date)
-  i32(o.version)
   flagVector(obj, o.restriction_reason)
   flag(obj, o.admin_rights)
   flag(obj, o.banned_rights)
@@ -1724,7 +1782,7 @@ const _channelForbidden = (o: any) => {
     | (has(o.megagroup) << 8)
     | (has(o.until_date) << 16)
   i32(flags)
-  i32(o.id)
+  i64(o.id)
   i64(o.access_hash)
   str(o.title)
   flag(i32, o.until_date)
@@ -1751,6 +1809,7 @@ const _channelFull = (o: any) => {
     | (has(o.kicked_count) << 2)
     | (has(o.banned_count) << 2)
     | (has(o.online_count) << 13)
+    | (has(o.exported_invite) << 23)
     | (has(o.migrated_from_chat_id) << 4)
     | (has(o.migrated_from_max_id) << 4)
     | (has(o.pinned_msg_id) << 5)
@@ -1762,8 +1821,13 @@ const _channelFull = (o: any) => {
     | (has(o.slowmode_seconds) << 17)
     | (has(o.slowmode_next_send_date) << 18)
     | (has(o.stats_dc) << 12)
+    | (has(o.call) << 21)
+    | (has(o.ttl_period) << 24)
+    | (has(o.pending_suggestions) << 25)
+    | (has(o.groupcall_default_join_as) << 26)
+    | (has(o.theme_emoticon) << 27)
   i32(flags)
-  i32(o.id)
+  i64(o.id)
   str(o.about)
   flag(i32, o.participants_count)
   flag(i32, o.admins_count)
@@ -1775,20 +1839,25 @@ const _channelFull = (o: any) => {
   i32(o.unread_count)
   obj(o.chat_photo)
   obj(o.notify_settings)
-  obj(o.exported_invite)
+  flag(obj, o.exported_invite)
   vector(obj, o.bot_info)
-  flag(i32, o.migrated_from_chat_id)
+  flag(i64, o.migrated_from_chat_id)
   flag(i32, o.migrated_from_max_id)
   flag(i32, o.pinned_msg_id)
   flag(obj, o.stickerset)
   flag(i32, o.available_min_id)
   flag(i32, o.folder_id)
-  flag(i32, o.linked_chat_id)
+  flag(i64, o.linked_chat_id)
   flag(obj, o.location)
   flag(i32, o.slowmode_seconds)
   flag(i32, o.slowmode_next_send_date)
   flag(i32, o.stats_dc)
   i32(o.pts)
+  flag(obj, o.call)
+  flag(i32, o.ttl_period)
+  flagVector(str, o.pending_suggestions)
+  flag(obj, o.groupcall_default_join_as)
+  flag(str, o.theme_emoticon)
 }
 
 const _messageRange = (o: any) => {
@@ -1817,12 +1886,12 @@ const _updateChannelTooLong = (o: any) => {
   const flags =
       has(o.pts)
   i32(flags)
-  i32(o.channel_id)
+  i64(o.channel_id)
   flag(i32, o.pts)
 }
 
 const _updateChannel = (o: any) => {
-  i32(o.channel_id)
+  i64(o.channel_id)
 }
 
 const _updateNewChannelMessage = (o: any) => {
@@ -1836,21 +1905,21 @@ const _updateReadChannelInbox = (o: any) => {
       has(o.folder_id)
   i32(flags)
   flag(i32, o.folder_id)
-  i32(o.channel_id)
+  i64(o.channel_id)
   i32(o.max_id)
   i32(o.still_unread_count)
   i32(o.pts)
 }
 
 const _updateDeleteChannelMessages = (o: any) => {
-  i32(o.channel_id)
+  i64(o.channel_id)
   vector(i32, o.messages)
   i32(o.pts)
   i32(o.pts_count)
 }
 
 const _updateChannelMessageViews = (o: any) => {
-  i32(o.channel_id)
+  i64(o.channel_id)
   i32(o.id)
   i32(o.views)
 }
@@ -1897,13 +1966,13 @@ const _channelMessagesFilter = (o: any) => {
 }
 
 const _channelParticipant = (o: any) => {
-  i32(o.user_id)
+  i64(o.user_id)
   i32(o.date)
 }
 
 const _channelParticipantSelf = (o: any) => {
-  i32(o.user_id)
-  i32(o.inviter_id)
+  i64(o.user_id)
+  i64(o.inviter_id)
   i32(o.date)
 }
 
@@ -1911,7 +1980,7 @@ const _channelParticipantCreator = (o: any) => {
   const flags =
       has(o.rank)
   i32(flags)
-  i32(o.user_id)
+  i64(o.user_id)
   obj(o.admin_rights)
   flag(str, o.rank)
 }
@@ -1923,38 +1992,40 @@ const _channelParticipantsKicked = (o: any) => {
 const _channelsChannelParticipants = (o: any) => {
   i32(o.count)
   vector(obj, o.participants)
+  vector(obj, o.chats)
   vector(obj, o.users)
 }
 
 const _channelsChannelParticipant = (o: any) => {
   obj(o.participant)
+  vector(obj, o.chats)
   vector(obj, o.users)
 }
 
 const _chatParticipantCreator = (o: any) => {
-  i32(o.user_id)
+  i64(o.user_id)
 }
 
 const _chatParticipantAdmin = (o: any) => {
-  i32(o.user_id)
-  i32(o.inviter_id)
+  i64(o.user_id)
+  i64(o.inviter_id)
   i32(o.date)
 }
 
 const _updateChatParticipantAdmin = (o: any) => {
-  i32(o.chat_id)
-  i32(o.user_id)
+  i64(o.chat_id)
+  i64(o.user_id)
   bool(o.is_admin)
   i32(o.version)
 }
 
 const _messageActionChatMigrateTo = (o: any) => {
-  i32(o.channel_id)
+  i64(o.channel_id)
 }
 
 const _messageActionChannelMigrateFrom = (o: any) => {
   str(o.title)
-  i32(o.chat_id)
+  i64(o.chat_id)
 }
 
 const _helpTermsOfService = (o: any) => {
@@ -1980,7 +2051,7 @@ const _updateStickerSetsOrder = (o: any) => {
 }
 
 const _messagesSavedGifs = (o: any) => {
-  i32(o.hash)
+  i64(o.hash)
   vector(obj, o.gifs)
 }
 
@@ -2079,11 +2150,13 @@ const _messagesBotResults = (o: any) => {
 const _updateBotInlineQuery = (o: any) => {
   const flags =
       has(o.geo)
+    | (has(o.peer_type) << 1)
   i32(flags)
   i64(o.query_id)
-  i32(o.user_id)
+  i64(o.user_id)
   str(o.query)
   flag(obj, o.geo)
+  flag(obj, o.peer_type)
   str(o.offset)
 }
 
@@ -2092,7 +2165,7 @@ const _updateBotInlineSend = (o: any) => {
       has(o.geo)
     | (has(o.msg_id) << 1)
   i32(flags)
-  i32(o.user_id)
+  i64(o.user_id)
   str(o.query)
   flag(obj, o.geo)
   str(o.id)
@@ -2199,7 +2272,7 @@ const _updateBotCallbackQuery = (o: any) => {
     | (has(o.game_short_name) << 1)
   i32(flags)
   i64(o.query_id)
-  i32(o.user_id)
+  i64(o.user_id)
   obj(o.peer)
   i32(o.msg_id)
   i64(o.chat_instance)
@@ -2343,7 +2416,7 @@ const _updateInlineBotCallbackQuery = (o: any) => {
     | (has(o.game_short_name) << 1)
   i32(flags)
   i64(o.query_id)
-  i32(o.user_id)
+  i64(o.user_id)
   obj(o.msg_id)
   i64(o.chat_instance)
   flag(bytes, o.data)
@@ -2383,7 +2456,7 @@ const _contactsTopPeers = (o: any) => {
 const _messageEntityMentionName = (o: any) => {
   i32(o.offset)
   i32(o.length)
-  i32(o.user_id)
+  i64(o.user_id)
 }
 
 const _inputMessageEntityMentionName = (o: any) => {
@@ -2393,7 +2466,7 @@ const _inputMessageEntityMentionName = (o: any) => {
 }
 
 const _updateReadChannelOutbox = (o: any) => {
-  i32(o.channel_id)
+  i64(o.channel_id)
   i32(o.max_id)
 }
 
@@ -2426,14 +2499,14 @@ const _messagesFeaturedStickersNotModified = (o: any) => {
 }
 
 const _messagesFeaturedStickers = (o: any) => {
-  i32(o.hash)
+  i64(o.hash)
   i32(o.count)
   vector(obj, o.sets)
   vector(i64, o.unread)
 }
 
 const _messagesRecentStickers = (o: any) => {
-  i32(o.hash)
+  i64(o.hash)
   vector(obj, o.packs)
   vector(obj, o.stickers)
   vector(i32, o.dates)
@@ -2544,7 +2617,7 @@ const _messageActionGameScore = (o: any) => {
 
 const _highScore = (o: any) => {
   i32(o.pos)
-  i32(o.user_id)
+  i64(o.user_id)
   i32(o.score)
 }
 
@@ -2558,7 +2631,7 @@ const _updatesDifferenceTooLong = (o: any) => {
 }
 
 const _updateChannelWebPage = (o: any) => {
-  i32(o.channel_id)
+  i64(o.channel_id)
   obj(o.webpage)
   i32(o.pts)
   i32(o.pts_count)
@@ -2776,14 +2849,19 @@ const _invoice = (o: any) => {
     | (has(o.flexible) << 5)
     | (has(o.phone_to_provider) << 6)
     | (has(o.email_to_provider) << 7)
+    | (has(o.max_tip_amount) << 8)
+    | (has(o.suggested_tip_amounts) << 8)
   i32(flags)
   str(o.currency)
   vector(obj, o.prices)
+  flag(i64, o.max_tip_amount)
+  flagVector(i64, o.suggested_tip_amounts)
 }
 
 const _inputMediaInvoice = (o: any) => {
   const flags =
       has(o.photo)
+    | (has(o.start_param) << 1)
   i32(flags)
   str(o.title)
   str(o.description)
@@ -2792,7 +2870,7 @@ const _inputMediaInvoice = (o: any) => {
   bytes(o.payload)
   str(o.provider)
   obj(o.provider_data)
-  str(o.start_param)
+  flag(str, o.start_param)
 }
 
 const _paymentCharge = (o: any) => {
@@ -2902,9 +2980,10 @@ const _paymentsPaymentForm = (o: any) => {
     | has(o.saved_info)
     | (has(o.saved_credentials) << 1)
   i32(flags)
-  i32(o.bot_id)
+  i64(o.form_id)
+  i64(o.bot_id)
   obj(o.invoice)
-  i32(o.provider_id)
+  i64(o.provider_id)
   str(o.url)
   flag(str, o.native_provider)
   flag(obj, o.native_params)
@@ -2928,15 +3007,21 @@ const _paymentsPaymentResult = (o: any) => {
 
 const _paymentsPaymentReceipt = (o: any) => {
   const flags =
-      has(o.info)
+      (has(o.photo) << 2)
+    | has(o.info)
     | (has(o.shipping) << 1)
+    | (has(o.tip_amount) << 3)
   i32(flags)
   i32(o.date)
-  i32(o.bot_id)
+  i64(o.bot_id)
+  i64(o.provider_id)
+  str(o.title)
+  str(o.description)
+  flag(obj, o.photo)
   obj(o.invoice)
-  i32(o.provider_id)
   flag(obj, o.info)
   flag(obj, o.shipping)
+  flag(i64, o.tip_amount)
   str(o.currency)
   i64(o.total_amount)
   str(o.credentials_title)
@@ -2976,7 +3061,7 @@ const _shippingOption = (o: any) => {
 
 const _updateBotShippingQuery = (o: any) => {
   i64(o.query_id)
-  i32(o.user_id)
+  i64(o.user_id)
   bytes(o.payload)
   obj(o.shipping_address)
 }
@@ -2987,7 +3072,7 @@ const _updateBotPrecheckoutQuery = (o: any) => {
     | (has(o.shipping_option_id) << 1)
   i32(flags)
   i64(o.query_id)
-  i32(o.user_id)
+  i64(o.user_id)
   bytes(o.payload)
   flag(obj, o.info)
   flag(str, o.shipping_option_id)
@@ -3025,8 +3110,8 @@ const _phoneCallWaiting = (o: any) => {
   i64(o.id)
   i64(o.access_hash)
   i32(o.date)
-  i32(o.admin_id)
-  i32(o.participant_id)
+  i64(o.admin_id)
+  i64(o.participant_id)
   obj(o.protocol)
   flag(i32, o.receive_date)
 }
@@ -3038,8 +3123,8 @@ const _phoneCallRequested = (o: any) => {
   i64(o.id)
   i64(o.access_hash)
   i32(o.date)
-  i32(o.admin_id)
-  i32(o.participant_id)
+  i64(o.admin_id)
+  i64(o.participant_id)
   bytes(o.g_a_hash)
   obj(o.protocol)
 }
@@ -3051,8 +3136,8 @@ const _phoneCallAccepted = (o: any) => {
   i64(o.id)
   i64(o.access_hash)
   i32(o.date)
-  i32(o.admin_id)
-  i32(o.participant_id)
+  i64(o.admin_id)
+  i64(o.participant_id)
   bytes(o.g_b)
   obj(o.protocol)
 }
@@ -3065,8 +3150,8 @@ const _phoneCall = (o: any) => {
   i64(o.id)
   i64(o.access_hash)
   i32(o.date)
-  i32(o.admin_id)
-  i32(o.participant_id)
+  i64(o.admin_id)
+  i64(o.participant_id)
   bytes(o.g_a_or_b)
   i64(o.key_fingerprint)
   obj(o.protocol)
@@ -3225,9 +3310,9 @@ const _channelParticipantAdmin = (o: any) => {
     | (has(o.inviter_id) << 1)
     | (has(o.rank) << 2)
   i32(flags)
-  i32(o.user_id)
-  flag(i32, o.inviter_id)
-  i32(o.promoted_by)
+  i64(o.user_id)
+  flag(i64, o.inviter_id)
+  i64(o.promoted_by)
   i32(o.date)
   obj(o.admin_rights)
   flag(str, o.rank)
@@ -3237,8 +3322,8 @@ const _channelParticipantBanned = (o: any) => {
   const flags =
       has(o.left)
   i32(flags)
-  i32(o.user_id)
-  i32(o.kicked_by)
+  obj(o.peer)
+  i64(o.kicked_by)
   i32(o.date)
   obj(o.banned_rights)
 }
@@ -3309,7 +3394,7 @@ const _channelAdminLogEventActionParticipantToggleAdmin = (o: any) => {
 const _channelAdminLogEvent = (o: any) => {
   i64(o.id)
   i32(o.date)
-  i32(o.user_id)
+  i64(o.user_id)
   obj(o.action)
 }
 
@@ -3337,6 +3422,7 @@ const _channelAdminLogEventsFilter = (o: any) => {
     | (has(o.delete) << 13)
     | (has(o.group_call) << 14)
     | (has(o.invites) << 15)
+    | (has(o.send) << 16)
   i32(flags)
 }
 
@@ -3351,13 +3437,13 @@ const _popularContact = (o: any) => {
 }
 
 const _messagesFavedStickers = (o: any) => {
-  i32(o.hash)
+  i64(o.hash)
   vector(obj, o.packs)
   vector(obj, o.stickers)
 }
 
 const _updateChannelReadMessagesContents = (o: any) => {
-  i32(o.channel_id)
+  i64(o.channel_id)
   vector(i32, o.messages)
 }
 
@@ -3374,13 +3460,8 @@ const _inputPaymentCredentialsApplePay = (o: any) => {
   obj(o.payment_data)
 }
 
-const _inputPaymentCredentialsAndroidPay = (o: any) => {
-  obj(o.payment_token)
-  str(o.google_transaction_id)
-}
-
 const _updateChannelAvailableMessages = (o: any) => {
-  i32(o.channel_id)
+  i64(o.channel_id)
   i32(o.available_min_id)
 }
 
@@ -3418,12 +3499,12 @@ const _recentMeUrlUnknown = (o: any) => {
 
 const _recentMeUrlUser = (o: any) => {
   str(o.url)
-  i32(o.user_id)
+  i64(o.user_id)
 }
 
 const _recentMeUrlChat = (o: any) => {
   str(o.url)
-  i32(o.chat_id)
+  i64(o.chat_id)
 }
 
 const _recentMeUrlChatInvite = (o: any) => {
@@ -3458,7 +3539,7 @@ const _inputSingleMedia = (o: any) => {
 
 const _webAuthorization = (o: any) => {
   i64(o.hash)
-  i32(o.bot_id)
+  i64(o.bot_id)
   str(o.domain)
   str(o.browser)
   str(o.platform)
@@ -3504,7 +3585,7 @@ const _dialogPeer = (o: any) => {
 }
 
 const _messagesFoundStickerSets = (o: any) => {
-  i32(o.hash)
+  i64(o.hash)
   vector(obj, o.sets)
 }
 
@@ -4027,7 +4108,7 @@ const _pollResults = (o: any) => {
   i32(flags)
   flagVector(obj, o.results)
   flag(i32, o.total_voters)
-  flagVector(i32, o.recent_voters)
+  flagVector(i64, o.recent_voters)
   flag(str, o.solution)
   flagVector(obj, o.solution_entities)
 }
@@ -4125,7 +4206,7 @@ const _channelAdminLogEventActionStopPoll = (o: any) => {
 }
 
 const _accountWallPapers = (o: any) => {
-  i32(o.hash)
+  i64(o.hash)
   vector(obj, o.wallpapers)
 }
 
@@ -4143,11 +4224,15 @@ const _wallPaperSettings = (o: any) => {
     | (has(o.motion) << 2)
     | has(o.background_color)
     | (has(o.second_background_color) << 4)
+    | (has(o.third_background_color) << 5)
+    | (has(o.fourth_background_color) << 6)
     | (has(o.intensity) << 3)
     | (has(o.rotation) << 4)
   i32(flags)
   flag(i32, o.background_color)
   flag(i32, o.second_background_color)
+  flag(i32, o.third_background_color)
+  flag(i32, o.fourth_background_color)
   flag(i32, o.intensity)
   flag(i32, o.rotation)
 }
@@ -4196,11 +4281,6 @@ const _emojiLanguage = (o: any) => {
   str(o.lang_code)
 }
 
-const _fileLocationToBeDeprecated = (o: any) => {
-  i64(o.volume_id)
-  i32(o.local_id)
-}
-
 const _inputPhotoFileLocation = (o: any) => {
   i64(o.id)
   i64(o.access_hash)
@@ -4222,14 +4302,12 @@ const _inputPeerPhotoFileLocation = (o: any) => {
       has(o.big)
   i32(flags)
   obj(o.peer)
-  i64(o.volume_id)
-  i32(o.local_id)
+  i64(o.photo_id)
 }
 
 const _inputStickerSetThumb = (o: any) => {
   obj(o.stickerset)
-  i64(o.volume_id)
-  i32(o.local_id)
+  i32(o.thumb_version)
 }
 
 const _folder = (o: any) => {
@@ -4284,30 +4362,30 @@ const _updateFolderPeers = (o: any) => {
 const _inputUserFromMessage = (o: any) => {
   obj(o.peer)
   i32(o.msg_id)
-  i32(o.user_id)
+  i64(o.user_id)
 }
 
 const _inputChannelFromMessage = (o: any) => {
   obj(o.peer)
   i32(o.msg_id)
-  i32(o.channel_id)
+  i64(o.channel_id)
 }
 
 const _inputPeerUserFromMessage = (o: any) => {
   obj(o.peer)
   i32(o.msg_id)
-  i32(o.user_id)
+  i64(o.user_id)
 }
 
 const _inputPeerChannelFromMessage = (o: any) => {
   obj(o.peer)
   i32(o.msg_id)
-  i32(o.channel_id)
+  i64(o.channel_id)
 }
 
 const _channelAdminLogEventActionChangeLinkedChat = (o: any) => {
-  i32(o.prev_value)
-  i32(o.new_value)
+  i64(o.prev_value)
+  i64(o.new_value)
 }
 
 const _messagesSearchCounter = (o: any) => {
@@ -4352,19 +4430,19 @@ const _urlAuthResultAccepted = (o: any) => {
 }
 
 const _inputPrivacyValueAllowChatParticipants = (o: any) => {
-  vector(i32, o.chats)
+  vector(i64, o.chats)
 }
 
 const _inputPrivacyValueDisallowChatParticipants = (o: any) => {
-  vector(i32, o.chats)
+  vector(i64, o.chats)
 }
 
 const _privacyValueAllowChatParticipants = (o: any) => {
-  vector(i32, o.chats)
+  vector(i64, o.chats)
 }
 
 const _privacyValueDisallowChatParticipants = (o: any) => {
-  vector(i32, o.chats)
+  vector(i64, o.chats)
 }
 
 const _messageEntityUnderline = (o: any) => {
@@ -4451,8 +4529,10 @@ const _theme = (o: any) => {
   const flags =
       has(o.creator)
     | (has(o.default) << 1)
+    | (has(o.for_chat) << 5)
     | (has(o.document) << 2)
     | (has(o.settings) << 3)
+    | (has(o.installs_count) << 4)
   i32(flags)
   i64(o.id)
   i64(o.access_hash)
@@ -4460,11 +4540,11 @@ const _theme = (o: any) => {
   str(o.title)
   flag(obj, o.document)
   flag(obj, o.settings)
-  i32(o.installs_count)
+  flag(i32, o.installs_count)
 }
 
 const _accountThemes = (o: any) => {
-  i32(o.hash)
+  i64(o.hash)
   vector(obj, o.themes)
 }
 
@@ -4504,40 +4584,47 @@ const _messagesInactiveChats = (o: any) => {
   vector(obj, o.users)
 }
 
+const _inputWallPaperNoFile = (o: any) => {
+  i64(o.id)
+}
+
 const _wallPaperNoFile = (o: any) => {
   const flags =
       (has(o.default) << 1)
     | (has(o.dark) << 4)
     | (has(o.settings) << 2)
   i32(flags)
+  i64(o.id)
   flag(obj, o.settings)
 }
 
 const _inputThemeSettings = (o: any) => {
   const flags =
-      has(o.message_top_color)
-    | has(o.message_bottom_color)
+      (has(o.message_colors_animated) << 2)
+    | (has(o.outbox_accent_color) << 3)
+    | has(o.message_colors)
     | (has(o.wallpaper) << 1)
     | (has(o.wallpaper_settings) << 1)
   i32(flags)
   obj(o.base_theme)
   i32(o.accent_color)
-  flag(i32, o.message_top_color)
-  flag(i32, o.message_bottom_color)
+  flag(i32, o.outbox_accent_color)
+  flagVector(i32, o.message_colors)
   flag(obj, o.wallpaper)
   flag(obj, o.wallpaper_settings)
 }
 
 const _themeSettings = (o: any) => {
   const flags =
-      has(o.message_top_color)
-    | has(o.message_bottom_color)
+      (has(o.message_colors_animated) << 2)
+    | (has(o.outbox_accent_color) << 3)
+    | has(o.message_colors)
     | (has(o.wallpaper) << 1)
   i32(flags)
   obj(o.base_theme)
   i32(o.accent_color)
-  flag(i32, o.message_top_color)
-  flag(i32, o.message_bottom_color)
+  flag(i32, o.outbox_accent_color)
+  flagVector(i32, o.message_colors)
   flag(obj, o.wallpaper)
 }
 
@@ -4552,23 +4639,24 @@ const _webPageAttributeTheme = (o: any) => {
 
 const _updateMessagePollVote = (o: any) => {
   i64(o.poll_id)
-  i32(o.user_id)
+  i64(o.user_id)
   vector(bytes, o.options)
+  i32(o.qts)
 }
 
 const _messageUserVote = (o: any) => {
-  i32(o.user_id)
+  i64(o.user_id)
   bytes(o.option)
   i32(o.date)
 }
 
 const _messageUserVoteInputOption = (o: any) => {
-  i32(o.user_id)
+  i64(o.user_id)
   i32(o.date)
 }
 
 const _messageUserVoteMultiple = (o: any) => {
-  i32(o.user_id)
+  i64(o.user_id)
   vector(bytes, o.options)
   i32(o.date)
 }
@@ -4738,7 +4826,6 @@ const _videoSize = (o: any) => {
       has(o.video_start_ts)
   i32(flags)
   str(o.type)
-  obj(o.location)
   i32(o.w)
   i32(o.h)
   i32(o.size)
@@ -4756,20 +4843,20 @@ const _chatInvitePeek = (o: any) => {
 }
 
 const _statsGroupTopPoster = (o: any) => {
-  i32(o.user_id)
+  i64(o.user_id)
   i32(o.messages)
   i32(o.avg_chars)
 }
 
 const _statsGroupTopAdmin = (o: any) => {
-  i32(o.user_id)
+  i64(o.user_id)
   i32(o.deleted)
   i32(o.kicked)
   i32(o.banned)
 }
 
 const _statsGroupTopInviter = (o: any) => {
-  i32(o.user_id)
+  i64(o.user_id)
   i32(o.invitations)
 }
 
@@ -4851,14 +4938,13 @@ const _messageViews = (o: any) => {
 }
 
 const _updateChannelMessageForwards = (o: any) => {
-  i32(o.channel_id)
+  i64(o.channel_id)
   i32(o.id)
   i32(o.forwards)
 }
 
 const _photoSizeProgressive = (o: any) => {
   str(o.type)
-  obj(o.location)
   i32(o.w)
   i32(o.h)
   vector(i32, o.sizes)
@@ -4875,15 +4961,15 @@ const _updateReadChannelDiscussionInbox = (o: any) => {
       has(o.broadcast_id)
     | has(o.broadcast_post)
   i32(flags)
-  i32(o.channel_id)
+  i64(o.channel_id)
   i32(o.top_msg_id)
   i32(o.read_max_id)
-  flag(i32, o.broadcast_id)
+  flag(i64, o.broadcast_id)
   flag(i32, o.broadcast_post)
 }
 
 const _updateReadChannelDiscussionOutbox = (o: any) => {
-  i32(o.channel_id)
+  i64(o.channel_id)
   i32(o.top_msg_id)
   i32(o.read_max_id)
 }
@@ -4898,6 +4984,7 @@ const _messagesDiscussionMessage = (o: any) => {
   flag(i32, o.max_id)
   flag(i32, o.read_inbox_max_id)
   flag(i32, o.read_outbox_max_id)
+  i32(o.unread_count)
   vector(obj, o.chats)
   vector(obj, o.users)
 }
@@ -4923,7 +5010,7 @@ const _messageReplies = (o: any) => {
   i32(o.replies)
   i32(o.replies_pts)
   flagVector(obj, o.recent_repliers)
-  flag(i32, o.channel_id)
+  flag(i64, o.channel_id)
   flag(i32, o.max_id)
   flag(i32, o.read_max_id)
 }
@@ -4942,9 +5029,9 @@ const _updateChannelUserTyping = (o: any) => {
   const flags =
       has(o.top_msg_id)
   i32(flags)
-  i32(o.channel_id)
+  i64(o.channel_id)
   flag(i32, o.top_msg_id)
-  i32(o.user_id)
+  obj(o.from_id)
   obj(o.action)
 }
 
@@ -4954,7 +5041,7 @@ const _inputMessageCallbackQuery = (o: any) => {
 }
 
 const _channelParticipantLeft = (o: any) => {
-  i32(o.user_id)
+  obj(o.peer)
 }
 
 const _channelParticipantsMentions = (o: any) => {
@@ -4980,7 +5067,7 @@ const _updatePinnedChannelMessages = (o: any) => {
   const flags =
       has(o.pinned)
   i32(flags)
-  i32(o.channel_id)
+  i64(o.channel_id)
   vector(i32, o.messages)
   i32(o.pts)
   i32(o.pts_count)
@@ -4999,6 +5086,446 @@ const _messageActionGeoProximityReached = (o: any) => {
 const _photoPathSize = (o: any) => {
   str(o.type)
   bytes(o.bytes)
+}
+
+const _groupCallDiscarded = (o: any) => {
+  i64(o.id)
+  i64(o.access_hash)
+  i32(o.duration)
+}
+
+const _groupCall = (o: any) => {
+  const flags =
+      (has(o.join_muted) << 1)
+    | (has(o.can_change_join_muted) << 2)
+    | (has(o.join_date_asc) << 6)
+    | (has(o.schedule_start_subscribed) << 8)
+    | (has(o.can_start_video) << 9)
+    | (has(o.record_video_active) << 11)
+    | (has(o.title) << 3)
+    | (has(o.stream_dc_id) << 4)
+    | (has(o.record_start_date) << 5)
+    | (has(o.schedule_date) << 7)
+    | (has(o.unmuted_video_count) << 10)
+  i32(flags)
+  i64(o.id)
+  i64(o.access_hash)
+  i32(o.participants_count)
+  flag(str, o.title)
+  flag(i32, o.stream_dc_id)
+  flag(i32, o.record_start_date)
+  flag(i32, o.schedule_date)
+  flag(i32, o.unmuted_video_count)
+  i32(o.unmuted_video_limit)
+  i32(o.version)
+}
+
+const _inputGroupCall = (o: any) => {
+  i64(o.id)
+  i64(o.access_hash)
+}
+
+const _messageActionGroupCall = (o: any) => {
+  const flags =
+      has(o.duration)
+  i32(flags)
+  obj(o.call)
+  flag(i32, o.duration)
+}
+
+const _messageActionInviteToGroupCall = (o: any) => {
+  obj(o.call)
+  vector(i64, o.users)
+}
+
+const _groupCallParticipant = (o: any) => {
+  const flags =
+      has(o.muted)
+    | (has(o.left) << 1)
+    | (has(o.can_self_unmute) << 2)
+    | (has(o.just_joined) << 4)
+    | (has(o.versioned) << 5)
+    | (has(o.min) << 8)
+    | (has(o.muted_by_you) << 9)
+    | (has(o.volume_by_admin) << 10)
+    | (has(o.self) << 12)
+    | (has(o.video_joined) << 15)
+    | (has(o.active_date) << 3)
+    | (has(o.volume) << 7)
+    | (has(o.about) << 11)
+    | (has(o.raise_hand_rating) << 13)
+    | (has(o.video) << 6)
+    | (has(o.presentation) << 14)
+  i32(flags)
+  obj(o.peer)
+  i32(o.date)
+  flag(i32, o.active_date)
+  i32(o.source)
+  flag(i32, o.volume)
+  flag(str, o.about)
+  flag(i64, o.raise_hand_rating)
+  flag(obj, o.video)
+  flag(obj, o.presentation)
+}
+
+const _updateChat = (o: any) => {
+  i64(o.chat_id)
+}
+
+const _updateGroupCallParticipants = (o: any) => {
+  obj(o.call)
+  vector(obj, o.participants)
+  i32(o.version)
+}
+
+const _updateGroupCall = (o: any) => {
+  i64(o.chat_id)
+  obj(o.call)
+}
+
+const _phoneGroupCall = (o: any) => {
+  obj(o.call)
+  vector(obj, o.participants)
+  str(o.participants_next_offset)
+  vector(obj, o.chats)
+  vector(obj, o.users)
+}
+
+const _phoneGroupParticipants = (o: any) => {
+  i32(o.count)
+  vector(obj, o.participants)
+  str(o.next_offset)
+  vector(obj, o.chats)
+  vector(obj, o.users)
+  i32(o.version)
+}
+
+const _channelAdminLogEventActionStartGroupCall = (o: any) => {
+  obj(o.call)
+}
+
+const _channelAdminLogEventActionDiscardGroupCall = (o: any) => {
+  obj(o.call)
+}
+
+const _channelAdminLogEventActionParticipantMute = (o: any) => {
+  obj(o.participant)
+}
+
+const _channelAdminLogEventActionParticipantUnmute = (o: any) => {
+  obj(o.participant)
+}
+
+const _channelAdminLogEventActionToggleGroupCallSetting = (o: any) => {
+  bool(o.join_muted)
+}
+
+const _inputPaymentCredentialsGooglePay = (o: any) => {
+  obj(o.payment_token)
+}
+
+const _messagesHistoryImport = (o: any) => {
+  i64(o.id)
+}
+
+const _sendMessageHistoryImportAction = (o: any) => {
+  i32(o.progress)
+}
+
+const _messagesHistoryImportParsed = (o: any) => {
+  const flags =
+      has(o.pm)
+    | (has(o.group) << 1)
+    | (has(o.title) << 2)
+  i32(flags)
+  flag(str, o.title)
+}
+
+const _messagesAffectedFoundMessages = (o: any) => {
+  i32(o.pts)
+  i32(o.pts_count)
+  i32(o.offset)
+  vector(i32, o.messages)
+}
+
+const _messageActionSetMessagesTTL = (o: any) => {
+  i32(o.period)
+}
+
+const _updatePeerHistoryTTL = (o: any) => {
+  const flags =
+      has(o.ttl_period)
+  i32(flags)
+  obj(o.peer)
+  flag(i32, o.ttl_period)
+}
+
+const _updateChatParticipant = (o: any) => {
+  const flags =
+      has(o.prev_participant)
+    | (has(o.new_participant) << 1)
+    | (has(o.invite) << 2)
+  i32(flags)
+  i64(o.chat_id)
+  i32(o.date)
+  i64(o.actor_id)
+  i64(o.user_id)
+  flag(obj, o.prev_participant)
+  flag(obj, o.new_participant)
+  flag(obj, o.invite)
+  i32(o.qts)
+}
+
+const _updateChannelParticipant = (o: any) => {
+  const flags =
+      has(o.prev_participant)
+    | (has(o.new_participant) << 1)
+    | (has(o.invite) << 2)
+  i32(flags)
+  i64(o.channel_id)
+  i32(o.date)
+  i64(o.actor_id)
+  i64(o.user_id)
+  flag(obj, o.prev_participant)
+  flag(obj, o.new_participant)
+  flag(obj, o.invite)
+  i32(o.qts)
+}
+
+const _updateBotStopped = (o: any) => {
+  i64(o.user_id)
+  i32(o.date)
+  bool(o.stopped)
+  i32(o.qts)
+}
+
+const _chatInviteImporter = (o: any) => {
+  i64(o.user_id)
+  i32(o.date)
+}
+
+const _messagesExportedChatInvites = (o: any) => {
+  i32(o.count)
+  vector(obj, o.invites)
+  vector(obj, o.users)
+}
+
+const _messagesExportedChatInvite = (o: any) => {
+  obj(o.invite)
+  vector(obj, o.users)
+}
+
+const _messagesExportedChatInviteReplaced = (o: any) => {
+  obj(o.invite)
+  obj(o.new_invite)
+  vector(obj, o.users)
+}
+
+const _messagesChatInviteImporters = (o: any) => {
+  i32(o.count)
+  vector(obj, o.importers)
+  vector(obj, o.users)
+}
+
+const _chatAdminWithInvites = (o: any) => {
+  i64(o.admin_id)
+  i32(o.invites_count)
+  i32(o.revoked_invites_count)
+}
+
+const _messagesChatAdminsWithInvites = (o: any) => {
+  vector(obj, o.admins)
+  vector(obj, o.users)
+}
+
+const _channelAdminLogEventActionParticipantJoinByInvite = (o: any) => {
+  obj(o.invite)
+}
+
+const _channelAdminLogEventActionExportedInviteDelete = (o: any) => {
+  obj(o.invite)
+}
+
+const _channelAdminLogEventActionExportedInviteRevoke = (o: any) => {
+  obj(o.invite)
+}
+
+const _channelAdminLogEventActionExportedInviteEdit = (o: any) => {
+  obj(o.prev_invite)
+  obj(o.new_invite)
+}
+
+const _channelAdminLogEventActionParticipantVolume = (o: any) => {
+  obj(o.participant)
+}
+
+const _channelAdminLogEventActionChangeHistoryTTL = (o: any) => {
+  i32(o.prev_value)
+  i32(o.new_value)
+}
+
+const _messagesCheckedHistoryImportPeer = (o: any) => {
+  str(o.confirm_text)
+}
+
+const _inputGroupCallStream = (o: any) => {
+  const flags =
+      has(o.video_channel)
+    | has(o.video_quality)
+  i32(flags)
+  obj(o.call)
+  i64(o.time_ms)
+  i32(o.scale)
+  flag(i32, o.video_channel)
+  flag(i32, o.video_quality)
+}
+
+const _phoneJoinAsPeers = (o: any) => {
+  vector(obj, o.peers)
+  vector(obj, o.chats)
+  vector(obj, o.users)
+}
+
+const _phoneExportedGroupCallInvite = (o: any) => {
+  str(o.link)
+}
+
+const _inputBotInlineMessageMediaInvoice = (o: any) => {
+  const flags =
+      has(o.photo)
+    | (has(o.reply_markup) << 2)
+  i32(flags)
+  str(o.title)
+  str(o.description)
+  flag(obj, o.photo)
+  obj(o.invoice)
+  bytes(o.payload)
+  str(o.provider)
+  obj(o.provider_data)
+  flag(obj, o.reply_markup)
+}
+
+const _botInlineMessageMediaInvoice = (o: any) => {
+  const flags =
+      (has(o.shipping_address_requested) << 1)
+    | (has(o.test) << 3)
+    | has(o.photo)
+    | (has(o.reply_markup) << 2)
+  i32(flags)
+  str(o.title)
+  str(o.description)
+  flag(obj, o.photo)
+  str(o.currency)
+  i64(o.total_amount)
+  flag(obj, o.reply_markup)
+}
+
+const _messageActionGroupCallScheduled = (o: any) => {
+  obj(o.call)
+  i32(o.schedule_date)
+}
+
+const _groupCallParticipantVideoSourceGroup = (o: any) => {
+  str(o.semantics)
+  vector(i32, o.sources)
+}
+
+const _groupCallParticipantVideo = (o: any) => {
+  const flags =
+      has(o.paused)
+    | (has(o.audio_source) << 1)
+  i32(flags)
+  str(o.endpoint)
+  vector(obj, o.source_groups)
+  flag(i32, o.audio_source)
+}
+
+const _updateGroupCallConnection = (o: any) => {
+  const flags =
+      has(o.presentation)
+  i32(flags)
+  obj(o.params)
+}
+
+const _stickersSuggestedShortName = (o: any) => {
+  str(o.short_name)
+}
+
+const _botCommandScopePeer = (o: any) => {
+  obj(o.peer)
+}
+
+const _botCommandScopePeerAdmins = (o: any) => {
+  obj(o.peer)
+}
+
+const _botCommandScopePeerUser = (o: any) => {
+  obj(o.peer)
+  obj(o.user_id)
+}
+
+const _accountResetPasswordFailedWait = (o: any) => {
+  i32(o.retry_date)
+}
+
+const _accountResetPasswordRequestedWait = (o: any) => {
+  i32(o.until_date)
+}
+
+const _updateBotCommands = (o: any) => {
+  obj(o.peer)
+  i64(o.bot_id)
+  vector(obj, o.commands)
+}
+
+const _chatTheme = (o: any) => {
+  str(o.emoticon)
+  obj(o.theme)
+  obj(o.dark_theme)
+}
+
+const _accountChatThemes = (o: any) => {
+  i32(o.hash)
+  vector(obj, o.themes)
+}
+
+const _messageActionSetChatTheme = (o: any) => {
+  str(o.emoticon)
+}
+
+const _sponsoredMessage = (o: any) => {
+  const flags =
+      has(o.start_param)
+    | (has(o.entities) << 1)
+  i32(flags)
+  bytes(o.random_id)
+  obj(o.from_id)
+  flag(str, o.start_param)
+  str(o.message)
+  flagVector(obj, o.entities)
+}
+
+const _messagesSponsoredMessages = (o: any) => {
+  vector(obj, o.messages)
+  vector(obj, o.chats)
+  vector(obj, o.users)
+}
+
+const _sendMessageEmojiInteraction = (o: any) => {
+  str(o.emoticon)
+  i32(o.msg_id)
+  obj(o.interaction)
+}
+
+const _sendMessageEmojiInteractionSeen = (o: any) => {
+  str(o.emoticon)
+}
+
+const _inputBotInlineMessageID64 = (o: any) => {
+  i32(o.dc_id)
+  i64(o.owner_id)
+  i32(o.id)
+  i64(o.access_hash)
 }
 
 const _invokeAfterMsg = (o: any) => {
@@ -5036,7 +5563,7 @@ const _authExportAuthorization = (o: any) => {
 }
 
 const _authImportAuthorization = (o: any) => {
-  i32(o.id)
+  i64(o.id)
   bytes(o.bytes)
 }
 
@@ -5055,13 +5582,13 @@ const _accountRegisterDevice = (o: any) => {
   str(o.token)
   bool(o.app_sandbox)
   bytes(o.secret)
-  vector(i32, o.other_uids)
+  vector(i64, o.other_uids)
 }
 
 const _accountUnregisterDevice = (o: any) => {
   i32(o.token_type)
   str(o.token)
-  vector(i32, o.other_uids)
+  vector(i64, o.other_uids)
 }
 
 const _accountUpdateNotifySettings = (o: any) => {
@@ -5089,12 +5616,13 @@ const _accountUpdateStatus = (o: any) => {
 }
 
 const _accountGetWallPapers = (o: any) => {
-  i32(o.hash)
+  i64(o.hash)
 }
 
 const _accountReportPeer = (o: any) => {
   obj(o.peer)
   obj(o.reason)
+  str(o.message)
 }
 
 const _usersGetUsers = (o: any) => {
@@ -5106,11 +5634,11 @@ const _usersGetFullUser = (o: any) => {
 }
 
 const _contactsGetContactIDs = (o: any) => {
-  i32(o.hash)
+  i64(o.hash)
 }
 
 const _contactsGetContacts = (o: any) => {
-  i32(o.hash)
+  i64(o.hash)
 }
 
 const _contactsImportContacts = (o: any) => {
@@ -5152,7 +5680,7 @@ const _messagesGetDialogs = (o: any) => {
   i32(o.offset_id)
   obj(o.offset_peer)
   i32(o.limit)
-  i32(o.hash)
+  i64(o.hash)
 }
 
 const _messagesGetHistory = (o: any) => {
@@ -5163,7 +5691,7 @@ const _messagesGetHistory = (o: any) => {
   i32(o.limit)
   i32(o.max_id)
   i32(o.min_id)
-  i32(o.hash)
+  i64(o.hash)
 }
 
 const _messagesSearch = (o: any) => {
@@ -5183,7 +5711,7 @@ const _messagesSearch = (o: any) => {
   i32(o.limit)
   i32(o.max_id)
   i32(o.min_id)
-  i32(o.hash)
+  i64(o.hash)
 }
 
 const _messagesReadHistory = (o: any) => {
@@ -5265,6 +5793,8 @@ const _messagesForwardMessages = (o: any) => {
       (has(o.silent) << 5)
     | (has(o.background) << 6)
     | (has(o.with_my_score) << 8)
+    | (has(o.drop_author) << 11)
+    | (has(o.drop_media_captions) << 12)
     | (has(o.schedule_date) << 10)
   i32(flags)
   obj(o.from_peer)
@@ -5286,34 +5816,38 @@ const _messagesReport = (o: any) => {
   obj(o.peer)
   vector(i32, o.id)
   obj(o.reason)
+  str(o.message)
 }
 
 const _messagesGetChats = (o: any) => {
-  vector(i32, o.id)
+  vector(i64, o.id)
 }
 
 const _messagesGetFullChat = (o: any) => {
-  i32(o.chat_id)
+  i64(o.chat_id)
 }
 
 const _messagesEditChatTitle = (o: any) => {
-  i32(o.chat_id)
+  i64(o.chat_id)
   str(o.title)
 }
 
 const _messagesEditChatPhoto = (o: any) => {
-  i32(o.chat_id)
+  i64(o.chat_id)
   obj(o.photo)
 }
 
 const _messagesAddChatUser = (o: any) => {
-  i32(o.chat_id)
+  i64(o.chat_id)
   obj(o.user_id)
   i32(o.fwd_limit)
 }
 
 const _messagesDeleteChatUser = (o: any) => {
-  i32(o.chat_id)
+  const flags =
+      has(o.revoke_history)
+  i32(flags)
+  i64(o.chat_id)
   obj(o.user_id)
 }
 
@@ -5396,6 +5930,9 @@ const _messagesAcceptEncryption = (o: any) => {
 }
 
 const _messagesDiscardEncryption = (o: any) => {
+  const flags =
+      has(o.delete_history)
+  i32(flags)
   i32(o.chat_id)
 }
 
@@ -5522,11 +6059,11 @@ const _accountChangePhone = (o: any) => {
 
 const _messagesGetStickers = (o: any) => {
   str(o.emoticon)
-  i32(o.hash)
+  i64(o.hash)
 }
 
 const _messagesGetAllStickers = (o: any) => {
-  i32(o.hash)
+  i64(o.hash)
 }
 
 const _accountUpdateDeviceLocked = (o: any) => {
@@ -5565,7 +6102,11 @@ const _authCheckPassword = (o: any) => {
 }
 
 const _authRecoverPassword = (o: any) => {
+  const flags =
+      has(o.new_settings)
+  i32(flags)
   str(o.code)
+  flag(obj, o.new_settings)
 }
 
 const _invokeWithoutUpdates = (o: any) => {
@@ -5573,7 +6114,14 @@ const _invokeWithoutUpdates = (o: any) => {
 }
 
 const _messagesExportChatInvite = (o: any) => {
+  const flags =
+      (has(o.legacy_revoke_permanent) << 2)
+    | has(o.expire_date)
+    | (has(o.usage_limit) << 1)
+  i32(flags)
   obj(o.peer)
+  flag(i32, o.expire_date)
+  flag(i32, o.usage_limit)
 }
 
 const _messagesCheckChatInvite = (o: any) => {
@@ -5645,12 +6193,12 @@ const _channelsGetParticipants = (o: any) => {
   obj(o.filter)
   i32(o.offset)
   i32(o.limit)
-  i32(o.hash)
+  i64(o.hash)
 }
 
 const _channelsGetParticipant = (o: any) => {
   obj(o.channel)
-  obj(o.user_id)
+  obj(o.participant)
 }
 
 const _channelsGetChannels = (o: any) => {
@@ -5730,13 +6278,13 @@ const _updatesGetChannelDifference = (o: any) => {
 }
 
 const _messagesEditChatAdmin = (o: any) => {
-  i32(o.chat_id)
+  i64(o.chat_id)
   obj(o.user_id)
   bool(o.is_admin)
 }
 
 const _messagesMigrateChat = (o: any) => {
-  i32(o.chat_id)
+  i64(o.chat_id)
 }
 
 const _messagesSearchGlobal = (o: any) => {
@@ -5768,7 +6316,7 @@ const _messagesGetDocumentByHash = (o: any) => {
 }
 
 const _messagesGetSavedGifs = (o: any) => {
-  i32(o.hash)
+  i64(o.hash)
 }
 
 const _messagesSaveGif = (o: any) => {
@@ -5917,7 +6465,7 @@ const _contactsGetTopPeers = (o: any) => {
   i32(flags)
   i32(o.offset)
   i32(o.limit)
-  i32(o.hash)
+  i64(o.hash)
 }
 
 const _contactsResetTopPeerRating = (o: any) => {
@@ -5942,7 +6490,7 @@ const _messagesSaveDraft = (o: any) => {
 }
 
 const _messagesGetFeaturedStickers = (o: any) => {
-  i32(o.hash)
+  i64(o.hash)
 }
 
 const _messagesReadFeaturedStickers = (o: any) => {
@@ -5953,7 +6501,7 @@ const _messagesGetRecentStickers = (o: any) => {
   const flags =
       has(o.attached)
   i32(flags)
-  i32(o.hash)
+  i64(o.hash)
 }
 
 const _messagesSaveRecentSticker = (o: any) => {
@@ -5996,7 +6544,7 @@ const _channelsGetAdminedPublicChannels = (o: any) => {
 }
 
 const _messagesGetMaskStickers = (o: any) => {
-  i32(o.hash)
+  i64(o.hash)
 }
 
 const _messagesGetAttachedStickers = (o: any) => {
@@ -6041,12 +6589,12 @@ const _messagesGetInlineGameHighScores = (o: any) => {
 
 const _messagesGetCommonChats = (o: any) => {
   obj(o.user_id)
-  i32(o.max_id)
+  i64(o.max_id)
   i32(o.limit)
 }
 
 const _messagesGetAllChats = (o: any) => {
-  vector(i32, o.except_ids)
+  vector(i64, o.except_ids)
 }
 
 const _helpSetBotUpdatesStatus = (o: any) => {
@@ -6095,10 +6643,16 @@ const _uploadGetWebFile = (o: any) => {
 }
 
 const _paymentsGetPaymentForm = (o: any) => {
+  const flags =
+      has(o.theme_params)
+  i32(flags)
+  obj(o.peer)
   i32(o.msg_id)
+  flag(obj, o.theme_params)
 }
 
 const _paymentsGetPaymentReceipt = (o: any) => {
+  obj(o.peer)
   i32(o.msg_id)
 }
 
@@ -6106,6 +6660,7 @@ const _paymentsValidateRequestedInfo = (o: any) => {
   const flags =
       has(o.save)
   i32(flags)
+  obj(o.peer)
   i32(o.msg_id)
   obj(o.info)
 }
@@ -6114,11 +6669,15 @@ const _paymentsSendPaymentForm = (o: any) => {
   const flags =
       has(o.requested_info_id)
     | (has(o.shipping_option_id) << 1)
+    | (has(o.tip_amount) << 2)
   i32(flags)
+  i64(o.form_id)
+  obj(o.peer)
   i32(o.msg_id)
   flag(str, o.requested_info_id)
   flag(str, o.shipping_option_id)
   obj(o.credentials)
+  flag(i64, o.tip_amount)
 }
 
 const _accountGetTmpPassword = (o: any) => {
@@ -6157,12 +6716,14 @@ const _stickersCreateStickerSet = (o: any) => {
       has(o.masks)
     | (has(o.animated) << 1)
     | (has(o.thumb) << 2)
+    | (has(o.software) << 3)
   i32(flags)
   obj(o.user_id)
   str(o.title)
   str(o.short_name)
   flag(obj, o.thumb)
   vector(obj, o.stickers)
+  flag(str, o.software)
 }
 
 const _stickersRemoveStickerFromSet = (o: any) => {
@@ -6269,7 +6830,7 @@ const _langpackGetLanguages = (o: any) => {
 
 const _channelsEditBanned = (o: any) => {
   obj(o.channel)
-  obj(o.user_id)
+  obj(o.participant)
   obj(o.banned_rights)
 }
 
@@ -6304,7 +6865,7 @@ const _channelsSetStickers = (o: any) => {
 }
 
 const _messagesGetFavedStickers = (o: any) => {
-  i32(o.hash)
+  i64(o.hash)
 }
 
 const _messagesFaveSticker = (o: any) => {
@@ -6347,7 +6908,7 @@ const _messagesReadMentions = (o: any) => {
 const _messagesGetRecentLocations = (o: any) => {
   obj(o.peer)
   i32(o.limit)
-  i32(o.hash)
+  i64(o.hash)
 }
 
 const _messagesSendMultiMedia = (o: any) => {
@@ -6378,7 +6939,7 @@ const _messagesSearchStickerSets = (o: any) => {
       has(o.exclude_featured)
   i32(flags)
   str(o.q)
-  i32(o.hash)
+  i64(o.hash)
 }
 
 const _uploadGetFileHashes = (o: any) => {
@@ -6409,13 +6970,13 @@ const _usersSetSecureValueErrors = (o: any) => {
 }
 
 const _accountGetAuthorizationForm = (o: any) => {
-  i32(o.bot_id)
+  i64(o.bot_id)
   str(o.scope)
   str(o.public_key)
 }
 
 const _accountAcceptAuthorization = (o: any) => {
-  i32(o.bot_id)
+  i64(o.bot_id)
   str(o.scope)
   str(o.public_key)
   vector(obj, o.value_hashes)
@@ -6554,14 +7115,6 @@ const _messagesGetOnlines = (o: any) => {
   obj(o.peer)
 }
 
-const _messagesGetStatsURL = (o: any) => {
-  const flags =
-      has(o.dark)
-  i32(flags)
-  obj(o.peer)
-  str(o.params)
-}
-
 const _messagesEditChatAbout = (o: any) => {
   obj(o.peer)
   str(o.about)
@@ -6637,18 +7190,30 @@ const _channelsSetDiscussionGroup = (o: any) => {
 }
 
 const _messagesRequestUrlAuth = (o: any) => {
-  obj(o.peer)
-  i32(o.msg_id)
-  i32(o.button_id)
+  const flags =
+      (has(o.peer) << 1)
+    | (has(o.msg_id) << 1)
+    | (has(o.button_id) << 1)
+    | (has(o.url) << 2)
+  i32(flags)
+  flag(obj, o.peer)
+  flag(i32, o.msg_id)
+  flag(i32, o.button_id)
+  flag(str, o.url)
 }
 
 const _messagesAcceptUrlAuth = (o: any) => {
   const flags =
       has(o.write_allowed)
+    | (has(o.peer) << 1)
+    | (has(o.msg_id) << 1)
+    | (has(o.button_id) << 1)
+    | (has(o.url) << 2)
   i32(flags)
-  obj(o.peer)
-  i32(o.msg_id)
-  i32(o.button_id)
+  flag(obj, o.peer)
+  flag(i32, o.msg_id)
+  flag(i32, o.button_id)
+  flag(str, o.url)
 }
 
 const _messagesHidePeerSettingsBar = (o: any) => {
@@ -6697,7 +7262,7 @@ const _channelsToggleSlowMode = (o: any) => {
 
 const _messagesGetScheduledHistory = (o: any) => {
   obj(o.peer)
-  i32(o.hash)
+  i64(o.hash)
 }
 
 const _messagesGetScheduledMessages = (o: any) => {
@@ -6774,13 +7339,13 @@ const _accountGetTheme = (o: any) => {
 
 const _accountGetThemes = (o: any) => {
   str(o.format)
-  i32(o.hash)
+  i64(o.hash)
 }
 
 const _authExportLoginToken = (o: any) => {
   i32(o.api_id)
   str(o.api_hash)
-  vector(i32, o.except_ids)
+  vector(i64, o.except_ids)
 }
 
 const _authImportLoginToken = (o: any) => {
@@ -6859,13 +7424,15 @@ const _stickersSetStickerSetThumb = (o: any) => {
 }
 
 const _botsSetBotCommands = (o: any) => {
+  obj(o.scope)
+  str(o.lang_code)
   vector(obj, o.commands)
 }
 
 const _messagesGetOldFeaturedStickers = (o: any) => {
   i32(o.offset)
   i32(o.limit)
-  i32(o.hash)
+  i64(o.hash)
 }
 
 const _helpHidePromoData = (o: any) => {
@@ -6889,6 +7456,7 @@ const _accountSetGlobalPrivacySettings = (o: any) => {
 }
 
 const _helpDismissSuggestion = (o: any) => {
+  obj(o.peer)
   str(o.suggestion)
 }
 
@@ -6906,7 +7474,7 @@ const _messagesGetReplies = (o: any) => {
   i32(o.limit)
   i32(o.max_id)
   i32(o.min_id)
-  i32(o.hash)
+  i64(o.hash)
 }
 
 const _messagesGetDiscussionMessage = (o: any) => {
@@ -6950,6 +7518,289 @@ const _messagesUnpinAllMessages = (o: any) => {
   obj(o.peer)
 }
 
+const _phoneCreateGroupCall = (o: any) => {
+  const flags =
+      has(o.title)
+    | (has(o.schedule_date) << 1)
+  i32(flags)
+  obj(o.peer)
+  i32(o.random_id)
+  flag(str, o.title)
+  flag(i32, o.schedule_date)
+}
+
+const _phoneJoinGroupCall = (o: any) => {
+  const flags =
+      has(o.muted)
+    | (has(o.video_stopped) << 2)
+    | (has(o.invite_hash) << 1)
+  i32(flags)
+  obj(o.call)
+  obj(o.join_as)
+  flag(str, o.invite_hash)
+  obj(o.params)
+}
+
+const _phoneLeaveGroupCall = (o: any) => {
+  obj(o.call)
+  i32(o.source)
+}
+
+const _phoneInviteToGroupCall = (o: any) => {
+  obj(o.call)
+  vector(obj, o.users)
+}
+
+const _phoneDiscardGroupCall = (o: any) => {
+  obj(o.call)
+}
+
+const _phoneToggleGroupCallSettings = (o: any) => {
+  const flags =
+      (has(o.reset_invite_hash) << 1)
+    | has(o.join_muted)
+  i32(flags)
+  obj(o.call)
+  flag(bool, o.join_muted)
+}
+
+const _phoneGetGroupCall = (o: any) => {
+  obj(o.call)
+  i32(o.limit)
+}
+
+const _phoneGetGroupParticipants = (o: any) => {
+  obj(o.call)
+  vector(obj, o.ids)
+  vector(i32, o.sources)
+  str(o.offset)
+  i32(o.limit)
+}
+
+const _phoneCheckGroupCall = (o: any) => {
+  obj(o.call)
+  vector(i32, o.sources)
+}
+
+const _messagesDeleteChat = (o: any) => {
+  i64(o.chat_id)
+}
+
+const _messagesDeletePhoneCallHistory = (o: any) => {
+  const flags =
+      has(o.revoke)
+  i32(flags)
+}
+
+const _messagesCheckHistoryImport = (o: any) => {
+  str(o.import_head)
+}
+
+const _messagesInitHistoryImport = (o: any) => {
+  obj(o.peer)
+  obj(o.file)
+  i32(o.media_count)
+}
+
+const _messagesUploadImportedMedia = (o: any) => {
+  obj(o.peer)
+  i64(o.import_id)
+  str(o.file_name)
+  obj(o.media)
+}
+
+const _messagesStartHistoryImport = (o: any) => {
+  obj(o.peer)
+  i64(o.import_id)
+}
+
+const _messagesGetExportedChatInvites = (o: any) => {
+  const flags =
+      (has(o.revoked) << 3)
+    | (has(o.offset_date) << 2)
+    | (has(o.offset_link) << 2)
+  i32(flags)
+  obj(o.peer)
+  obj(o.admin_id)
+  flag(i32, o.offset_date)
+  flag(str, o.offset_link)
+  i32(o.limit)
+}
+
+const _messagesGetExportedChatInvite = (o: any) => {
+  obj(o.peer)
+  str(o.link)
+}
+
+const _messagesEditExportedChatInvite = (o: any) => {
+  const flags =
+      (has(o.revoked) << 2)
+    | has(o.expire_date)
+    | (has(o.usage_limit) << 1)
+  i32(flags)
+  obj(o.peer)
+  str(o.link)
+  flag(i32, o.expire_date)
+  flag(i32, o.usage_limit)
+}
+
+const _messagesDeleteRevokedExportedChatInvites = (o: any) => {
+  obj(o.peer)
+  obj(o.admin_id)
+}
+
+const _messagesDeleteExportedChatInvite = (o: any) => {
+  obj(o.peer)
+  str(o.link)
+}
+
+const _messagesGetAdminsWithInvites = (o: any) => {
+  obj(o.peer)
+}
+
+const _messagesGetChatInviteImporters = (o: any) => {
+  obj(o.peer)
+  str(o.link)
+  i32(o.offset_date)
+  obj(o.offset_user)
+  i32(o.limit)
+}
+
+const _messagesSetHistoryTTL = (o: any) => {
+  obj(o.peer)
+  i32(o.period)
+}
+
+const _accountReportProfilePhoto = (o: any) => {
+  obj(o.peer)
+  obj(o.photo_id)
+  obj(o.reason)
+  str(o.message)
+}
+
+const _channelsConvertToGigagroup = (o: any) => {
+  obj(o.channel)
+}
+
+const _messagesCheckHistoryImportPeer = (o: any) => {
+  obj(o.peer)
+}
+
+const _phoneToggleGroupCallRecord = (o: any) => {
+  const flags =
+      has(o.start)
+    | (has(o.video) << 2)
+    | (has(o.title) << 1)
+    | (has(o.video_portrait) << 2)
+  i32(flags)
+  obj(o.call)
+  flag(str, o.title)
+  flag(bool, o.video_portrait)
+}
+
+const _phoneEditGroupCallParticipant = (o: any) => {
+  const flags =
+      has(o.muted)
+    | (has(o.volume) << 1)
+    | (has(o.raise_hand) << 2)
+    | (has(o.video_stopped) << 3)
+    | (has(o.video_paused) << 4)
+    | (has(o.presentation_paused) << 5)
+  i32(flags)
+  obj(o.call)
+  obj(o.participant)
+  flag(bool, o.muted)
+  flag(i32, o.volume)
+  flag(bool, o.raise_hand)
+  flag(bool, o.video_stopped)
+  flag(bool, o.video_paused)
+  flag(bool, o.presentation_paused)
+}
+
+const _phoneEditGroupCallTitle = (o: any) => {
+  obj(o.call)
+  str(o.title)
+}
+
+const _phoneGetGroupCallJoinAs = (o: any) => {
+  obj(o.peer)
+}
+
+const _phoneExportGroupCallInvite = (o: any) => {
+  const flags =
+      has(o.can_self_unmute)
+  i32(flags)
+  obj(o.call)
+}
+
+const _phoneToggleGroupCallStartSubscription = (o: any) => {
+  obj(o.call)
+  bool(o.subscribed)
+}
+
+const _phoneStartScheduledGroupCall = (o: any) => {
+  obj(o.call)
+}
+
+const _phoneSaveDefaultGroupCallJoinAs = (o: any) => {
+  obj(o.peer)
+  obj(o.join_as)
+}
+
+const _phoneJoinGroupCallPresentation = (o: any) => {
+  obj(o.call)
+  obj(o.params)
+}
+
+const _phoneLeaveGroupCallPresentation = (o: any) => {
+  obj(o.call)
+}
+
+const _stickersCheckShortName = (o: any) => {
+  str(o.short_name)
+}
+
+const _stickersSuggestShortName = (o: any) => {
+  str(o.title)
+}
+
+const _botsResetBotCommands = (o: any) => {
+  obj(o.scope)
+  str(o.lang_code)
+}
+
+const _botsGetBotCommands = (o: any) => {
+  obj(o.scope)
+  str(o.lang_code)
+}
+
+const _authCheckRecoveryPassword = (o: any) => {
+  str(o.code)
+}
+
+const _accountGetChatThemes = (o: any) => {
+  i32(o.hash)
+}
+
+const _messagesSetChatTheme = (o: any) => {
+  obj(o.peer)
+  str(o.emoticon)
+}
+
+const _channelsViewSponsoredMessage = (o: any) => {
+  obj(o.channel)
+  bytes(o.random_id)
+}
+
+const _channelsGetSponsoredMessages = (o: any) => {
+  obj(o.channel)
+}
+
+const _messagesGetMessageReadParticipants = (o: any) => {
+  obj(o.peer)
+  i32(o.msg_id)
+}
+
 
 const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'boolFalse': [0xbc799737],
@@ -6960,7 +7811,7 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'null': [0x56730bcc],
   'inputPeerEmpty': [0x7f3b18ea],
   'inputPeerSelf': [0x7da07ec9],
-  'inputPeerChat': [0x179be863, _inputPeerChat],
+  'inputPeerChat': [0x35a95cb9, _inputPeerChat],
   'inputUserEmpty': [0xb98886cf],
   'inputUserSelf': [0xf7c1b13f],
   'inputPhoneContact': [0xf392b7f4, _inputPhoneContact],
@@ -6978,8 +7829,8 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'inputPhotoEmpty': [0x1cd7bf0d],
   'inputPhoto': [0x3bb3b94a, _inputPhoto],
   'inputFileLocation': [0xdfdaabe1, _inputFileLocation],
-  'peerUser': [0x9db1bc6d, _peerUser],
-  'peerChat': [0xbad0e5bb, _peerChat],
+  'peerUser': [0x59511722, _peerUser],
+  'peerChat': [0x36c6019a, _peerChat],
   'storage.fileUnknown': [0xaa963b05],
   'storage.filePartial': [0x40bc6f52],
   'storage.fileJpeg': [0x7efe0e],
@@ -6990,47 +7841,47 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'storage.fileMov': [0x4b09ebbc],
   'storage.fileMp4': [0xb3cea0e4],
   'storage.fileWebp': [0x1081464c],
-  'userEmpty': [0x200250ba, _userEmpty],
+  'userEmpty': [0xd3bc4b7a, _userEmpty],
   'userProfilePhotoEmpty': [0x4f11bae1],
-  'userProfilePhoto': [0x69d3ab26, _userProfilePhoto],
+  'userProfilePhoto': [0x82d1f706, _userProfilePhoto],
   'userStatusEmpty': [0x9d05049],
   'userStatusOnline': [0xedb93949, _userStatusOnline],
   'userStatusOffline': [0x8c703f, _userStatusOffline],
-  'chatEmpty': [0x9ba2d800, _chatEmpty],
-  'chat': [0x3bda1bde, _chat],
-  'chatForbidden': [0x7328bdb, _chatForbidden],
-  'chatFull': [0x1b7c9db3, _chatFull],
-  'chatParticipant': [0xc8d7493e, _chatParticipant],
-  'chatParticipantsForbidden': [0xfc900c2b, _chatParticipantsForbidden],
-  'chatParticipants': [0x3f460fed, _chatParticipants],
+  'chatEmpty': [0x29562865, _chatEmpty],
+  'chat': [0x41cbf256, _chat],
+  'chatForbidden': [0x6592a1a7, _chatForbidden],
+  'chatFull': [0x4dbdc099, _chatFull],
+  'chatParticipant': [0xc02d4007, _chatParticipant],
+  'chatParticipantsForbidden': [0x8763d3e1, _chatParticipantsForbidden],
+  'chatParticipants': [0x3cbc93f8, _chatParticipants],
   'chatPhotoEmpty': [0x37c1011c],
-  'chatPhoto': [0xd20b9f3c, _chatPhoto],
-  'messageEmpty': [0x83e5de54, _messageEmpty],
-  'message': [0x58ae39c9, _message],
-  'messageService': [0x286fa604, _messageService],
+  'chatPhoto': [0x1c6e1c11, _chatPhoto],
+  'messageEmpty': [0x90a6ca84, _messageEmpty],
+  'message': [0x85d6cbe2, _message],
+  'messageService': [0x2b085862, _messageService],
   'messageMediaEmpty': [0x3ded6320],
   'messageMediaPhoto': [0x695150d7, _messageMediaPhoto],
   'messageMediaGeo': [0x56e0d474, _messageMediaGeo],
-  'messageMediaContact': [0xcbf24940, _messageMediaContact],
+  'messageMediaContact': [0x70322949, _messageMediaContact],
   'messageMediaUnsupported': [0x9f84f49e],
   'messageActionEmpty': [0xb6aef7b0],
-  'messageActionChatCreate': [0xa6638b9a, _messageActionChatCreate],
+  'messageActionChatCreate': [0xbd47cbad, _messageActionChatCreate],
   'messageActionChatEditTitle': [0xb5a1ce5a, _messageActionChatEditTitle],
   'messageActionChatEditPhoto': [0x7fcb13a8, _messageActionChatEditPhoto],
   'messageActionChatDeletePhoto': [0x95e3fbef],
-  'messageActionChatAddUser': [0x488a7337, _messageActionChatAddUser],
-  'messageActionChatDeleteUser': [0xb2ae9b0c, _messageActionChatDeleteUser],
+  'messageActionChatAddUser': [0x15cefd00, _messageActionChatAddUser],
+  'messageActionChatDeleteUser': [0xa43f30cc, _messageActionChatDeleteUser],
   'dialog': [0x2c171f72, _dialog],
   'photoEmpty': [0x2331b22d, _photoEmpty],
   'photo': [0xfb197a65, _photo],
   'photoSizeEmpty': [0xe17e23c, _photoSizeEmpty],
-  'photoSize': [0x77bfb61b, _photoSize],
-  'photoCachedSize': [0xe9a734fa, _photoCachedSize],
+  'photoSize': [0x75c78e60, _photoSize],
+  'photoCachedSize': [0x21e1ad6, _photoCachedSize],
   'geoPointEmpty': [0x1117dd5f],
   'geoPoint': [0xb2a2f663, _geoPoint],
   'auth.sentCode': [0x5e002502, _authSentCode],
   'auth.authorization': [0xcd050916, _authAuthorization],
-  'auth.exportedAuthorization': [0xdf969c2d, _authExportedAuthorization],
+  'auth.exportedAuthorization': [0xb434e2b8, _authExportedAuthorization],
   'inputNotifyPeer': [0xb8bc5b0c, _inputNotifyPeer],
   'inputNotifyUsers': [0x193b4417],
   'inputNotifyChats': [0x4a95e84e],
@@ -7042,11 +7893,11 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'inputReportReasonViolence': [0x1e22c78d],
   'inputReportReasonPornography': [0x2e59d922],
   'inputReportReasonChildAbuse': [0xadf44ee3],
-  'inputReportReasonOther': [0xe1746d0a, _inputReportReasonOther],
-  'userFull': [0xedf17c12, _userFull],
-  'contact': [0xf911c994, _contact],
-  'importedContact': [0xd0028438, _importedContact],
-  'contactStatus': [0xd3680c61, _contactStatus],
+  'inputReportReasonOther': [0xc1e4a2b1],
+  'userFull': [0xd697ff05, _userFull],
+  'contact': [0x145ade0b, _contact],
+  'importedContact': [0xc13e3c50, _importedContact],
+  'contactStatus': [0x16d9703b, _contactStatus],
   'contacts.contactsNotModified': [0xb74ba9d2],
   'contacts.contacts': [0xeae87e42, _contactsContacts],
   'contacts.importedContacts': [0x77d01c3b, _contactsImportedContacts],
@@ -7069,19 +7920,19 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'updateNewMessage': [0x1f2b0afd, _updateNewMessage],
   'updateMessageID': [0x4e90bfd6, _updateMessageID],
   'updateDeleteMessages': [0xa20db0e5, _updateDeleteMessages],
-  'updateUserTyping': [0x5c486927, _updateUserTyping],
-  'updateChatUserTyping': [0x9a65ea1f, _updateChatUserTyping],
+  'updateUserTyping': [0xc01e857f, _updateUserTyping],
+  'updateChatUserTyping': [0x83487af0, _updateChatUserTyping],
   'updateChatParticipants': [0x7761198, _updateChatParticipants],
-  'updateUserStatus': [0x1bfbd823, _updateUserStatus],
-  'updateUserName': [0xa7332b73, _updateUserName],
-  'updateUserPhoto': [0x95313b0c, _updateUserPhoto],
+  'updateUserStatus': [0xe5bdf8de, _updateUserStatus],
+  'updateUserName': [0xc3f202e0, _updateUserName],
+  'updateUserPhoto': [0xf227868c, _updateUserPhoto],
   'updates.state': [0xa56c2a3e, _updatesState],
   'updates.differenceEmpty': [0x5d75a138, _updatesDifferenceEmpty],
   'updates.difference': [0xf49ca0, _updatesDifference],
   'updates.differenceSlice': [0xa8fb1981, _updatesDifferenceSlice],
   'updatesTooLong': [0xe317af7e],
-  'updateShortMessage': [0x2296d2c8, _updateShortMessage],
-  'updateShortChatMessage': [0x402d5dbb, _updateShortChatMessage],
+  'updateShortMessage': [0x313bc7f8, _updateShortMessage],
+  'updateShortChatMessage': [0x4d6deea5, _updateShortChatMessage],
   'updateShort': [0x78d4dec1, _updateShort],
   'updatesCombined': [0x725b04c3, _updatesCombined],
   'updates': [0x74ae4240, _updates],
@@ -7092,7 +7943,7 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'dcOption': [0x18b7a10d, _dcOption],
   'config': [0x330b4067, _config],
   'nearestDc': [0x8e1a1775, _nearestDc],
-  'help.appUpdate': [0x1da7158f, _helpAppUpdate],
+  'help.appUpdate': [0xccbbce30, _helpAppUpdate],
   'help.noAppUpdate': [0xc45a6536],
   'help.inviteText': [0x18cb9f78, _helpInviteText],
   'updateNewEncryptedMessage': [0x12bcbd9a, _updateNewEncryptedMessage],
@@ -7100,10 +7951,10 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'updateEncryption': [0xb4a2e88d, _updateEncryption],
   'updateEncryptedMessagesRead': [0x38fe25b7, _updateEncryptedMessagesRead],
   'encryptedChatEmpty': [0xab7ec0a0, _encryptedChatEmpty],
-  'encryptedChatWaiting': [0x3bf703dc, _encryptedChatWaiting],
-  'encryptedChatRequested': [0x62718a82, _encryptedChatRequested],
-  'encryptedChat': [0xfa56ce36, _encryptedChat],
-  'encryptedChatDiscarded': [0x13d6dd27, _encryptedChatDiscarded],
+  'encryptedChatWaiting': [0x66b25953, _encryptedChatWaiting],
+  'encryptedChatRequested': [0x48f1d94c, _encryptedChatRequested],
+  'encryptedChat': [0x61f0d4c7, _encryptedChat],
+  'encryptedChatDiscarded': [0x1e1c7c45, _encryptedChatDiscarded],
   'inputEncryptedChat': [0xf141b5e1, _inputEncryptedChat],
   'encryptedFileEmpty': [0xc21f497e],
   'encryptedFile': [0x4a70994c, _encryptedFile],
@@ -7119,11 +7970,11 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'messages.sentEncryptedFile': [0x9493ff32, _messagesSentEncryptedFile],
   'inputFileBig': [0xfa4f0bb5, _inputFileBig],
   'inputEncryptedFileBigUploaded': [0x2dc173c8, _inputEncryptedFileBigUploaded],
-  'updateChatParticipantAdd': [0xea4b0e5c, _updateChatParticipantAdd],
-  'updateChatParticipantDelete': [0x6e5f8c22, _updateChatParticipantDelete],
+  'updateChatParticipantAdd': [0x3dda5451, _updateChatParticipantAdd],
+  'updateChatParticipantDelete': [0xe32f3d77, _updateChatParticipantDelete],
   'updateDcOptions': [0x8e5e9873, _updateDcOptions],
   'inputMediaUploadedDocument': [0x5b38c6c1, _inputMediaUploadedDocument],
-  'inputMediaDocument': [0x23ab23d2, _inputMediaDocument],
+  'inputMediaDocument': [0x33473058, _inputMediaDocument],
   'messageMediaDocument': [0x9cb070d7, _messageMediaDocument],
   'inputDocumentEmpty': [0x72f0eaae],
   'inputDocument': [0x1abfb575, _inputDocument],
@@ -7161,13 +8012,13 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'inputPrivacyValueDisallowUsers': [0x90110467, _inputPrivacyValueDisallowUsers],
   'privacyValueAllowContacts': [0xfffe1bac],
   'privacyValueAllowAll': [0x65427b82],
-  'privacyValueAllowUsers': [0x4d5bbe0c, _privacyValueAllowUsers],
+  'privacyValueAllowUsers': [0xb8905fb2, _privacyValueAllowUsers],
   'privacyValueDisallowContacts': [0xf888fa1a],
   'privacyValueDisallowAll': [0x8b73e763],
-  'privacyValueDisallowUsers': [0xc7f49b7, _privacyValueDisallowUsers],
+  'privacyValueDisallowUsers': [0xe4621141, _privacyValueDisallowUsers],
   'account.privacyRules': [0x50a04e45, _accountPrivacyRules],
   'accountDaysTTL': [0xb8d0afdf, _accountDaysTTL],
-  'updateUserPhone': [0x12b9417b, _updateUserPhone],
+  'updateUserPhone': [0x5492a13, _updateUserPhone],
   'documentAttributeImageSize': [0x6c37c15c, _documentAttributeImageSize],
   'documentAttributeAnimated': [0x11b58939],
   'documentAttributeSticker': [0x6319d612, _documentAttributeSticker],
@@ -7175,10 +8026,10 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'documentAttributeAudio': [0x9852f9c6, _documentAttributeAudio],
   'documentAttributeFilename': [0x15590068, _documentAttributeFilename],
   'messages.stickersNotModified': [0xf1749a22],
-  'messages.stickers': [0xe4599bbd, _messagesStickers],
+  'messages.stickers': [0x30a6ec7e, _messagesStickers],
   'stickerPack': [0x12b299d4, _stickerPack],
   'messages.allStickersNotModified': [0xe86602c3],
-  'messages.allStickers': [0xedfd405f, _messagesAllStickers],
+  'messages.allStickers': [0xcdbbcebb, _messagesAllStickers],
   'updateReadHistoryInbox': [0x9c974fdf, _updateReadHistoryInbox],
   'updateReadHistoryOutbox': [0x2f2f21bf, _updateReadHistoryOutbox],
   'messages.affectedMessages': [0x84d19185, _messagesAffectedMessages],
@@ -7189,34 +8040,33 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'messageMediaWebPage': [0xa32dd600, _messageMediaWebPage],
   'authorization': [0xad01d61d, _authorization],
   'account.authorizations': [0x1250abde, _accountAuthorizations],
-  'account.password': [0xad2641f8, _accountPassword],
+  'account.password': [0x185b184f, _accountPassword],
   'account.passwordSettings': [0x9a5c33e5, _accountPasswordSettings],
   'account.passwordInputSettings': [0xc23727c9, _accountPasswordInputSettings],
   'auth.passwordRecovery': [0x137948a5, _authPasswordRecovery],
   'inputMediaVenue': [0xc13d1c11, _inputMediaVenue],
   'messageMediaVenue': [0x2ec0533f, _messageMediaVenue],
   'receivedNotifyMessage': [0xa384b779, _receivedNotifyMessage],
-  'chatInviteEmpty': [0x69df3769],
-  'chatInviteExported': [0xfc2e05bc, _chatInviteExported],
+  'chatInviteExported': [0xb18105e8, _chatInviteExported],
   'chatInviteAlready': [0x5a686d7c, _chatInviteAlready],
   'chatInvite': [0xdfc2f58e, _chatInvite],
-  'messageActionChatJoinedByLink': [0xf89cf5e8, _messageActionChatJoinedByLink],
+  'messageActionChatJoinedByLink': [0x31224c3, _messageActionChatJoinedByLink],
   'updateReadMessagesContents': [0x68c13933, _updateReadMessagesContents],
   'inputStickerSetEmpty': [0xffb62b95],
   'inputStickerSetID': [0x9de7a269, _inputStickerSetID],
   'inputStickerSetShortName': [0x861cc8a0, _inputStickerSetShortName],
-  'stickerSet': [0xeeb46f27, _stickerSet],
+  'stickerSet': [0xd7df217a, _stickerSet],
   'messages.stickerSet': [0xb60a24a6, _messagesStickerSet],
-  'user': [0x938458c1, _user],
+  'user': [0x3ff6ecb0, _user],
   'botCommand': [0xc27ac8c7, _botCommand],
-  'botInfo': [0x98e81d3a, _botInfo],
+  'botInfo': [0x1b74b335, _botInfo],
   'keyboardButton': [0xa2fa4880, _keyboardButton],
   'keyboardButtonRow': [0x77608b83, _keyboardButtonRow],
   'replyKeyboardHide': [0xa03e5b85, _replyKeyboardHide],
-  'replyKeyboardForceReply': [0xf4108aa0, _replyKeyboardForceReply],
-  'replyKeyboardMarkup': [0x3502758c, _replyKeyboardMarkup],
-  'inputPeerUser': [0x7b8e7de6, _inputPeerUser],
-  'inputUser': [0xd8292816, _inputUser],
+  'replyKeyboardForceReply': [0x86b40b08, _replyKeyboardForceReply],
+  'replyKeyboardMarkup': [0x85dd99d1, _replyKeyboardMarkup],
+  'inputPeerUser': [0xdde8a54c, _inputPeerUser],
+  'inputUser': [0xf21158c6, _inputUser],
   'messageEntityUnknown': [0xbb92ba95, _messageEntityUnknown],
   'messageEntityMention': [0xfa04579d, _messageEntityMention],
   'messageEntityHashtag': [0x6f635b0d, _messageEntityHashtag],
@@ -7228,49 +8078,49 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'messageEntityCode': [0x28a20571, _messageEntityCode],
   'messageEntityPre': [0x73924be0, _messageEntityPre],
   'messageEntityTextUrl': [0x76a6d327, _messageEntityTextUrl],
-  'updateShortSentMessage': [0x11f1331c, _updateShortSentMessage],
+  'updateShortSentMessage': [0x9015e101, _updateShortSentMessage],
   'inputChannelEmpty': [0xee8c1e86],
-  'inputChannel': [0xafeb712e, _inputChannel],
-  'peerChannel': [0xbddde532, _peerChannel],
-  'inputPeerChannel': [0x20adaef8, _inputPeerChannel],
-  'channel': [0xd31a961e, _channel],
-  'channelForbidden': [0x289da732, _channelForbidden],
+  'inputChannel': [0xf35aec28, _inputChannel],
+  'peerChannel': [0xa2a5371e, _peerChannel],
+  'inputPeerChannel': [0x27bcbbfc, _inputPeerChannel],
+  'channel': [0x8261ac61, _channel],
+  'channelForbidden': [0x17d493d5, _channelForbidden],
   'contacts.resolvedPeer': [0x7f077ad9, _contactsResolvedPeer],
-  'channelFull': [0xf0e6672a, _channelFull],
+  'channelFull': [0xe9b27a17, _channelFull],
   'messageRange': [0xae30253, _messageRange],
   'messages.channelMessages': [0x64479808, _messagesChannelMessages],
   'messageActionChannelCreate': [0x95d2ac92, _messageActionChannelCreate],
-  'updateChannelTooLong': [0xeb0467fb, _updateChannelTooLong],
-  'updateChannel': [0xb6d45656, _updateChannel],
+  'updateChannelTooLong': [0x108d941f, _updateChannelTooLong],
+  'updateChannel': [0x635b4c09, _updateChannel],
   'updateNewChannelMessage': [0x62ba04d9, _updateNewChannelMessage],
-  'updateReadChannelInbox': [0x330b5424, _updateReadChannelInbox],
-  'updateDeleteChannelMessages': [0xc37521c9, _updateDeleteChannelMessages],
-  'updateChannelMessageViews': [0x98a12b4b, _updateChannelMessageViews],
+  'updateReadChannelInbox': [0x922e6e10, _updateReadChannelInbox],
+  'updateDeleteChannelMessages': [0xc32d5b12, _updateDeleteChannelMessages],
+  'updateChannelMessageViews': [0xf226ac08, _updateChannelMessageViews],
   'updates.channelDifferenceEmpty': [0x3e11affb, _updatesChannelDifferenceEmpty],
   'updates.channelDifferenceTooLong': [0xa4bcc6fe, _updatesChannelDifferenceTooLong],
   'updates.channelDifference': [0x2064674e, _updatesChannelDifference],
   'channelMessagesFilterEmpty': [0x94d42ee7],
   'channelMessagesFilter': [0xcd77d957, _channelMessagesFilter],
-  'channelParticipant': [0x15ebac1d, _channelParticipant],
-  'channelParticipantSelf': [0xa3289a6d, _channelParticipantSelf],
-  'channelParticipantCreator': [0x447dca4b, _channelParticipantCreator],
+  'channelParticipant': [0xc00c07c0, _channelParticipant],
+  'channelParticipantSelf': [0x28a8bc67, _channelParticipantSelf],
+  'channelParticipantCreator': [0x2fe601d3, _channelParticipantCreator],
   'channelParticipantsRecent': [0xde3f3c79],
   'channelParticipantsAdmins': [0xb4608969],
   'channelParticipantsKicked': [0xa3b54985, _channelParticipantsKicked],
-  'channels.channelParticipants': [0xf56ee2a8, _channelsChannelParticipants],
-  'channels.channelParticipant': [0xd0d9b163, _channelsChannelParticipant],
-  'chatParticipantCreator': [0xda13538a, _chatParticipantCreator],
-  'chatParticipantAdmin': [0xe2d6e436, _chatParticipantAdmin],
-  'updateChatParticipantAdmin': [0xb6901959, _updateChatParticipantAdmin],
-  'messageActionChatMigrateTo': [0x51bdb021, _messageActionChatMigrateTo],
-  'messageActionChannelMigrateFrom': [0xb055eaee, _messageActionChannelMigrateFrom],
+  'channels.channelParticipants': [0x9ab0feaf, _channelsChannelParticipants],
+  'channels.channelParticipant': [0xdfb80317, _channelsChannelParticipant],
+  'chatParticipantCreator': [0xe46bcee4, _chatParticipantCreator],
+  'chatParticipantAdmin': [0xa0933f5b, _chatParticipantAdmin],
+  'updateChatParticipantAdmin': [0xd7ca61a2, _updateChatParticipantAdmin],
+  'messageActionChatMigrateTo': [0xe1037f92, _messageActionChatMigrateTo],
+  'messageActionChannelMigrateFrom': [0xea3948e9, _messageActionChannelMigrateFrom],
   'channelParticipantsBots': [0xb0d1865b],
   'help.termsOfService': [0x780a0310, _helpTermsOfService],
   'updateNewStickerSet': [0x688a30aa, _updateNewStickerSet],
   'updateStickerSetsOrder': [0xbb2d201, _updateStickerSetsOrder],
   'updateStickerSets': [0x43ae3dec],
   'messages.savedGifsNotModified': [0xe8025ca2],
-  'messages.savedGifs': [0x2e0709a5, _messagesSavedGifs],
+  'messages.savedGifs': [0x84a02a0d, _messagesSavedGifs],
   'updateSavedGifs': [0x9375341e],
   'inputBotInlineMessageMediaAuto': [0x3380c786, _inputBotInlineMessageMediaAuto],
   'inputBotInlineMessageText': [0x3dcd7a87, _inputBotInlineMessageText],
@@ -7279,8 +8129,8 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'botInlineMessageText': [0x8c7f65e2, _botInlineMessageText],
   'botInlineResult': [0x11965f3a, _botInlineResult],
   'messages.botResults': [0x947ca848, _messagesBotResults],
-  'updateBotInlineQuery': [0x54826690, _updateBotInlineQuery],
-  'updateBotInlineSend': [0xe48f964, _updateBotInlineSend],
+  'updateBotInlineQuery': [0x496f379c, _updateBotInlineQuery],
+  'updateBotInlineSend': [0x12f12a07, _updateBotInlineSend],
   'inputMessagesFilterVoice': [0x50f5c392],
   'inputMessagesFilterMusic': [0x3751b49e],
   'inputPrivacyKeyChatInvite': [0xbdfb0426],
@@ -7303,7 +8153,7 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'keyboardButtonSwitchInline': [0x568a748, _keyboardButtonSwitchInline],
   'replyInlineMarkup': [0x48a30254, _replyInlineMarkup],
   'messages.botCallbackAnswer': [0x36585ea4, _messagesBotCallbackAnswer],
-  'updateBotCallbackQuery': [0xe73547e1, _updateBotCallbackQuery],
+  'updateBotCallbackQuery': [0xb9cfc48d, _updateBotCallbackQuery],
   'messages.messageEditData': [0x26b5dde6, _messagesMessageEditData],
   'updateEditMessage': [0xe40370a3, _updateEditMessage],
   'inputBotInlineMessageMediaGeo': [0x96929a85, _inputBotInlineMessageMediaGeo],
@@ -7316,7 +8166,7 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'inputBotInlineResultDocument': [0xfff8fdc4, _inputBotInlineResultDocument],
   'botInlineMediaResult': [0x17db940b, _botInlineMediaResult],
   'inputBotInlineMessageID': [0x890c3d89, _inputBotInlineMessageID],
-  'updateInlineBotCallbackQuery': [0xf9d27a5a, _updateInlineBotCallbackQuery],
+  'updateInlineBotCallbackQuery': [0x691e9052, _updateInlineBotCallbackQuery],
   'inlineBotSwitchPM': [0x3c20629f, _inlineBotSwitchPM],
   'messages.peerDialogs': [0x3371c354, _messagesPeerDialogs],
   'topPeer': [0xedcdc05b, _topPeer],
@@ -7328,19 +8178,19 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'topPeerCategoryPeers': [0xfb834291, _topPeerCategoryPeers],
   'contacts.topPeersNotModified': [0xde266ef5],
   'contacts.topPeers': [0x70b772a8, _contactsTopPeers],
-  'messageEntityMentionName': [0x352dca58, _messageEntityMentionName],
+  'messageEntityMentionName': [0xdc7b1140, _messageEntityMentionName],
   'inputMessageEntityMentionName': [0x208e68c9, _inputMessageEntityMentionName],
   'inputMessagesFilterChatPhotos': [0x3a20ecb8],
-  'updateReadChannelOutbox': [0x25d6c9c7, _updateReadChannelOutbox],
+  'updateReadChannelOutbox': [0xb75f99a9, _updateReadChannelOutbox],
   'updateDraftMessage': [0xee2bb969, _updateDraftMessage],
   'draftMessageEmpty': [0x1b0c841a, _draftMessageEmpty],
   'draftMessage': [0xfd8e711f, _draftMessage],
   'messageActionHistoryClear': [0x9fbab604],
   'messages.featuredStickersNotModified': [0xc6dc0c66, _messagesFeaturedStickersNotModified],
-  'messages.featuredStickers': [0xb6abc341, _messagesFeaturedStickers],
+  'messages.featuredStickers': [0x84c02310, _messagesFeaturedStickers],
   'updateReadFeaturedStickers': [0x571d2742],
   'messages.recentStickersNotModified': [0xb17f890],
-  'messages.recentStickers': [0x22f3afb3, _messagesRecentStickers],
+  'messages.recentStickers': [0x88d37c56, _messagesRecentStickers],
   'updateRecentStickers': [0x9a422c20],
   'messages.archivedStickers': [0x4fcba9c8, _messagesArchivedStickers],
   'messages.stickerSetInstallResultSuccess': [0x38641628],
@@ -7364,10 +8214,10 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'inputGameShortName': [0xc331e80a, _inputGameShortName],
   'keyboardButtonGame': [0x50f41ccf, _keyboardButtonGame],
   'messageActionGameScore': [0x92a72876, _messageActionGameScore],
-  'highScore': [0x58fffcd0, _highScore],
+  'highScore': [0x73a379eb, _highScore],
   'messages.highScores': [0x9a3bfd99, _messagesHighScores],
   'updates.differenceTooLong': [0x4afe8f6d, _updatesDifferenceTooLong],
-  'updateChannelWebPage': [0x40771900, _updateChannelWebPage],
+  'updateChannelWebPage': [0x2f2ba99f, _updateChannelWebPage],
   'messages.chatsSlice': [0x9cd81144, _messagesChatsSlice],
   'textEmpty': [0xdc3d824f],
   'textPlain': [0x744694e0, _textPlain],
@@ -7414,8 +8264,8 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'updateBotWebhookJSON': [0x8317c0c3, _updateBotWebhookJSON],
   'updateBotWebhookJSONQuery': [0x9b9240a6, _updateBotWebhookJSONQuery],
   'labeledPrice': [0xcb296bf8, _labeledPrice],
-  'invoice': [0xc30aa358, _invoice],
-  'inputMediaInvoice': [0xf4e096c3, _inputMediaInvoice],
+  'invoice': [0xcd886e0, _invoice],
+  'inputMediaInvoice': [0xd9799874, _inputMediaInvoice],
   'paymentCharge': [0xea02c27e, _paymentCharge],
   'messageActionPaymentSentMe': [0x8f31b327, _messageActionPaymentSentMe],
   'messageMediaInvoice': [0x84551347, _messageMediaInvoice],
@@ -7428,25 +8278,25 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'inputWebDocument': [0x9bed434d, _inputWebDocument],
   'inputWebFileLocation': [0xc239d686, _inputWebFileLocation],
   'upload.webFile': [0x21e753bc, _uploadWebFile],
-  'payments.paymentForm': [0x3f56aea3, _paymentsPaymentForm],
+  'payments.paymentForm': [0x1694761b, _paymentsPaymentForm],
   'payments.validatedRequestedInfo': [0xd1451883, _paymentsValidatedRequestedInfo],
   'payments.paymentResult': [0x4e5f810d, _paymentsPaymentResult],
-  'payments.paymentReceipt': [0x500911e1, _paymentsPaymentReceipt],
+  'payments.paymentReceipt': [0x70c4fe03, _paymentsPaymentReceipt],
   'payments.savedInfo': [0xfb8fe43c, _paymentsSavedInfo],
   'inputPaymentCredentialsSaved': [0xc10eb2cf, _inputPaymentCredentialsSaved],
   'inputPaymentCredentials': [0x3417d728, _inputPaymentCredentials],
   'account.tmpPassword': [0xdb64fd34, _accountTmpPassword],
   'shippingOption': [0xb6213cdf, _shippingOption],
-  'updateBotShippingQuery': [0xe0cdc940, _updateBotShippingQuery],
-  'updateBotPrecheckoutQuery': [0x5d2f3aa9, _updateBotPrecheckoutQuery],
+  'updateBotShippingQuery': [0xb5aefd7d, _updateBotShippingQuery],
+  'updateBotPrecheckoutQuery': [0x8caa9a96, _updateBotPrecheckoutQuery],
   'inputStickerSetItem': [0xffa0a496, _inputStickerSetItem],
   'updatePhoneCall': [0xab0f6b1e, _updatePhoneCall],
   'inputPhoneCall': [0x1e36fded, _inputPhoneCall],
   'phoneCallEmpty': [0x5366c915, _phoneCallEmpty],
-  'phoneCallWaiting': [0x1b8f4ad1, _phoneCallWaiting],
-  'phoneCallRequested': [0x87eabb53, _phoneCallRequested],
-  'phoneCallAccepted': [0x997c454a, _phoneCallAccepted],
-  'phoneCall': [0x8742ae7f, _phoneCall],
+  'phoneCallWaiting': [0xc5226f17, _phoneCallWaiting],
+  'phoneCallRequested': [0x14b0ed0c, _phoneCallRequested],
+  'phoneCallAccepted': [0x3660c311, _phoneCallAccepted],
+  'phoneCall': [0x967f7c67, _phoneCall],
   'phoneCallDiscarded': [0x50ca4de1, _phoneCallDiscarded],
   'phoneConnection': [0x9d4c17c0, _phoneConnection],
   'phoneCallProtocol': [0xfc878fc8, _phoneCallProtocol],
@@ -7470,8 +8320,8 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'langPackLanguage': [0xeeca5ce3, _langPackLanguage],
   'updateLangPackTooLong': [0x46560264, _updateLangPackTooLong],
   'updateLangPack': [0x56022f4d, _updateLangPack],
-  'channelParticipantAdmin': [0xccbebbaf, _channelParticipantAdmin],
-  'channelParticipantBanned': [0x1c0facaf, _channelParticipantBanned],
+  'channelParticipantAdmin': [0x34c3bb53, _channelParticipantAdmin],
+  'channelParticipantBanned': [0x6df8014e, _channelParticipantBanned],
   'channelParticipantsBanned': [0x1427a5e1, _channelParticipantsBanned],
   'channelParticipantsSearch': [0x656ac4b, _channelParticipantsSearch],
   'channelAdminLogEventActionChangeTitle': [0xe6dfb825, _channelAdminLogEventActionChangeTitle],
@@ -7488,7 +8338,7 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'channelAdminLogEventActionParticipantInvite': [0xe31c34d8, _channelAdminLogEventActionParticipantInvite],
   'channelAdminLogEventActionParticipantToggleBan': [0xe6d83d7e, _channelAdminLogEventActionParticipantToggleBan],
   'channelAdminLogEventActionParticipantToggleAdmin': [0xd5676710, _channelAdminLogEventActionParticipantToggleAdmin],
-  'channelAdminLogEvent': [0x3b5a3e40, _channelAdminLogEvent],
+  'channelAdminLogEvent': [0x1fad68cd, _channelAdminLogEvent],
   'channels.adminLogResults': [0xed8af74d, _channelsAdminLogResults],
   'channelAdminLogEventsFilter': [0xea107ae4, _channelAdminLogEventsFilter],
   'topPeerCategoryPhoneCalls': [0x1e76a78c],
@@ -7496,31 +8346,30 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'popularContact': [0x5ce14175, _popularContact],
   'messageActionScreenshotTaken': [0x4792929b],
   'messages.favedStickersNotModified': [0x9e8fa6d3],
-  'messages.favedStickers': [0xf37f2f16, _messagesFavedStickers],
+  'messages.favedStickers': [0x2cb51097, _messagesFavedStickers],
   'updateFavedStickers': [0xe511996d],
-  'updateChannelReadMessagesContents': [0x89893b45, _updateChannelReadMessagesContents],
+  'updateChannelReadMessagesContents': [0x44bdd535, _updateChannelReadMessagesContents],
   'inputMessagesFilterMyMentions': [0xc1f8e69a],
   'updateContactsReset': [0x7084a7be],
   'channelAdminLogEventActionChangeStickerSet': [0xb1c3caa7, _channelAdminLogEventActionChangeStickerSet],
   'messageActionCustomAction': [0xfae69f56, _messageActionCustomAction],
   'inputPaymentCredentialsApplePay': [0xaa1c39f, _inputPaymentCredentialsApplePay],
-  'inputPaymentCredentialsAndroidPay': [0xca05d50e, _inputPaymentCredentialsAndroidPay],
   'inputMessagesFilterGeo': [0xe7026d0d],
   'inputMessagesFilterContacts': [0xe062db83],
-  'updateChannelAvailableMessages': [0x70db6837, _updateChannelAvailableMessages],
+  'updateChannelAvailableMessages': [0xb23fc698, _updateChannelAvailableMessages],
   'channelAdminLogEventActionTogglePreHistoryHidden': [0x5f5c95f1, _channelAdminLogEventActionTogglePreHistoryHidden],
   'inputMediaGeoLive': [0x971fa843, _inputMediaGeoLive],
   'messageMediaGeoLive': [0xb940c666, _messageMediaGeoLive],
   'recentMeUrlUnknown': [0x46e1d13d, _recentMeUrlUnknown],
-  'recentMeUrlUser': [0x8dbc3336, _recentMeUrlUser],
-  'recentMeUrlChat': [0xa01b22f9, _recentMeUrlChat],
+  'recentMeUrlUser': [0xb92c09e2, _recentMeUrlUser],
+  'recentMeUrlChat': [0xb2da71d2, _recentMeUrlChat],
   'recentMeUrlChatInvite': [0xeb49081d, _recentMeUrlChatInvite],
   'recentMeUrlStickerSet': [0xbc0a57dc, _recentMeUrlStickerSet],
   'help.recentMeUrls': [0xe0310d7, _helpRecentMeUrls],
   'channels.channelParticipantsNotModified': [0xf0173fe9],
   'messages.messagesNotModified': [0x74535f21, _messagesMessagesNotModified],
   'inputSingleMedia': [0x1cc6e91f, _inputSingleMedia],
-  'webAuthorization': [0xcac943f2, _webAuthorization],
+  'webAuthorization': [0xa6f8f452, _webAuthorization],
   'account.webAuthorizations': [0xed56c9fc, _accountWebAuthorizations],
   'inputMessageID': [0xa676a322, _inputMessageID],
   'inputMessageReplyTo': [0xbad88395, _inputMessageReplyTo],
@@ -7531,7 +8380,7 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'inputDialogPeer': [0xfcaafeb7, _inputDialogPeer],
   'dialogPeer': [0xe56dbf05, _dialogPeer],
   'messages.foundStickerSetsNotModified': [0xd54b65d],
-  'messages.foundStickerSets': [0x5108d648, _messagesFoundStickerSets],
+  'messages.foundStickerSets': [0x8af09dd2, _messagesFoundStickerSets],
   'fileHash': [0x6242c773, _fileHash],
   'webDocumentNoProxy': [0xf9c8bcc6, _webDocumentNoProxy],
   'inputClientProxy': [0x75588b3f, _inputClientProxy],
@@ -7638,7 +8487,7 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'pollAnswer': [0x6ca9c2e9, _pollAnswer],
   'poll': [0x86e18161, _poll],
   'pollAnswerVoters': [0x3b6ddad2, _pollAnswerVoters],
-  'pollResults': [0xbadcc1a3, _pollResults],
+  'pollResults': [0xdcb82ea3, _pollResults],
   'inputMediaPoll': [0xf94e5f1, _inputMediaPoll],
   'messageMediaPoll': [0x4bd6e798, _messageMediaPoll],
   'chatOnlines': [0xf041e250, _chatOnlines],
@@ -7653,9 +8502,9 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'channelAdminLogEventActionDefaultBannedRights': [0x2df5fc0a, _channelAdminLogEventActionDefaultBannedRights],
   'channelAdminLogEventActionStopPoll': [0x8f079643, _channelAdminLogEventActionStopPoll],
   'account.wallPapersNotModified': [0x1c199183],
-  'account.wallPapers': [0x702b65a9, _accountWallPapers],
+  'account.wallPapers': [0xcdc3858c, _accountWallPapers],
   'codeSettings': [0xdebebe83, _codeSettings],
-  'wallPaperSettings': [0x5086cf8, _wallPaperSettings],
+  'wallPaperSettings': [0x1dc1bca4, _wallPaperSettings],
   'autoDownloadSettings': [0xe04232f3, _autoDownloadSettings],
   'account.autoDownloadSettings': [0x63cacf26, _accountAutoDownloadSettings],
   'emojiKeyword': [0xd5b3b9f9, _emojiKeyword],
@@ -7667,11 +8516,10 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'privacyKeyForwards': [0x69ec56a3],
   'inputPrivacyKeyProfilePhoto': [0x5719bacc],
   'privacyKeyProfilePhoto': [0x96151fed],
-  'fileLocationToBeDeprecated': [0xbc7fc6cd, _fileLocationToBeDeprecated],
   'inputPhotoFileLocation': [0x40181ffe, _inputPhotoFileLocation],
   'inputPhotoLegacyFileLocation': [0xd83466f3, _inputPhotoLegacyFileLocation],
-  'inputPeerPhotoFileLocation': [0x27d69997, _inputPeerPhotoFileLocation],
-  'inputStickerSetThumb': [0xdbaeae9, _inputStickerSetThumb],
+  'inputPeerPhotoFileLocation': [0x37257e99, _inputPeerPhotoFileLocation],
+  'inputStickerSetThumb': [0x9d84f3db, _inputStickerSetThumb],
   'folder': [0xff544e65, _folder],
   'dialogFolder': [0x71bd134c, _dialogFolder],
   'inputDialogPeerFolder': [0x64600527, _inputDialogPeerFolder],
@@ -7679,25 +8527,25 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'inputFolderPeer': [0xfbd2c296, _inputFolderPeer],
   'folderPeer': [0xe9baa668, _folderPeer],
   'updateFolderPeers': [0x19360dc0, _updateFolderPeers],
-  'inputUserFromMessage': [0x2d117597, _inputUserFromMessage],
-  'inputChannelFromMessage': [0x2a286531, _inputChannelFromMessage],
-  'inputPeerUserFromMessage': [0x17bae2e6, _inputPeerUserFromMessage],
-  'inputPeerChannelFromMessage': [0x9c95f7bb, _inputPeerChannelFromMessage],
+  'inputUserFromMessage': [0x1da448e2, _inputUserFromMessage],
+  'inputChannelFromMessage': [0x5b934f9d, _inputChannelFromMessage],
+  'inputPeerUserFromMessage': [0xa87b0a1c, _inputPeerUserFromMessage],
+  'inputPeerChannelFromMessage': [0xbd2a0840, _inputPeerChannelFromMessage],
   'inputPrivacyKeyPhoneNumber': [0x352dafa],
   'privacyKeyPhoneNumber': [0xd19ae46d],
   'topPeerCategoryForwardUsers': [0xa8406ca9],
   'topPeerCategoryForwardChats': [0xfbeec0f0],
-  'channelAdminLogEventActionChangeLinkedChat': [0xa26f881b, _channelAdminLogEventActionChangeLinkedChat],
+  'channelAdminLogEventActionChangeLinkedChat': [0x50c7ac8, _channelAdminLogEventActionChangeLinkedChat],
   'messages.searchCounter': [0xe844ebff, _messagesSearchCounter],
   'keyboardButtonUrlAuth': [0x10b78d29, _keyboardButtonUrlAuth],
   'inputKeyboardButtonUrlAuth': [0xd02e7fd4, _inputKeyboardButtonUrlAuth],
   'urlAuthResultRequest': [0x92d33a0e, _urlAuthResultRequest],
   'urlAuthResultAccepted': [0x8f8c0e4e, _urlAuthResultAccepted],
   'urlAuthResultDefault': [0xa9d6db1f],
-  'inputPrivacyValueAllowChatParticipants': [0x4c81c1ba, _inputPrivacyValueAllowChatParticipants],
-  'inputPrivacyValueDisallowChatParticipants': [0xd82363af, _inputPrivacyValueDisallowChatParticipants],
-  'privacyValueAllowChatParticipants': [0x18be796b, _privacyValueAllowChatParticipants],
-  'privacyValueDisallowChatParticipants': [0xacae0690, _privacyValueDisallowChatParticipants],
+  'inputPrivacyValueAllowChatParticipants': [0x840649cf, _inputPrivacyValueAllowChatParticipants],
+  'inputPrivacyValueDisallowChatParticipants': [0xe94f0f86, _inputPrivacyValueDisallowChatParticipants],
+  'privacyValueAllowChatParticipants': [0x6b134e8e, _privacyValueAllowChatParticipants],
+  'privacyValueDisallowChatParticipants': [0x41c87565, _privacyValueDisallowChatParticipants],
   'messageEntityUnderline': [0x9c4e7e8b, _messageEntityUnderline],
   'messageEntityStrike': [0xbf0693d4, _messageEntityStrike],
   'messageEntityBlockquote': [0x20df5d0, _messageEntityBlockquote],
@@ -7717,9 +8565,9 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'restrictionReason': [0xd072acb4, _restrictionReason],
   'inputTheme': [0x3c5693e9, _inputTheme],
   'inputThemeSlug': [0xf5890df1, _inputThemeSlug],
-  'theme': [0x28f1114, _theme],
+  'theme': [0xe802b8dc, _theme],
   'account.themesNotModified': [0xf41eb622],
-  'account.themes': [0x7f676421, _accountThemes],
+  'account.themes': [0x9a3d8c6d, _accountThemes],
   'updateTheme': [0x8216fba3, _updateTheme],
   'inputPrivacyKeyAddedByPhone': [0xd1219bdd],
   'privacyKeyAddedByPhone': [0x42ffd42b],
@@ -7735,15 +8583,15 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'baseThemeNight': [0xb7b31ea8],
   'baseThemeTinted': [0x6d5f77ee],
   'baseThemeArctic': [0x5b11125a],
-  'inputWallPaperNoFile': [0x8427bbac],
-  'wallPaperNoFile': [0x8af40b25, _wallPaperNoFile],
-  'inputThemeSettings': [0xbd507cd1, _inputThemeSettings],
-  'themeSettings': [0x9c14984a, _themeSettings],
+  'inputWallPaperNoFile': [0x967a462e, _inputWallPaperNoFile],
+  'wallPaperNoFile': [0xe0804116, _wallPaperNoFile],
+  'inputThemeSettings': [0x8fde504f, _inputThemeSettings],
+  'themeSettings': [0xfa58b6d4, _themeSettings],
   'webPageAttributeTheme': [0x54b56617, _webPageAttributeTheme],
-  'updateMessagePollVote': [0x42f88f2c, _updateMessagePollVote],
-  'messageUserVote': [0xa28e5559, _messageUserVote],
-  'messageUserVoteInputOption': [0x36377430, _messageUserVoteInputOption],
-  'messageUserVoteMultiple': [0xe8fe0de, _messageUserVoteMultiple],
+  'updateMessagePollVote': [0x106395c9, _updateMessagePollVote],
+  'messageUserVote': [0x34d247b4, _messageUserVote],
+  'messageUserVoteInputOption': [0x3ca5b0ec, _messageUserVoteInputOption],
+  'messageUserVoteMultiple': [0x8a65e557, _messageUserVoteMultiple],
   'messages.votesList': [0x823f649, _messagesVotesList],
   'keyboardButtonRequestPoll': [0xbbc7515d, _keyboardButtonRequestPoll],
   'messageEntityBankCard': [0x761e6af4, _messageEntityBankCard],
@@ -7768,12 +8616,12 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'inputStickerSetDice': [0xe67f520e, _inputStickerSetDice],
   'help.promoDataEmpty': [0x98f6ac75, _helpPromoDataEmpty],
   'help.promoData': [0x8c39793f, _helpPromoData],
-  'videoSize': [0xe831c556, _videoSize],
+  'videoSize': [0xde33b094, _videoSize],
   'updatePhoneCallSignalingData': [0x2661bf09, _updatePhoneCallSignalingData],
   'chatInvitePeek': [0x61695cb0, _chatInvitePeek],
-  'statsGroupTopPoster': [0x18f3d0f7, _statsGroupTopPoster],
-  'statsGroupTopAdmin': [0x6014f412, _statsGroupTopAdmin],
-  'statsGroupTopInviter': [0x31962a4c, _statsGroupTopInviter],
+  'statsGroupTopPoster': [0x9d04af9b, _statsGroupTopPoster],
+  'statsGroupTopAdmin': [0xd7584c87, _statsGroupTopAdmin],
+  'statsGroupTopInviter': [0x535f779d, _statsGroupTopInviter],
   'stats.megagroupStats': [0xef7ff916, _statsMegagroupStats],
   'globalPrivacySettings': [0xbea2f424, _globalPrivacySettings],
   'phoneConnectionWebrtc': [0x635fe375, _phoneConnectionWebrtc],
@@ -7782,26 +8630,105 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'help.countriesListNotModified': [0x93cc1f32],
   'help.countriesList': [0x87d0759e, _helpCountriesList],
   'messageViews': [0x455b853d, _messageViews],
-  'updateChannelMessageForwards': [0x6e8a84df, _updateChannelMessageForwards],
-  'photoSizeProgressive': [0x5aa86a51, _photoSizeProgressive],
+  'updateChannelMessageForwards': [0xd29a27f4, _updateChannelMessageForwards],
+  'photoSizeProgressive': [0xfa3efb95, _photoSizeProgressive],
   'messages.messageViews': [0xb6c4f543, _messagesMessageViews],
-  'updateReadChannelDiscussionInbox': [0x1cc7de54, _updateReadChannelDiscussionInbox],
-  'updateReadChannelDiscussionOutbox': [0x4638a26c, _updateReadChannelDiscussionOutbox],
-  'messages.discussionMessage': [0xf5dd8f9d, _messagesDiscussionMessage],
+  'updateReadChannelDiscussionInbox': [0xd6b19546, _updateReadChannelDiscussionInbox],
+  'updateReadChannelDiscussionOutbox': [0x695c9e7c, _updateReadChannelDiscussionOutbox],
+  'messages.discussionMessage': [0xa6341782, _messagesDiscussionMessage],
   'messageReplyHeader': [0xa6d57763, _messageReplyHeader],
-  'messageReplies': [0x4128faac, _messageReplies],
+  'messageReplies': [0x83d60fc2, _messageReplies],
   'updatePeerBlocked': [0x246a4b22, _updatePeerBlocked],
   'peerBlocked': [0xe8fd8014, _peerBlocked],
-  'updateChannelUserTyping': [0xff2abe9f, _updateChannelUserTyping],
+  'updateChannelUserTyping': [0x8c88c923, _updateChannelUserTyping],
   'inputMessageCallbackQuery': [0xacfa1a7e, _inputMessageCallbackQuery],
-  'channelParticipantLeft': [0xc3c6796b, _channelParticipantLeft],
+  'channelParticipantLeft': [0x1b03f006, _channelParticipantLeft],
   'channelParticipantsMentions': [0xe04b5ceb, _channelParticipantsMentions],
   'updatePinnedMessages': [0xed85eab5, _updatePinnedMessages],
-  'updatePinnedChannelMessages': [0x8588878b, _updatePinnedChannelMessages],
+  'updatePinnedChannelMessages': [0x5bb98608, _updatePinnedChannelMessages],
   'inputMessagesFilterPinned': [0x1bb00451],
   'stats.messageStats': [0x8999f295, _statsMessageStats],
   'messageActionGeoProximityReached': [0x98e0d697, _messageActionGeoProximityReached],
   'photoPathSize': [0xd8214d41, _photoPathSize],
+  'speakingInGroupCallAction': [0xd92c2285],
+  'groupCallDiscarded': [0x7780bcb4, _groupCallDiscarded],
+  'groupCall': [0xd597650c, _groupCall],
+  'inputGroupCall': [0xd8aa840f, _inputGroupCall],
+  'messageActionGroupCall': [0x7a0d7f42, _messageActionGroupCall],
+  'messageActionInviteToGroupCall': [0x502f92f7, _messageActionInviteToGroupCall],
+  'groupCallParticipant': [0xeba636fe, _groupCallParticipant],
+  'updateChat': [0xf89a6a4e, _updateChat],
+  'updateGroupCallParticipants': [0xf2ebdb4e, _updateGroupCallParticipants],
+  'updateGroupCall': [0x14b24500, _updateGroupCall],
+  'phone.groupCall': [0x9e727aad, _phoneGroupCall],
+  'phone.groupParticipants': [0xf47751b6, _phoneGroupParticipants],
+  'inlineQueryPeerTypeSameBotPM': [0x3081ed9d],
+  'inlineQueryPeerTypePM': [0x833c0fac],
+  'inlineQueryPeerTypeChat': [0xd766c50a],
+  'inlineQueryPeerTypeMegagroup': [0x5ec4be43],
+  'inlineQueryPeerTypeBroadcast': [0x6334ee9a],
+  'channelAdminLogEventActionStartGroupCall': [0x23209745, _channelAdminLogEventActionStartGroupCall],
+  'channelAdminLogEventActionDiscardGroupCall': [0xdb9f9140, _channelAdminLogEventActionDiscardGroupCall],
+  'channelAdminLogEventActionParticipantMute': [0xf92424d2, _channelAdminLogEventActionParticipantMute],
+  'channelAdminLogEventActionParticipantUnmute': [0xe64429c0, _channelAdminLogEventActionParticipantUnmute],
+  'channelAdminLogEventActionToggleGroupCallSetting': [0x56d6a247, _channelAdminLogEventActionToggleGroupCallSetting],
+  'inputPaymentCredentialsGooglePay': [0x8ac32801, _inputPaymentCredentialsGooglePay],
+  'messages.historyImport': [0x1662af0b, _messagesHistoryImport],
+  'sendMessageHistoryImportAction': [0xdbda9246, _sendMessageHistoryImportAction],
+  'messages.historyImportParsed': [0x5e0fb7b9, _messagesHistoryImportParsed],
+  'inputReportReasonFake': [0xf5ddd6e7],
+  'messages.affectedFoundMessages': [0xef8d3e6c, _messagesAffectedFoundMessages],
+  'messageActionSetMessagesTTL': [0xaa1afbfd, _messageActionSetMessagesTTL],
+  'updatePeerHistoryTTL': [0xbb9bb9a5, _updatePeerHistoryTTL],
+  'updateChatParticipant': [0xd087663a, _updateChatParticipant],
+  'updateChannelParticipant': [0x985d3abb, _updateChannelParticipant],
+  'updateBotStopped': [0xc4870a49, _updateBotStopped],
+  'chatInviteImporter': [0xb5cd5f4, _chatInviteImporter],
+  'messages.exportedChatInvites': [0xbdc62dcc, _messagesExportedChatInvites],
+  'messages.exportedChatInvite': [0x1871be50, _messagesExportedChatInvite],
+  'messages.exportedChatInviteReplaced': [0x222600ef, _messagesExportedChatInviteReplaced],
+  'messages.chatInviteImporters': [0x81b6b00a, _messagesChatInviteImporters],
+  'chatAdminWithInvites': [0xf2ecef23, _chatAdminWithInvites],
+  'messages.chatAdminsWithInvites': [0xb69b72d7, _messagesChatAdminsWithInvites],
+  'channelAdminLogEventActionParticipantJoinByInvite': [0x5cdada77, _channelAdminLogEventActionParticipantJoinByInvite],
+  'channelAdminLogEventActionExportedInviteDelete': [0x5a50fca4, _channelAdminLogEventActionExportedInviteDelete],
+  'channelAdminLogEventActionExportedInviteRevoke': [0x410a134e, _channelAdminLogEventActionExportedInviteRevoke],
+  'channelAdminLogEventActionExportedInviteEdit': [0xe90ebb59, _channelAdminLogEventActionExportedInviteEdit],
+  'channelAdminLogEventActionParticipantVolume': [0x3e7f6847, _channelAdminLogEventActionParticipantVolume],
+  'channelAdminLogEventActionChangeHistoryTTL': [0x6e941a38, _channelAdminLogEventActionChangeHistoryTTL],
+  'messages.checkedHistoryImportPeer': [0xa24de717, _messagesCheckedHistoryImportPeer],
+  'inputGroupCallStream': [0x598a92a, _inputGroupCallStream],
+  'phone.joinAsPeers': [0xafe5623f, _phoneJoinAsPeers],
+  'phone.exportedGroupCallInvite': [0x204bd158, _phoneExportedGroupCallInvite],
+  'inputBotInlineMessageMediaInvoice': [0xd7e78225, _inputBotInlineMessageMediaInvoice],
+  'botInlineMessageMediaInvoice': [0x354a9b09, _botInlineMessageMediaInvoice],
+  'messageActionGroupCallScheduled': [0xb3a07661, _messageActionGroupCallScheduled],
+  'groupCallParticipantVideoSourceGroup': [0xdcb118b7, _groupCallParticipantVideoSourceGroup],
+  'groupCallParticipantVideo': [0x67753ac8, _groupCallParticipantVideo],
+  'updateGroupCallConnection': [0xb783982, _updateGroupCallConnection],
+  'stickers.suggestedShortName': [0x85fea03f, _stickersSuggestedShortName],
+  'botCommandScopeDefault': [0x2f6cb2ab],
+  'botCommandScopeUsers': [0x3c4f04d8],
+  'botCommandScopeChats': [0x6fe1a881],
+  'botCommandScopeChatAdmins': [0xb9aa606a],
+  'botCommandScopePeer': [0xdb9d897d, _botCommandScopePeer],
+  'botCommandScopePeerAdmins': [0x3fd863d1, _botCommandScopePeerAdmins],
+  'botCommandScopePeerUser': [0xa1321f3, _botCommandScopePeerUser],
+  'account.resetPasswordFailedWait': [0xe3779861, _accountResetPasswordFailedWait],
+  'account.resetPasswordRequestedWait': [0xe9effc7d, _accountResetPasswordRequestedWait],
+  'account.resetPasswordOk': [0xe926d63e],
+  'updateBotCommands': [0x4d712f2e, _updateBotCommands],
+  'chatTheme': [0xed0b5c33, _chatTheme],
+  'account.chatThemesNotModified': [0xe011e1c4],
+  'account.chatThemes': [0xfe4cbebd, _accountChatThemes],
+  'messageActionSetChatTheme': [0xaa786345, _messageActionSetChatTheme],
+  'sendMessageChooseStickerAction': [0xb05ac6b1],
+  'sponsoredMessage': [0x2a3c381f, _sponsoredMessage],
+  'messages.sponsoredMessages': [0x65a4c7d5, _messagesSponsoredMessages],
+  'inputStickerSetAnimatedEmojiAnimations': [0xcde3739],
+  'sendMessageEmojiInteraction': [0x25972bcb, _sendMessageEmojiInteraction],
+  'sendMessageEmojiInteractionSeen': [0xb665902e, _sendMessageEmojiInteractionSeen],
+  'inputBotInlineMessageID64': [0xb6d915d7, _inputBotInlineMessageID64],
   'invokeAfterMsg': [0xcb9f372d, _invokeAfterMsg],
   'invokeAfterMsgs': [0x3dc4b4f0, _invokeAfterMsgs],
   'auth.sendCode': [0xa677244f, _authSendCode],
@@ -7810,22 +8737,22 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'auth.logOut': [0x5717da40],
   'auth.resetAuthorizations': [0x9fab0d1a],
   'auth.exportAuthorization': [0xe5bfffcd, _authExportAuthorization],
-  'auth.importAuthorization': [0xe3ef9613, _authImportAuthorization],
+  'auth.importAuthorization': [0xa57a7dad, _authImportAuthorization],
   'auth.bindTempAuthKey': [0xcdd42a05, _authBindTempAuthKey],
-  'account.registerDevice': [0x68976c6f, _accountRegisterDevice],
-  'account.unregisterDevice': [0x3076c4bf, _accountUnregisterDevice],
+  'account.registerDevice': [0xec86017a, _accountRegisterDevice],
+  'account.unregisterDevice': [0x6a0d3206, _accountUnregisterDevice],
   'account.updateNotifySettings': [0x84be5b93, _accountUpdateNotifySettings],
   'account.getNotifySettings': [0x12b3ad31, _accountGetNotifySettings],
   'account.resetNotifySettings': [0xdb7e1747],
   'account.updateProfile': [0x78515775, _accountUpdateProfile],
   'account.updateStatus': [0x6628562c, _accountUpdateStatus],
-  'account.getWallPapers': [0xaabb1763, _accountGetWallPapers],
-  'account.reportPeer': [0xae189d5f, _accountReportPeer],
+  'account.getWallPapers': [0x7967d36, _accountGetWallPapers],
+  'account.reportPeer': [0xc5ba3d86, _accountReportPeer],
   'users.getUsers': [0xd91a548, _usersGetUsers],
   'users.getFullUser': [0xca30a5b1, _usersGetFullUser],
-  'contacts.getContactIDs': [0x2caa4a42, _contactsGetContactIDs],
+  'contacts.getContactIDs': [0x7adc669d, _contactsGetContactIDs],
   'contacts.getStatuses': [0xc4a353ee],
-  'contacts.getContacts': [0xc023849f, _contactsGetContacts],
+  'contacts.getContacts': [0x5dd69e12, _contactsGetContacts],
   'contacts.importContacts': [0x2c800be5, _contactsImportContacts],
   'contacts.deleteContacts': [0x96a0e00, _contactsDeleteContacts],
   'contacts.deleteByPhones': [0x1013fd9e, _contactsDeleteByPhones],
@@ -7833,9 +8760,9 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'contacts.unblock': [0xbea65d50, _contactsUnblock],
   'contacts.getBlocked': [0xf57c350f, _contactsGetBlocked],
   'messages.getMessages': [0x63c66506, _messagesGetMessages],
-  'messages.getDialogs': [0xa0ee3b73, _messagesGetDialogs],
-  'messages.getHistory': [0xdcbb8260, _messagesGetHistory],
-  'messages.search': [0xc352eec, _messagesSearch],
+  'messages.getDialogs': [0xa0f4cb4f, _messagesGetDialogs],
+  'messages.getHistory': [0x4423e6c5, _messagesGetHistory],
+  'messages.search': [0xa0fda762, _messagesSearch],
   'messages.readHistory': [0xe306d3a, _messagesReadHistory],
   'messages.deleteHistory': [0x1c015b09, _messagesDeleteHistory],
   'messages.deleteMessages': [0xe58e95d2, _messagesDeleteMessages],
@@ -7846,13 +8773,13 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'messages.forwardMessages': [0xd9fee60e, _messagesForwardMessages],
   'messages.reportSpam': [0xcf1592db, _messagesReportSpam],
   'messages.getPeerSettings': [0x3672e09c, _messagesGetPeerSettings],
-  'messages.report': [0xbd82b658, _messagesReport],
-  'messages.getChats': [0x3c6aa187, _messagesGetChats],
-  'messages.getFullChat': [0x3b831c66, _messagesGetFullChat],
-  'messages.editChatTitle': [0xdc452855, _messagesEditChatTitle],
-  'messages.editChatPhoto': [0xca4c79d8, _messagesEditChatPhoto],
-  'messages.addChatUser': [0xf9a0aa09, _messagesAddChatUser],
-  'messages.deleteChatUser': [0xe0611f16, _messagesDeleteChatUser],
+  'messages.report': [0x8953ab4e, _messagesReport],
+  'messages.getChats': [0x49e9528f, _messagesGetChats],
+  'messages.getFullChat': [0xaeb00b34, _messagesGetFullChat],
+  'messages.editChatTitle': [0x73783ffd, _messagesEditChatTitle],
+  'messages.editChatPhoto': [0x35ddd674, _messagesEditChatPhoto],
+  'messages.addChatUser': [0xf24753e3, _messagesAddChatUser],
+  'messages.deleteChatUser': [0xa2185cab, _messagesDeleteChatUser],
   'messages.createChat': [0x9cb126e, _messagesCreateChat],
   'updates.getState': [0xedd4882a],
   'updates.getDifference': [0x25939651, _updatesGetDifference],
@@ -7869,7 +8796,7 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'messages.getDhConfig': [0x26cf8950, _messagesGetDhConfig],
   'messages.requestEncryption': [0xf64daf43, _messagesRequestEncryption],
   'messages.acceptEncryption': [0x3dbc0415, _messagesAcceptEncryption],
-  'messages.discardEncryption': [0xedd923c5, _messagesDiscardEncryption],
+  'messages.discardEncryption': [0xf393aea0, _messagesDiscardEncryption],
   'messages.setEncryptedTyping': [0x791451ed, _messagesSetEncryptedTyping],
   'messages.readEncryptedHistory': [0x7f4b690a, _messagesReadEncryptedHistory],
   'messages.sendEncrypted': [0x44fa7a15, _messagesSendEncrypted],
@@ -7893,8 +8820,8 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'contacts.resolveUsername': [0xf93ccba3, _contactsResolveUsername],
   'account.sendChangePhoneCode': [0x82574ae5, _accountSendChangePhoneCode],
   'account.changePhone': [0x70c32edb, _accountChangePhone],
-  'messages.getStickers': [0x43d4f2c, _messagesGetStickers],
-  'messages.getAllStickers': [0x1c9618b1, _messagesGetAllStickers],
+  'messages.getStickers': [0xd5a5d3a1, _messagesGetStickers],
+  'messages.getAllStickers': [0xb8a0a1a8, _messagesGetAllStickers],
   'account.updateDeviceLocked': [0x38df3532, _accountUpdateDeviceLocked],
   'auth.importBotAuthorization': [0x67a3ff2c, _authImportBotAuthorization],
   'messages.getWebPagePreview': [0x8b68b0cc, _messagesGetWebPagePreview],
@@ -7905,9 +8832,9 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'account.updatePasswordSettings': [0xa59b102f, _accountUpdatePasswordSettings],
   'auth.checkPassword': [0xd18b4d16, _authCheckPassword],
   'auth.requestPasswordRecovery': [0xd897bc66],
-  'auth.recoverPassword': [0x4ea56e92, _authRecoverPassword],
+  'auth.recoverPassword': [0x37096c70, _authRecoverPassword],
   'invokeWithoutUpdates': [0xbf9459b7, _invokeWithoutUpdates],
-  'messages.exportChatInvite': [0xdf7534c, _messagesExportChatInvite],
+  'messages.exportChatInvite': [0x14b9bcd7, _messagesExportChatInvite],
   'messages.checkChatInvite': [0x3eadb1bb, _messagesCheckChatInvite],
   'messages.importChatInvite': [0x6c50051c, _messagesImportChatInvite],
   'messages.getStickerSet': [0x2619a90e, _messagesGetStickerSet],
@@ -7921,8 +8848,8 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'channels.deleteUserHistory': [0xd10dd71b, _channelsDeleteUserHistory],
   'channels.reportSpam': [0xfe087810, _channelsReportSpam],
   'channels.getMessages': [0xad8c9a23, _channelsGetMessages],
-  'channels.getParticipants': [0x123e05e9, _channelsGetParticipants],
-  'channels.getParticipant': [0x546dd7a6, _channelsGetParticipant],
+  'channels.getParticipants': [0x77ced9d0, _channelsGetParticipants],
+  'channels.getParticipant': [0xa0ab6cc6, _channelsGetParticipant],
   'channels.getChannels': [0xa7f6bbb, _channelsGetChannels],
   'channels.getFullChannel': [0x8736a09, _channelsGetFullChannel],
   'channels.createChannel': [0x3d5fb10f, _channelsCreateChannel],
@@ -7936,12 +8863,12 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'channels.inviteToChannel': [0x199f3a6c, _channelsInviteToChannel],
   'channels.deleteChannel': [0xc0111fe3, _channelsDeleteChannel],
   'updates.getChannelDifference': [0x3173d78, _updatesGetChannelDifference],
-  'messages.editChatAdmin': [0xa9e69f2e, _messagesEditChatAdmin],
-  'messages.migrateChat': [0x15a3b8e3, _messagesMigrateChat],
+  'messages.editChatAdmin': [0xa85bd1c2, _messagesEditChatAdmin],
+  'messages.migrateChat': [0xa2875319, _messagesMigrateChat],
   'messages.searchGlobal': [0x4bc6589a, _messagesSearchGlobal],
   'messages.reorderStickerSets': [0x78337739, _messagesReorderStickerSets],
   'messages.getDocumentByHash': [0x338e2464, _messagesGetDocumentByHash],
-  'messages.getSavedGifs': [0x83bf3d52, _messagesGetSavedGifs],
+  'messages.getSavedGifs': [0x5cf09635, _messagesGetSavedGifs],
   'messages.saveGif': [0x327a30cb, _messagesSaveGif],
   'messages.getInlineBotResults': [0x514e999d, _messagesGetInlineBotResults],
   'messages.setInlineBotResults': [0xeb5ea206, _messagesSetInlineBotResults],
@@ -7955,29 +8882,29 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'messages.editInlineBotMessage': [0x83557dba, _messagesEditInlineBotMessage],
   'messages.getBotCallbackAnswer': [0x9342ca07, _messagesGetBotCallbackAnswer],
   'messages.setBotCallbackAnswer': [0xd58f130a, _messagesSetBotCallbackAnswer],
-  'contacts.getTopPeers': [0xd4982db5, _contactsGetTopPeers],
+  'contacts.getTopPeers': [0x973478b6, _contactsGetTopPeers],
   'contacts.resetTopPeerRating': [0x1ae373ac, _contactsResetTopPeerRating],
   'messages.getPeerDialogs': [0xe470bcfd, _messagesGetPeerDialogs],
   'messages.saveDraft': [0xbc39e14b, _messagesSaveDraft],
   'messages.getAllDrafts': [0x6a3f8d65],
-  'messages.getFeaturedStickers': [0x2dacca4f, _messagesGetFeaturedStickers],
+  'messages.getFeaturedStickers': [0x64780b14, _messagesGetFeaturedStickers],
   'messages.readFeaturedStickers': [0x5b118126, _messagesReadFeaturedStickers],
-  'messages.getRecentStickers': [0x5ea192c9, _messagesGetRecentStickers],
+  'messages.getRecentStickers': [0x9da9403b, _messagesGetRecentStickers],
   'messages.saveRecentSticker': [0x392718f8, _messagesSaveRecentSticker],
   'messages.clearRecentStickers': [0x8999602d, _messagesClearRecentStickers],
   'messages.getArchivedStickers': [0x57f17692, _messagesGetArchivedStickers],
   'account.sendConfirmPhoneCode': [0x1b3faa88, _accountSendConfirmPhoneCode],
   'account.confirmPhone': [0x5f2178c3, _accountConfirmPhone],
   'channels.getAdminedPublicChannels': [0xf8b036af, _channelsGetAdminedPublicChannels],
-  'messages.getMaskStickers': [0x65b8c79f, _messagesGetMaskStickers],
+  'messages.getMaskStickers': [0x640f82b8, _messagesGetMaskStickers],
   'messages.getAttachedStickers': [0xcc5b67cc, _messagesGetAttachedStickers],
   'auth.dropTempAuthKeys': [0x8e48a188, _authDropTempAuthKeys],
   'messages.setGameScore': [0x8ef8ecc0, _messagesSetGameScore],
   'messages.setInlineGameScore': [0x15ad9f64, _messagesSetInlineGameScore],
   'messages.getGameHighScores': [0xe822649d, _messagesGetGameHighScores],
   'messages.getInlineGameHighScores': [0xf635e1b, _messagesGetInlineGameHighScores],
-  'messages.getCommonChats': [0xd0a48c4, _messagesGetCommonChats],
-  'messages.getAllChats': [0xeba80ff0, _messagesGetAllChats],
+  'messages.getCommonChats': [0xe40ca104, _messagesGetCommonChats],
+  'messages.getAllChats': [0x875f74be, _messagesGetAllChats],
   'help.setBotUpdatesStatus': [0xec22cfcd, _helpSetBotUpdatesStatus],
   'messages.getWebPage': [0x32ca8f91, _messagesGetWebPage],
   'messages.toggleDialogPin': [0xa731e257, _messagesToggleDialogPin],
@@ -7986,16 +8913,16 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'bots.sendCustomRequest': [0xaa2769ed, _botsSendCustomRequest],
   'bots.answerWebhookJSONQuery': [0xe6213f4d, _botsAnswerWebhookJSONQuery],
   'upload.getWebFile': [0x24e6818d, _uploadGetWebFile],
-  'payments.getPaymentForm': [0x99f09745, _paymentsGetPaymentForm],
-  'payments.getPaymentReceipt': [0xa092a980, _paymentsGetPaymentReceipt],
-  'payments.validateRequestedInfo': [0x770a8e74, _paymentsValidateRequestedInfo],
-  'payments.sendPaymentForm': [0x2b8879b3, _paymentsSendPaymentForm],
+  'payments.getPaymentForm': [0x8a333c8d, _paymentsGetPaymentForm],
+  'payments.getPaymentReceipt': [0x2478d1cc, _paymentsGetPaymentReceipt],
+  'payments.validateRequestedInfo': [0xdb103170, _paymentsValidateRequestedInfo],
+  'payments.sendPaymentForm': [0x30c3bc9d, _paymentsSendPaymentForm],
   'account.getTmpPassword': [0x449e0b51, _accountGetTmpPassword],
   'payments.getSavedInfo': [0x227d824b],
   'payments.clearSavedInfo': [0xd83d70c1, _paymentsClearSavedInfo],
   'messages.setBotShippingResults': [0xe5f672fa, _messagesSetBotShippingResults],
   'messages.setBotPrecheckoutResults': [0x9c2dd95, _messagesSetBotPrecheckoutResults],
-  'stickers.createStickerSet': [0xf1036780, _stickersCreateStickerSet],
+  'stickers.createStickerSet': [0x9021ab67, _stickersCreateStickerSet],
   'stickers.removeStickerFromSet': [0xf7760f51, _stickersRemoveStickerFromSet],
   'stickers.changeStickerPosition': [0xffb6d4ca, _stickersChangeStickerPosition],
   'stickers.addStickerToSet': [0x8653febe, _stickersAddStickerToSet],
@@ -8015,12 +8942,12 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'langpack.getStrings': [0xefea3803, _langpackGetStrings],
   'langpack.getDifference': [0xcd984aa5, _langpackGetDifference],
   'langpack.getLanguages': [0x42c6978f, _langpackGetLanguages],
-  'channels.editBanned': [0x72796912, _channelsEditBanned],
+  'channels.editBanned': [0x96e6cd81, _channelsEditBanned],
   'channels.getAdminLog': [0x33ddf480, _channelsGetAdminLog],
   'upload.getCdnFileHashes': [0x4da54231, _uploadGetCdnFileHashes],
   'messages.sendScreenshotNotification': [0xc97df020, _messagesSendScreenshotNotification],
   'channels.setStickers': [0xea8ca4f9, _channelsSetStickers],
-  'messages.getFavedStickers': [0x21ce0b0e, _messagesGetFavedStickers],
+  'messages.getFavedStickers': [0x4f1aaa9, _messagesGetFavedStickers],
   'messages.faveSticker': [0xb9ffc55b, _messagesFaveSticker],
   'channels.readMessageContents': [0xeab5dc38, _channelsReadMessageContents],
   'contacts.resetSaved': [0x879537f1],
@@ -8029,13 +8956,13 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'help.getRecentMeUrls': [0x3dc0f114, _helpGetRecentMeUrls],
   'channels.togglePreHistoryHidden': [0xeabbb94c, _channelsTogglePreHistoryHidden],
   'messages.readMentions': [0xf0189d3, _messagesReadMentions],
-  'messages.getRecentLocations': [0xbbc45b09, _messagesGetRecentLocations],
+  'messages.getRecentLocations': [0x702a40e0, _messagesGetRecentLocations],
   'messages.sendMultiMedia': [0xcc0110cb, _messagesSendMultiMedia],
   'messages.uploadEncryptedFile': [0x5057c497, _messagesUploadEncryptedFile],
   'account.getWebAuthorizations': [0x182e6d6f],
   'account.resetWebAuthorization': [0x2d01b9ef, _accountResetWebAuthorization],
   'account.resetWebAuthorizations': [0x682d2594],
-  'messages.searchStickerSets': [0xc2b7d08b, _messagesSearchStickerSets],
+  'messages.searchStickerSets': [0x35705b8a, _messagesSearchStickerSets],
   'upload.getFileHashes': [0xc7025931, _uploadGetFileHashes],
   'help.getTermsOfServiceUpdate': [0x2ca51fd1],
   'help.acceptTermsOfService': [0xee72f79a, _helpAcceptTermsOfService],
@@ -8044,8 +8971,8 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'account.saveSecureValue': [0x899fe31d, _accountSaveSecureValue],
   'account.deleteSecureValue': [0xb880bc4b, _accountDeleteSecureValue],
   'users.setSecureValueErrors': [0x90c894b5, _usersSetSecureValueErrors],
-  'account.getAuthorizationForm': [0xb86ba8e1, _accountGetAuthorizationForm],
-  'account.acceptAuthorization': [0xe7027c94, _accountAcceptAuthorization],
+  'account.getAuthorizationForm': [0xa929597a, _accountGetAuthorizationForm],
+  'account.acceptAuthorization': [0xf3ed4c73, _accountAcceptAuthorization],
   'account.sendVerifyPhoneCode': [0xa5a356f9, _accountSendVerifyPhoneCode],
   'account.verifyPhone': [0x4dd3a7f6, _accountVerifyPhone],
   'account.sendVerifyEmailCode': [0x7011509f, _accountSendVerifyEmailCode],
@@ -8079,7 +9006,6 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'messages.sendVote': [0x10ea6184, _messagesSendVote],
   'messages.getPollResults': [0x73bb643b, _messagesGetPollResults],
   'messages.getOnlines': [0x6e2be050, _messagesGetOnlines],
-  'messages.getStatsURL': [0x812c2ae6, _messagesGetStatsURL],
   'messages.editChatAbout': [0xdef60797, _messagesEditChatAbout],
   'messages.editChatDefaultBannedRights': [0xa5866b41, _messagesEditChatDefaultBannedRights],
   'account.getWallPaper': [0xfc8ddbea, _accountGetWallPaper],
@@ -8098,8 +9024,8 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'messages.getSearchCounters': [0x732eef00, _messagesGetSearchCounters],
   'channels.getGroupsForDiscussion': [0xf5dad378],
   'channels.setDiscussionGroup': [0x40582bb2, _channelsSetDiscussionGroup],
-  'messages.requestUrlAuth': [0xe33f5613, _messagesRequestUrlAuth],
-  'messages.acceptUrlAuth': [0xf729ea98, _messagesAcceptUrlAuth],
+  'messages.requestUrlAuth': [0x198fb446, _messagesRequestUrlAuth],
+  'messages.acceptUrlAuth': [0xb12c7125, _messagesAcceptUrlAuth],
   'messages.hidePeerSettingsBar': [0x4facb138, _messagesHidePeerSettingsBar],
   'contacts.addContact': [0xe8f463d0, _contactsAddContact],
   'contacts.acceptContact': [0xf831a20f, _contactsAcceptContact],
@@ -8107,7 +9033,7 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'contacts.getLocated': [0xd348bc44, _contactsGetLocated],
   'channels.editLocation': [0x58e63f6d, _channelsEditLocation],
   'channels.toggleSlowMode': [0xedd49ef0, _channelsToggleSlowMode],
-  'messages.getScheduledHistory': [0xe2c2685b, _messagesGetScheduledHistory],
+  'messages.getScheduledHistory': [0xf516760b, _messagesGetScheduledHistory],
   'messages.getScheduledMessages': [0xbdbb0464, _messagesGetScheduledMessages],
   'messages.sendScheduledMessages': [0xbd38850a, _messagesSendScheduledMessages],
   'messages.deleteScheduledMessages': [0x59ae2b16, _messagesDeleteScheduledMessages],
@@ -8117,8 +9043,8 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'account.saveTheme': [0xf257106c, _accountSaveTheme],
   'account.installTheme': [0x7ae43737, _accountInstallTheme],
   'account.getTheme': [0x8d9d742b, _accountGetTheme],
-  'account.getThemes': [0x285946f8, _accountGetThemes],
-  'auth.exportLoginToken': [0xb1b41517, _authExportLoginToken],
+  'account.getThemes': [0x7206e458, _accountGetThemes],
+  'auth.exportLoginToken': [0xb7e085fe, _authExportLoginToken],
   'auth.importLoginToken': [0x95ac5ce4, _authImportLoginToken],
   'auth.acceptLoginToken': [0xe894ad4d, _authAcceptLoginToken],
   'account.setContentSettings': [0xb574b16b, _accountSetContentSettings],
@@ -8135,23 +9061,71 @@ const builderMap: Record<string, [number, ((o: any) => void)?]> = {
   'stats.getBroadcastStats': [0xab42441a, _statsGetBroadcastStats],
   'stats.loadAsyncGraph': [0x621d5fa0, _statsLoadAsyncGraph],
   'stickers.setStickerSetThumb': [0x9a364e30, _stickersSetStickerSetThumb],
-  'bots.setBotCommands': [0x805d46f6, _botsSetBotCommands],
-  'messages.getOldFeaturedStickers': [0x5fe7025b, _messagesGetOldFeaturedStickers],
+  'bots.setBotCommands': [0x517165a, _botsSetBotCommands],
+  'messages.getOldFeaturedStickers': [0x7ed094a1, _messagesGetOldFeaturedStickers],
   'help.getPromoData': [0xc0977421],
   'help.hidePromoData': [0x1e251c95, _helpHidePromoData],
   'phone.sendSignalingData': [0xff7a9383, _phoneSendSignalingData],
   'stats.getMegagroupStats': [0xdcdf8607, _statsGetMegagroupStats],
   'account.getGlobalPrivacySettings': [0xeb2b4cf6],
   'account.setGlobalPrivacySettings': [0x1edaaac2, _accountSetGlobalPrivacySettings],
-  'help.dismissSuggestion': [0x77fa99f, _helpDismissSuggestion],
+  'help.dismissSuggestion': [0xf50dbaa1, _helpDismissSuggestion],
   'help.getCountriesList': [0x735787a8, _helpGetCountriesList],
-  'messages.getReplies': [0x24b581ba, _messagesGetReplies],
+  'messages.getReplies': [0x22ddd30c, _messagesGetReplies],
   'messages.getDiscussionMessage': [0x446972fd, _messagesGetDiscussionMessage],
   'messages.readDiscussion': [0xf731a9f4, _messagesReadDiscussion],
   'contacts.blockFromReplies': [0x29a8962c, _contactsBlockFromReplies],
   'stats.getMessagePublicForwards': [0x5630281b, _statsGetMessagePublicForwards],
   'stats.getMessageStats': [0xb6e0a3f5, _statsGetMessageStats],
   'messages.unpinAllMessages': [0xf025bc8b, _messagesUnpinAllMessages],
+  'phone.createGroupCall': [0x48cdc6d8, _phoneCreateGroupCall],
+  'phone.joinGroupCall': [0xb132ff7b, _phoneJoinGroupCall],
+  'phone.leaveGroupCall': [0x500377f9, _phoneLeaveGroupCall],
+  'phone.inviteToGroupCall': [0x7b393160, _phoneInviteToGroupCall],
+  'phone.discardGroupCall': [0x7a777135, _phoneDiscardGroupCall],
+  'phone.toggleGroupCallSettings': [0x74bbb43d, _phoneToggleGroupCallSettings],
+  'phone.getGroupCall': [0x41845db, _phoneGetGroupCall],
+  'phone.getGroupParticipants': [0xc558d8ab, _phoneGetGroupParticipants],
+  'phone.checkGroupCall': [0xb59cf977, _phoneCheckGroupCall],
+  'messages.deleteChat': [0x5bd0ee50, _messagesDeleteChat],
+  'messages.deletePhoneCallHistory': [0xf9cbe409, _messagesDeletePhoneCallHistory],
+  'messages.checkHistoryImport': [0x43fe19f3, _messagesCheckHistoryImport],
+  'messages.initHistoryImport': [0x34090c3b, _messagesInitHistoryImport],
+  'messages.uploadImportedMedia': [0x2a862092, _messagesUploadImportedMedia],
+  'messages.startHistoryImport': [0xb43df344, _messagesStartHistoryImport],
+  'messages.getExportedChatInvites': [0xa2b5a3f6, _messagesGetExportedChatInvites],
+  'messages.getExportedChatInvite': [0x73746f5c, _messagesGetExportedChatInvite],
+  'messages.editExportedChatInvite': [0x2e4ffbe, _messagesEditExportedChatInvite],
+  'messages.deleteRevokedExportedChatInvites': [0x56987bd5, _messagesDeleteRevokedExportedChatInvites],
+  'messages.deleteExportedChatInvite': [0xd464a42b, _messagesDeleteExportedChatInvite],
+  'messages.getAdminsWithInvites': [0x3920e6ef, _messagesGetAdminsWithInvites],
+  'messages.getChatInviteImporters': [0x26fb7289, _messagesGetChatInviteImporters],
+  'messages.setHistoryTTL': [0xb80e5fe4, _messagesSetHistoryTTL],
+  'account.reportProfilePhoto': [0xfa8cc6f5, _accountReportProfilePhoto],
+  'channels.convertToGigagroup': [0xb290c69, _channelsConvertToGigagroup],
+  'messages.checkHistoryImportPeer': [0x5dc60f03, _messagesCheckHistoryImportPeer],
+  'phone.toggleGroupCallRecord': [0xf128c708, _phoneToggleGroupCallRecord],
+  'phone.editGroupCallParticipant': [0xa5273abf, _phoneEditGroupCallParticipant],
+  'phone.editGroupCallTitle': [0x1ca6ac0a, _phoneEditGroupCallTitle],
+  'phone.getGroupCallJoinAs': [0xef7c213a, _phoneGetGroupCallJoinAs],
+  'phone.exportGroupCallInvite': [0xe6aa647f, _phoneExportGroupCallInvite],
+  'phone.toggleGroupCallStartSubscription': [0x219c34e6, _phoneToggleGroupCallStartSubscription],
+  'phone.startScheduledGroupCall': [0x5680e342, _phoneStartScheduledGroupCall],
+  'phone.saveDefaultGroupCallJoinAs': [0x575e1f8c, _phoneSaveDefaultGroupCallJoinAs],
+  'phone.joinGroupCallPresentation': [0xcbea6bc4, _phoneJoinGroupCallPresentation],
+  'phone.leaveGroupCallPresentation': [0x1c50d144, _phoneLeaveGroupCallPresentation],
+  'stickers.checkShortName': [0x284b3639, _stickersCheckShortName],
+  'stickers.suggestShortName': [0x4dafc503, _stickersSuggestShortName],
+  'bots.resetBotCommands': [0x3d8de0f9, _botsResetBotCommands],
+  'bots.getBotCommands': [0xe34c0dd6, _botsGetBotCommands],
+  'account.resetPassword': [0x9308ce1b],
+  'account.declinePasswordReset': [0x4c9409f6],
+  'auth.checkRecoveryPassword': [0xd36bf79, _authCheckRecoveryPassword],
+  'account.getChatThemes': [0xd6d71d7b, _accountGetChatThemes],
+  'messages.setChatTheme': [0xe63be13f, _messagesSetChatTheme],
+  'channels.viewSponsoredMessage': [0xbeaedb94, _channelsViewSponsoredMessage],
+  'channels.getSponsoredMessages': [0xec210fbf, _channelsGetSponsoredMessages],
+  'messages.getMessageReadParticipants': [0x2c6f97b7, _messagesGetMessageReadParticipants],
 }
 
 const i32 = (value: number) => w.int32(value)

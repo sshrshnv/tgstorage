@@ -23,7 +23,7 @@ export const Avatar: FC<Props> = ({
     if (!image) return ''
     const blob = new Blob(
       [new Uint8Array(image.bytes)],
-      { type: `image/${image.type}` }
+      { type: 'image/jpeg' }
     )
     return URL.createObjectURL(blob)
   }, [image?.bytes, image?.type])

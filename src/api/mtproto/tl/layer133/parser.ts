@@ -11,8 +11,8 @@
 /* Do not make changes to this file unless you know what you are doing -- modify           */
 /* the tool instead.                                                                       */
 /*                                                                                         */
-/* Source: layer121.json (md5: fac17987c903ff370719ede4ea52153f)                           */
-/* Time: Thursday, 01 April 2021 11:12:36 (UTC)                                            */
+/* Source: layer133.json (md5: 4a01d9211c08eeb56142ca61c1117812)                           */
+/* Time: Thursday, 25 November 2021 10:31:53 (UTC)                                         */
 /*                                                                                         */
 /*******************************************************************************************/
 
@@ -44,7 +44,7 @@ const _error: any = () => ({ _: 'error', code: i32(), text: str() })
 const _null = () => null
 const _inputPeerEmpty: any = () => ({ _: 'inputPeerEmpty' })
 const _inputPeerSelf: any = () => ({ _: 'inputPeerSelf' })
-const _inputPeerChat: any = () => ({ _: 'inputPeerChat', chat_id: i32() })
+const _inputPeerChat: any = () => ({ _: 'inputPeerChat', chat_id: i64() })
 const _inputUserEmpty: any = () => ({ _: 'inputUserEmpty' })
 const _inputUserSelf: any = () => ({ _: 'inputUserSelf' })
 const _inputPhoneContact: any = () => ({ _: 'inputPhoneContact', client_id: i64(), phone: str(), first_name: str(), last_name: str() })
@@ -89,8 +89,8 @@ const _inputGeoPoint = (): any => {
 const _inputPhotoEmpty: any = () => ({ _: 'inputPhotoEmpty' })
 const _inputPhoto: any = () => ({ _: 'inputPhoto', id: i64(), access_hash: i64(), file_reference: bytes() })
 const _inputFileLocation: any = () => ({ _: 'inputFileLocation', volume_id: i64(), local_id: i32(), secret: i64(), file_reference: bytes() })
-const _peerUser: any = () => ({ _: 'peerUser', user_id: i32() })
-const _peerChat: any = () => ({ _: 'peerChat', chat_id: i32() })
+const _peerUser: any = () => ({ _: 'peerUser', user_id: i64() })
+const _peerChat: any = () => ({ _: 'peerChat', chat_id: i64() })
 const _storageFileUnknown: any = () => ({ _: 'storage.fileUnknown' })
 const _storageFilePartial: any = () => ({ _: 'storage.filePartial' })
 const _storageFileJpeg: any = () => ({ _: 'storage.fileJpeg' })
@@ -101,22 +101,21 @@ const _storageFileMp3: any = () => ({ _: 'storage.fileMp3' })
 const _storageFileMov: any = () => ({ _: 'storage.fileMov' })
 const _storageFileMp4: any = () => ({ _: 'storage.fileMp4' })
 const _storageFileWebp: any = () => ({ _: 'storage.fileWebp' })
-const _userEmpty: any = () => ({ _: 'userEmpty', id: i32() })
+const _userEmpty: any = () => ({ _: 'userEmpty', id: i64() })
 const _userProfilePhotoEmpty: any = () => ({ _: 'userProfilePhotoEmpty' })
 const _userProfilePhoto = (): any => {
   const result: Record<string, unknown> = { _: 'userProfilePhoto' }
   const flags = i32()
   result.has_video = !!(flags & 0x1)
   result.photo_id = i64()
-  result.photo_small = obj()
-  result.photo_big = obj()
+  if (flags & 0x2) result.stripped_thumb = bytes()
   result.dc_id = i32()
   return result
 }
 const _userStatusEmpty: any = () => ({ _: 'userStatusEmpty' })
 const _userStatusOnline: any = () => ({ _: 'userStatusOnline', expires: i32() })
 const _userStatusOffline: any = () => ({ _: 'userStatusOffline', was_online: i32() })
-const _chatEmpty: any = () => ({ _: 'chatEmpty', id: i32() })
+const _chatEmpty: any = () => ({ _: 'chatEmpty', id: i64() })
 const _chat = (): any => {
   const result: Record<string, unknown> = { _: 'chat' }
   const flags = i32()
@@ -126,7 +125,8 @@ const _chat = (): any => {
   result.deactivated = !!(flags & 0x20)
   result.call_active = !!(flags & 0x800000)
   result.call_not_empty = !!(flags & 0x1000000)
-  result.id = i32()
+  result.noforwards = !!(flags & 0x2000000)
+  result.id = i64()
   result.title = str()
   result.photo = obj()
   result.participants_count = i32()
@@ -137,43 +137,53 @@ const _chat = (): any => {
   if (flags & 0x40000) result.default_banned_rights = obj()
   return result
 }
-const _chatForbidden: any = () => ({ _: 'chatForbidden', id: i32(), title: str() })
+const _chatForbidden: any = () => ({ _: 'chatForbidden', id: i64(), title: str() })
 const _chatFull = (): any => {
   const result: Record<string, unknown> = { _: 'chatFull' }
   const flags = i32()
   result.can_set_username = !!(flags & 0x80)
   result.has_scheduled = !!(flags & 0x100)
-  result.id = i32()
+  result.id = i64()
   result.about = str()
   result.participants = obj()
   if (flags & 0x4) result.chat_photo = obj()
   result.notify_settings = obj()
-  result.exported_invite = obj()
+  if (flags & 0x2000) result.exported_invite = obj()
   if (flags & 0x8) result.bot_info = vector(obj)
   if (flags & 0x40) result.pinned_msg_id = i32()
   if (flags & 0x800) result.folder_id = i32()
+  if (flags & 0x1000) result.call = obj()
+  if (flags & 0x4000) result.ttl_period = i32()
+  if (flags & 0x8000) result.groupcall_default_join_as = obj()
+  if (flags & 0x10000) result.theme_emoticon = str()
   return result
 }
-const _chatParticipant: any = () => ({ _: 'chatParticipant', user_id: i32(), inviter_id: i32(), date: i32() })
+const _chatParticipant: any = () => ({ _: 'chatParticipant', user_id: i64(), inviter_id: i64(), date: i32() })
 const _chatParticipantsForbidden = (): any => {
   const result: Record<string, unknown> = { _: 'chatParticipantsForbidden' }
   const flags = i32()
-  result.chat_id = i32()
+  result.chat_id = i64()
   if (flags & 0x1) result.self_participant = obj()
   return result
 }
-const _chatParticipants: any = () => ({ _: 'chatParticipants', chat_id: i32(), participants: vector(obj), version: i32() })
+const _chatParticipants: any = () => ({ _: 'chatParticipants', chat_id: i64(), participants: vector(obj), version: i32() })
 const _chatPhotoEmpty: any = () => ({ _: 'chatPhotoEmpty' })
 const _chatPhoto = (): any => {
   const result: Record<string, unknown> = { _: 'chatPhoto' }
   const flags = i32()
   result.has_video = !!(flags & 0x1)
-  result.photo_small = obj()
-  result.photo_big = obj()
+  result.photo_id = i64()
+  if (flags & 0x2) result.stripped_thumb = bytes()
   result.dc_id = i32()
   return result
 }
-const _messageEmpty: any = () => ({ _: 'messageEmpty', id: i32() })
+const _messageEmpty = (): any => {
+  const result: Record<string, unknown> = { _: 'messageEmpty' }
+  const flags = i32()
+  result.id = i32()
+  if (flags & 0x1) result.peer_id = obj()
+  return result
+}
 const _message = (): any => {
   const result: Record<string, unknown> = { _: 'message' }
   const flags = i32()
@@ -186,11 +196,12 @@ const _message = (): any => {
   result.legacy = !!(flags & 0x80000)
   result.edit_hide = !!(flags & 0x200000)
   result.pinned = !!(flags & 0x1000000)
+  result.noforwards = !!(flags & 0x4000000)
   result.id = i32()
   if (flags & 0x100) result.from_id = obj()
   result.peer_id = obj()
   if (flags & 0x4) result.fwd_from = obj()
-  if (flags & 0x800) result.via_bot_id = i32()
+  if (flags & 0x800) result.via_bot_id = i64()
   if (flags & 0x8) result.reply_to = obj()
   result.date = i32()
   result.message = str()
@@ -204,6 +215,7 @@ const _message = (): any => {
   if (flags & 0x10000) result.post_author = str()
   if (flags & 0x20000) result.grouped_id = i64()
   if (flags & 0x400000) result.restriction_reason = vector(obj)
+  if (flags & 0x2000000) result.ttl_period = i32()
   return result
 }
 const _messageService = (): any => {
@@ -221,6 +233,7 @@ const _messageService = (): any => {
   if (flags & 0x8) result.reply_to = obj()
   result.date = i32()
   result.action = obj()
+  if (flags & 0x2000000) result.ttl_period = i32()
   return result
 }
 const _messageMediaEmpty: any = () => ({ _: 'messageMediaEmpty' })
@@ -232,15 +245,15 @@ const _messageMediaPhoto = (): any => {
   return result
 }
 const _messageMediaGeo: any = () => ({ _: 'messageMediaGeo', geo: obj() })
-const _messageMediaContact: any = () => ({ _: 'messageMediaContact', phone_number: str(), first_name: str(), last_name: str(), vcard: str(), user_id: i32() })
+const _messageMediaContact: any = () => ({ _: 'messageMediaContact', phone_number: str(), first_name: str(), last_name: str(), vcard: str(), user_id: i64() })
 const _messageMediaUnsupported: any = () => ({ _: 'messageMediaUnsupported' })
 const _messageActionEmpty: any = () => ({ _: 'messageActionEmpty' })
-const _messageActionChatCreate: any = () => ({ _: 'messageActionChatCreate', title: str(), users: vector(i32) })
+const _messageActionChatCreate: any = () => ({ _: 'messageActionChatCreate', title: str(), users: vector(i64) })
 const _messageActionChatEditTitle: any = () => ({ _: 'messageActionChatEditTitle', title: str() })
 const _messageActionChatEditPhoto: any = () => ({ _: 'messageActionChatEditPhoto', photo: obj() })
 const _messageActionChatDeletePhoto: any = () => ({ _: 'messageActionChatDeletePhoto' })
-const _messageActionChatAddUser: any = () => ({ _: 'messageActionChatAddUser', users: vector(i32) })
-const _messageActionChatDeleteUser: any = () => ({ _: 'messageActionChatDeleteUser', user_id: i32() })
+const _messageActionChatAddUser: any = () => ({ _: 'messageActionChatAddUser', users: vector(i64) })
+const _messageActionChatDeleteUser: any = () => ({ _: 'messageActionChatDeleteUser', user_id: i64() })
 const _dialog = (): any => {
   const result: Record<string, unknown> = { _: 'dialog' }
   const flags = i32()
@@ -273,8 +286,8 @@ const _photo = (): any => {
   return result
 }
 const _photoSizeEmpty: any = () => ({ _: 'photoSizeEmpty', type: str() })
-const _photoSize: any = () => ({ _: 'photoSize', type: str(), location: obj(), w: i32(), h: i32(), size: i32() })
-const _photoCachedSize: any = () => ({ _: 'photoCachedSize', type: str(), location: obj(), w: i32(), h: i32(), bytes: bytes() })
+const _photoSize: any = () => ({ _: 'photoSize', type: str(), w: i32(), h: i32(), size: i32() })
+const _photoCachedSize: any = () => ({ _: 'photoCachedSize', type: str(), w: i32(), h: i32(), bytes: bytes() })
 const _geoPointEmpty: any = () => ({ _: 'geoPointEmpty' })
 const _geoPoint = (): any => {
   const result: Record<string, unknown> = { _: 'geoPoint' }
@@ -301,7 +314,7 @@ const _authAuthorization = (): any => {
   result.user = obj()
   return result
 }
-const _authExportedAuthorization: any = () => ({ _: 'auth.exportedAuthorization', id: i32(), bytes: bytes() })
+const _authExportedAuthorization: any = () => ({ _: 'auth.exportedAuthorization', id: i64(), bytes: bytes() })
 const _inputNotifyPeer: any = () => ({ _: 'inputNotifyPeer', peer: obj() })
 const _inputNotifyUsers: any = () => ({ _: 'inputNotifyUsers' })
 const _inputNotifyChats: any = () => ({ _: 'inputNotifyChats' })
@@ -355,7 +368,7 @@ const _inputReportReasonSpam: any = () => ({ _: 'inputReportReasonSpam' })
 const _inputReportReasonViolence: any = () => ({ _: 'inputReportReasonViolence' })
 const _inputReportReasonPornography: any = () => ({ _: 'inputReportReasonPornography' })
 const _inputReportReasonChildAbuse: any = () => ({ _: 'inputReportReasonChildAbuse' })
-const _inputReportReasonOther: any = () => ({ _: 'inputReportReasonOther', text: str() })
+const _inputReportReasonOther: any = () => ({ _: 'inputReportReasonOther' })
 const _userFull = (): any => {
   const result: Record<string, unknown> = { _: 'userFull' }
   const flags = i32()
@@ -374,11 +387,13 @@ const _userFull = (): any => {
   if (flags & 0x40) result.pinned_msg_id = i32()
   result.common_chats_count = i32()
   if (flags & 0x800) result.folder_id = i32()
+  if (flags & 0x4000) result.ttl_period = i32()
+  if (flags & 0x8000) result.theme_emoticon = str()
   return result
 }
-const _contact: any = () => ({ _: 'contact', user_id: i32(), mutual: obj() })
-const _importedContact: any = () => ({ _: 'importedContact', user_id: i32(), client_id: i64() })
-const _contactStatus: any = () => ({ _: 'contactStatus', user_id: i32(), status: obj() })
+const _contact: any = () => ({ _: 'contact', user_id: i64(), mutual: obj() })
+const _importedContact: any = () => ({ _: 'importedContact', user_id: i64(), client_id: i64() })
+const _contactStatus: any = () => ({ _: 'contactStatus', user_id: i64(), status: obj() })
 const _contactsContactsNotModified: any = () => ({ _: 'contacts.contactsNotModified' })
 const _contactsContacts: any = () => ({ _: 'contacts.contacts', contacts: vector(obj), saved_count: i32(), users: vector(obj) })
 const _contactsImportedContacts: any = () => ({ _: 'contacts.importedContacts', imported: vector(obj), popular_invites: vector(obj), retry_contacts: vector(i64), users: vector(obj) })
@@ -412,12 +427,12 @@ const _inputMessagesFilterGif: any = () => ({ _: 'inputMessagesFilterGif' })
 const _updateNewMessage: any = () => ({ _: 'updateNewMessage', _update: true, message: obj(), pts: i32(), pts_count: i32() })
 const _updateMessageID: any = () => ({ _: 'updateMessageID', _update: true, id: i32(), random_id: i64() })
 const _updateDeleteMessages: any = () => ({ _: 'updateDeleteMessages', _update: true, messages: vector(i32), pts: i32(), pts_count: i32() })
-const _updateUserTyping: any = () => ({ _: 'updateUserTyping', _update: true, user_id: i32(), action: obj() })
-const _updateChatUserTyping: any = () => ({ _: 'updateChatUserTyping', _update: true, chat_id: i32(), user_id: i32(), action: obj() })
+const _updateUserTyping: any = () => ({ _: 'updateUserTyping', _update: true, user_id: i64(), action: obj() })
+const _updateChatUserTyping: any = () => ({ _: 'updateChatUserTyping', _update: true, chat_id: i64(), from_id: obj(), action: obj() })
 const _updateChatParticipants: any = () => ({ _: 'updateChatParticipants', _update: true, participants: obj() })
-const _updateUserStatus: any = () => ({ _: 'updateUserStatus', _update: true, user_id: i32(), status: obj() })
-const _updateUserName: any = () => ({ _: 'updateUserName', _update: true, user_id: i32(), first_name: str(), last_name: str(), username: str() })
-const _updateUserPhoto: any = () => ({ _: 'updateUserPhoto', _update: true, user_id: i32(), date: i32(), photo: obj(), previous: obj() })
+const _updateUserStatus: any = () => ({ _: 'updateUserStatus', _update: true, user_id: i64(), status: obj() })
+const _updateUserName: any = () => ({ _: 'updateUserName', _update: true, user_id: i64(), first_name: str(), last_name: str(), username: str() })
+const _updateUserPhoto: any = () => ({ _: 'updateUserPhoto', _update: true, user_id: i64(), date: i32(), photo: obj(), previous: obj() })
 const _updatesState: any = () => ({ _: 'updates.state', pts: i32(), qts: i32(), date: i32(), seq: i32(), unread_count: i32() })
 const _updatesDifferenceEmpty: any = () => ({ _: 'updates.differenceEmpty', date: i32(), seq: i32() })
 const _updatesDifference: any = () => ({ _: 'updates.difference', new_messages: vector(obj), new_encrypted_messages: vector(obj), other_updates: vector(obj), chats: vector(obj), users: vector(obj), state: obj() })
@@ -432,15 +447,16 @@ const _updateShortMessage = (): any => {
   result.media_unread = !!(flags & 0x20)
   result.silent = !!(flags & 0x2000)
   result.id = i32()
-  result.user_id = i32()
+  result.user_id = i64()
   result.message = str()
   result.pts = i32()
   result.pts_count = i32()
   result.date = i32()
   if (flags & 0x4) result.fwd_from = obj()
-  if (flags & 0x800) result.via_bot_id = i32()
+  if (flags & 0x800) result.via_bot_id = i64()
   if (flags & 0x8) result.reply_to = obj()
   if (flags & 0x80) result.entities = vector(obj)
+  if (flags & 0x2000000) result.ttl_period = i32()
   return result
 }
 const _updateShortChatMessage = (): any => {
@@ -452,16 +468,17 @@ const _updateShortChatMessage = (): any => {
   result.media_unread = !!(flags & 0x20)
   result.silent = !!(flags & 0x2000)
   result.id = i32()
-  result.from_id = i32()
-  result.chat_id = i32()
+  result.from_id = i64()
+  result.chat_id = i64()
   result.message = str()
   result.pts = i32()
   result.pts_count = i32()
   result.date = i32()
   if (flags & 0x4) result.fwd_from = obj()
-  if (flags & 0x800) result.via_bot_id = i32()
+  if (flags & 0x800) result.via_bot_id = i64()
   if (flags & 0x8) result.reply_to = obj()
   if (flags & 0x80) result.entities = vector(obj)
+  if (flags & 0x2000000) result.ttl_period = i32()
   return result
 }
 const _updateShort: any = () => ({ _: 'updateShort', _update: true, update: obj(), date: i32() })
@@ -552,6 +569,7 @@ const _helpAppUpdate = (): any => {
   result.entities = vector(obj)
   if (flags & 0x2) result.document = obj()
   if (flags & 0x4) result.url = str()
+  if (flags & 0x8) result.sticker = obj()
   return result
 }
 const _helpNoAppUpdate: any = () => ({ _: 'help.noAppUpdate' })
@@ -561,7 +579,7 @@ const _updateEncryptedChatTyping: any = () => ({ _: 'updateEncryptedChatTyping',
 const _updateEncryption: any = () => ({ _: 'updateEncryption', _update: true, chat: obj(), date: i32() })
 const _updateEncryptedMessagesRead: any = () => ({ _: 'updateEncryptedMessagesRead', _update: true, chat_id: i32(), max_date: i32(), date: i32() })
 const _encryptedChatEmpty: any = () => ({ _: 'encryptedChatEmpty', id: i32() })
-const _encryptedChatWaiting: any = () => ({ _: 'encryptedChatWaiting', id: i32(), access_hash: i64(), date: i32(), admin_id: i32(), participant_id: i32() })
+const _encryptedChatWaiting: any = () => ({ _: 'encryptedChatWaiting', id: i32(), access_hash: i64(), date: i32(), admin_id: i64(), participant_id: i64() })
 const _encryptedChatRequested = (): any => {
   const result: Record<string, unknown> = { _: 'encryptedChatRequested' }
   const flags = i32()
@@ -569,13 +587,19 @@ const _encryptedChatRequested = (): any => {
   result.id = i32()
   result.access_hash = i64()
   result.date = i32()
-  result.admin_id = i32()
-  result.participant_id = i32()
+  result.admin_id = i64()
+  result.participant_id = i64()
   result.g_a = bytes()
   return result
 }
-const _encryptedChat: any = () => ({ _: 'encryptedChat', id: i32(), access_hash: i64(), date: i32(), admin_id: i32(), participant_id: i32(), g_a_or_b: bytes(), key_fingerprint: i64() })
-const _encryptedChatDiscarded: any = () => ({ _: 'encryptedChatDiscarded', id: i32() })
+const _encryptedChat: any = () => ({ _: 'encryptedChat', id: i32(), access_hash: i64(), date: i32(), admin_id: i64(), participant_id: i64(), g_a_or_b: bytes(), key_fingerprint: i64() })
+const _encryptedChatDiscarded = (): any => {
+  const result: Record<string, unknown> = { _: 'encryptedChatDiscarded' }
+  const flags = i32()
+  result.history_deleted = !!(flags & 0x1)
+  result.id = i32()
+  return result
+}
 const _inputEncryptedChat: any = () => ({ _: 'inputEncryptedChat', chat_id: i32(), access_hash: i64() })
 const _encryptedFileEmpty: any = () => ({ _: 'encryptedFileEmpty' })
 const _encryptedFile: any = () => ({ _: 'encryptedFile', id: i64(), access_hash: i64(), size: i32(), dc_id: i32(), key_fingerprint: i32() })
@@ -591,8 +615,8 @@ const _messagesSentEncryptedMessage: any = () => ({ _: 'messages.sentEncryptedMe
 const _messagesSentEncryptedFile: any = () => ({ _: 'messages.sentEncryptedFile', date: i32(), file: obj() })
 const _inputFileBig: any = () => ({ _: 'inputFileBig', id: i64(), parts: i32(), name: str() })
 const _inputEncryptedFileBigUploaded: any = () => ({ _: 'inputEncryptedFileBigUploaded', id: i64(), parts: i32(), key_fingerprint: i32() })
-const _updateChatParticipantAdd: any = () => ({ _: 'updateChatParticipantAdd', _update: true, chat_id: i32(), user_id: i32(), inviter_id: i32(), date: i32(), version: i32() })
-const _updateChatParticipantDelete: any = () => ({ _: 'updateChatParticipantDelete', _update: true, chat_id: i32(), user_id: i32(), version: i32() })
+const _updateChatParticipantAdd: any = () => ({ _: 'updateChatParticipantAdd', _update: true, chat_id: i64(), user_id: i64(), inviter_id: i64(), date: i32(), version: i32() })
+const _updateChatParticipantDelete: any = () => ({ _: 'updateChatParticipantDelete', _update: true, chat_id: i64(), user_id: i64(), version: i32() })
 const _updateDcOptions: any = () => ({ _: 'updateDcOptions', _update: true, dc_options: vector(obj) })
 const _inputMediaUploadedDocument = (): any => {
   const result: Record<string, unknown> = { _: 'inputMediaUploadedDocument' }
@@ -612,6 +636,7 @@ const _inputMediaDocument = (): any => {
   const flags = i32()
   result.id = obj()
   if (flags & 0x1) result.ttl_seconds = i32()
+  if (flags & 0x2) result.query = str()
   return result
 }
 const _messageMediaDocument = (): any => {
@@ -682,13 +707,13 @@ const _inputPrivacyValueDisallowAll: any = () => ({ _: 'inputPrivacyValueDisallo
 const _inputPrivacyValueDisallowUsers: any = () => ({ _: 'inputPrivacyValueDisallowUsers', users: vector(obj) })
 const _privacyValueAllowContacts: any = () => ({ _: 'privacyValueAllowContacts' })
 const _privacyValueAllowAll: any = () => ({ _: 'privacyValueAllowAll' })
-const _privacyValueAllowUsers: any = () => ({ _: 'privacyValueAllowUsers', users: vector(i32) })
+const _privacyValueAllowUsers: any = () => ({ _: 'privacyValueAllowUsers', users: vector(i64) })
 const _privacyValueDisallowContacts: any = () => ({ _: 'privacyValueDisallowContacts' })
 const _privacyValueDisallowAll: any = () => ({ _: 'privacyValueDisallowAll' })
-const _privacyValueDisallowUsers: any = () => ({ _: 'privacyValueDisallowUsers', users: vector(i32) })
+const _privacyValueDisallowUsers: any = () => ({ _: 'privacyValueDisallowUsers', users: vector(i64) })
 const _accountPrivacyRules: any = () => ({ _: 'account.privacyRules', rules: vector(obj), chats: vector(obj), users: vector(obj) })
 const _accountDaysTTL: any = () => ({ _: 'accountDaysTTL', days: i32() })
-const _updateUserPhone: any = () => ({ _: 'updateUserPhone', _update: true, user_id: i32(), phone: str() })
+const _updateUserPhone: any = () => ({ _: 'updateUserPhone', _update: true, user_id: i64(), phone: str() })
 const _documentAttributeImageSize: any = () => ({ _: 'documentAttributeImageSize', w: i32(), h: i32() })
 const _documentAttributeAnimated: any = () => ({ _: 'documentAttributeAnimated' })
 const _documentAttributeSticker = (): any => {
@@ -722,10 +747,10 @@ const _documentAttributeAudio = (): any => {
 }
 const _documentAttributeFilename: any = () => ({ _: 'documentAttributeFilename', file_name: str() })
 const _messagesStickersNotModified: any = () => ({ _: 'messages.stickersNotModified' })
-const _messagesStickers: any = () => ({ _: 'messages.stickers', hash: i32(), stickers: vector(obj) })
+const _messagesStickers: any = () => ({ _: 'messages.stickers', hash: i64(), stickers: vector(obj) })
 const _stickerPack: any = () => ({ _: 'stickerPack', emoticon: str(), documents: vector(i64) })
 const _messagesAllStickersNotModified: any = () => ({ _: 'messages.allStickersNotModified' })
-const _messagesAllStickers: any = () => ({ _: 'messages.allStickers', hash: i32(), sets: vector(obj) })
+const _messagesAllStickers: any = () => ({ _: 'messages.allStickers', hash: i64(), sets: vector(obj) })
 const _updateReadHistoryInbox = (): any => {
   const result: Record<string, unknown> = { _: 'updateReadHistoryInbox' }
   result._update = true
@@ -773,6 +798,8 @@ const _authorization = (): any => {
   result.current = !!(flags & 0x1)
   result.official_app = !!(flags & 0x2)
   result.password_pending = !!(flags & 0x4)
+  result.encrypted_requests_disabled = !!(flags & 0x8)
+  result.call_requests_disabled = !!(flags & 0x10)
   result.hash = i64()
   result.device_model = str()
   result.platform = str()
@@ -802,6 +829,7 @@ const _accountPassword = (): any => {
   result.new_algo = obj()
   result.new_secure_algo = obj()
   result.secure_random = bytes()
+  if (flags & 0x20) result.pending_reset_date = i32()
   return result
 }
 const _accountPasswordSettings = (): any => {
@@ -825,8 +853,20 @@ const _authPasswordRecovery: any = () => ({ _: 'auth.passwordRecovery', email_pa
 const _inputMediaVenue: any = () => ({ _: 'inputMediaVenue', geo_point: obj(), title: str(), address: str(), provider: str(), venue_id: str(), venue_type: str() })
 const _messageMediaVenue: any = () => ({ _: 'messageMediaVenue', geo: obj(), title: str(), address: str(), provider: str(), venue_id: str(), venue_type: str() })
 const _receivedNotifyMessage: any = () => ({ _: 'receivedNotifyMessage', id: i32(), flags: i32() })
-const _chatInviteEmpty: any = () => ({ _: 'chatInviteEmpty' })
-const _chatInviteExported: any = () => ({ _: 'chatInviteExported', link: str() })
+const _chatInviteExported = (): any => {
+  const result: Record<string, unknown> = { _: 'chatInviteExported' }
+  const flags = i32()
+  result.revoked = !!(flags & 0x1)
+  result.permanent = !!(flags & 0x20)
+  result.link = str()
+  result.admin_id = i64()
+  result.date = i32()
+  if (flags & 0x10) result.start_date = i32()
+  if (flags & 0x2) result.expire_date = i32()
+  if (flags & 0x4) result.usage_limit = i32()
+  if (flags & 0x8) result.usage = i32()
+  return result
+}
 const _chatInviteAlready: any = () => ({ _: 'chatInviteAlready', chat: obj() })
 const _chatInvite = (): any => {
   const result: Record<string, unknown> = { _: 'chatInvite' }
@@ -841,7 +881,7 @@ const _chatInvite = (): any => {
   if (flags & 0x10) result.participants = vector(obj)
   return result
 }
-const _messageActionChatJoinedByLink: any = () => ({ _: 'messageActionChatJoinedByLink', inviter_id: i32() })
+const _messageActionChatJoinedByLink: any = () => ({ _: 'messageActionChatJoinedByLink', inviter_id: i64() })
 const _updateReadMessagesContents: any = () => ({ _: 'updateReadMessagesContents', _update: true, messages: vector(i32), pts: i32(), pts_count: i32() })
 const _inputStickerSetEmpty: any = () => ({ _: 'inputStickerSetEmpty' })
 const _inputStickerSetID: any = () => ({ _: 'inputStickerSetID', id: i64(), access_hash: i64() })
@@ -858,8 +898,9 @@ const _stickerSet = (): any => {
   result.access_hash = i64()
   result.title = str()
   result.short_name = str()
-  if (flags & 0x10) result.thumb = obj()
+  if (flags & 0x10) result.thumbs = vector(obj)
   if (flags & 0x10) result.thumb_dc_id = i32()
+  if (flags & 0x10) result.thumb_version = i32()
   result.count = i32()
   result.hash = i32()
   return result
@@ -882,7 +923,8 @@ const _user = (): any => {
   result.support = !!(flags & 0x800000)
   result.scam = !!(flags & 0x1000000)
   result.apply_min_photo = !!(flags & 0x2000000)
-  result.id = i32()
+  result.fake = !!(flags & 0x4000000)
+  result.id = i64()
   if (flags & 0x1) result.access_hash = i64()
   if (flags & 0x2) result.first_name = str()
   if (flags & 0x4) result.last_name = str()
@@ -897,7 +939,7 @@ const _user = (): any => {
   return result
 }
 const _botCommand: any = () => ({ _: 'botCommand', command: str(), description: str() })
-const _botInfo: any = () => ({ _: 'botInfo', user_id: i32(), description: str(), commands: vector(obj) })
+const _botInfo: any = () => ({ _: 'botInfo', user_id: i64(), description: str(), commands: vector(obj) })
 const _keyboardButton: any = () => ({ _: 'keyboardButton', text: str() })
 const _keyboardButtonRow: any = () => ({ _: 'keyboardButtonRow', buttons: vector(obj) })
 const _replyKeyboardHide = (): any => {
@@ -911,6 +953,7 @@ const _replyKeyboardForceReply = (): any => {
   const flags = i32()
   result.single_use = !!(flags & 0x2)
   result.selective = !!(flags & 0x4)
+  if (flags & 0x8) result.placeholder = str()
   return result
 }
 const _replyKeyboardMarkup = (): any => {
@@ -920,10 +963,11 @@ const _replyKeyboardMarkup = (): any => {
   result.single_use = !!(flags & 0x2)
   result.selective = !!(flags & 0x4)
   result.rows = vector(obj)
+  if (flags & 0x8) result.placeholder = str()
   return result
 }
-const _inputPeerUser: any = () => ({ _: 'inputPeerUser', user_id: i32(), access_hash: i64() })
-const _inputUser: any = () => ({ _: 'inputUser', user_id: i32(), access_hash: i64() })
+const _inputPeerUser: any = () => ({ _: 'inputPeerUser', user_id: i64(), access_hash: i64() })
+const _inputUser: any = () => ({ _: 'inputUser', user_id: i64(), access_hash: i64() })
 const _messageEntityUnknown: any = () => ({ _: 'messageEntityUnknown', offset: i32(), length: i32() })
 const _messageEntityMention: any = () => ({ _: 'messageEntityMention', offset: i32(), length: i32() })
 const _messageEntityHashtag: any = () => ({ _: 'messageEntityHashtag', offset: i32(), length: i32() })
@@ -946,12 +990,13 @@ const _updateShortSentMessage = (): any => {
   result.date = i32()
   if (flags & 0x200) result.media = obj()
   if (flags & 0x80) result.entities = vector(obj)
+  if (flags & 0x2000000) result.ttl_period = i32()
   return result
 }
 const _inputChannelEmpty: any = () => ({ _: 'inputChannelEmpty' })
-const _inputChannel: any = () => ({ _: 'inputChannel', channel_id: i32(), access_hash: i64() })
-const _peerChannel: any = () => ({ _: 'peerChannel', channel_id: i32() })
-const _inputPeerChannel: any = () => ({ _: 'inputPeerChannel', channel_id: i32(), access_hash: i64() })
+const _inputChannel: any = () => ({ _: 'inputChannel', channel_id: i64(), access_hash: i64() })
+const _peerChannel: any = () => ({ _: 'peerChannel', channel_id: i64() })
+const _inputPeerChannel: any = () => ({ _: 'inputPeerChannel', channel_id: i64(), access_hash: i64() })
 const _channel = (): any => {
   const result: Record<string, unknown> = { _: 'channel' }
   const flags = i32()
@@ -969,13 +1014,15 @@ const _channel = (): any => {
   result.slowmode_enabled = !!(flags & 0x400000)
   result.call_active = !!(flags & 0x800000)
   result.call_not_empty = !!(flags & 0x1000000)
-  result.id = i32()
+  result.fake = !!(flags & 0x2000000)
+  result.gigagroup = !!(flags & 0x4000000)
+  result.noforwards = !!(flags & 0x8000000)
+  result.id = i64()
   if (flags & 0x2000) result.access_hash = i64()
   result.title = str()
   if (flags & 0x40) result.username = str()
   result.photo = obj()
   result.date = i32()
-  result.version = i32()
   if (flags & 0x200) result.restriction_reason = vector(obj)
   if (flags & 0x4000) result.admin_rights = obj()
   if (flags & 0x8000) result.banned_rights = obj()
@@ -988,7 +1035,7 @@ const _channelForbidden = (): any => {
   const flags = i32()
   result.broadcast = !!(flags & 0x20)
   result.megagroup = !!(flags & 0x100)
-  result.id = i32()
+  result.id = i64()
   result.access_hash = i64()
   result.title = str()
   if (flags & 0x10000) result.until_date = i32()
@@ -1006,7 +1053,7 @@ const _channelFull = (): any => {
   result.has_scheduled = !!(flags & 0x80000)
   result.can_view_stats = !!(flags & 0x100000)
   result.blocked = !!(flags & 0x400000)
-  result.id = i32()
+  result.id = i64()
   result.about = str()
   if (flags & 0x1) result.participants_count = i32()
   if (flags & 0x2) result.admins_count = i32()
@@ -1018,20 +1065,25 @@ const _channelFull = (): any => {
   result.unread_count = i32()
   result.chat_photo = obj()
   result.notify_settings = obj()
-  result.exported_invite = obj()
+  if (flags & 0x800000) result.exported_invite = obj()
   result.bot_info = vector(obj)
-  if (flags & 0x10) result.migrated_from_chat_id = i32()
+  if (flags & 0x10) result.migrated_from_chat_id = i64()
   if (flags & 0x10) result.migrated_from_max_id = i32()
   if (flags & 0x20) result.pinned_msg_id = i32()
   if (flags & 0x100) result.stickerset = obj()
   if (flags & 0x200) result.available_min_id = i32()
   if (flags & 0x800) result.folder_id = i32()
-  if (flags & 0x4000) result.linked_chat_id = i32()
+  if (flags & 0x4000) result.linked_chat_id = i64()
   if (flags & 0x8000) result.location = obj()
   if (flags & 0x20000) result.slowmode_seconds = i32()
   if (flags & 0x40000) result.slowmode_next_send_date = i32()
   if (flags & 0x1000) result.stats_dc = i32()
   result.pts = i32()
+  if (flags & 0x200000) result.call = obj()
+  if (flags & 0x1000000) result.ttl_period = i32()
+  if (flags & 0x2000000) result.pending_suggestions = vector(str)
+  if (flags & 0x4000000) result.groupcall_default_join_as = obj()
+  if (flags & 0x8000000) result.theme_emoticon = str()
   return result
 }
 const _messageRange: any = () => ({ _: 'messageRange', min_id: i32(), max_id: i32() })
@@ -1052,25 +1104,25 @@ const _updateChannelTooLong = (): any => {
   const result: Record<string, unknown> = { _: 'updateChannelTooLong' }
   result._update = true
   const flags = i32()
-  result.channel_id = i32()
+  result.channel_id = i64()
   if (flags & 0x1) result.pts = i32()
   return result
 }
-const _updateChannel: any = () => ({ _: 'updateChannel', _update: true, channel_id: i32() })
+const _updateChannel: any = () => ({ _: 'updateChannel', _update: true, channel_id: i64() })
 const _updateNewChannelMessage: any = () => ({ _: 'updateNewChannelMessage', _update: true, message: obj(), pts: i32(), pts_count: i32() })
 const _updateReadChannelInbox = (): any => {
   const result: Record<string, unknown> = { _: 'updateReadChannelInbox' }
   result._update = true
   const flags = i32()
   if (flags & 0x1) result.folder_id = i32()
-  result.channel_id = i32()
+  result.channel_id = i64()
   result.max_id = i32()
   result.still_unread_count = i32()
   result.pts = i32()
   return result
 }
-const _updateDeleteChannelMessages: any = () => ({ _: 'updateDeleteChannelMessages', _update: true, channel_id: i32(), messages: vector(i32), pts: i32(), pts_count: i32() })
-const _updateChannelMessageViews: any = () => ({ _: 'updateChannelMessageViews', _update: true, channel_id: i32(), id: i32(), views: i32() })
+const _updateDeleteChannelMessages: any = () => ({ _: 'updateDeleteChannelMessages', _update: true, channel_id: i64(), messages: vector(i32), pts: i32(), pts_count: i32() })
+const _updateChannelMessageViews: any = () => ({ _: 'updateChannelMessageViews', _update: true, channel_id: i64(), id: i32(), views: i32() })
 const _updatesChannelDifferenceEmpty = (): any => {
   const result: Record<string, unknown> = { _: 'updates.channelDifferenceEmpty' }
   const flags = i32()
@@ -1110,12 +1162,12 @@ const _channelMessagesFilter = (): any => {
   result.ranges = vector(obj)
   return result
 }
-const _channelParticipant: any = () => ({ _: 'channelParticipant', user_id: i32(), date: i32() })
-const _channelParticipantSelf: any = () => ({ _: 'channelParticipantSelf', user_id: i32(), inviter_id: i32(), date: i32() })
+const _channelParticipant: any = () => ({ _: 'channelParticipant', user_id: i64(), date: i32() })
+const _channelParticipantSelf: any = () => ({ _: 'channelParticipantSelf', user_id: i64(), inviter_id: i64(), date: i32() })
 const _channelParticipantCreator = (): any => {
   const result: Record<string, unknown> = { _: 'channelParticipantCreator' }
   const flags = i32()
-  result.user_id = i32()
+  result.user_id = i64()
   result.admin_rights = obj()
   if (flags & 0x1) result.rank = str()
   return result
@@ -1123,13 +1175,13 @@ const _channelParticipantCreator = (): any => {
 const _channelParticipantsRecent: any = () => ({ _: 'channelParticipantsRecent' })
 const _channelParticipantsAdmins: any = () => ({ _: 'channelParticipantsAdmins' })
 const _channelParticipantsKicked: any = () => ({ _: 'channelParticipantsKicked', q: str() })
-const _channelsChannelParticipants: any = () => ({ _: 'channels.channelParticipants', count: i32(), participants: vector(obj), users: vector(obj) })
-const _channelsChannelParticipant: any = () => ({ _: 'channels.channelParticipant', participant: obj(), users: vector(obj) })
-const _chatParticipantCreator: any = () => ({ _: 'chatParticipantCreator', user_id: i32() })
-const _chatParticipantAdmin: any = () => ({ _: 'chatParticipantAdmin', user_id: i32(), inviter_id: i32(), date: i32() })
-const _updateChatParticipantAdmin: any = () => ({ _: 'updateChatParticipantAdmin', _update: true, chat_id: i32(), user_id: i32(), is_admin: obj(), version: i32() })
-const _messageActionChatMigrateTo: any = () => ({ _: 'messageActionChatMigrateTo', channel_id: i32() })
-const _messageActionChannelMigrateFrom: any = () => ({ _: 'messageActionChannelMigrateFrom', title: str(), chat_id: i32() })
+const _channelsChannelParticipants: any = () => ({ _: 'channels.channelParticipants', count: i32(), participants: vector(obj), chats: vector(obj), users: vector(obj) })
+const _channelsChannelParticipant: any = () => ({ _: 'channels.channelParticipant', participant: obj(), chats: vector(obj), users: vector(obj) })
+const _chatParticipantCreator: any = () => ({ _: 'chatParticipantCreator', user_id: i64() })
+const _chatParticipantAdmin: any = () => ({ _: 'chatParticipantAdmin', user_id: i64(), inviter_id: i64(), date: i32() })
+const _updateChatParticipantAdmin: any = () => ({ _: 'updateChatParticipantAdmin', _update: true, chat_id: i64(), user_id: i64(), is_admin: obj(), version: i32() })
+const _messageActionChatMigrateTo: any = () => ({ _: 'messageActionChatMigrateTo', channel_id: i64() })
+const _messageActionChannelMigrateFrom: any = () => ({ _: 'messageActionChannelMigrateFrom', title: str(), chat_id: i64() })
 const _channelParticipantsBots: any = () => ({ _: 'channelParticipantsBots' })
 const _helpTermsOfService = (): any => {
   const result: Record<string, unknown> = { _: 'help.termsOfService' }
@@ -1152,7 +1204,7 @@ const _updateStickerSetsOrder = (): any => {
 }
 const _updateStickerSets: any = () => ({ _: 'updateStickerSets', _update: true })
 const _messagesSavedGifsNotModified: any = () => ({ _: 'messages.savedGifsNotModified' })
-const _messagesSavedGifs: any = () => ({ _: 'messages.savedGifs', hash: i32(), gifs: vector(obj) })
+const _messagesSavedGifs: any = () => ({ _: 'messages.savedGifs', hash: i64(), gifs: vector(obj) })
 const _updateSavedGifs: any = () => ({ _: 'updateSavedGifs', _update: true })
 const _inputBotInlineMessageMediaAuto = (): any => {
   const result: Record<string, unknown> = { _: 'inputBotInlineMessageMediaAuto' }
@@ -1231,9 +1283,10 @@ const _updateBotInlineQuery = (): any => {
   result._update = true
   const flags = i32()
   result.query_id = i64()
-  result.user_id = i32()
+  result.user_id = i64()
   result.query = str()
   if (flags & 0x1) result.geo = obj()
+  if (flags & 0x2) result.peer_type = obj()
   result.offset = str()
   return result
 }
@@ -1241,7 +1294,7 @@ const _updateBotInlineSend = (): any => {
   const result: Record<string, unknown> = { _: 'updateBotInlineSend' }
   result._update = true
   const flags = i32()
-  result.user_id = i32()
+  result.user_id = i64()
   result.query = str()
   if (flags & 0x1) result.geo = obj()
   result.id = str()
@@ -1312,7 +1365,7 @@ const _updateBotCallbackQuery = (): any => {
   result._update = true
   const flags = i32()
   result.query_id = i64()
-  result.user_id = i32()
+  result.user_id = i64()
   result.peer = obj()
   result.msg_id = i32()
   result.chat_instance = i64()
@@ -1421,7 +1474,7 @@ const _updateInlineBotCallbackQuery = (): any => {
   result._update = true
   const flags = i32()
   result.query_id = i64()
-  result.user_id = i32()
+  result.user_id = i64()
   result.msg_id = obj()
   result.chat_instance = i64()
   if (flags & 0x1) result.data = bytes()
@@ -1439,10 +1492,10 @@ const _topPeerCategoryChannels: any = () => ({ _: 'topPeerCategoryChannels' })
 const _topPeerCategoryPeers: any = () => ({ _: 'topPeerCategoryPeers', category: obj(), count: i32(), peers: vector(obj) })
 const _contactsTopPeersNotModified: any = () => ({ _: 'contacts.topPeersNotModified' })
 const _contactsTopPeers: any = () => ({ _: 'contacts.topPeers', categories: vector(obj), chats: vector(obj), users: vector(obj) })
-const _messageEntityMentionName: any = () => ({ _: 'messageEntityMentionName', offset: i32(), length: i32(), user_id: i32() })
+const _messageEntityMentionName: any = () => ({ _: 'messageEntityMentionName', offset: i32(), length: i32(), user_id: i64() })
 const _inputMessageEntityMentionName: any = () => ({ _: 'inputMessageEntityMentionName', offset: i32(), length: i32(), user_id: obj() })
 const _inputMessagesFilterChatPhotos: any = () => ({ _: 'inputMessagesFilterChatPhotos' })
-const _updateReadChannelOutbox: any = () => ({ _: 'updateReadChannelOutbox', _update: true, channel_id: i32(), max_id: i32() })
+const _updateReadChannelOutbox: any = () => ({ _: 'updateReadChannelOutbox', _update: true, channel_id: i64(), max_id: i32() })
 const _updateDraftMessage: any = () => ({ _: 'updateDraftMessage', _update: true, peer: obj(), draft: obj() })
 const _draftMessageEmpty = (): any => {
   const result: Record<string, unknown> = { _: 'draftMessageEmpty' }
@@ -1462,10 +1515,10 @@ const _draftMessage = (): any => {
 }
 const _messageActionHistoryClear: any = () => ({ _: 'messageActionHistoryClear' })
 const _messagesFeaturedStickersNotModified: any = () => ({ _: 'messages.featuredStickersNotModified', count: i32() })
-const _messagesFeaturedStickers: any = () => ({ _: 'messages.featuredStickers', hash: i32(), count: i32(), sets: vector(obj), unread: vector(i64) })
+const _messagesFeaturedStickers: any = () => ({ _: 'messages.featuredStickers', hash: i64(), count: i32(), sets: vector(obj), unread: vector(i64) })
 const _updateReadFeaturedStickers: any = () => ({ _: 'updateReadFeaturedStickers', _update: true })
 const _messagesRecentStickersNotModified: any = () => ({ _: 'messages.recentStickersNotModified' })
-const _messagesRecentStickers: any = () => ({ _: 'messages.recentStickers', hash: i32(), packs: vector(obj), stickers: vector(obj), dates: vector(i32) })
+const _messagesRecentStickers: any = () => ({ _: 'messages.recentStickers', hash: i64(), packs: vector(obj), stickers: vector(obj), dates: vector(i32) })
 const _updateRecentStickers: any = () => ({ _: 'updateRecentStickers', _update: true })
 const _messagesArchivedStickers: any = () => ({ _: 'messages.archivedStickers', count: i32(), sets: vector(obj) })
 const _messagesStickerSetInstallResultSuccess: any = () => ({ _: 'messages.stickerSetInstallResultSuccess' })
@@ -1517,10 +1570,10 @@ const _inputGameID: any = () => ({ _: 'inputGameID', id: i64(), access_hash: i64
 const _inputGameShortName: any = () => ({ _: 'inputGameShortName', bot_id: obj(), short_name: str() })
 const _keyboardButtonGame: any = () => ({ _: 'keyboardButtonGame', text: str() })
 const _messageActionGameScore: any = () => ({ _: 'messageActionGameScore', game_id: i64(), score: i32() })
-const _highScore: any = () => ({ _: 'highScore', pos: i32(), user_id: i32(), score: i32() })
+const _highScore: any = () => ({ _: 'highScore', pos: i32(), user_id: i64(), score: i32() })
 const _messagesHighScores: any = () => ({ _: 'messages.highScores', scores: vector(obj), users: vector(obj) })
 const _updatesDifferenceTooLong: any = () => ({ _: 'updates.differenceTooLong', pts: i32() })
-const _updateChannelWebPage: any = () => ({ _: 'updateChannelWebPage', _update: true, channel_id: i32(), webpage: obj(), pts: i32(), pts_count: i32() })
+const _updateChannelWebPage: any = () => ({ _: 'updateChannelWebPage', _update: true, channel_id: i64(), webpage: obj(), pts: i32(), pts_count: i32() })
 const _messagesChatsSlice: any = () => ({ _: 'messages.chatsSlice', count: i32(), chats: vector(obj) })
 const _textEmpty: any = () => ({ _: 'textEmpty' })
 const _textPlain: any = () => ({ _: 'textPlain', text: str() })
@@ -1628,6 +1681,8 @@ const _invoice = (): any => {
   result.email_to_provider = !!(flags & 0x80)
   result.currency = str()
   result.prices = vector(obj)
+  if (flags & 0x100) result.max_tip_amount = i64()
+  if (flags & 0x100) result.suggested_tip_amounts = vector(i64)
   return result
 }
 const _inputMediaInvoice = (): any => {
@@ -1640,7 +1695,7 @@ const _inputMediaInvoice = (): any => {
   result.payload = bytes()
   result.provider = str()
   result.provider_data = obj()
-  result.start_param = str()
+  if (flags & 0x2) result.start_param = str()
   return result
 }
 const _paymentCharge: any = () => ({ _: 'paymentCharge', id: str(), provider_charge_id: str() })
@@ -1691,9 +1746,10 @@ const _paymentsPaymentForm = (): any => {
   const flags = i32()
   result.can_save_credentials = !!(flags & 0x4)
   result.password_missing = !!(flags & 0x8)
-  result.bot_id = i32()
+  result.form_id = i64()
+  result.bot_id = i64()
   result.invoice = obj()
-  result.provider_id = i32()
+  result.provider_id = i64()
   result.url = str()
   if (flags & 0x10) result.native_provider = str()
   if (flags & 0x10) result.native_params = obj()
@@ -1714,11 +1770,15 @@ const _paymentsPaymentReceipt = (): any => {
   const result: Record<string, unknown> = { _: 'payments.paymentReceipt' }
   const flags = i32()
   result.date = i32()
-  result.bot_id = i32()
+  result.bot_id = i64()
+  result.provider_id = i64()
+  result.title = str()
+  result.description = str()
+  if (flags & 0x4) result.photo = obj()
   result.invoice = obj()
-  result.provider_id = i32()
   if (flags & 0x1) result.info = obj()
   if (flags & 0x2) result.shipping = obj()
+  if (flags & 0x8) result.tip_amount = i64()
   result.currency = str()
   result.total_amount = i64()
   result.credentials_title = str()
@@ -1742,13 +1802,13 @@ const _inputPaymentCredentials = (): any => {
 }
 const _accountTmpPassword: any = () => ({ _: 'account.tmpPassword', tmp_password: bytes(), valid_until: i32() })
 const _shippingOption: any = () => ({ _: 'shippingOption', id: str(), title: str(), prices: vector(obj) })
-const _updateBotShippingQuery: any = () => ({ _: 'updateBotShippingQuery', _update: true, query_id: i64(), user_id: i32(), payload: bytes(), shipping_address: obj() })
+const _updateBotShippingQuery: any = () => ({ _: 'updateBotShippingQuery', _update: true, query_id: i64(), user_id: i64(), payload: bytes(), shipping_address: obj() })
 const _updateBotPrecheckoutQuery = (): any => {
   const result: Record<string, unknown> = { _: 'updateBotPrecheckoutQuery' }
   result._update = true
   const flags = i32()
   result.query_id = i64()
-  result.user_id = i32()
+  result.user_id = i64()
   result.payload = bytes()
   if (flags & 0x1) result.info = obj()
   if (flags & 0x2) result.shipping_option_id = str()
@@ -1774,8 +1834,8 @@ const _phoneCallWaiting = (): any => {
   result.id = i64()
   result.access_hash = i64()
   result.date = i32()
-  result.admin_id = i32()
-  result.participant_id = i32()
+  result.admin_id = i64()
+  result.participant_id = i64()
   result.protocol = obj()
   if (flags & 0x1) result.receive_date = i32()
   return result
@@ -1787,8 +1847,8 @@ const _phoneCallRequested = (): any => {
   result.id = i64()
   result.access_hash = i64()
   result.date = i32()
-  result.admin_id = i32()
-  result.participant_id = i32()
+  result.admin_id = i64()
+  result.participant_id = i64()
   result.g_a_hash = bytes()
   result.protocol = obj()
   return result
@@ -1800,8 +1860,8 @@ const _phoneCallAccepted = (): any => {
   result.id = i64()
   result.access_hash = i64()
   result.date = i32()
-  result.admin_id = i32()
-  result.participant_id = i32()
+  result.admin_id = i64()
+  result.participant_id = i64()
   result.g_b = bytes()
   result.protocol = obj()
   return result
@@ -1814,8 +1874,8 @@ const _phoneCall = (): any => {
   result.id = i64()
   result.access_hash = i64()
   result.date = i32()
-  result.admin_id = i32()
-  result.participant_id = i32()
+  result.admin_id = i64()
+  result.participant_id = i64()
   result.g_a_or_b = bytes()
   result.key_fingerprint = i64()
   result.protocol = obj()
@@ -1909,9 +1969,9 @@ const _channelParticipantAdmin = (): any => {
   const flags = i32()
   result.can_edit = !!(flags & 0x1)
   result.self = !!(flags & 0x2)
-  result.user_id = i32()
-  if (flags & 0x2) result.inviter_id = i32()
-  result.promoted_by = i32()
+  result.user_id = i64()
+  if (flags & 0x2) result.inviter_id = i64()
+  result.promoted_by = i64()
   result.date = i32()
   result.admin_rights = obj()
   if (flags & 0x4) result.rank = str()
@@ -1921,8 +1981,8 @@ const _channelParticipantBanned = (): any => {
   const result: Record<string, unknown> = { _: 'channelParticipantBanned' }
   const flags = i32()
   result.left = !!(flags & 0x1)
-  result.user_id = i32()
-  result.kicked_by = i32()
+  result.peer = obj()
+  result.kicked_by = i64()
   result.date = i32()
   result.banned_rights = obj()
   return result
@@ -1943,7 +2003,7 @@ const _channelAdminLogEventActionParticipantLeave: any = () => ({ _: 'channelAdm
 const _channelAdminLogEventActionParticipantInvite: any = () => ({ _: 'channelAdminLogEventActionParticipantInvite', participant: obj() })
 const _channelAdminLogEventActionParticipantToggleBan: any = () => ({ _: 'channelAdminLogEventActionParticipantToggleBan', prev_participant: obj(), new_participant: obj() })
 const _channelAdminLogEventActionParticipantToggleAdmin: any = () => ({ _: 'channelAdminLogEventActionParticipantToggleAdmin', prev_participant: obj(), new_participant: obj() })
-const _channelAdminLogEvent: any = () => ({ _: 'channelAdminLogEvent', id: i64(), date: i32(), user_id: i32(), action: obj() })
+const _channelAdminLogEvent: any = () => ({ _: 'channelAdminLogEvent', id: i64(), date: i32(), user_id: i64(), action: obj() })
 const _channelsAdminLogResults: any = () => ({ _: 'channels.adminLogResults', events: vector(obj), chats: vector(obj), users: vector(obj) })
 const _channelAdminLogEventsFilter = (): any => {
   const result: Record<string, unknown> = { _: 'channelAdminLogEventsFilter' }
@@ -1964,6 +2024,7 @@ const _channelAdminLogEventsFilter = (): any => {
   result.delete = !!(flags & 0x2000)
   result.group_call = !!(flags & 0x4000)
   result.invites = !!(flags & 0x8000)
+  result.send = !!(flags & 0x10000)
   return result
 }
 const _topPeerCategoryPhoneCalls: any = () => ({ _: 'topPeerCategoryPhoneCalls' })
@@ -1971,18 +2032,17 @@ const _pageBlockAudio: any = () => ({ _: 'pageBlockAudio', audio_id: i64(), capt
 const _popularContact: any = () => ({ _: 'popularContact', client_id: i64(), importers: i32() })
 const _messageActionScreenshotTaken: any = () => ({ _: 'messageActionScreenshotTaken' })
 const _messagesFavedStickersNotModified: any = () => ({ _: 'messages.favedStickersNotModified' })
-const _messagesFavedStickers: any = () => ({ _: 'messages.favedStickers', hash: i32(), packs: vector(obj), stickers: vector(obj) })
+const _messagesFavedStickers: any = () => ({ _: 'messages.favedStickers', hash: i64(), packs: vector(obj), stickers: vector(obj) })
 const _updateFavedStickers: any = () => ({ _: 'updateFavedStickers', _update: true })
-const _updateChannelReadMessagesContents: any = () => ({ _: 'updateChannelReadMessagesContents', _update: true, channel_id: i32(), messages: vector(i32) })
+const _updateChannelReadMessagesContents: any = () => ({ _: 'updateChannelReadMessagesContents', _update: true, channel_id: i64(), messages: vector(i32) })
 const _inputMessagesFilterMyMentions: any = () => ({ _: 'inputMessagesFilterMyMentions' })
 const _updateContactsReset: any = () => ({ _: 'updateContactsReset', _update: true })
 const _channelAdminLogEventActionChangeStickerSet: any = () => ({ _: 'channelAdminLogEventActionChangeStickerSet', prev_stickerset: obj(), new_stickerset: obj() })
 const _messageActionCustomAction: any = () => ({ _: 'messageActionCustomAction', message: str() })
 const _inputPaymentCredentialsApplePay: any = () => ({ _: 'inputPaymentCredentialsApplePay', payment_data: obj() })
-const _inputPaymentCredentialsAndroidPay: any = () => ({ _: 'inputPaymentCredentialsAndroidPay', payment_token: obj(), google_transaction_id: str() })
 const _inputMessagesFilterGeo: any = () => ({ _: 'inputMessagesFilterGeo' })
 const _inputMessagesFilterContacts: any = () => ({ _: 'inputMessagesFilterContacts' })
-const _updateChannelAvailableMessages: any = () => ({ _: 'updateChannelAvailableMessages', _update: true, channel_id: i32(), available_min_id: i32() })
+const _updateChannelAvailableMessages: any = () => ({ _: 'updateChannelAvailableMessages', _update: true, channel_id: i64(), available_min_id: i32() })
 const _channelAdminLogEventActionTogglePreHistoryHidden: any = () => ({ _: 'channelAdminLogEventActionTogglePreHistoryHidden', new_value: obj() })
 const _inputMediaGeoLive = (): any => {
   const result: Record<string, unknown> = { _: 'inputMediaGeoLive' }
@@ -2004,8 +2064,8 @@ const _messageMediaGeoLive = (): any => {
   return result
 }
 const _recentMeUrlUnknown: any = () => ({ _: 'recentMeUrlUnknown', url: str() })
-const _recentMeUrlUser: any = () => ({ _: 'recentMeUrlUser', url: str(), user_id: i32() })
-const _recentMeUrlChat: any = () => ({ _: 'recentMeUrlChat', url: str(), chat_id: i32() })
+const _recentMeUrlUser: any = () => ({ _: 'recentMeUrlUser', url: str(), user_id: i64() })
+const _recentMeUrlChat: any = () => ({ _: 'recentMeUrlChat', url: str(), chat_id: i64() })
 const _recentMeUrlChatInvite: any = () => ({ _: 'recentMeUrlChatInvite', url: str(), chat_invite: obj() })
 const _recentMeUrlStickerSet: any = () => ({ _: 'recentMeUrlStickerSet', url: str(), set: obj() })
 const _helpRecentMeUrls: any = () => ({ _: 'help.recentMeUrls', urls: vector(obj), chats: vector(obj), users: vector(obj) })
@@ -2020,7 +2080,7 @@ const _inputSingleMedia = (): any => {
   if (flags & 0x1) result.entities = vector(obj)
   return result
 }
-const _webAuthorization: any = () => ({ _: 'webAuthorization', hash: i64(), bot_id: i32(), domain: str(), browser: str(), platform: str(), date_created: i32(), date_active: i32(), ip: str(), region: str() })
+const _webAuthorization: any = () => ({ _: 'webAuthorization', hash: i64(), bot_id: i64(), domain: str(), browser: str(), platform: str(), date_created: i32(), date_active: i32(), ip: str(), region: str() })
 const _accountWebAuthorizations: any = () => ({ _: 'account.webAuthorizations', authorizations: vector(obj), users: vector(obj) })
 const _inputMessageID: any = () => ({ _: 'inputMessageID', id: i32() })
 const _inputMessageReplyTo: any = () => ({ _: 'inputMessageReplyTo', id: i32() })
@@ -2031,7 +2091,7 @@ const _messageActionBotAllowed: any = () => ({ _: 'messageActionBotAllowed', dom
 const _inputDialogPeer: any = () => ({ _: 'inputDialogPeer', peer: obj() })
 const _dialogPeer: any = () => ({ _: 'dialogPeer', peer: obj() })
 const _messagesFoundStickerSetsNotModified: any = () => ({ _: 'messages.foundStickerSetsNotModified' })
-const _messagesFoundStickerSets: any = () => ({ _: 'messages.foundStickerSets', hash: i32(), sets: vector(obj) })
+const _messagesFoundStickerSets: any = () => ({ _: 'messages.foundStickerSets', hash: i64(), sets: vector(obj) })
 const _fileHash: any = () => ({ _: 'fileHash', offset: i32(), limit: i32(), hash: bytes() })
 const _webDocumentNoProxy: any = () => ({ _: 'webDocumentNoProxy', url: str(), size: i32(), mime_type: str(), attributes: vector(obj) })
 const _inputClientProxy: any = () => ({ _: 'inputClientProxy', address: str(), port: i32() })
@@ -2279,7 +2339,7 @@ const _pollResults = (): any => {
   result.min = !!(flags & 0x1)
   if (flags & 0x2) result.results = vector(obj)
   if (flags & 0x4) result.total_voters = i32()
-  if (flags & 0x8) result.recent_voters = vector(i32)
+  if (flags & 0x8) result.recent_voters = vector(i64)
   if (flags & 0x10) result.solution = str()
   if (flags & 0x10) result.solution_entities = vector(obj)
   return result
@@ -2338,7 +2398,7 @@ const _channelParticipantsContacts: any = () => ({ _: 'channelParticipantsContac
 const _channelAdminLogEventActionDefaultBannedRights: any = () => ({ _: 'channelAdminLogEventActionDefaultBannedRights', prev_banned_rights: obj(), new_banned_rights: obj() })
 const _channelAdminLogEventActionStopPoll: any = () => ({ _: 'channelAdminLogEventActionStopPoll', message: obj() })
 const _accountWallPapersNotModified: any = () => ({ _: 'account.wallPapersNotModified' })
-const _accountWallPapers: any = () => ({ _: 'account.wallPapers', hash: i32(), wallpapers: vector(obj) })
+const _accountWallPapers: any = () => ({ _: 'account.wallPapers', hash: i64(), wallpapers: vector(obj) })
 const _codeSettings = (): any => {
   const result: Record<string, unknown> = { _: 'codeSettings' }
   const flags = i32()
@@ -2354,6 +2414,8 @@ const _wallPaperSettings = (): any => {
   result.motion = !!(flags & 0x4)
   if (flags & 0x1) result.background_color = i32()
   if (flags & 0x10) result.second_background_color = i32()
+  if (flags & 0x20) result.third_background_color = i32()
+  if (flags & 0x40) result.fourth_background_color = i32()
   if (flags & 0x8) result.intensity = i32()
   if (flags & 0x10) result.rotation = i32()
   return result
@@ -2381,7 +2443,6 @@ const _inputPrivacyKeyForwards: any = () => ({ _: 'inputPrivacyKeyForwards' })
 const _privacyKeyForwards: any = () => ({ _: 'privacyKeyForwards' })
 const _inputPrivacyKeyProfilePhoto: any = () => ({ _: 'inputPrivacyKeyProfilePhoto' })
 const _privacyKeyProfilePhoto: any = () => ({ _: 'privacyKeyProfilePhoto' })
-const _fileLocationToBeDeprecated: any = () => ({ _: 'fileLocationToBeDeprecated', volume_id: i64(), local_id: i32() })
 const _inputPhotoFileLocation: any = () => ({ _: 'inputPhotoFileLocation', id: i64(), access_hash: i64(), file_reference: bytes(), thumb_size: str() })
 const _inputPhotoLegacyFileLocation: any = () => ({ _: 'inputPhotoLegacyFileLocation', id: i64(), access_hash: i64(), file_reference: bytes(), volume_id: i64(), local_id: i32(), secret: i64() })
 const _inputPeerPhotoFileLocation = (): any => {
@@ -2389,11 +2450,10 @@ const _inputPeerPhotoFileLocation = (): any => {
   const flags = i32()
   result.big = !!(flags & 0x1)
   result.peer = obj()
-  result.volume_id = i64()
-  result.local_id = i32()
+  result.photo_id = i64()
   return result
 }
-const _inputStickerSetThumb: any = () => ({ _: 'inputStickerSetThumb', stickerset: obj(), volume_id: i64(), local_id: i32() })
+const _inputStickerSetThumb: any = () => ({ _: 'inputStickerSetThumb', stickerset: obj(), thumb_version: i32() })
 const _folder = (): any => {
   const result: Record<string, unknown> = { _: 'folder' }
   const flags = i32()
@@ -2423,15 +2483,15 @@ const _dialogPeerFolder: any = () => ({ _: 'dialogPeerFolder', folder_id: i32() 
 const _inputFolderPeer: any = () => ({ _: 'inputFolderPeer', peer: obj(), folder_id: i32() })
 const _folderPeer: any = () => ({ _: 'folderPeer', peer: obj(), folder_id: i32() })
 const _updateFolderPeers: any = () => ({ _: 'updateFolderPeers', _update: true, folder_peers: vector(obj), pts: i32(), pts_count: i32() })
-const _inputUserFromMessage: any = () => ({ _: 'inputUserFromMessage', peer: obj(), msg_id: i32(), user_id: i32() })
-const _inputChannelFromMessage: any = () => ({ _: 'inputChannelFromMessage', peer: obj(), msg_id: i32(), channel_id: i32() })
-const _inputPeerUserFromMessage: any = () => ({ _: 'inputPeerUserFromMessage', peer: obj(), msg_id: i32(), user_id: i32() })
-const _inputPeerChannelFromMessage: any = () => ({ _: 'inputPeerChannelFromMessage', peer: obj(), msg_id: i32(), channel_id: i32() })
+const _inputUserFromMessage: any = () => ({ _: 'inputUserFromMessage', peer: obj(), msg_id: i32(), user_id: i64() })
+const _inputChannelFromMessage: any = () => ({ _: 'inputChannelFromMessage', peer: obj(), msg_id: i32(), channel_id: i64() })
+const _inputPeerUserFromMessage: any = () => ({ _: 'inputPeerUserFromMessage', peer: obj(), msg_id: i32(), user_id: i64() })
+const _inputPeerChannelFromMessage: any = () => ({ _: 'inputPeerChannelFromMessage', peer: obj(), msg_id: i32(), channel_id: i64() })
 const _inputPrivacyKeyPhoneNumber: any = () => ({ _: 'inputPrivacyKeyPhoneNumber' })
 const _privacyKeyPhoneNumber: any = () => ({ _: 'privacyKeyPhoneNumber' })
 const _topPeerCategoryForwardUsers: any = () => ({ _: 'topPeerCategoryForwardUsers' })
 const _topPeerCategoryForwardChats: any = () => ({ _: 'topPeerCategoryForwardChats' })
-const _channelAdminLogEventActionChangeLinkedChat: any = () => ({ _: 'channelAdminLogEventActionChangeLinkedChat', prev_value: i32(), new_value: i32() })
+const _channelAdminLogEventActionChangeLinkedChat: any = () => ({ _: 'channelAdminLogEventActionChangeLinkedChat', prev_value: i64(), new_value: i64() })
 const _messagesSearchCounter = (): any => {
   const result: Record<string, unknown> = { _: 'messages.searchCounter' }
   const flags = i32()
@@ -2469,10 +2529,10 @@ const _urlAuthResultRequest = (): any => {
 }
 const _urlAuthResultAccepted: any = () => ({ _: 'urlAuthResultAccepted', url: str() })
 const _urlAuthResultDefault: any = () => ({ _: 'urlAuthResultDefault' })
-const _inputPrivacyValueAllowChatParticipants: any = () => ({ _: 'inputPrivacyValueAllowChatParticipants', chats: vector(i32) })
-const _inputPrivacyValueDisallowChatParticipants: any = () => ({ _: 'inputPrivacyValueDisallowChatParticipants', chats: vector(i32) })
-const _privacyValueAllowChatParticipants: any = () => ({ _: 'privacyValueAllowChatParticipants', chats: vector(i32) })
-const _privacyValueDisallowChatParticipants: any = () => ({ _: 'privacyValueDisallowChatParticipants', chats: vector(i32) })
+const _inputPrivacyValueAllowChatParticipants: any = () => ({ _: 'inputPrivacyValueAllowChatParticipants', chats: vector(i64) })
+const _inputPrivacyValueDisallowChatParticipants: any = () => ({ _: 'inputPrivacyValueDisallowChatParticipants', chats: vector(i64) })
+const _privacyValueAllowChatParticipants: any = () => ({ _: 'privacyValueAllowChatParticipants', chats: vector(i64) })
+const _privacyValueDisallowChatParticipants: any = () => ({ _: 'privacyValueDisallowChatParticipants', chats: vector(i64) })
 const _messageEntityUnderline: any = () => ({ _: 'messageEntityUnderline', offset: i32(), length: i32() })
 const _messageEntityStrike: any = () => ({ _: 'messageEntityStrike', offset: i32(), length: i32() })
 const _messageEntityBlockquote: any = () => ({ _: 'messageEntityBlockquote', offset: i32(), length: i32() })
@@ -2502,17 +2562,18 @@ const _theme = (): any => {
   const flags = i32()
   result.creator = !!(flags & 0x1)
   result.default = !!(flags & 0x2)
+  result.for_chat = !!(flags & 0x20)
   result.id = i64()
   result.access_hash = i64()
   result.slug = str()
   result.title = str()
   if (flags & 0x4) result.document = obj()
   if (flags & 0x8) result.settings = obj()
-  result.installs_count = i32()
+  if (flags & 0x10) result.installs_count = i32()
   return result
 }
 const _accountThemesNotModified: any = () => ({ _: 'account.themesNotModified' })
-const _accountThemes: any = () => ({ _: 'account.themes', hash: i32(), themes: vector(obj) })
+const _accountThemes: any = () => ({ _: 'account.themes', hash: i64(), themes: vector(obj) })
 const _updateTheme: any = () => ({ _: 'updateTheme', _update: true, theme: obj() })
 const _inputPrivacyKeyAddedByPhone: any = () => ({ _: 'inputPrivacyKeyAddedByPhone' })
 const _privacyKeyAddedByPhone: any = () => ({ _: 'privacyKeyAddedByPhone' })
@@ -2534,9 +2595,10 @@ const _baseThemeDay: any = () => ({ _: 'baseThemeDay' })
 const _baseThemeNight: any = () => ({ _: 'baseThemeNight' })
 const _baseThemeTinted: any = () => ({ _: 'baseThemeTinted' })
 const _baseThemeArctic: any = () => ({ _: 'baseThemeArctic' })
-const _inputWallPaperNoFile: any = () => ({ _: 'inputWallPaperNoFile' })
+const _inputWallPaperNoFile: any = () => ({ _: 'inputWallPaperNoFile', id: i64() })
 const _wallPaperNoFile = (): any => {
   const result: Record<string, unknown> = { _: 'wallPaperNoFile' }
+  result.id = i64()
   const flags = i32()
   result.default = !!(flags & 0x2)
   result.dark = !!(flags & 0x10)
@@ -2546,10 +2608,11 @@ const _wallPaperNoFile = (): any => {
 const _inputThemeSettings = (): any => {
   const result: Record<string, unknown> = { _: 'inputThemeSettings' }
   const flags = i32()
+  result.message_colors_animated = !!(flags & 0x4)
   result.base_theme = obj()
   result.accent_color = i32()
-  if (flags & 0x1) result.message_top_color = i32()
-  if (flags & 0x1) result.message_bottom_color = i32()
+  if (flags & 0x8) result.outbox_accent_color = i32()
+  if (flags & 0x1) result.message_colors = vector(i32)
   if (flags & 0x2) result.wallpaper = obj()
   if (flags & 0x2) result.wallpaper_settings = obj()
   return result
@@ -2557,10 +2620,11 @@ const _inputThemeSettings = (): any => {
 const _themeSettings = (): any => {
   const result: Record<string, unknown> = { _: 'themeSettings' }
   const flags = i32()
+  result.message_colors_animated = !!(flags & 0x4)
   result.base_theme = obj()
   result.accent_color = i32()
-  if (flags & 0x1) result.message_top_color = i32()
-  if (flags & 0x1) result.message_bottom_color = i32()
+  if (flags & 0x8) result.outbox_accent_color = i32()
+  if (flags & 0x1) result.message_colors = vector(i32)
   if (flags & 0x2) result.wallpaper = obj()
   return result
 }
@@ -2571,10 +2635,10 @@ const _webPageAttributeTheme = (): any => {
   if (flags & 0x2) result.settings = obj()
   return result
 }
-const _updateMessagePollVote: any = () => ({ _: 'updateMessagePollVote', _update: true, poll_id: i64(), user_id: i32(), options: vector(bytes) })
-const _messageUserVote: any = () => ({ _: 'messageUserVote', user_id: i32(), option: bytes(), date: i32() })
-const _messageUserVoteInputOption: any = () => ({ _: 'messageUserVoteInputOption', user_id: i32(), date: i32() })
-const _messageUserVoteMultiple: any = () => ({ _: 'messageUserVoteMultiple', user_id: i32(), options: vector(bytes), date: i32() })
+const _updateMessagePollVote: any = () => ({ _: 'updateMessagePollVote', _update: true, poll_id: i64(), user_id: i64(), options: vector(bytes), qts: i32() })
+const _messageUserVote: any = () => ({ _: 'messageUserVote', user_id: i64(), option: bytes(), date: i32() })
+const _messageUserVoteInputOption: any = () => ({ _: 'messageUserVoteInputOption', user_id: i64(), date: i32() })
+const _messageUserVoteMultiple: any = () => ({ _: 'messageUserVoteMultiple', user_id: i64(), options: vector(bytes), date: i32() })
 const _messagesVotesList = (): any => {
   const result: Record<string, unknown> = { _: 'messages.votesList' }
   const flags = i32()
@@ -2659,7 +2723,6 @@ const _videoSize = (): any => {
   const result: Record<string, unknown> = { _: 'videoSize' }
   const flags = i32()
   result.type = str()
-  result.location = obj()
   result.w = i32()
   result.h = i32()
   result.size = i32()
@@ -2668,9 +2731,9 @@ const _videoSize = (): any => {
 }
 const _updatePhoneCallSignalingData: any = () => ({ _: 'updatePhoneCallSignalingData', _update: true, phone_call_id: i64(), data: bytes() })
 const _chatInvitePeek: any = () => ({ _: 'chatInvitePeek', chat: obj(), expires: i32() })
-const _statsGroupTopPoster: any = () => ({ _: 'statsGroupTopPoster', user_id: i32(), messages: i32(), avg_chars: i32() })
-const _statsGroupTopAdmin: any = () => ({ _: 'statsGroupTopAdmin', user_id: i32(), deleted: i32(), kicked: i32(), banned: i32() })
-const _statsGroupTopInviter: any = () => ({ _: 'statsGroupTopInviter', user_id: i32(), invitations: i32() })
+const _statsGroupTopPoster: any = () => ({ _: 'statsGroupTopPoster', user_id: i64(), messages: i32(), avg_chars: i32() })
+const _statsGroupTopAdmin: any = () => ({ _: 'statsGroupTopAdmin', user_id: i64(), deleted: i32(), kicked: i32(), banned: i32() })
+const _statsGroupTopInviter: any = () => ({ _: 'statsGroupTopInviter', user_id: i64(), invitations: i32() })
 const _statsMegagroupStats: any = () => ({ _: 'stats.megagroupStats', period: obj(), members: obj(), messages: obj(), viewers: obj(), posters: obj(), growth_graph: obj(), members_graph: obj(), new_members_by_source_graph: obj(), languages_graph: obj(), messages_graph: obj(), actions_graph: obj(), top_hours_graph: obj(), weekdays_graph: obj(), top_posters: vector(obj), top_admins: vector(obj), top_inviters: vector(obj), users: vector(obj) })
 const _globalPrivacySettings = (): any => {
   const result: Record<string, unknown> = { _: 'globalPrivacySettings' }
@@ -2719,21 +2782,21 @@ const _messageViews = (): any => {
   if (flags & 0x4) result.replies = obj()
   return result
 }
-const _updateChannelMessageForwards: any = () => ({ _: 'updateChannelMessageForwards', _update: true, channel_id: i32(), id: i32(), forwards: i32() })
-const _photoSizeProgressive: any = () => ({ _: 'photoSizeProgressive', type: str(), location: obj(), w: i32(), h: i32(), sizes: vector(i32) })
+const _updateChannelMessageForwards: any = () => ({ _: 'updateChannelMessageForwards', _update: true, channel_id: i64(), id: i32(), forwards: i32() })
+const _photoSizeProgressive: any = () => ({ _: 'photoSizeProgressive', type: str(), w: i32(), h: i32(), sizes: vector(i32) })
 const _messagesMessageViews: any = () => ({ _: 'messages.messageViews', views: vector(obj), chats: vector(obj), users: vector(obj) })
 const _updateReadChannelDiscussionInbox = (): any => {
   const result: Record<string, unknown> = { _: 'updateReadChannelDiscussionInbox' }
   result._update = true
   const flags = i32()
-  result.channel_id = i32()
+  result.channel_id = i64()
   result.top_msg_id = i32()
   result.read_max_id = i32()
-  if (flags & 0x1) result.broadcast_id = i32()
+  if (flags & 0x1) result.broadcast_id = i64()
   if (flags & 0x1) result.broadcast_post = i32()
   return result
 }
-const _updateReadChannelDiscussionOutbox: any = () => ({ _: 'updateReadChannelDiscussionOutbox', _update: true, channel_id: i32(), top_msg_id: i32(), read_max_id: i32() })
+const _updateReadChannelDiscussionOutbox: any = () => ({ _: 'updateReadChannelDiscussionOutbox', _update: true, channel_id: i64(), top_msg_id: i32(), read_max_id: i32() })
 const _messagesDiscussionMessage = (): any => {
   const result: Record<string, unknown> = { _: 'messages.discussionMessage' }
   const flags = i32()
@@ -2741,6 +2804,7 @@ const _messagesDiscussionMessage = (): any => {
   if (flags & 0x1) result.max_id = i32()
   if (flags & 0x2) result.read_inbox_max_id = i32()
   if (flags & 0x4) result.read_outbox_max_id = i32()
+  result.unread_count = i32()
   result.chats = vector(obj)
   result.users = vector(obj)
   return result
@@ -2760,7 +2824,7 @@ const _messageReplies = (): any => {
   result.replies = i32()
   result.replies_pts = i32()
   if (flags & 0x2) result.recent_repliers = vector(obj)
-  if (flags & 0x1) result.channel_id = i32()
+  if (flags & 0x1) result.channel_id = i64()
   if (flags & 0x4) result.max_id = i32()
   if (flags & 0x8) result.read_max_id = i32()
   return result
@@ -2771,14 +2835,14 @@ const _updateChannelUserTyping = (): any => {
   const result: Record<string, unknown> = { _: 'updateChannelUserTyping' }
   result._update = true
   const flags = i32()
-  result.channel_id = i32()
+  result.channel_id = i64()
   if (flags & 0x1) result.top_msg_id = i32()
-  result.user_id = i32()
+  result.from_id = obj()
   result.action = obj()
   return result
 }
 const _inputMessageCallbackQuery: any = () => ({ _: 'inputMessageCallbackQuery', id: i32(), query_id: i64() })
-const _channelParticipantLeft: any = () => ({ _: 'channelParticipantLeft', user_id: i32() })
+const _channelParticipantLeft: any = () => ({ _: 'channelParticipantLeft', peer: obj() })
 const _channelParticipantsMentions = (): any => {
   const result: Record<string, unknown> = { _: 'channelParticipantsMentions' }
   const flags = i32()
@@ -2802,7 +2866,7 @@ const _updatePinnedChannelMessages = (): any => {
   result._update = true
   const flags = i32()
   result.pinned = !!(flags & 0x1)
-  result.channel_id = i32()
+  result.channel_id = i64()
   result.messages = vector(i32)
   result.pts = i32()
   result.pts_count = i32()
@@ -2812,6 +2876,231 @@ const _inputMessagesFilterPinned: any = () => ({ _: 'inputMessagesFilterPinned' 
 const _statsMessageStats: any = () => ({ _: 'stats.messageStats', views_graph: obj() })
 const _messageActionGeoProximityReached: any = () => ({ _: 'messageActionGeoProximityReached', from_id: obj(), to_id: obj(), distance: i32() })
 const _photoPathSize: any = () => ({ _: 'photoPathSize', type: str(), bytes: bytes() })
+const _speakingInGroupCallAction: any = () => ({ _: 'speakingInGroupCallAction' })
+const _groupCallDiscarded: any = () => ({ _: 'groupCallDiscarded', id: i64(), access_hash: i64(), duration: i32() })
+const _groupCall = (): any => {
+  const result: Record<string, unknown> = { _: 'groupCall' }
+  const flags = i32()
+  result.join_muted = !!(flags & 0x2)
+  result.can_change_join_muted = !!(flags & 0x4)
+  result.join_date_asc = !!(flags & 0x40)
+  result.schedule_start_subscribed = !!(flags & 0x100)
+  result.can_start_video = !!(flags & 0x200)
+  result.record_video_active = !!(flags & 0x800)
+  result.id = i64()
+  result.access_hash = i64()
+  result.participants_count = i32()
+  if (flags & 0x8) result.title = str()
+  if (flags & 0x10) result.stream_dc_id = i32()
+  if (flags & 0x20) result.record_start_date = i32()
+  if (flags & 0x80) result.schedule_date = i32()
+  if (flags & 0x400) result.unmuted_video_count = i32()
+  result.unmuted_video_limit = i32()
+  result.version = i32()
+  return result
+}
+const _inputGroupCall: any = () => ({ _: 'inputGroupCall', id: i64(), access_hash: i64() })
+const _messageActionGroupCall = (): any => {
+  const result: Record<string, unknown> = { _: 'messageActionGroupCall' }
+  const flags = i32()
+  result.call = obj()
+  if (flags & 0x1) result.duration = i32()
+  return result
+}
+const _messageActionInviteToGroupCall: any = () => ({ _: 'messageActionInviteToGroupCall', call: obj(), users: vector(i64) })
+const _groupCallParticipant = (): any => {
+  const result: Record<string, unknown> = { _: 'groupCallParticipant' }
+  const flags = i32()
+  result.muted = !!(flags & 0x1)
+  result.left = !!(flags & 0x2)
+  result.can_self_unmute = !!(flags & 0x4)
+  result.just_joined = !!(flags & 0x10)
+  result.versioned = !!(flags & 0x20)
+  result.min = !!(flags & 0x100)
+  result.muted_by_you = !!(flags & 0x200)
+  result.volume_by_admin = !!(flags & 0x400)
+  result.self = !!(flags & 0x1000)
+  result.video_joined = !!(flags & 0x8000)
+  result.peer = obj()
+  result.date = i32()
+  if (flags & 0x8) result.active_date = i32()
+  result.source = i32()
+  if (flags & 0x80) result.volume = i32()
+  if (flags & 0x800) result.about = str()
+  if (flags & 0x2000) result.raise_hand_rating = i64()
+  if (flags & 0x40) result.video = obj()
+  if (flags & 0x4000) result.presentation = obj()
+  return result
+}
+const _updateChat: any = () => ({ _: 'updateChat', _update: true, chat_id: i64() })
+const _updateGroupCallParticipants: any = () => ({ _: 'updateGroupCallParticipants', _update: true, call: obj(), participants: vector(obj), version: i32() })
+const _updateGroupCall: any = () => ({ _: 'updateGroupCall', _update: true, chat_id: i64(), call: obj() })
+const _phoneGroupCall: any = () => ({ _: 'phone.groupCall', call: obj(), participants: vector(obj), participants_next_offset: str(), chats: vector(obj), users: vector(obj) })
+const _phoneGroupParticipants: any = () => ({ _: 'phone.groupParticipants', count: i32(), participants: vector(obj), next_offset: str(), chats: vector(obj), users: vector(obj), version: i32() })
+const _inlineQueryPeerTypeSameBotPM: any = () => ({ _: 'inlineQueryPeerTypeSameBotPM' })
+const _inlineQueryPeerTypePM: any = () => ({ _: 'inlineQueryPeerTypePM' })
+const _inlineQueryPeerTypeChat: any = () => ({ _: 'inlineQueryPeerTypeChat' })
+const _inlineQueryPeerTypeMegagroup: any = () => ({ _: 'inlineQueryPeerTypeMegagroup' })
+const _inlineQueryPeerTypeBroadcast: any = () => ({ _: 'inlineQueryPeerTypeBroadcast' })
+const _channelAdminLogEventActionStartGroupCall: any = () => ({ _: 'channelAdminLogEventActionStartGroupCall', call: obj() })
+const _channelAdminLogEventActionDiscardGroupCall: any = () => ({ _: 'channelAdminLogEventActionDiscardGroupCall', call: obj() })
+const _channelAdminLogEventActionParticipantMute: any = () => ({ _: 'channelAdminLogEventActionParticipantMute', participant: obj() })
+const _channelAdminLogEventActionParticipantUnmute: any = () => ({ _: 'channelAdminLogEventActionParticipantUnmute', participant: obj() })
+const _channelAdminLogEventActionToggleGroupCallSetting: any = () => ({ _: 'channelAdminLogEventActionToggleGroupCallSetting', join_muted: obj() })
+const _inputPaymentCredentialsGooglePay: any = () => ({ _: 'inputPaymentCredentialsGooglePay', payment_token: obj() })
+const _messagesHistoryImport: any = () => ({ _: 'messages.historyImport', id: i64() })
+const _sendMessageHistoryImportAction: any = () => ({ _: 'sendMessageHistoryImportAction', progress: i32() })
+const _messagesHistoryImportParsed = (): any => {
+  const result: Record<string, unknown> = { _: 'messages.historyImportParsed' }
+  const flags = i32()
+  result.pm = !!(flags & 0x1)
+  result.group = !!(flags & 0x2)
+  if (flags & 0x4) result.title = str()
+  return result
+}
+const _inputReportReasonFake: any = () => ({ _: 'inputReportReasonFake' })
+const _messagesAffectedFoundMessages: any = () => ({ _: 'messages.affectedFoundMessages', pts: i32(), pts_count: i32(), offset: i32(), messages: vector(i32) })
+const _messageActionSetMessagesTTL: any = () => ({ _: 'messageActionSetMessagesTTL', period: i32() })
+const _updatePeerHistoryTTL = (): any => {
+  const result: Record<string, unknown> = { _: 'updatePeerHistoryTTL' }
+  result._update = true
+  const flags = i32()
+  result.peer = obj()
+  if (flags & 0x1) result.ttl_period = i32()
+  return result
+}
+const _updateChatParticipant = (): any => {
+  const result: Record<string, unknown> = { _: 'updateChatParticipant' }
+  result._update = true
+  const flags = i32()
+  result.chat_id = i64()
+  result.date = i32()
+  result.actor_id = i64()
+  result.user_id = i64()
+  if (flags & 0x1) result.prev_participant = obj()
+  if (flags & 0x2) result.new_participant = obj()
+  if (flags & 0x4) result.invite = obj()
+  result.qts = i32()
+  return result
+}
+const _updateChannelParticipant = (): any => {
+  const result: Record<string, unknown> = { _: 'updateChannelParticipant' }
+  result._update = true
+  const flags = i32()
+  result.channel_id = i64()
+  result.date = i32()
+  result.actor_id = i64()
+  result.user_id = i64()
+  if (flags & 0x1) result.prev_participant = obj()
+  if (flags & 0x2) result.new_participant = obj()
+  if (flags & 0x4) result.invite = obj()
+  result.qts = i32()
+  return result
+}
+const _updateBotStopped: any = () => ({ _: 'updateBotStopped', _update: true, user_id: i64(), date: i32(), stopped: obj(), qts: i32() })
+const _chatInviteImporter: any = () => ({ _: 'chatInviteImporter', user_id: i64(), date: i32() })
+const _messagesExportedChatInvites: any = () => ({ _: 'messages.exportedChatInvites', count: i32(), invites: vector(obj), users: vector(obj) })
+const _messagesExportedChatInvite: any = () => ({ _: 'messages.exportedChatInvite', invite: obj(), users: vector(obj) })
+const _messagesExportedChatInviteReplaced: any = () => ({ _: 'messages.exportedChatInviteReplaced', invite: obj(), new_invite: obj(), users: vector(obj) })
+const _messagesChatInviteImporters: any = () => ({ _: 'messages.chatInviteImporters', count: i32(), importers: vector(obj), users: vector(obj) })
+const _chatAdminWithInvites: any = () => ({ _: 'chatAdminWithInvites', admin_id: i64(), invites_count: i32(), revoked_invites_count: i32() })
+const _messagesChatAdminsWithInvites: any = () => ({ _: 'messages.chatAdminsWithInvites', admins: vector(obj), users: vector(obj) })
+const _channelAdminLogEventActionParticipantJoinByInvite: any = () => ({ _: 'channelAdminLogEventActionParticipantJoinByInvite', invite: obj() })
+const _channelAdminLogEventActionExportedInviteDelete: any = () => ({ _: 'channelAdminLogEventActionExportedInviteDelete', invite: obj() })
+const _channelAdminLogEventActionExportedInviteRevoke: any = () => ({ _: 'channelAdminLogEventActionExportedInviteRevoke', invite: obj() })
+const _channelAdminLogEventActionExportedInviteEdit: any = () => ({ _: 'channelAdminLogEventActionExportedInviteEdit', prev_invite: obj(), new_invite: obj() })
+const _channelAdminLogEventActionParticipantVolume: any = () => ({ _: 'channelAdminLogEventActionParticipantVolume', participant: obj() })
+const _channelAdminLogEventActionChangeHistoryTTL: any = () => ({ _: 'channelAdminLogEventActionChangeHistoryTTL', prev_value: i32(), new_value: i32() })
+const _messagesCheckedHistoryImportPeer: any = () => ({ _: 'messages.checkedHistoryImportPeer', confirm_text: str() })
+const _inputGroupCallStream = (): any => {
+  const result: Record<string, unknown> = { _: 'inputGroupCallStream' }
+  const flags = i32()
+  result.call = obj()
+  result.time_ms = i64()
+  result.scale = i32()
+  if (flags & 0x1) result.video_channel = i32()
+  if (flags & 0x1) result.video_quality = i32()
+  return result
+}
+const _phoneJoinAsPeers: any = () => ({ _: 'phone.joinAsPeers', peers: vector(obj), chats: vector(obj), users: vector(obj) })
+const _phoneExportedGroupCallInvite: any = () => ({ _: 'phone.exportedGroupCallInvite', link: str() })
+const _inputBotInlineMessageMediaInvoice = (): any => {
+  const result: Record<string, unknown> = { _: 'inputBotInlineMessageMediaInvoice' }
+  const flags = i32()
+  result.title = str()
+  result.description = str()
+  if (flags & 0x1) result.photo = obj()
+  result.invoice = obj()
+  result.payload = bytes()
+  result.provider = str()
+  result.provider_data = obj()
+  if (flags & 0x4) result.reply_markup = obj()
+  return result
+}
+const _botInlineMessageMediaInvoice = (): any => {
+  const result: Record<string, unknown> = { _: 'botInlineMessageMediaInvoice' }
+  const flags = i32()
+  result.shipping_address_requested = !!(flags & 0x2)
+  result.test = !!(flags & 0x8)
+  result.title = str()
+  result.description = str()
+  if (flags & 0x1) result.photo = obj()
+  result.currency = str()
+  result.total_amount = i64()
+  if (flags & 0x4) result.reply_markup = obj()
+  return result
+}
+const _messageActionGroupCallScheduled: any = () => ({ _: 'messageActionGroupCallScheduled', call: obj(), schedule_date: i32() })
+const _groupCallParticipantVideoSourceGroup: any = () => ({ _: 'groupCallParticipantVideoSourceGroup', semantics: str(), sources: vector(i32) })
+const _groupCallParticipantVideo = (): any => {
+  const result: Record<string, unknown> = { _: 'groupCallParticipantVideo' }
+  const flags = i32()
+  result.paused = !!(flags & 0x1)
+  result.endpoint = str()
+  result.source_groups = vector(obj)
+  if (flags & 0x2) result.audio_source = i32()
+  return result
+}
+const _updateGroupCallConnection = (): any => {
+  const result: Record<string, unknown> = { _: 'updateGroupCallConnection' }
+  result._update = true
+  const flags = i32()
+  result.presentation = !!(flags & 0x1)
+  result.params = obj()
+  return result
+}
+const _stickersSuggestedShortName: any = () => ({ _: 'stickers.suggestedShortName', short_name: str() })
+const _botCommandScopeDefault: any = () => ({ _: 'botCommandScopeDefault' })
+const _botCommandScopeUsers: any = () => ({ _: 'botCommandScopeUsers' })
+const _botCommandScopeChats: any = () => ({ _: 'botCommandScopeChats' })
+const _botCommandScopeChatAdmins: any = () => ({ _: 'botCommandScopeChatAdmins' })
+const _botCommandScopePeer: any = () => ({ _: 'botCommandScopePeer', peer: obj() })
+const _botCommandScopePeerAdmins: any = () => ({ _: 'botCommandScopePeerAdmins', peer: obj() })
+const _botCommandScopePeerUser: any = () => ({ _: 'botCommandScopePeerUser', peer: obj(), user_id: obj() })
+const _accountResetPasswordFailedWait: any = () => ({ _: 'account.resetPasswordFailedWait', retry_date: i32() })
+const _accountResetPasswordRequestedWait: any = () => ({ _: 'account.resetPasswordRequestedWait', until_date: i32() })
+const _accountResetPasswordOk: any = () => ({ _: 'account.resetPasswordOk' })
+const _updateBotCommands: any = () => ({ _: 'updateBotCommands', _update: true, peer: obj(), bot_id: i64(), commands: vector(obj) })
+const _chatTheme: any = () => ({ _: 'chatTheme', emoticon: str(), theme: obj(), dark_theme: obj() })
+const _accountChatThemesNotModified: any = () => ({ _: 'account.chatThemesNotModified' })
+const _accountChatThemes: any = () => ({ _: 'account.chatThemes', hash: i32(), themes: vector(obj) })
+const _messageActionSetChatTheme: any = () => ({ _: 'messageActionSetChatTheme', emoticon: str() })
+const _sendMessageChooseStickerAction: any = () => ({ _: 'sendMessageChooseStickerAction' })
+const _sponsoredMessage = (): any => {
+  const result: Record<string, unknown> = { _: 'sponsoredMessage' }
+  const flags = i32()
+  result.random_id = bytes()
+  result.from_id = obj()
+  if (flags & 0x1) result.start_param = str()
+  result.message = str()
+  if (flags & 0x2) result.entities = vector(obj)
+  return result
+}
+const _messagesSponsoredMessages: any = () => ({ _: 'messages.sponsoredMessages', messages: vector(obj), chats: vector(obj), users: vector(obj) })
+const _inputStickerSetAnimatedEmojiAnimations: any = () => ({ _: 'inputStickerSetAnimatedEmojiAnimations' })
+const _sendMessageEmojiInteraction: any = () => ({ _: 'sendMessageEmojiInteraction', emoticon: str(), msg_id: i32(), interaction: obj() })
+const _sendMessageEmojiInteractionSeen: any = () => ({ _: 'sendMessageEmojiInteractionSeen', emoticon: str() })
+const _inputBotInlineMessageID64: any = () => ({ _: 'inputBotInlineMessageID64', dc_id: i32(), owner_id: i64(), id: i32(), access_hash: i64() })
 
 const parserMap = new Map<number, () => any>([
   [0xbc799737, _boolFalse],
@@ -2822,7 +3111,7 @@ const parserMap = new Map<number, () => any>([
   [0x56730bcc, _null],
   [0x7f3b18ea, _inputPeerEmpty],
   [0x7da07ec9, _inputPeerSelf],
-  [0x179be863, _inputPeerChat],
+  [0x35a95cb9, _inputPeerChat],
   [0xb98886cf, _inputUserEmpty],
   [0xf7c1b13f, _inputUserSelf],
   [0xf392b7f4, _inputPhoneContact],
@@ -2840,8 +3129,8 @@ const parserMap = new Map<number, () => any>([
   [0x1cd7bf0d, _inputPhotoEmpty],
   [0x3bb3b94a, _inputPhoto],
   [0xdfdaabe1, _inputFileLocation],
-  [0x9db1bc6d, _peerUser],
-  [0xbad0e5bb, _peerChat],
+  [0x59511722, _peerUser],
+  [0x36c6019a, _peerChat],
   [0xaa963b05, _storageFileUnknown],
   [0x40bc6f52, _storageFilePartial],
   [0x7efe0e, _storageFileJpeg],
@@ -2852,47 +3141,47 @@ const parserMap = new Map<number, () => any>([
   [0x4b09ebbc, _storageFileMov],
   [0xb3cea0e4, _storageFileMp4],
   [0x1081464c, _storageFileWebp],
-  [0x200250ba, _userEmpty],
+  [0xd3bc4b7a, _userEmpty],
   [0x4f11bae1, _userProfilePhotoEmpty],
-  [0x69d3ab26, _userProfilePhoto],
+  [0x82d1f706, _userProfilePhoto],
   [0x9d05049, _userStatusEmpty],
   [0xedb93949, _userStatusOnline],
   [0x8c703f, _userStatusOffline],
-  [0x9ba2d800, _chatEmpty],
-  [0x3bda1bde, _chat],
-  [0x7328bdb, _chatForbidden],
-  [0x1b7c9db3, _chatFull],
-  [0xc8d7493e, _chatParticipant],
-  [0xfc900c2b, _chatParticipantsForbidden],
-  [0x3f460fed, _chatParticipants],
+  [0x29562865, _chatEmpty],
+  [0x41cbf256, _chat],
+  [0x6592a1a7, _chatForbidden],
+  [0x4dbdc099, _chatFull],
+  [0xc02d4007, _chatParticipant],
+  [0x8763d3e1, _chatParticipantsForbidden],
+  [0x3cbc93f8, _chatParticipants],
   [0x37c1011c, _chatPhotoEmpty],
-  [0xd20b9f3c, _chatPhoto],
-  [0x83e5de54, _messageEmpty],
-  [0x58ae39c9, _message],
-  [0x286fa604, _messageService],
+  [0x1c6e1c11, _chatPhoto],
+  [0x90a6ca84, _messageEmpty],
+  [0x85d6cbe2, _message],
+  [0x2b085862, _messageService],
   [0x3ded6320, _messageMediaEmpty],
   [0x695150d7, _messageMediaPhoto],
   [0x56e0d474, _messageMediaGeo],
-  [0xcbf24940, _messageMediaContact],
+  [0x70322949, _messageMediaContact],
   [0x9f84f49e, _messageMediaUnsupported],
   [0xb6aef7b0, _messageActionEmpty],
-  [0xa6638b9a, _messageActionChatCreate],
+  [0xbd47cbad, _messageActionChatCreate],
   [0xb5a1ce5a, _messageActionChatEditTitle],
   [0x7fcb13a8, _messageActionChatEditPhoto],
   [0x95e3fbef, _messageActionChatDeletePhoto],
-  [0x488a7337, _messageActionChatAddUser],
-  [0xb2ae9b0c, _messageActionChatDeleteUser],
+  [0x15cefd00, _messageActionChatAddUser],
+  [0xa43f30cc, _messageActionChatDeleteUser],
   [0x2c171f72, _dialog],
   [0x2331b22d, _photoEmpty],
   [0xfb197a65, _photo],
   [0xe17e23c, _photoSizeEmpty],
-  [0x77bfb61b, _photoSize],
-  [0xe9a734fa, _photoCachedSize],
+  [0x75c78e60, _photoSize],
+  [0x21e1ad6, _photoCachedSize],
   [0x1117dd5f, _geoPointEmpty],
   [0xb2a2f663, _geoPoint],
   [0x5e002502, _authSentCode],
   [0xcd050916, _authAuthorization],
-  [0xdf969c2d, _authExportedAuthorization],
+  [0xb434e2b8, _authExportedAuthorization],
   [0xb8bc5b0c, _inputNotifyPeer],
   [0x193b4417, _inputNotifyUsers],
   [0x4a95e84e, _inputNotifyChats],
@@ -2904,11 +3193,11 @@ const parserMap = new Map<number, () => any>([
   [0x1e22c78d, _inputReportReasonViolence],
   [0x2e59d922, _inputReportReasonPornography],
   [0xadf44ee3, _inputReportReasonChildAbuse],
-  [0xe1746d0a, _inputReportReasonOther],
-  [0xedf17c12, _userFull],
-  [0xf911c994, _contact],
-  [0xd0028438, _importedContact],
-  [0xd3680c61, _contactStatus],
+  [0xc1e4a2b1, _inputReportReasonOther],
+  [0xd697ff05, _userFull],
+  [0x145ade0b, _contact],
+  [0xc13e3c50, _importedContact],
+  [0x16d9703b, _contactStatus],
   [0xb74ba9d2, _contactsContactsNotModified],
   [0xeae87e42, _contactsContacts],
   [0x77d01c3b, _contactsImportedContacts],
@@ -2931,19 +3220,19 @@ const parserMap = new Map<number, () => any>([
   [0x1f2b0afd, _updateNewMessage],
   [0x4e90bfd6, _updateMessageID],
   [0xa20db0e5, _updateDeleteMessages],
-  [0x5c486927, _updateUserTyping],
-  [0x9a65ea1f, _updateChatUserTyping],
+  [0xc01e857f, _updateUserTyping],
+  [0x83487af0, _updateChatUserTyping],
   [0x7761198, _updateChatParticipants],
-  [0x1bfbd823, _updateUserStatus],
-  [0xa7332b73, _updateUserName],
-  [0x95313b0c, _updateUserPhoto],
+  [0xe5bdf8de, _updateUserStatus],
+  [0xc3f202e0, _updateUserName],
+  [0xf227868c, _updateUserPhoto],
   [0xa56c2a3e, _updatesState],
   [0x5d75a138, _updatesDifferenceEmpty],
   [0xf49ca0, _updatesDifference],
   [0xa8fb1981, _updatesDifferenceSlice],
   [0xe317af7e, _updatesTooLong],
-  [0x2296d2c8, _updateShortMessage],
-  [0x402d5dbb, _updateShortChatMessage],
+  [0x313bc7f8, _updateShortMessage],
+  [0x4d6deea5, _updateShortChatMessage],
   [0x78d4dec1, _updateShort],
   [0x725b04c3, _updatesCombined],
   [0x74ae4240, _updates],
@@ -2954,7 +3243,7 @@ const parserMap = new Map<number, () => any>([
   [0x18b7a10d, _dcOption],
   [0x330b4067, _config],
   [0x8e1a1775, _nearestDc],
-  [0x1da7158f, _helpAppUpdate],
+  [0xccbbce30, _helpAppUpdate],
   [0xc45a6536, _helpNoAppUpdate],
   [0x18cb9f78, _helpInviteText],
   [0x12bcbd9a, _updateNewEncryptedMessage],
@@ -2962,10 +3251,10 @@ const parserMap = new Map<number, () => any>([
   [0xb4a2e88d, _updateEncryption],
   [0x38fe25b7, _updateEncryptedMessagesRead],
   [0xab7ec0a0, _encryptedChatEmpty],
-  [0x3bf703dc, _encryptedChatWaiting],
-  [0x62718a82, _encryptedChatRequested],
-  [0xfa56ce36, _encryptedChat],
-  [0x13d6dd27, _encryptedChatDiscarded],
+  [0x66b25953, _encryptedChatWaiting],
+  [0x48f1d94c, _encryptedChatRequested],
+  [0x61f0d4c7, _encryptedChat],
+  [0x1e1c7c45, _encryptedChatDiscarded],
   [0xf141b5e1, _inputEncryptedChat],
   [0xc21f497e, _encryptedFileEmpty],
   [0x4a70994c, _encryptedFile],
@@ -2981,11 +3270,11 @@ const parserMap = new Map<number, () => any>([
   [0x9493ff32, _messagesSentEncryptedFile],
   [0xfa4f0bb5, _inputFileBig],
   [0x2dc173c8, _inputEncryptedFileBigUploaded],
-  [0xea4b0e5c, _updateChatParticipantAdd],
-  [0x6e5f8c22, _updateChatParticipantDelete],
+  [0x3dda5451, _updateChatParticipantAdd],
+  [0xe32f3d77, _updateChatParticipantDelete],
   [0x8e5e9873, _updateDcOptions],
   [0x5b38c6c1, _inputMediaUploadedDocument],
-  [0x23ab23d2, _inputMediaDocument],
+  [0x33473058, _inputMediaDocument],
   [0x9cb070d7, _messageMediaDocument],
   [0x72f0eaae, _inputDocumentEmpty],
   [0x1abfb575, _inputDocument],
@@ -3023,13 +3312,13 @@ const parserMap = new Map<number, () => any>([
   [0x90110467, _inputPrivacyValueDisallowUsers],
   [0xfffe1bac, _privacyValueAllowContacts],
   [0x65427b82, _privacyValueAllowAll],
-  [0x4d5bbe0c, _privacyValueAllowUsers],
+  [0xb8905fb2, _privacyValueAllowUsers],
   [0xf888fa1a, _privacyValueDisallowContacts],
   [0x8b73e763, _privacyValueDisallowAll],
-  [0xc7f49b7, _privacyValueDisallowUsers],
+  [0xe4621141, _privacyValueDisallowUsers],
   [0x50a04e45, _accountPrivacyRules],
   [0xb8d0afdf, _accountDaysTTL],
-  [0x12b9417b, _updateUserPhone],
+  [0x5492a13, _updateUserPhone],
   [0x6c37c15c, _documentAttributeImageSize],
   [0x11b58939, _documentAttributeAnimated],
   [0x6319d612, _documentAttributeSticker],
@@ -3037,10 +3326,10 @@ const parserMap = new Map<number, () => any>([
   [0x9852f9c6, _documentAttributeAudio],
   [0x15590068, _documentAttributeFilename],
   [0xf1749a22, _messagesStickersNotModified],
-  [0xe4599bbd, _messagesStickers],
+  [0x30a6ec7e, _messagesStickers],
   [0x12b299d4, _stickerPack],
   [0xe86602c3, _messagesAllStickersNotModified],
-  [0xedfd405f, _messagesAllStickers],
+  [0xcdbbcebb, _messagesAllStickers],
   [0x9c974fdf, _updateReadHistoryInbox],
   [0x2f2f21bf, _updateReadHistoryOutbox],
   [0x84d19185, _messagesAffectedMessages],
@@ -3051,34 +3340,33 @@ const parserMap = new Map<number, () => any>([
   [0xa32dd600, _messageMediaWebPage],
   [0xad01d61d, _authorization],
   [0x1250abde, _accountAuthorizations],
-  [0xad2641f8, _accountPassword],
+  [0x185b184f, _accountPassword],
   [0x9a5c33e5, _accountPasswordSettings],
   [0xc23727c9, _accountPasswordInputSettings],
   [0x137948a5, _authPasswordRecovery],
   [0xc13d1c11, _inputMediaVenue],
   [0x2ec0533f, _messageMediaVenue],
   [0xa384b779, _receivedNotifyMessage],
-  [0x69df3769, _chatInviteEmpty],
-  [0xfc2e05bc, _chatInviteExported],
+  [0xb18105e8, _chatInviteExported],
   [0x5a686d7c, _chatInviteAlready],
   [0xdfc2f58e, _chatInvite],
-  [0xf89cf5e8, _messageActionChatJoinedByLink],
+  [0x31224c3, _messageActionChatJoinedByLink],
   [0x68c13933, _updateReadMessagesContents],
   [0xffb62b95, _inputStickerSetEmpty],
   [0x9de7a269, _inputStickerSetID],
   [0x861cc8a0, _inputStickerSetShortName],
-  [0xeeb46f27, _stickerSet],
+  [0xd7df217a, _stickerSet],
   [0xb60a24a6, _messagesStickerSet],
-  [0x938458c1, _user],
+  [0x3ff6ecb0, _user],
   [0xc27ac8c7, _botCommand],
-  [0x98e81d3a, _botInfo],
+  [0x1b74b335, _botInfo],
   [0xa2fa4880, _keyboardButton],
   [0x77608b83, _keyboardButtonRow],
   [0xa03e5b85, _replyKeyboardHide],
-  [0xf4108aa0, _replyKeyboardForceReply],
-  [0x3502758c, _replyKeyboardMarkup],
-  [0x7b8e7de6, _inputPeerUser],
-  [0xd8292816, _inputUser],
+  [0x86b40b08, _replyKeyboardForceReply],
+  [0x85dd99d1, _replyKeyboardMarkup],
+  [0xdde8a54c, _inputPeerUser],
+  [0xf21158c6, _inputUser],
   [0xbb92ba95, _messageEntityUnknown],
   [0xfa04579d, _messageEntityMention],
   [0x6f635b0d, _messageEntityHashtag],
@@ -3090,49 +3378,49 @@ const parserMap = new Map<number, () => any>([
   [0x28a20571, _messageEntityCode],
   [0x73924be0, _messageEntityPre],
   [0x76a6d327, _messageEntityTextUrl],
-  [0x11f1331c, _updateShortSentMessage],
+  [0x9015e101, _updateShortSentMessage],
   [0xee8c1e86, _inputChannelEmpty],
-  [0xafeb712e, _inputChannel],
-  [0xbddde532, _peerChannel],
-  [0x20adaef8, _inputPeerChannel],
-  [0xd31a961e, _channel],
-  [0x289da732, _channelForbidden],
+  [0xf35aec28, _inputChannel],
+  [0xa2a5371e, _peerChannel],
+  [0x27bcbbfc, _inputPeerChannel],
+  [0x8261ac61, _channel],
+  [0x17d493d5, _channelForbidden],
   [0x7f077ad9, _contactsResolvedPeer],
-  [0xf0e6672a, _channelFull],
+  [0xe9b27a17, _channelFull],
   [0xae30253, _messageRange],
   [0x64479808, _messagesChannelMessages],
   [0x95d2ac92, _messageActionChannelCreate],
-  [0xeb0467fb, _updateChannelTooLong],
-  [0xb6d45656, _updateChannel],
+  [0x108d941f, _updateChannelTooLong],
+  [0x635b4c09, _updateChannel],
   [0x62ba04d9, _updateNewChannelMessage],
-  [0x330b5424, _updateReadChannelInbox],
-  [0xc37521c9, _updateDeleteChannelMessages],
-  [0x98a12b4b, _updateChannelMessageViews],
+  [0x922e6e10, _updateReadChannelInbox],
+  [0xc32d5b12, _updateDeleteChannelMessages],
+  [0xf226ac08, _updateChannelMessageViews],
   [0x3e11affb, _updatesChannelDifferenceEmpty],
   [0xa4bcc6fe, _updatesChannelDifferenceTooLong],
   [0x2064674e, _updatesChannelDifference],
   [0x94d42ee7, _channelMessagesFilterEmpty],
   [0xcd77d957, _channelMessagesFilter],
-  [0x15ebac1d, _channelParticipant],
-  [0xa3289a6d, _channelParticipantSelf],
-  [0x447dca4b, _channelParticipantCreator],
+  [0xc00c07c0, _channelParticipant],
+  [0x28a8bc67, _channelParticipantSelf],
+  [0x2fe601d3, _channelParticipantCreator],
   [0xde3f3c79, _channelParticipantsRecent],
   [0xb4608969, _channelParticipantsAdmins],
   [0xa3b54985, _channelParticipantsKicked],
-  [0xf56ee2a8, _channelsChannelParticipants],
-  [0xd0d9b163, _channelsChannelParticipant],
-  [0xda13538a, _chatParticipantCreator],
-  [0xe2d6e436, _chatParticipantAdmin],
-  [0xb6901959, _updateChatParticipantAdmin],
-  [0x51bdb021, _messageActionChatMigrateTo],
-  [0xb055eaee, _messageActionChannelMigrateFrom],
+  [0x9ab0feaf, _channelsChannelParticipants],
+  [0xdfb80317, _channelsChannelParticipant],
+  [0xe46bcee4, _chatParticipantCreator],
+  [0xa0933f5b, _chatParticipantAdmin],
+  [0xd7ca61a2, _updateChatParticipantAdmin],
+  [0xe1037f92, _messageActionChatMigrateTo],
+  [0xea3948e9, _messageActionChannelMigrateFrom],
   [0xb0d1865b, _channelParticipantsBots],
   [0x780a0310, _helpTermsOfService],
   [0x688a30aa, _updateNewStickerSet],
   [0xbb2d201, _updateStickerSetsOrder],
   [0x43ae3dec, _updateStickerSets],
   [0xe8025ca2, _messagesSavedGifsNotModified],
-  [0x2e0709a5, _messagesSavedGifs],
+  [0x84a02a0d, _messagesSavedGifs],
   [0x9375341e, _updateSavedGifs],
   [0x3380c786, _inputBotInlineMessageMediaAuto],
   [0x3dcd7a87, _inputBotInlineMessageText],
@@ -3141,8 +3429,8 @@ const parserMap = new Map<number, () => any>([
   [0x8c7f65e2, _botInlineMessageText],
   [0x11965f3a, _botInlineResult],
   [0x947ca848, _messagesBotResults],
-  [0x54826690, _updateBotInlineQuery],
-  [0xe48f964, _updateBotInlineSend],
+  [0x496f379c, _updateBotInlineQuery],
+  [0x12f12a07, _updateBotInlineSend],
   [0x50f5c392, _inputMessagesFilterVoice],
   [0x3751b49e, _inputMessagesFilterMusic],
   [0xbdfb0426, _inputPrivacyKeyChatInvite],
@@ -3165,7 +3453,7 @@ const parserMap = new Map<number, () => any>([
   [0x568a748, _keyboardButtonSwitchInline],
   [0x48a30254, _replyInlineMarkup],
   [0x36585ea4, _messagesBotCallbackAnswer],
-  [0xe73547e1, _updateBotCallbackQuery],
+  [0xb9cfc48d, _updateBotCallbackQuery],
   [0x26b5dde6, _messagesMessageEditData],
   [0xe40370a3, _updateEditMessage],
   [0x96929a85, _inputBotInlineMessageMediaGeo],
@@ -3178,7 +3466,7 @@ const parserMap = new Map<number, () => any>([
   [0xfff8fdc4, _inputBotInlineResultDocument],
   [0x17db940b, _botInlineMediaResult],
   [0x890c3d89, _inputBotInlineMessageID],
-  [0xf9d27a5a, _updateInlineBotCallbackQuery],
+  [0x691e9052, _updateInlineBotCallbackQuery],
   [0x3c20629f, _inlineBotSwitchPM],
   [0x3371c354, _messagesPeerDialogs],
   [0xedcdc05b, _topPeer],
@@ -3190,19 +3478,19 @@ const parserMap = new Map<number, () => any>([
   [0xfb834291, _topPeerCategoryPeers],
   [0xde266ef5, _contactsTopPeersNotModified],
   [0x70b772a8, _contactsTopPeers],
-  [0x352dca58, _messageEntityMentionName],
+  [0xdc7b1140, _messageEntityMentionName],
   [0x208e68c9, _inputMessageEntityMentionName],
   [0x3a20ecb8, _inputMessagesFilterChatPhotos],
-  [0x25d6c9c7, _updateReadChannelOutbox],
+  [0xb75f99a9, _updateReadChannelOutbox],
   [0xee2bb969, _updateDraftMessage],
   [0x1b0c841a, _draftMessageEmpty],
   [0xfd8e711f, _draftMessage],
   [0x9fbab604, _messageActionHistoryClear],
   [0xc6dc0c66, _messagesFeaturedStickersNotModified],
-  [0xb6abc341, _messagesFeaturedStickers],
+  [0x84c02310, _messagesFeaturedStickers],
   [0x571d2742, _updateReadFeaturedStickers],
   [0xb17f890, _messagesRecentStickersNotModified],
-  [0x22f3afb3, _messagesRecentStickers],
+  [0x88d37c56, _messagesRecentStickers],
   [0x9a422c20, _updateRecentStickers],
   [0x4fcba9c8, _messagesArchivedStickers],
   [0x38641628, _messagesStickerSetInstallResultSuccess],
@@ -3226,10 +3514,10 @@ const parserMap = new Map<number, () => any>([
   [0xc331e80a, _inputGameShortName],
   [0x50f41ccf, _keyboardButtonGame],
   [0x92a72876, _messageActionGameScore],
-  [0x58fffcd0, _highScore],
+  [0x73a379eb, _highScore],
   [0x9a3bfd99, _messagesHighScores],
   [0x4afe8f6d, _updatesDifferenceTooLong],
-  [0x40771900, _updateChannelWebPage],
+  [0x2f2ba99f, _updateChannelWebPage],
   [0x9cd81144, _messagesChatsSlice],
   [0xdc3d824f, _textEmpty],
   [0x744694e0, _textPlain],
@@ -3276,8 +3564,8 @@ const parserMap = new Map<number, () => any>([
   [0x8317c0c3, _updateBotWebhookJSON],
   [0x9b9240a6, _updateBotWebhookJSONQuery],
   [0xcb296bf8, _labeledPrice],
-  [0xc30aa358, _invoice],
-  [0xf4e096c3, _inputMediaInvoice],
+  [0xcd886e0, _invoice],
+  [0xd9799874, _inputMediaInvoice],
   [0xea02c27e, _paymentCharge],
   [0x8f31b327, _messageActionPaymentSentMe],
   [0x84551347, _messageMediaInvoice],
@@ -3290,25 +3578,25 @@ const parserMap = new Map<number, () => any>([
   [0x9bed434d, _inputWebDocument],
   [0xc239d686, _inputWebFileLocation],
   [0x21e753bc, _uploadWebFile],
-  [0x3f56aea3, _paymentsPaymentForm],
+  [0x1694761b, _paymentsPaymentForm],
   [0xd1451883, _paymentsValidatedRequestedInfo],
   [0x4e5f810d, _paymentsPaymentResult],
-  [0x500911e1, _paymentsPaymentReceipt],
+  [0x70c4fe03, _paymentsPaymentReceipt],
   [0xfb8fe43c, _paymentsSavedInfo],
   [0xc10eb2cf, _inputPaymentCredentialsSaved],
   [0x3417d728, _inputPaymentCredentials],
   [0xdb64fd34, _accountTmpPassword],
   [0xb6213cdf, _shippingOption],
-  [0xe0cdc940, _updateBotShippingQuery],
-  [0x5d2f3aa9, _updateBotPrecheckoutQuery],
+  [0xb5aefd7d, _updateBotShippingQuery],
+  [0x8caa9a96, _updateBotPrecheckoutQuery],
   [0xffa0a496, _inputStickerSetItem],
   [0xab0f6b1e, _updatePhoneCall],
   [0x1e36fded, _inputPhoneCall],
   [0x5366c915, _phoneCallEmpty],
-  [0x1b8f4ad1, _phoneCallWaiting],
-  [0x87eabb53, _phoneCallRequested],
-  [0x997c454a, _phoneCallAccepted],
-  [0x8742ae7f, _phoneCall],
+  [0xc5226f17, _phoneCallWaiting],
+  [0x14b0ed0c, _phoneCallRequested],
+  [0x3660c311, _phoneCallAccepted],
+  [0x967f7c67, _phoneCall],
   [0x50ca4de1, _phoneCallDiscarded],
   [0x9d4c17c0, _phoneConnection],
   [0xfc878fc8, _phoneCallProtocol],
@@ -3332,8 +3620,8 @@ const parserMap = new Map<number, () => any>([
   [0xeeca5ce3, _langPackLanguage],
   [0x46560264, _updateLangPackTooLong],
   [0x56022f4d, _updateLangPack],
-  [0xccbebbaf, _channelParticipantAdmin],
-  [0x1c0facaf, _channelParticipantBanned],
+  [0x34c3bb53, _channelParticipantAdmin],
+  [0x6df8014e, _channelParticipantBanned],
   [0x1427a5e1, _channelParticipantsBanned],
   [0x656ac4b, _channelParticipantsSearch],
   [0xe6dfb825, _channelAdminLogEventActionChangeTitle],
@@ -3350,7 +3638,7 @@ const parserMap = new Map<number, () => any>([
   [0xe31c34d8, _channelAdminLogEventActionParticipantInvite],
   [0xe6d83d7e, _channelAdminLogEventActionParticipantToggleBan],
   [0xd5676710, _channelAdminLogEventActionParticipantToggleAdmin],
-  [0x3b5a3e40, _channelAdminLogEvent],
+  [0x1fad68cd, _channelAdminLogEvent],
   [0xed8af74d, _channelsAdminLogResults],
   [0xea107ae4, _channelAdminLogEventsFilter],
   [0x1e76a78c, _topPeerCategoryPhoneCalls],
@@ -3358,31 +3646,30 @@ const parserMap = new Map<number, () => any>([
   [0x5ce14175, _popularContact],
   [0x4792929b, _messageActionScreenshotTaken],
   [0x9e8fa6d3, _messagesFavedStickersNotModified],
-  [0xf37f2f16, _messagesFavedStickers],
+  [0x2cb51097, _messagesFavedStickers],
   [0xe511996d, _updateFavedStickers],
-  [0x89893b45, _updateChannelReadMessagesContents],
+  [0x44bdd535, _updateChannelReadMessagesContents],
   [0xc1f8e69a, _inputMessagesFilterMyMentions],
   [0x7084a7be, _updateContactsReset],
   [0xb1c3caa7, _channelAdminLogEventActionChangeStickerSet],
   [0xfae69f56, _messageActionCustomAction],
   [0xaa1c39f, _inputPaymentCredentialsApplePay],
-  [0xca05d50e, _inputPaymentCredentialsAndroidPay],
   [0xe7026d0d, _inputMessagesFilterGeo],
   [0xe062db83, _inputMessagesFilterContacts],
-  [0x70db6837, _updateChannelAvailableMessages],
+  [0xb23fc698, _updateChannelAvailableMessages],
   [0x5f5c95f1, _channelAdminLogEventActionTogglePreHistoryHidden],
   [0x971fa843, _inputMediaGeoLive],
   [0xb940c666, _messageMediaGeoLive],
   [0x46e1d13d, _recentMeUrlUnknown],
-  [0x8dbc3336, _recentMeUrlUser],
-  [0xa01b22f9, _recentMeUrlChat],
+  [0xb92c09e2, _recentMeUrlUser],
+  [0xb2da71d2, _recentMeUrlChat],
   [0xeb49081d, _recentMeUrlChatInvite],
   [0xbc0a57dc, _recentMeUrlStickerSet],
   [0xe0310d7, _helpRecentMeUrls],
   [0xf0173fe9, _channelsChannelParticipantsNotModified],
   [0x74535f21, _messagesMessagesNotModified],
   [0x1cc6e91f, _inputSingleMedia],
-  [0xcac943f2, _webAuthorization],
+  [0xa6f8f452, _webAuthorization],
   [0xed56c9fc, _accountWebAuthorizations],
   [0xa676a322, _inputMessageID],
   [0xbad88395, _inputMessageReplyTo],
@@ -3393,7 +3680,7 @@ const parserMap = new Map<number, () => any>([
   [0xfcaafeb7, _inputDialogPeer],
   [0xe56dbf05, _dialogPeer],
   [0xd54b65d, _messagesFoundStickerSetsNotModified],
-  [0x5108d648, _messagesFoundStickerSets],
+  [0x8af09dd2, _messagesFoundStickerSets],
   [0x6242c773, _fileHash],
   [0xf9c8bcc6, _webDocumentNoProxy],
   [0x75588b3f, _inputClientProxy],
@@ -3500,7 +3787,7 @@ const parserMap = new Map<number, () => any>([
   [0x6ca9c2e9, _pollAnswer],
   [0x86e18161, _poll],
   [0x3b6ddad2, _pollAnswerVoters],
-  [0xbadcc1a3, _pollResults],
+  [0xdcb82ea3, _pollResults],
   [0xf94e5f1, _inputMediaPoll],
   [0x4bd6e798, _messageMediaPoll],
   [0xf041e250, _chatOnlines],
@@ -3515,9 +3802,9 @@ const parserMap = new Map<number, () => any>([
   [0x2df5fc0a, _channelAdminLogEventActionDefaultBannedRights],
   [0x8f079643, _channelAdminLogEventActionStopPoll],
   [0x1c199183, _accountWallPapersNotModified],
-  [0x702b65a9, _accountWallPapers],
+  [0xcdc3858c, _accountWallPapers],
   [0xdebebe83, _codeSettings],
-  [0x5086cf8, _wallPaperSettings],
+  [0x1dc1bca4, _wallPaperSettings],
   [0xe04232f3, _autoDownloadSettings],
   [0x63cacf26, _accountAutoDownloadSettings],
   [0xd5b3b9f9, _emojiKeyword],
@@ -3529,11 +3816,10 @@ const parserMap = new Map<number, () => any>([
   [0x69ec56a3, _privacyKeyForwards],
   [0x5719bacc, _inputPrivacyKeyProfilePhoto],
   [0x96151fed, _privacyKeyProfilePhoto],
-  [0xbc7fc6cd, _fileLocationToBeDeprecated],
   [0x40181ffe, _inputPhotoFileLocation],
   [0xd83466f3, _inputPhotoLegacyFileLocation],
-  [0x27d69997, _inputPeerPhotoFileLocation],
-  [0xdbaeae9, _inputStickerSetThumb],
+  [0x37257e99, _inputPeerPhotoFileLocation],
+  [0x9d84f3db, _inputStickerSetThumb],
   [0xff544e65, _folder],
   [0x71bd134c, _dialogFolder],
   [0x64600527, _inputDialogPeerFolder],
@@ -3541,25 +3827,25 @@ const parserMap = new Map<number, () => any>([
   [0xfbd2c296, _inputFolderPeer],
   [0xe9baa668, _folderPeer],
   [0x19360dc0, _updateFolderPeers],
-  [0x2d117597, _inputUserFromMessage],
-  [0x2a286531, _inputChannelFromMessage],
-  [0x17bae2e6, _inputPeerUserFromMessage],
-  [0x9c95f7bb, _inputPeerChannelFromMessage],
+  [0x1da448e2, _inputUserFromMessage],
+  [0x5b934f9d, _inputChannelFromMessage],
+  [0xa87b0a1c, _inputPeerUserFromMessage],
+  [0xbd2a0840, _inputPeerChannelFromMessage],
   [0x352dafa, _inputPrivacyKeyPhoneNumber],
   [0xd19ae46d, _privacyKeyPhoneNumber],
   [0xa8406ca9, _topPeerCategoryForwardUsers],
   [0xfbeec0f0, _topPeerCategoryForwardChats],
-  [0xa26f881b, _channelAdminLogEventActionChangeLinkedChat],
+  [0x50c7ac8, _channelAdminLogEventActionChangeLinkedChat],
   [0xe844ebff, _messagesSearchCounter],
   [0x10b78d29, _keyboardButtonUrlAuth],
   [0xd02e7fd4, _inputKeyboardButtonUrlAuth],
   [0x92d33a0e, _urlAuthResultRequest],
   [0x8f8c0e4e, _urlAuthResultAccepted],
   [0xa9d6db1f, _urlAuthResultDefault],
-  [0x4c81c1ba, _inputPrivacyValueAllowChatParticipants],
-  [0xd82363af, _inputPrivacyValueDisallowChatParticipants],
-  [0x18be796b, _privacyValueAllowChatParticipants],
-  [0xacae0690, _privacyValueDisallowChatParticipants],
+  [0x840649cf, _inputPrivacyValueAllowChatParticipants],
+  [0xe94f0f86, _inputPrivacyValueDisallowChatParticipants],
+  [0x6b134e8e, _privacyValueAllowChatParticipants],
+  [0x41c87565, _privacyValueDisallowChatParticipants],
   [0x9c4e7e8b, _messageEntityUnderline],
   [0xbf0693d4, _messageEntityStrike],
   [0x20df5d0, _messageEntityBlockquote],
@@ -3579,9 +3865,9 @@ const parserMap = new Map<number, () => any>([
   [0xd072acb4, _restrictionReason],
   [0x3c5693e9, _inputTheme],
   [0xf5890df1, _inputThemeSlug],
-  [0x28f1114, _theme],
+  [0xe802b8dc, _theme],
   [0xf41eb622, _accountThemesNotModified],
-  [0x7f676421, _accountThemes],
+  [0x9a3d8c6d, _accountThemes],
   [0x8216fba3, _updateTheme],
   [0xd1219bdd, _inputPrivacyKeyAddedByPhone],
   [0x42ffd42b, _privacyKeyAddedByPhone],
@@ -3597,15 +3883,15 @@ const parserMap = new Map<number, () => any>([
   [0xb7b31ea8, _baseThemeNight],
   [0x6d5f77ee, _baseThemeTinted],
   [0x5b11125a, _baseThemeArctic],
-  [0x8427bbac, _inputWallPaperNoFile],
-  [0x8af40b25, _wallPaperNoFile],
-  [0xbd507cd1, _inputThemeSettings],
-  [0x9c14984a, _themeSettings],
+  [0x967a462e, _inputWallPaperNoFile],
+  [0xe0804116, _wallPaperNoFile],
+  [0x8fde504f, _inputThemeSettings],
+  [0xfa58b6d4, _themeSettings],
   [0x54b56617, _webPageAttributeTheme],
-  [0x42f88f2c, _updateMessagePollVote],
-  [0xa28e5559, _messageUserVote],
-  [0x36377430, _messageUserVoteInputOption],
-  [0xe8fe0de, _messageUserVoteMultiple],
+  [0x106395c9, _updateMessagePollVote],
+  [0x34d247b4, _messageUserVote],
+  [0x3ca5b0ec, _messageUserVoteInputOption],
+  [0x8a65e557, _messageUserVoteMultiple],
   [0x823f649, _messagesVotesList],
   [0xbbc7515d, _keyboardButtonRequestPoll],
   [0x761e6af4, _messageEntityBankCard],
@@ -3630,12 +3916,12 @@ const parserMap = new Map<number, () => any>([
   [0xe67f520e, _inputStickerSetDice],
   [0x98f6ac75, _helpPromoDataEmpty],
   [0x8c39793f, _helpPromoData],
-  [0xe831c556, _videoSize],
+  [0xde33b094, _videoSize],
   [0x2661bf09, _updatePhoneCallSignalingData],
   [0x61695cb0, _chatInvitePeek],
-  [0x18f3d0f7, _statsGroupTopPoster],
-  [0x6014f412, _statsGroupTopAdmin],
-  [0x31962a4c, _statsGroupTopInviter],
+  [0x9d04af9b, _statsGroupTopPoster],
+  [0xd7584c87, _statsGroupTopAdmin],
+  [0x535f779d, _statsGroupTopInviter],
   [0xef7ff916, _statsMegagroupStats],
   [0xbea2f424, _globalPrivacySettings],
   [0x635fe375, _phoneConnectionWebrtc],
@@ -3644,26 +3930,105 @@ const parserMap = new Map<number, () => any>([
   [0x93cc1f32, _helpCountriesListNotModified],
   [0x87d0759e, _helpCountriesList],
   [0x455b853d, _messageViews],
-  [0x6e8a84df, _updateChannelMessageForwards],
-  [0x5aa86a51, _photoSizeProgressive],
+  [0xd29a27f4, _updateChannelMessageForwards],
+  [0xfa3efb95, _photoSizeProgressive],
   [0xb6c4f543, _messagesMessageViews],
-  [0x1cc7de54, _updateReadChannelDiscussionInbox],
-  [0x4638a26c, _updateReadChannelDiscussionOutbox],
-  [0xf5dd8f9d, _messagesDiscussionMessage],
+  [0xd6b19546, _updateReadChannelDiscussionInbox],
+  [0x695c9e7c, _updateReadChannelDiscussionOutbox],
+  [0xa6341782, _messagesDiscussionMessage],
   [0xa6d57763, _messageReplyHeader],
-  [0x4128faac, _messageReplies],
+  [0x83d60fc2, _messageReplies],
   [0x246a4b22, _updatePeerBlocked],
   [0xe8fd8014, _peerBlocked],
-  [0xff2abe9f, _updateChannelUserTyping],
+  [0x8c88c923, _updateChannelUserTyping],
   [0xacfa1a7e, _inputMessageCallbackQuery],
-  [0xc3c6796b, _channelParticipantLeft],
+  [0x1b03f006, _channelParticipantLeft],
   [0xe04b5ceb, _channelParticipantsMentions],
   [0xed85eab5, _updatePinnedMessages],
-  [0x8588878b, _updatePinnedChannelMessages],
+  [0x5bb98608, _updatePinnedChannelMessages],
   [0x1bb00451, _inputMessagesFilterPinned],
   [0x8999f295, _statsMessageStats],
   [0x98e0d697, _messageActionGeoProximityReached],
   [0xd8214d41, _photoPathSize],
+  [0xd92c2285, _speakingInGroupCallAction],
+  [0x7780bcb4, _groupCallDiscarded],
+  [0xd597650c, _groupCall],
+  [0xd8aa840f, _inputGroupCall],
+  [0x7a0d7f42, _messageActionGroupCall],
+  [0x502f92f7, _messageActionInviteToGroupCall],
+  [0xeba636fe, _groupCallParticipant],
+  [0xf89a6a4e, _updateChat],
+  [0xf2ebdb4e, _updateGroupCallParticipants],
+  [0x14b24500, _updateGroupCall],
+  [0x9e727aad, _phoneGroupCall],
+  [0xf47751b6, _phoneGroupParticipants],
+  [0x3081ed9d, _inlineQueryPeerTypeSameBotPM],
+  [0x833c0fac, _inlineQueryPeerTypePM],
+  [0xd766c50a, _inlineQueryPeerTypeChat],
+  [0x5ec4be43, _inlineQueryPeerTypeMegagroup],
+  [0x6334ee9a, _inlineQueryPeerTypeBroadcast],
+  [0x23209745, _channelAdminLogEventActionStartGroupCall],
+  [0xdb9f9140, _channelAdminLogEventActionDiscardGroupCall],
+  [0xf92424d2, _channelAdminLogEventActionParticipantMute],
+  [0xe64429c0, _channelAdminLogEventActionParticipantUnmute],
+  [0x56d6a247, _channelAdminLogEventActionToggleGroupCallSetting],
+  [0x8ac32801, _inputPaymentCredentialsGooglePay],
+  [0x1662af0b, _messagesHistoryImport],
+  [0xdbda9246, _sendMessageHistoryImportAction],
+  [0x5e0fb7b9, _messagesHistoryImportParsed],
+  [0xf5ddd6e7, _inputReportReasonFake],
+  [0xef8d3e6c, _messagesAffectedFoundMessages],
+  [0xaa1afbfd, _messageActionSetMessagesTTL],
+  [0xbb9bb9a5, _updatePeerHistoryTTL],
+  [0xd087663a, _updateChatParticipant],
+  [0x985d3abb, _updateChannelParticipant],
+  [0xc4870a49, _updateBotStopped],
+  [0xb5cd5f4, _chatInviteImporter],
+  [0xbdc62dcc, _messagesExportedChatInvites],
+  [0x1871be50, _messagesExportedChatInvite],
+  [0x222600ef, _messagesExportedChatInviteReplaced],
+  [0x81b6b00a, _messagesChatInviteImporters],
+  [0xf2ecef23, _chatAdminWithInvites],
+  [0xb69b72d7, _messagesChatAdminsWithInvites],
+  [0x5cdada77, _channelAdminLogEventActionParticipantJoinByInvite],
+  [0x5a50fca4, _channelAdminLogEventActionExportedInviteDelete],
+  [0x410a134e, _channelAdminLogEventActionExportedInviteRevoke],
+  [0xe90ebb59, _channelAdminLogEventActionExportedInviteEdit],
+  [0x3e7f6847, _channelAdminLogEventActionParticipantVolume],
+  [0x6e941a38, _channelAdminLogEventActionChangeHistoryTTL],
+  [0xa24de717, _messagesCheckedHistoryImportPeer],
+  [0x598a92a, _inputGroupCallStream],
+  [0xafe5623f, _phoneJoinAsPeers],
+  [0x204bd158, _phoneExportedGroupCallInvite],
+  [0xd7e78225, _inputBotInlineMessageMediaInvoice],
+  [0x354a9b09, _botInlineMessageMediaInvoice],
+  [0xb3a07661, _messageActionGroupCallScheduled],
+  [0xdcb118b7, _groupCallParticipantVideoSourceGroup],
+  [0x67753ac8, _groupCallParticipantVideo],
+  [0xb783982, _updateGroupCallConnection],
+  [0x85fea03f, _stickersSuggestedShortName],
+  [0x2f6cb2ab, _botCommandScopeDefault],
+  [0x3c4f04d8, _botCommandScopeUsers],
+  [0x6fe1a881, _botCommandScopeChats],
+  [0xb9aa606a, _botCommandScopeChatAdmins],
+  [0xdb9d897d, _botCommandScopePeer],
+  [0x3fd863d1, _botCommandScopePeerAdmins],
+  [0xa1321f3, _botCommandScopePeerUser],
+  [0xe3779861, _accountResetPasswordFailedWait],
+  [0xe9effc7d, _accountResetPasswordRequestedWait],
+  [0xe926d63e, _accountResetPasswordOk],
+  [0x4d712f2e, _updateBotCommands],
+  [0xed0b5c33, _chatTheme],
+  [0xe011e1c4, _accountChatThemesNotModified],
+  [0xfe4cbebd, _accountChatThemes],
+  [0xaa786345, _messageActionSetChatTheme],
+  [0xb05ac6b1, _sendMessageChooseStickerAction],
+  [0x2a3c381f, _sponsoredMessage],
+  [0x65a4c7d5, _messagesSponsoredMessages],
+  [0xcde3739, _inputStickerSetAnimatedEmojiAnimations],
+  [0x25972bcb, _sendMessageEmojiInteraction],
+  [0xb665902e, _sendMessageEmojiInteractionSeen],
+  [0xb6d915d7, _inputBotInlineMessageID64],
 ])
 
 const i32 = () => r.int32()

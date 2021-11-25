@@ -39,7 +39,7 @@ const initialDataState = {
   folders: new Map(),
   foldersLoading: false,
   foldersMessages: new Map(),
-  activeFolderId: 0,
+  activeFolderId: '',
   loadingFolderIds: new Map(),
   sendingMessages: new Map(),
   searchMessages: new Map(),

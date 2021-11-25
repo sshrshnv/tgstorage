@@ -1,4 +1,4 @@
-import { createStore, get, set, update, clear } from 'idb-keyval'
+import { createStore, get, set, update, clear, keys, delMany } from 'idb-keyval'
 
 import type {
   User,
@@ -11,7 +11,7 @@ import type {
 
 const database = createStore('tgstorage-data', 'data')
 let cache = {}
-let offsetsCache = new Map<number, number | 'end'>()
+let offsetsCache = new Map<string, number | 'end'>()
 
 const setData = async (
   key: string, {
@@ -38,7 +38,7 @@ const setData = async (
 }
 
 const getData = async (key: string, fallback: any = null) => {
-  if (!cache[key]) {
+  if (typeof cache[key] === 'undefined') {
     cache[key] = await get(key, database).catch(() => fallback) || fallback
   }
   return cache[key]
@@ -49,6 +49,12 @@ export const dataCache = {
     data: Date.now()
   }),
   getQueryTime: (queryName: string) => getData(`query-${queryName}`, 0),
+  resetQueryTime: async () => {
+    const allKeys = await keys(database)
+    const queryKeys = allKeys.filter(key => `${key}`.startsWith('query-'))
+    delMany(queryKeys, database)
+    queryKeys.forEach(key => cache[`${key}`] = 0)
+  },
 
   setMeta: (metaKey, meta) => setData(metaKey, {
     data: meta
@@ -58,7 +64,7 @@ export const dataCache = {
   setUser: (user: User) => setData('user', {
     data: user
   }),
-  getUser: (): Promise<User> => getData('user', null),
+  getUser: async (): Promise<User> => getData('user', null),
 
   setSettings: (settings: Settings) => setData('settings', {
     data: settings
@@ -99,8 +105,8 @@ export const dataCache = {
     dataCache.setSearchOffsetId(0)
   },
 
-  setFolderOffsetId: (folderId: number, offsetId: number | 'end') => offsetsCache.set(folderId, offsetId),
-  getFolderOffsetId: (folderId: number) => offsetsCache.get(folderId)
+  setFolderOffsetId: (folderId: string, offsetId: number | 'end') => offsetsCache.set(folderId, offsetId),
+  getFolderOffsetId: (folderId: string) => offsetsCache.get(folderId)
 }
 
 export const resetDataCache = async () => {

@@ -35,7 +35,7 @@ export const setFolders = (
 }
 
 export const setLoadingFolderId = (
-  id: number,
+  id: string,
   value: boolean
 ) => {
   const loadingFolderIds = new Map(store.getState().loadingFolderIds)
@@ -52,7 +52,7 @@ export const getActiveFolder = () => {
 }
 
 export const setActiveFolder = (
-  id: number
+  id: string
 ) => {
   store.setState({
     activeFolderId: id

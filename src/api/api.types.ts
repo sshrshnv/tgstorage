@@ -103,6 +103,10 @@ export type Api = {
 
   logOut: () => Promise<boolean>
 
+  updateUser: () => Promise<{
+    user: User
+  }>
+
   getFolders: () => Promise<Updates>
 
   createFolder: (
@@ -194,12 +198,6 @@ export type Api = {
     originalSizeType?: string
     precise?: boolean
   }) => Promise<Uint8Array>
-
-  downloadPhotoFile: (photoParams: {
-    volume_id: number
-    local_id: number
-    dc_id: number
-  }) => Promise<{ bytes: Uint8Array, type: string }>
 
   searchMessages: (
     query: string,

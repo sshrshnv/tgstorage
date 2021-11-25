@@ -4,7 +4,7 @@ import { useStoreState } from 'unistore-hooks'
 import type { State } from '~/core/store'
 import { useUpdatableRef } from '~/tools/hooks'
 
-export const useSendingMessage = (folderId: number) => {
+export const useSendingMessage = (folderId: string) => {
   const {
     sendingMessages
   }: {

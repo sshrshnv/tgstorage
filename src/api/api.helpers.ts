@@ -26,11 +26,9 @@ export const transformUser = (user, country) => {
     username: user.username,
     firstName: user.first_name,
     lastName: user.last_name,
-    photo: user.photo?.photo_id ? {
-      id: user.photo.photo_id,
-      volume_id: user.photo.photo_small.volume_id,
-      local_id: user.photo.photo_small.local_id,
-      dc_id: user.photo.dc_id
+    photoFile: user.photo?.photo_id ? {
+      bytes: user.photo.stripped_thumb.bytes,
+      type: user.photo.stripped_thumb.type
     } : undefined,
     country: country?.toLowerCase() || 'en'
   }
