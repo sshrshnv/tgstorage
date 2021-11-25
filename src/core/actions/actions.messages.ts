@@ -166,7 +166,7 @@ const refreshMessages: {
 export const refreshMessage = (
   folder: Folder,
   id: number,
-  timeout = 1000,
+  timeout = 100,
   callback?: () => void
 ) => new Promise(resolve => {
   if (

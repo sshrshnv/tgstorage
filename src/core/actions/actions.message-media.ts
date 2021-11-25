@@ -269,7 +269,7 @@ export const downloadFile = async (
     downloading: true
   }
 
-  if (!downloadingFile.lastPart) {
+  if (!downloadingFile.lastPart0 && !downloadingFile.lastPart1) {
     const partSize = DOWNLOADING_PART_SIZE
     const partsCount = Math.ceil(file.size / partSize)
     downloadingFile = {
@@ -284,67 +284,99 @@ export const downloadFile = async (
   downloadingQueue.add(async () => {
     const downloadingFile = getDownloadingFile(file)
     if (!downloadingFile) return
+
     const {
-      id,
-      lastPart = -1,
-      partsCount = 0,
-      partSize = 0,
-      dc_id,
-      access_hash,
-      file_reference,
-      sizeType,
-      originalSizeType
+      lastPart0 = -1,
+      lastPart1 = 0,
+      partsCount = 0
     } = downloadingFile
+    let progress = 0
 
-    for (let part = lastPart + 1; part < partsCount; part++ ) {
-      let downloadingFile = getDownloadingFile(file)
-      if (!downloadingFile || downloadingFile.downloading === false) return
+    const downloadPart = async (part: number, partIndex: number) => {
+      if (part > partsCount - 1) return
 
-      const offsetSize = part * partSize
-      const isLastPart = part === partsCount - 1
-
-      let bytes = await api.downloadFilePart({
-        id,
-        partSize,
-        offsetSize,
-        dc_id,
-        access_hash,
-        file_reference,
-        sizeType,
-        originalSizeType
-      }).catch(({ message }) => {
-        if (downloadingFile && message === 'FILE_REFERENCE_EXPIRED') {
-          pauseDownloadingFile(downloadingFile)
-          refreshMessage(folder, messageId)
-        }
-      })
-
-      if (!bytes) return
-
-      downloadingFile = getDownloadingFile(file)
-      if (!downloadingFile) return
-
-      let fileKey: string|undefined = generateFileKey(downloadingFile)
-      const { type } = downloadingFile
-      const progress = Math.round((part + 1) / partsCount * 100)
-
-      await setBytes(fileKey, part, bytes)
-      bytes = undefined
-
-      fileKey = isLastPart ?
-        await createFile(fileKey, partsCount, sizeType ? 'image/jpeg' : type) :
-        undefined
-
-      setDownloadingFile({
-        ...downloadingFile,
-        ...(fileKey ? {
-          fileKey,
-          downloading: false
-        } : {}),
-        lastPart: part,
-        progress
-      })
+      progress = Math.max(progress, Math.round((part + 1) / partsCount * 100))
+      await downloadFilePart(messageId, folder, file, part, partIndex, progress)
+      return downloadPart(part + 2, partIndex)
     }
+
+    await Promise.all([
+      downloadPart(lastPart0 + 1, 0),
+      partsCount > 1 && downloadPart(lastPart1 + 1, 1)
+    ])
+  })
+}
+
+export const downloadFilePart = async (
+  messageId: number,
+  folder: Folder,
+  file: DownloadingFile,
+  part: number,
+  partIndex: number,
+  progress: number
+) => {
+  let downloadingFile = getDownloadingFile(file)
+  if (!downloadingFile || downloadingFile.downloading === false) return
+
+  const {
+    id,
+    partSize = 0,
+    dc_id,
+    access_hash,
+    file_reference,
+    sizeType,
+    originalSizeType
+  } = downloadingFile
+
+  const offsetSize = part * partSize
+
+  let bytes = await api.downloadFilePart({
+    id,
+    partSize,
+    offsetSize,
+    dc_id,
+    access_hash,
+    file_reference,
+    sizeType,
+    originalSizeType
+  }).catch(({ message }) => {
+    if (downloadingFile && message === 'FILE_REFERENCE_EXPIRED') {
+      pauseDownloadingFile(downloadingFile)
+      refreshMessage(folder, messageId)
+    }
+  })
+
+  if (!bytes) return
+
+  downloadingFile = getDownloadingFile(file)
+  if (!downloadingFile) return
+
+  let fileKey: string|undefined = generateFileKey(downloadingFile)
+  const {
+    type,
+    partsCount = 0
+  } = downloadingFile
+  const otherPart = downloadingFile[`lastPart${partIndex === 0 ? 1 : 0}`] || 0
+  const isLastPart = partsCount === 1 || (
+    Math.max(part, otherPart) === partsCount - 1 &&
+    Math.min(part, otherPart) === partsCount - 2
+  )
+
+  await setBytes(fileKey, part, bytes)
+  bytes = undefined
+
+  fileKey = isLastPart ?
+    await createFile(fileKey, partsCount, sizeType ? 'image/jpeg' : type) :
+    undefined
+
+  setDownloadingFile({
+    ...downloadingFile,
+    ...(fileKey ? {
+      fileKey,
+      downloading: false
+    } : {}),
+    [`lastPart${partIndex}`]: part,
+    progress: Math.max(downloadingFile.progress || 0, progress)
   })
 }
 
