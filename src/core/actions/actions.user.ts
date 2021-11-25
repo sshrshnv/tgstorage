@@ -15,6 +15,21 @@ export const setUser = (
   })
 }
 
+let photoLoading = false
+export const loadPhoto = async () => {
+  const user = getUser()
+  if (!user?.photo || user.photoFile || photoLoading) return
+
+  photoLoading = true
+  const photoFile = await api.downloadPhotoFile(user.photo)
+
+  setUser({
+    ...user,
+    photoFile
+  })
+  photoLoading = false
+}
+
 let logouting = false
 export const logOut = async () => {
   if (logouting) return

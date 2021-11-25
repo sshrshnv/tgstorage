@@ -23,10 +23,10 @@ export const Avatar: FC<Props> = ({
     if (!image) return ''
     const blob = new Blob(
       [new Uint8Array(image.bytes)],
-      { type: 'image/jpeg' }
+      { type: `image/${image.type}` }
     )
     return URL.createObjectURL(blob)
-  }, [image?.bytes, image?.type])
+  }, [image?.bytes])
 
   const handleLoad = useCallback(() => {
     if (!url) return

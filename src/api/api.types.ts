@@ -107,6 +107,11 @@ export type Api = {
     user: User
   }>
 
+  downloadPhotoFile: (photoParams: {
+    id: string
+    dc_id: number
+  }) => Promise<{ bytes: Uint8Array, type: string }>
+
   getFolders: () => Promise<Updates>
 
   createFolder: (

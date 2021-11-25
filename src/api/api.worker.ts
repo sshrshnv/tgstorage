@@ -258,6 +258,31 @@ class Api {
     return { user: normalizedUser }
   }
 
+  public async downloadPhotoFile({
+    id,
+    dc_id
+  }) {
+    let file = await this.call('upload.getFile', {
+      location: {
+        _: 'inputPeerPhotoFileLocation',
+        peer: { _: 'inputPeerSelf' },
+        photo_id: id
+      },
+      cdn_supported: false,
+      limit: FILE_SIZE.MB1,
+      offset: 0,
+    }, {
+      dc: dc_id,
+      thread: 2
+    })
+
+    const bytes = new Uint8Array(file.bytes)
+    const type = file.type._.replace('storage.file', '').toLowerCase()
+    file = undefined
+
+    return transfer({ bytes, type }, [bytes.buffer])
+  }
+
   public async getFolders(loadedChats: any[] = []) {
     const isQueryAvailable = await checkIsQueryAvailableByTime('getFolders')
 

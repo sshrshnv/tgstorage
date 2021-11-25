@@ -30,6 +30,10 @@ export type User = {
   username?: string
   firstName: string
   lastName?: string
+  photo?: {
+    id: string
+    dc_id: number
+  }
   photoFile?: {
     bytes: Uint8Array
     type: string

@@ -1,8 +1,9 @@
 import { FunctionComponent as FC } from 'preact'
 import { Fragment, h } from 'preact'
 import { memo } from 'preact/compat'
+import { useEffect } from 'preact/hooks'
 
-import { logOut } from '~/core/actions'
+import { logOut, loadPhoto } from '~/core/actions'
 import { useTexts, useUser } from '~/core/hooks'
 import { SidebarPopup } from '~/ui/elements/sidebar-popup'
 import { Form } from '~/ui/elements/form'
@@ -20,6 +21,10 @@ export const StorageSidebarProfilePopup: FC<Props> = memo(({
 }) => {
   const { texts } = useTexts('storage')
   const { user } = useUser()
+
+  useEffect(() => {
+    loadPhoto()
+  }, [])
 
   return user ? (
     <SidebarPopup
