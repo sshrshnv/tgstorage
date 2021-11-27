@@ -2,6 +2,7 @@ import 'core-js'
 
 import type { FunctionComponent as FC } from 'preact'
 import { h, render, Fragment } from 'preact'
+import { memo } from 'preact/compat'
 import { useEffect } from 'preact/hooks'
 import { Provider } from 'unistore-hooks'
 
@@ -11,7 +12,7 @@ listenAppInstall()
 
 import { store } from '~/core/store'
 import { updateUser } from '~/core/actions'
-import { useAppRoute, useUser } from '~/core/hooks'
+import { useAppRoute, useAppRender, useUser } from '~/core/hooks'
 import { checkIsIOS, checkIsIOSSafari } from '~/tools/detect-device'
 import { registerSW } from '~/sw'
 import { IntroLazy } from '~/features/intro'
@@ -24,9 +25,11 @@ import {
   PreventContextMenu, PreventScale, PreventDragAndDrop, PreventIOSScroll,
   ApplyTheme, ApplyLocale
 } from '~/ui/handlers'
+import { Analytics } from '~/scripts'
 
-const App: FC = () => {
+const App: FC = memo(() => {
   const { isIntroAppRoute } = useAppRoute()
+  const { appFeatureRendered } = useAppRender()
   const { user, isLegacyUser } = useUser()
 
   useEffect(() => {
@@ -60,9 +63,13 @@ const App: FC = () => {
       {checkIsIOSSafari() && (
         <IOSInstallPromptLazy/>
       )}
+
+      {appFeatureRendered && (
+        <Analytics/>
+      )}
     </Fragment>
   )
-}
+})
 
 registerSW()
 

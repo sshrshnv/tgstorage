@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from 'preact/hooks'
 
 import type { Countries } from '~/api'
 import { api } from '~/api'
+import { setAppFeatureRendered } from '~/core/actions'
 import { useTexts, useSettings } from '~/core/hooks'
 import { useUpdatableRef } from '~/tools/hooks'
 import { formatPhone } from '~/tools/format-phone'
@@ -113,7 +114,10 @@ export const AuthFormPhone: FC<Props> = memo(({
     Promise.all([
       api.getCountry().then(({ country: value }) => setCountryRef.current({ ...countryRef.current, value })),
       api.getCountries(localeRef.current).then(({ countries }) => setCountries(countries))
-    ]).then(() => setReady(true))
+    ]).then(() => {
+      setReady(true)
+      setAppFeatureRendered()
+    })
   }, [])
 
   useEffect(() => {

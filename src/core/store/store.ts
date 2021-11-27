@@ -59,6 +59,7 @@ const state: State = {
   },
   texts: AVALIABLE_LOCALES.reduce((obj, locale) => ({ ...obj, [locale]: {} }), {} as Texts),
   appRoute: self.location.pathname,
+  appFeatureRendered: false,
   appUpdateExists: false,
   appUpdateAccepted: false,
   appInstallAvailable: false,

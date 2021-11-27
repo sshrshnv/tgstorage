@@ -33,7 +33,8 @@ const defineEnvConfig = {
   'process.env.INVITE_RU': JSON.stringify(appEnv.INVITE_RU),
   'process.env.INVITE_EN': JSON.stringify(appEnv.INVITE_EN),
   'process.env.SENTRY_DSN': JSON.stringify(appEnv.SENTRY_DSN),
-  'process.env.SENTRY_AUTH_TOKEN': JSON.stringify(appEnv.SENTRY_AUTH_TOKEN)
+  'process.env.SENTRY_AUTH_TOKEN': JSON.stringify(appEnv.SENTRY_AUTH_TOKEN),
+  'process.env.GOOGLE_ANALYTICS_ID': JSON.stringify(appEnv.GOOGLE_ANALYTICS_ID),
 }
 
 const resolveOptions = {

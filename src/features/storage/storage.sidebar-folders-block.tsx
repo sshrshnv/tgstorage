@@ -1,8 +1,9 @@
 import type { FunctionComponent as FC } from 'preact'
 import { h } from 'preact'
 import { memo } from 'preact/compat'
-import { useCallback } from 'preact/hooks'
+import { useCallback, useEffect } from 'preact/hooks'
 
+import { setAppFeatureRendered } from '~/core/actions'
 import { useFolders, useAppInstall } from '~/core/hooks'
 import { Sidebar } from '~/ui/elements/sidebar'
 import { SidebarHeader } from '~/ui/elements/sidebar-header'
@@ -49,6 +50,11 @@ export const StorageSidebarFoldersBlock: FC<Props> = memo(({
   const openInstallPopup = useCallback(() => {
     setInstallPopupVisible?.(true)
   }, [setInstallPopupVisible])
+
+  useEffect(() => {
+    if (foldersLoading) return
+    setAppFeatureRendered()
+  }, [foldersLoading])
 
   return (
     <Sidebar

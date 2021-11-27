@@ -1,8 +1,8 @@
 import { FunctionComponent as FC } from 'preact'
 import { Fragment, h } from 'preact'
-import { useCallback } from 'preact/hooks'
+import { useCallback, useEffect } from 'preact/hooks'
 
-import { installApp, setAppRoute } from '~/core/actions'
+import { installApp, setAppRoute, setAppFeatureRendered } from '~/core/actions'
 import { useTexts, useSettings, useAppInstall } from '~/core/hooks'
 import { checkIsDesktop, checkIsWindows, checkIsIOS, checkIsAndroid } from '~/tools/detect-device'
 import { Layout } from '~/ui/elements/layout'
@@ -25,6 +25,10 @@ const Intro: FC = () => {
 
   const handleContinue = useCallback(() => {
     setAppRoute('/app')
+  }, [])
+
+  useEffect(() => {
+    setAppFeatureRendered()
   }, [])
 
   return (
