@@ -76,7 +76,7 @@ export const GalleryItem: FC<Props> = memo(({
         <FilePreviewImage
           class={styles.image}
           fileKey={fileKey}
-          timeout={150}
+          timeout={50}
           isFullscreen={isFullscreen}
         />
       )}

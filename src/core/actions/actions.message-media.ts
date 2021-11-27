@@ -269,7 +269,7 @@ export const downloadFile = async (
     downloading: true
   }
 
-  if (!downloadingFile.lastPart0 && !downloadingFile.lastPart1) {
+  if (!downloadingFile.lastDownloadedPart0 && !downloadingFile.lastDownloadedPart1) {
     const partSize = DOWNLOADING_PART_SIZE
     const partsCount = Math.ceil(file.size / partSize)
     downloadingFile = {
@@ -286,8 +286,8 @@ export const downloadFile = async (
     if (!downloadingFile) return
 
     const {
-      lastPart0 = -1,
-      lastPart1 = 0,
+      lastDownloadedPart0 = -1,
+      lastDownloadedPart1 = 0,
       partsCount = 0
     } = downloadingFile
     let progress = 0
@@ -301,8 +301,8 @@ export const downloadFile = async (
     }
 
     await Promise.all([
-      downloadPart(lastPart0 + 1, 0),
-      partsCount > 1 && downloadPart(lastPart1 + 1, 1)
+      downloadPart(lastDownloadedPart0 + 1, 0),
+      partsCount > 1 && downloadPart(lastDownloadedPart1 + 1, 1)
     ])
   })
 }
@@ -354,13 +354,10 @@ export const downloadFilePart = async (
   let fileKey: string|undefined = generateFileKey(downloadingFile)
   const {
     type,
-    partsCount = 0
+    partsCount = 0,
+    downloadedPartsCount = 0
   } = downloadingFile
-  const otherPart = downloadingFile[`lastPart${partIndex === 0 ? 1 : 0}`] || 0
-  const isLastPart = partsCount === 1 || (
-    Math.max(part, otherPart) === partsCount - 1 &&
-    Math.min(part, otherPart) === partsCount - 2
-  )
+  const isLastPart = downloadedPartsCount === partsCount - 1
 
   await setBytes(fileKey, part, bytes)
   bytes = undefined
@@ -375,7 +372,8 @@ export const downloadFilePart = async (
       fileKey,
       downloading: false
     } : {}),
-    [`lastPart${partIndex}`]: part,
+    downloadedPartsCount: downloadedPartsCount + 1,
+    [`lastDownloaded${partIndex}`]: part,
     progress: Math.max(downloadingFile.progress || 0, progress)
   })
 }

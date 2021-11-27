@@ -47,13 +47,14 @@ export const Gallery: FC<Props> = memo(({
   useEffect(() => {
     if (!galleryRef.current) return
 
-    const initialIndex = initialIndexRef.current
-    const closeSlide = () => closeSlideRef.current()
-    const onChangeIndex = (index: number) => onChangeIndexRef.current(index)
+    const initialIndex = initialIndexRef.current || 0
+    const closeSlide = () => closeSlideRef.current?.()
+    const onChangeIndex = (index: number) => onChangeIndexRef.current?.(index)
 
     const gallery = new KeenSlider(galleryRef.current, {
+      renderMode: 'performance',
       initial: initialIndex,
-      slideChanged: item => onChangeIndex(item.details().relativeSlide)
+      slideChanged: slider => onChangeIndex(slider.track.details.rel)
     })
 
     const handleKeyDown = ev => {
@@ -72,7 +73,7 @@ export const Gallery: FC<Props> = memo(({
       ev.preventDefault()
     }
 
-    setGalleryRef.current(gallery)
+    setGalleryRef.current?.(gallery)
     self.document.addEventListener('keydown', handleKeyDown)
 
     return () => {

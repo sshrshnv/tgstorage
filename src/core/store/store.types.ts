@@ -194,8 +194,9 @@ export type DownloadingFile = {
   partSize?: number
   lastPartSize?: number
   partsCount?: number
-  lastPart0?: number
-  lastPart1?: number
+  downloadedPartsCount?: number
+  lastDownloadedPart0?: number
+  lastDownloadedPart1?: number
   name?: string
   size: number
   description?: {
