@@ -4,30 +4,37 @@ import { memo, createPortal } from 'preact/compat'
 
 import type { User } from '~/core/store'
 import { checkIsStandalone } from '~/tools/detect-standalone'
+import { getOS, getBrowser } from '~/tools/detect-device'
 
 type Props = {
   userRef: RefObject<User>
 }
 
 const bodyEl = self.document.body
-const analyticsId = process.env.GOOGLE_ANALYTICS_ID
 
 export const Analytics: FC<Props> = memo(({
   userRef
 }) => {
-  return analyticsId ? createPortal((
+  return process.env.GOOGLE_ANALYTICS_ID ? createPortal((
     <Fragment>
       <script
-        src={`https://www.googletagmanager.com/gtag/js?id=${analyticsId}`}
+        src={`/proxy/tag/${process.env.GOOGLE_ANALYTICS_ID}`}
         async
       ></script>
       <script dangerouslySetInnerHTML={{ __html: `
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-        gtag('config', '${analyticsId}', {
-          auth: ${!!userRef.current},
-          installation: ${checkIsStandalone()}
+        gtag('config', '${process.env.GOOGLE_ANALYTICS_ID}', {
+          transport_url: 'https://${self.location.hostname}/proxy/event',
+          anonymize_ip: true,
+          country: '${userRef.current?.country || 'unknown'}',
+          lang: '${self.navigator.language}',
+          device: '${self.navigator.userAgent}',
+          os: '${getOS()}',
+          browser: '${getBrowser()}',
+          authenticated: ${!!userRef.current},
+          installed: ${checkIsStandalone()},
         });
       `}}>
       </script>

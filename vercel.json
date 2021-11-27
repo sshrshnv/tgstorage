@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/proxy/tag/:id", "destination": "https://www.googletagmanager.com/gtag/js" },
+    { "source": "/proxy/event/:match*", "destination": "https://www.google-analytics.com/:match*" }
+  ]
+}

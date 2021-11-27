@@ -59,6 +59,10 @@ let isChrome
 export const checkIsChrome = () =>
   isChrome ??= !checkIsMicrosoftEdge() && !checkIsYandex() && !checkIsSamsung() && checkIsChromium()
 
+let isFirefox
+export const checkIsFirefox = () =>
+  isFirefox ??= /firefox/i.test(userAgent)
+
 let isAndroidChrome
 export const checkIsAndroidChrome = () =>
   isAndroidChrome ??= checkIsAndroid() && checkIsChrome()
@@ -89,3 +93,45 @@ export const getIOSVersion = () =>
 let chromiumVersion
 export const getChromiumVersion = () =>
   chromiumVersion ??= +(brands?.find(({ brand }) => brand.toLocaleLowerCase() === 'chromium')?.version || '')
+
+let os
+export const getOS = () => {
+  if (os) {
+    return os
+  } else if (checkIsIOS()) {
+    os = 'ios'
+  } else if (checkIsAndroid()) {
+    os = 'android'
+  } else if (checkIsMac()) {
+    os = 'mac'
+  } else if (checkIsWindows()) {
+    os = 'windows'
+  } else {
+    os = 'unknown'
+  }
+  return os
+}
+
+let browser
+export const getBrowser = () => {
+  if (browser) {
+    return browser
+  } else if (checkIsChrome()) {
+    browser = 'chrome'
+  } else if (checkIsSafari()) {
+    browser = 'safari'
+  } else if (checkIsMicrosoftEdge()) {
+    browser = 'edge'
+  } else if (checkIsYandex()) {
+    browser = 'yandex'
+  } else if (checkIsSamsung()) {
+    browser = 'samsung'
+  } else if (checkIsChromium()) {
+    browser = 'chromium'
+  } else if (checkIsFirefox()) {
+    browser = 'firefox'
+  } else {
+    browser = 'unknown'
+  }
+  return browser
+}
