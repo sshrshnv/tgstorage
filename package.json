@@ -80,7 +80,7 @@
     "html-webpack-plugin": "5.5.0",
     "html-webpack-skip-assets-plugin": "1.0.3",
     "mini-css-extract-plugin": "2.4.5",
-    "postcss": "8.4.3",
+    "postcss": "8.4.4",
     "postcss-loader": "6.2.1",
     "preact-svg-loader": "0.2.1",
     "rimraf": "3.0.2",
