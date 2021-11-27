@@ -9,8 +9,8 @@ type Props = {
   userRef: RefObject<User>
 }
 
-const analyticsId = process.env.GOOGLE_ANALYTICS_ID
 const bodyEl = self.document.body
+const analyticsId = process.env.GOOGLE_ANALYTICS_ID
 
 export const Analytics: FC<Props> = memo(({
   userRef
