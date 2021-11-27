@@ -2,6 +2,7 @@ import { useMemo } from 'preact/hooks'
 import { useStoreState } from 'unistore-hooks'
 
 import type { State } from '~/core/store'
+import { useUpdatableRef } from '~/tools/hooks'
 import { checkIsLegacyUser } from '~/tools/handle-user'
 
 export const useUser = () => {
@@ -13,9 +14,12 @@ export const useUser = () => {
     userLoading: state.userLoading
   }))
 
+  const userRef = useUpdatableRef(user)
+
   return useMemo(() => ({
     user,
     userLoading,
+    userRef,
     isLegacyUser: checkIsLegacyUser(user)
-  }), [user, userLoading])
+  }), [user, userLoading, userRef])
 }

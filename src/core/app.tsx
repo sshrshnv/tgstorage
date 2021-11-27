@@ -30,7 +30,7 @@ import { Analytics } from '~/scripts'
 const App: FC = memo(() => {
   const { isIntroAppRoute } = useAppRoute()
   const { appFeatureRendered } = useAppRender()
-  const { user, isLegacyUser } = useUser()
+  const { user, userRef, isLegacyUser } = useUser()
 
   useEffect(() => {
     if (!isLegacyUser) return
@@ -65,7 +65,7 @@ const App: FC = memo(() => {
       )}
 
       {appFeatureRendered && (
-        <Analytics/>
+        <Analytics userRef={userRef}/>
       )}
     </Fragment>
   )

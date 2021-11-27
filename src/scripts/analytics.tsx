@@ -1,11 +1,20 @@
-import type { FunctionComponent as FC } from 'preact'
+import type { FunctionComponent as FC, RefObject } from 'preact'
 import { h, Fragment } from 'preact'
 import { memo, createPortal } from 'preact/compat'
+
+import type { User } from '~/core/store'
+import { checkIsStandalone } from '~/tools/detect-standalone'
+
+type Props = {
+  userRef: RefObject<User>
+}
 
 const analyticsId = process.env.GOOGLE_ANALYTICS_ID
 const bodyEl = self.document.body
 
-export const Analytics: FC = memo(() => {
+export const Analytics: FC<Props> = memo(({
+  userRef
+}) => {
   return analyticsId ? createPortal((
     <Fragment>
       <script
@@ -16,7 +25,10 @@ export const Analytics: FC = memo(() => {
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
-        gtag('config', '${analyticsId}');
+        gtag('config', '${analyticsId}', {
+          auth: ${!!userRef.current},
+          installation: ${checkIsStandalone()}
+        });
       `}}>
       </script>
     </Fragment>
