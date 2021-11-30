@@ -91,6 +91,11 @@ export const dataCache = {
     return foldersMessages
   },
 
+  setFolderSponsoredMessage: (folderId, message) => setData(`sponsored-message-${folderId}`, {
+    data: message
+  }),
+  getFolderSponsoredMessage: (folderId) => getData(`sponsored-message-${folderId}`, null),
+
   setSearchMessages: (messages) => setData('searchMessages', {
     data: messages,
     db: false

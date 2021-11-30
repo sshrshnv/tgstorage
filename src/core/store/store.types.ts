@@ -131,6 +131,14 @@ export type Message = {
   fwd?: MessageFwd
 }
 
+export type SponsoredMessage = {
+  id: Uint8Array
+  text: string
+  entities?: MessageEntity[]
+  title: string
+  link: string
+} | null
+
 export type FolderMessages =
   Map<number, Message>
 

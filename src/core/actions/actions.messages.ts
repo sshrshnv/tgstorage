@@ -26,6 +26,12 @@ export const loadFolderMessages = async (
   return true
 }
 
+export const loadFolderSponsoredMessage = async (
+  folder: Folder
+) => {
+  await api.getSponsoredMessage(folder)
+}
+
 export const setFoldersMessages = (
   foldersMessages: FoldersMessages
 ) => {

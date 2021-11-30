@@ -81,6 +81,29 @@ export const transformMessage = (message, user, { allowEmpty = false } = {}) => 
   }
 }
 
+export const transformSposoredMessage = (message, targets) => {
+  const {
+    message: text = '',
+    entities,
+    random_id: id,
+    from_id,
+    start_param
+  } = message
+  const { user_id, chat_id, channel_id } = from_id
+  const target = targets.find(({ id }) => id === (user_id || chat_id || channel_id))
+  if (!target || !target.username) {
+    return null
+  }
+
+  return {
+    id,
+    text,
+    entities: entities?.map(({ _, ...entity }) => ({ type: _, ...entity })),
+    title: target.title,
+    link: `https://t.me/${target.username}${start_param ? `/?start=${start_param}` : ''}`
+  }
+}
+
 export const transformMedia = (media) => {
   const { _ } = media
 

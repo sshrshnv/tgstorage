@@ -7,6 +7,7 @@ import type {
   FoldersMessages,
   SearchMessages,
   Message,
+  SponsoredMessage,
   InputMessage
 } from '~/core/store'
 
@@ -136,6 +137,15 @@ export type Api = {
     folder: Folder,
     lastMessageId?: number
   ) => Promise<Updates>
+
+  getSponsoredMessage: (
+    folder: Folder
+  ) => Promise<SponsoredMessage>
+
+  markSponsoredMessage: (
+    message: SponsoredMessage,
+    folder: Folder
+  ) => Promise<void>
 
   refreshMessages: (
     folder: Folder,

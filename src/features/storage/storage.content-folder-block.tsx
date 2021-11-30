@@ -4,7 +4,7 @@ import { memo } from 'preact/compat'
 import { useCallback, useEffect } from 'preact/hooks'
 
 import type { Message, SharedData } from '~/core/store'
-import { setActiveFolder, loadFolderMessages, setSharedData } from '~/core/actions'
+import { setActiveFolder, loadFolderMessages, loadFolderSponsoredMessage, setSharedData } from '~/core/actions'
 import { useTexts, useActiveFolder, useMessageForm } from '~/core/hooks'
 import { Content } from '~/ui/elements/content'
 import { ContentHeader } from '~/ui/elements/content-header'
@@ -50,7 +50,7 @@ export const StorageContentFolderBlock: FC<Props> = memo(({
   }, [folder, lastMessageId])
 
   const handleClose = useCallback(() => {
-    setActiveFolder(0)
+    setActiveFolder('')
   }, [])
 
   useEffect(() => {
@@ -61,6 +61,10 @@ export const StorageContentFolderBlock: FC<Props> = memo(({
     }
     setSharedData(null)
   }, [sharedData])
+
+  useEffect(() => {
+    loadFolderSponsoredMessage(folder)
+  }, [])
 
   return (
     <Content

@@ -6,7 +6,7 @@ import { useTexts } from '~/core/hooks'
 import { useUpdatableRef } from '~/tools/hooks'
 import { groupMessages } from '~/tools/handle-content'
 
-export const useFolder = (id = 0) => {
+export const useFolder = (id = '') => {
   const { texts } = useTexts('storage')
   const {
     folders,

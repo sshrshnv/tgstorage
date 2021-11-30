@@ -16,6 +16,7 @@ import {
   META_KEY,
   transformUser,
   transformMessage,
+  transformSposoredMessage,
   sortMessages,
   generateRandomId
 } from './api.helpers'
@@ -503,6 +504,59 @@ class Api {
     }
 
     return handleUpdates({ messages }, { offsetId })
+  }
+
+  public async getSponsoredMessage(
+    folder: {
+      id: string
+      access_hash: string
+    }
+  ) {
+    const user = await dataCache.getUser()
+    if (folder.id === user?.id) {
+      return null
+    }
+
+    const isQueryAvailable = await checkIsQueryAvailableByTime(`getSponsoredMessage-${folder.id}`, 5 * 60)
+    if (!isQueryAvailable) {
+      return dataCache.getFolderSponsoredMessage(folder.id)
+    }
+
+    const { messages, chats, users } = await this.call('channels.getSponsoredMessages', {
+      channel: {
+        _: 'inputChannel',
+        channel_id: folder.id,
+        access_hash: folder.access_hash
+      }
+    })
+    const message = messages[0]
+    if (!message) {
+      return null
+    }
+
+    const normalizedSponsoredMessage = transformSposoredMessage(message, [...chats, ...users])
+    dataCache.setFolderSponsoredMessage(folder.id, normalizedSponsoredMessage)
+
+    return normalizedSponsoredMessage
+  }
+
+  public async markSponsoredMessage(
+    message: {
+      id: Uint8Array
+    },
+    folder: {
+      id: string
+      access_hash: string
+    }
+  ) {
+    this.call('channels.viewSponsoredMessage', {
+      random_id: message.id,
+      channel: {
+        _: 'inputChannel',
+        channel_id: folder.id,
+        access_hash: folder.access_hash
+      }
+    })
   }
 
   public async refreshMessages(
