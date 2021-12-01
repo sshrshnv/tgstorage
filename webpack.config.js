@@ -2,6 +2,7 @@
 const path = require('path')
 const webpack = require('webpack')
 const dotenv = require('dotenv')
+const CopyPlugin = require('copy-webpack-plugin')
 const HtmlPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const TerserPlugin = require('terser-webpack-plugin')
@@ -197,6 +198,19 @@ module.exports = [{
 
     isProd() ? new HtmlSkipAssetsPlugin({
       skipAssets: [asset => /\/inline.*.js/.test(asset.attributes?.src || '')],
+    }) : () => {},
+
+    isProd() ? new CopyPlugin({
+      patterns: [{
+        from: './src/ui/images/manifest-splash-icon-512.png',
+        to: './manifest-splash-icon-512.[contenthash:8].png'
+      }, {
+        from: './assetlinks.json',
+        to: '.well-known/assetlinks.json',
+        transform: (content) => {
+          return content.toString().replace('process.env.ANDROID_FINGERPRINT', appEnv.ANDROID_FINGERPRINT)
+        }
+      }]
     }) : () => {},
 
     isSentryAvailable() ? new SentryPlugin({
