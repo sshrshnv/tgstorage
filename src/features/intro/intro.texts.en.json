@@ -6,6 +6,7 @@
   "installDescription": "The app can be installed on the device without downloading it from AppStore, PlayStore or MicrosoftStore.",
   "support": "For bugs, questions and suggestions, please contact",
   "installButton": "Install",
+  "browserButton": "Open in browser",
   "continueButton": "Continue",
   "installBrowsers": "Installation is available only in browsers:"
 }

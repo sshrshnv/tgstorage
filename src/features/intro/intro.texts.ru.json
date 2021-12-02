@@ -6,6 +6,7 @@
   "installDescription": "Приложение можно установить на устройство, не скачивая его из AppStore, PlayStore или MicrosoftStore.",
   "support": "С вопросами, ошибками и предложениям обращайтесь сюда:",
   "installButton": "Установить",
+  "browserButton": "Открыть в браузере",
   "continueButton": "Продолжить",
   "installBrowsers": "Установка доступна только в браузерах:"
 }

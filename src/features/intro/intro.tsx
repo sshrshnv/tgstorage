@@ -13,6 +13,7 @@ import { Text } from '~/ui/elements/text'
 import { PicturesGroup } from '~/ui/elements/pictures-group'
 import { Picture } from '~/ui/elements/picture'
 import { Button } from '~/ui/elements/button'
+import { Icon } from '~/ui/elements/icon'
 
 import { screens } from './screens'
 
@@ -65,99 +66,92 @@ const Intro: FC = () => {
       </PicturesGroup>
       <Break mSize={36} dSize={60} px/>
 
-      <LayoutBlock narrow>
-        <Text center>
-          {texts.faqDescription0}
+      <LayoutBlock middle>
+        <Text center withLink>
+          {texts.appDescription0} <a
+            href="https://github.com/sh-a-v/tgstorage"
+            target="_blank"
+            rel="noopener noreferrer"
+          >GitHub</a>.
         </Text>
       </LayoutBlock>
       <Break mSize={40} dSize={60} px/>
 
-      <LayoutBlock group>
-        <Picture sources={SCREEN_TYPES.map(type => ({
-          type,
-          src: screens[`install-${locale}.${type}`]
-        }))}/>
+      <LayoutBlock icons>
+        <Icon icon="logo-apple" logo/>
+        <Icon icon="logo-android" logo/>
+        <Icon icon="logo-windows" logo/>
+      </LayoutBlock>
+      <Break size={20} px/>
 
-        <div>
-          <Text center withLink>
-            {texts.appDescription0} <a
-              href="https://github.com/sh-a-v/tgstorage"
-              target="_blank"
-              rel="noopener noreferrer"
-            >GitHub</a>.
-          </Text>
-          <Text center>
-            {texts.installDescription}
-          </Text>
+      <LayoutBlock group narrow>
+        <Text center>
+          {texts.installDescription}
+        </Text>
 
-          {(appInstallAvailable && !appInstalled) && (
-            <Button
-              uppercase
-              brand
-              onClick={installApp}
-            >
-              {texts.installButton}
-            </Button>
-          )}
-
+        {(appInstallAvailable && !appInstalled) && (
           <Button
             uppercase
             brand
-            outline={appInstallAvailable && !appInstalled}
-            onClick={handleContinue}
+            onClick={installApp}
           >
-            {texts.continueButton}
+            {texts.installButton}
           </Button>
+        )}
 
-          {(!appInstallAvailable && !appInstalled) && (
-            <Fragment>
-              <Break mSize={16} dSize={20} px/>
-              <Text mCenter withLink small>
-                {texts.installBrowsers}
-                {checkIsDesktop() && (
-                  <Fragment>
-                    <br/>
-                    <a
-                      href="https://www.microsoft.com/edge"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >- Microsoft Edge</a>
-                  </Fragment>
-                )}
-                {checkIsWindows() && (
-                  <Fragment>
-                    <br/>
-                    <a
-                      href="https://www.google.com/chrome"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >- Google Chrome</a>
-                  </Fragment>
-                )}
-                {checkIsAndroid() && (
-                  <Fragment>
-                    <br/>
-                    <a
-                      href="market://details?id=com.android.chrome"
-                      target="_top"
-                      rel="noopener noreferrer"
-                    >- Google Chrome</a>
-                  </Fragment>
-                )}
-                {checkIsIOS() && (
-                  <Fragment>
-                    <br/>
-                    <a
-                      href="https://www.apple.com/safari"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >- Safari</a>
-                  </Fragment>
-                )}
-              </Text>
-            </Fragment>
-          )}
-        </div>
+        {(!appInstallAvailable && !appInstalled) && (
+          <Fragment>
+            <Text center withLink small grey>
+              {texts.installBrowsers}
+              <br/>
+              {checkIsWindows() && (
+                <Fragment>
+                  <a
+                    href="https://www.microsoft.com/edge"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >Microsoft Edge</a>
+                </Fragment>
+              )}
+              {checkIsDesktop() && (
+                <Fragment>
+                  <a
+                    href="https://www.google.com/chrome"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >Google Chrome</a>
+                </Fragment>
+              )}
+              {checkIsAndroid() && (
+                <Fragment>
+                  <a
+                    href="market://details?id=com.android.chrome"
+                    target="_top"
+                    rel="noopener noreferrer"
+                  >Google Chrome</a>
+                </Fragment>
+              )}
+              {checkIsIOS() && (
+                <Fragment>
+                  <a
+                    href="https://www.apple.com/safari"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >Safari</a>
+                </Fragment>
+              )}
+            </Text>
+          </Fragment>
+        )}
+
+        <Button
+          uppercase
+          brand
+          outline={appInstallAvailable && !appInstalled}
+          onClick={handleContinue}
+        >
+          {(appInstallAvailable && !appInstalled) ? texts.browserButton : texts.continueButton}
+        </Button>
       </LayoutBlock>
       <Break mSize={48} dSize={72} px/>
 

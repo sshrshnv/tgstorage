@@ -9,69 +9,54 @@
     max-width: calc(100% - 20px)
   }
 
+._middle
+  max-width: 480px
+
+  @media screen and (max-width: 519px) {
+    max-width: calc(100% - 20px)
+  }
+
 ._group
-  display: flex
-  flex-direction: column
-  flex-shrink: 0
+  align-items: center
 
-  > picture
-    flex-shrink: 0
+  > button
+    margin-left: auto
+    margin-right: auto
+    margin-bottom: 20px
+    max-width: 280px
 
-  > div
-    > span
-      font-family: var(--font-family-content)
+    &:first-of-type
+      margin-top: 20px
 
-    > button
-      margin-bottom: 20px
-      max-width: 280px
+    &:last-of-type
+      margin-bottom: 0
+
+  > span
+    > a:last-of-type:not(:first-of-type)
+      margin-left: 20px
+
 
   @media $mobile
     align-items: center
 
-    > picture
-      margin-bottom: 36px
+    > span
+      margin-bottom: 12px
 
-    > div
-      width: calc(100% - 40px)
-      max-width: 480px
-
-      > span
-        //font-size: 15px
-
-        &:not(:last-child)
-          margin-bottom: 12px
-
-      > button
-        margin-left: auto
-        margin-right: auto
-
-        &:first-of-type
-          margin-top: 40px
+      &:last-of-type:not(:first-of-type)
+        margin-bottom: 0
 
   @media $desktop
-    flex-direction: row
-    justify-content: center
+    > span
+      margin-bottom: 20px
 
-    > div
-      margin-left: 40px
-      display: flex
-      flex-direction: column
-      justify-content: center
-      align-items: center
-      width: 50%
+      &:last-of-type:not(:first-of-type)
+        margin-bottom: 0
 
-      > span
-        margin-bottom: 20px
+._icons
+  width: 300px
+  display: flex
+  justify-content: space-between
+  flex-shrink: 0
 
-      > button
-        //align-self: flex-start
-
-        &:first-of-type
-          margin-top: 20px
-
-    &._reverse
-      flex-direction: row-reverse
-
-      > div
-        margin-left: 0
-        margin-right: 40px
+  > svg
+    fill: var(--default-font-color)

@@ -5,6 +5,8 @@ import cn from 'classnames'
 
 import { useCallbackRef } from '~/tools/hooks'
 
+import styles from './icon.styl'
+
 type SVGProps = {
   class?: string
   style?: { fill: string }
@@ -13,12 +15,14 @@ type SVGProps = {
 
 type Props = SVGProps & {
   icon: string
+  logo?: boolean
 }
 
 export const Icon: FC<Props> = ({
   class: outerStyles,
   style,
   icon,
+  logo,
   onClick
 }) => {
   const [LoadedIcon, setLoadedIcon] = useState<any>(null)
@@ -34,13 +38,16 @@ export const Icon: FC<Props> = ({
   }, [icon, setLoadedIcon])
 
   useEffect(() => {
-    const loadIcon = () => loadIconRef.current()
+    const loadIcon = () => loadIconRef.current?.()
     loadIcon()
   }, [icon])
 
   return LoadedIcon ? (
     <LoadedIcon.default
-      class={cn(outerStyles)}
+      class={cn(
+        outerStyles,
+        logo && styles._logo
+      )}
       style={style}
       onClick={onClick}
     />
