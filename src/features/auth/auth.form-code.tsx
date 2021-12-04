@@ -97,7 +97,8 @@ export const AuthFormCode: FC<Props> = memo(({
         setLoading(false)
         return
       }
-      setUser(user)
+      setUser(user);
+      (self as any).gtag?.('event', 'login_end')
     }
   }, [phone, phoneCodeHash, country.value, country.foundValue, code, loading, setStep, setError])
 

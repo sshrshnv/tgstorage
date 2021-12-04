@@ -12,7 +12,6 @@ import { Text } from '~/ui/elements/text'
 import { Break } from '~/ui/elements/break'
 import { Input } from '~/ui/elements/input'
 import { Button } from '~/ui/elements/button'
-import { Icon } from '~/ui/elements/icon'
 
 import type { Step, Country } from './auth'
 
@@ -55,7 +54,8 @@ export const AuthFormPassword: FC<Props> = memo(({
 
     if (response) {
       const { user } = response
-      setUser(user)
+      setUser(user);
+      (self as any).gtag?.('event', 'login_end')
     }
   }, [country.value, country.foundValue, password, loading, setError])
 

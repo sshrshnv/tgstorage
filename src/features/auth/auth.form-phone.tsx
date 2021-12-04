@@ -10,6 +10,7 @@ import { setAppFeatureRendered } from '~/core/actions'
 import { useTexts, useSettings } from '~/core/hooks'
 import { useUpdatableRef } from '~/tools/hooks'
 import { formatPhone } from '~/tools/format-phone'
+import { timer } from '~/tools/timer'
 import { Form } from '~/ui/elements/form'
 import { Text } from '~/ui/elements/text'
 import { Break } from '~/ui/elements/break'
@@ -111,16 +112,6 @@ export const AuthFormPhone: FC<Props> = memo(({
   }, [country.value, country.foundValue, phone, loading, setPhoneCodeHash, setCodeType, setStep, setTimeout, setError])
 
   useEffect(() => {
-    Promise.all([
-      api.getCountry().then(({ country: value }) => setCountryRef.current({ ...countryRef.current, value })),
-      api.getCountries(localeRef.current).then(({ countries }) => setCountries(countries))
-    ]).then(() => {
-      setReady(true)
-      setAppFeatureRendered()
-    })
-  }, [])
-
-  useEffect(() => {
     const initialCountry = initialCountryRef.current
     const countryCode = countryRef.current.code
     const phone = phoneRef.current
@@ -129,6 +120,18 @@ export const AuthFormPhone: FC<Props> = memo(({
     setCountryRef.current(foundCountry || { ...initialCountry, value: country.value })
     setPhone(formatPhone(validPhone, foundCountry).value)
   }, [country.value, countries])
+
+  useEffect(() => {
+    Promise.all([
+      api.getCountry().then(({ country: value }) => setCountryRef.current({ ...countryRef.current, value })),
+      api.getCountries(localeRef.current).then(({ countries }) => setCountries(countries))
+    ]).then(async () => {
+      setReady(true)
+      setAppFeatureRendered()
+      await timer(1000);
+      (self as any).gtag?.('event', 'login_start')
+    })
+  }, [])
 
   return (
     <Form onSubmit={handleSubmit} center>

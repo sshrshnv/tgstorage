@@ -63,8 +63,10 @@ export const StorageContentFolderBlock: FC<Props> = memo(({
   }, [sharedData])
 
   useEffect(() => {
-    loadFolderSponsoredMessage(folder)
-  }, [])
+    if (!folder?.id) return
+    loadFolderSponsoredMessage(folder);
+    (self as any).gtag?.('event', 'folder_view')
+  }, [folder?.id])
 
   return (
     <Content

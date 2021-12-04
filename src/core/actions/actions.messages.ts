@@ -29,7 +29,12 @@ export const loadFolderMessages = async (
 export const loadFolderSponsoredMessage = async (
   folder: Folder
 ) => {
-  await api.getSponsoredMessage(folder)
+  const message = await api.getSponsoredMessage(folder)
+  if (message) {
+    (self as any).gtag?.('event', 'sponsored_message', {
+      data: JSON.stringify(message)
+    })
+  }
 }
 
 export const setFoldersMessages = (
