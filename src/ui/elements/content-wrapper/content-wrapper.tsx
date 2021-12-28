@@ -32,7 +32,7 @@ export const ContentWrapper: FC<Props> = ({
   }, [setBackground])
 
   useEffect(() => {
-    const handleMenu = ev => handleMenuRef.current(ev)
+    const handleMenu = ev => handleMenuRef.current?.(ev)
 
     self.document.addEventListener('menu', handleMenu, { passive: true })
     return () => self.document.removeEventListener('menu', handleMenu)

@@ -2,6 +2,7 @@ import type { Message, FoldersMessages } from '~/core/store'
 import { formatDate } from '~/tools/format-date'
 import {
   SEPARATOR,
+  TITLE_SEPARATOR,
   FOLDER_POSTFIX,
   checkIsFileMessage,
   parseFileMessage,
@@ -35,15 +36,19 @@ export const transformUser = (user, country) => {
 }
 
 export const transformFolder = chat => {
-  const [title, category] = chat.title
+  const [fullTitle, category] = chat.title
     .replace(FOLDER_POSTFIX, '')
     .split(SEPARATOR)
     .slice(0, 2)
+
+  const [title, group] = fullTitle
+    .split(TITLE_SEPARATOR)
 
   return {
     id: chat.id,
     access_hash: chat.access_hash,
     title,
+    group: group || '',
     category: category || '',
     general: chat.general
   }
@@ -198,6 +203,7 @@ const parseFile = (photo, document) => {
 export const sortFolders = folders => {
   return folders.sort((a, b) =>
     new Intl.Collator(undefined, { sensitivity: 'base' }).compare(a.category, b.category) ||
+    (!a.group ? 1 : !b.group ? -1 : new Intl.Collator(undefined, { sensitivity: 'base' }).compare(a.group, b.group)) ||
     new Intl.Collator(undefined, { sensitivity: 'base' }).compare(a.title, b.title)
   )
 }

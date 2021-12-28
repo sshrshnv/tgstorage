@@ -64,7 +64,7 @@ export const Menu: FC<Props> = memo(({
       onClose?.()
     } else {
       const { top = 0 } = menuRef.current?.getBoundingClientRect() || {}
-      const menuHeight = top + itemsCountRef.current * ITEM_HEIGHT + OFFSET
+      const menuHeight = top + (itemsCountRef.current || 0) * ITEM_HEIGHT + OFFSET
       positionYRef.current = menuHeight > self.innerHeight ? 'bottom' : 'top'
     }
 
@@ -78,6 +78,8 @@ export const Menu: FC<Props> = memo(({
   useEffect(() => {
     if (!expanded) return
 
+    const toggle = (ev) => toggleRef.current?.(ev)
+
     dropdownRef.current?.animate?.([
       { transform: 'scale(0)', opacity: 0 },
       { opacity: 1, offset: 0.5 },
@@ -87,16 +89,19 @@ export const Menu: FC<Props> = memo(({
       fill: 'forwards',
       easing: 'ease-in-out'
     })
+
+    self.document.addEventListener('click', toggle)
+    return () => self.document.removeEventListener('click', toggle)
   }, [expanded])
 
   useEffect(() => {
     if (!forceOpened) return
-    toggleRef.current()
+    toggleRef.current?.()
   }, [forceOpened])
 
   useEffect(() => {
     const parentEl = parentRef?.current
-    const toggle = (ev?) => toggleRef.current(ev)
+    const toggle = (ev?) => toggleRef.current?.(ev)
 
     if (!parentEl) return
 
