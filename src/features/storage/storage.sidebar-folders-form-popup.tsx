@@ -56,14 +56,20 @@ export const StorageSidebarFoldersFormPopup: FC<Props> = memo(({
     }))
   ], [categories, texts.categoryCreateButton, texts.generalCategoryTitle])
 
-  const groupOptions = useMemo(() => [
-    { text: groupSelectValue === EMPTY_SELECT_VALUE ? '' : groupSelectValue, value: groupSelectValue },
-    { text: texts.groupCreateButton, value: NEW_SELECT_VALUE, button: true },
-    ...(groups[categorySelectValue] || []).map(group => ({
-      text: group,
-      value: group
-    }))
-  ], [categorySelectValue, groupSelectValue, groups, texts.groupCreateButton])
+  const groupOptions = useMemo(() => {
+    const options = [
+      { text: '', value: EMPTY_SELECT_VALUE },
+      { text: texts.groupCreateButton, value: NEW_SELECT_VALUE, button: true },
+      ...(groups[categorySelectValue] || []).map(group => ({
+        text: group,
+        value: group
+      }))
+    ]
+    if (options.some(({ value }) => value !== groupSelectValue)) {
+      options.push({ text: groupSelectValue, value: groupSelectValue })
+    }
+    return options
+  }, [categorySelectValue, groupSelectValue, groups, texts.groupCreateButton])
 
   const folderNames = useMemo(() => folders.map(({ title, group, category }) =>
     generateFolderName(title, group, category).toLowerCase()

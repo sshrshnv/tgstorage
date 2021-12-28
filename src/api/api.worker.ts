@@ -431,7 +431,7 @@ class Api {
       },
       title: `${generateFolderName(folder.title, newGroup, category)}${FOLDER_POSTFIX}`
     }, {
-      timeout: (index % 2 ? index - 1 : index) * 1500
+      timeout: (index % 2 ? index - 1 : index) * 2000
     })))
 
     for (let i = 0; i < updates.length; i++) {
@@ -458,7 +458,7 @@ class Api {
       },
       title: `${generateFolderName(folder.title, folder.group, newCategory)}${FOLDER_POSTFIX}`
     }, {
-      timeout: (index % 2 ? index - 1 : index) * 1500
+      timeout: (index % 2 ? index - 1 : index) * 2000
     })))
 
     for (let i = 0; i < updates.length; i++) {
