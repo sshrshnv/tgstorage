@@ -17,6 +17,7 @@ type Option = {
   value: string
   text: string
   subText?: string
+  button?: boolean
 } | null
 
 type Props = {
@@ -26,6 +27,7 @@ type Props = {
   value?: string
   error?: string | boolean
   disabled?: boolean
+  brand?: boolean
   loading?: boolean
   search?: boolean
   onSelect?: (value: string) => void
@@ -38,6 +40,7 @@ export const Select: FC<Props> = memo(({
   value,
   error,
   disabled,
+  brand,
   loading,
   search = false,
   onSelect
@@ -57,6 +60,7 @@ export const Select: FC<Props> = memo(({
 
   const filteredOptions = useMemo(() => options.filter(option => (
     option &&
+    option.text &&
     (search ? option.text.toLowerCase().startsWith(searchValue.toLowerCase()) : true) &&
     (search ? true : option.value !== value)
   )), [search, options, value, searchValue])
@@ -86,7 +90,8 @@ export const Select: FC<Props> = memo(({
     setExpanded(false)
   }, [focused, inputRef, setExpanded])
 
-  const toggle = useCallback(() => {
+  const toggle = useCallback((ev) => {
+    ev?.stopPropagation()
     expanded ? collapse() : expand()
   }, [expanded, collapse, expand])
 
@@ -136,10 +141,11 @@ export const Select: FC<Props> = memo(({
   }, [options, value])
 
   useEffect(() => {
-    const collapse = () => collapseRef.current()
-    const expand = () => expandRef.current()
+    if (!focused && !expanded) return
+
+    const collapse = () => collapseRef.current?.()
+    const expand = () => expandRef.current?.()
     const handleKey = ({ code }) => {
-      if (!focused && !expanded) return
       switch (code.toLowerCase()) {
         case 'enter':
           expanded ? collapse() : expand()
@@ -149,8 +155,13 @@ export const Select: FC<Props> = memo(({
           break
       }
     }
+
     self.addEventListener('keydown', handleKey)
-    return () => self.removeEventListener('keydown', handleKey)
+    self.document.addEventListener('click', collapse)
+    return () => {
+      self.removeEventListener('keydown', handleKey)
+      self.document.removeEventListener('click', collapse)
+    }
   }, [focused, expanded])
 
   return (
@@ -162,7 +173,8 @@ export const Select: FC<Props> = memo(({
         expanded && styles._expanded,
         (!search && !filteredOptions.length) && styles._empty,
         error && styles._error,
-        (disabled || loading) && styles._disabled
+        (disabled || loading) && styles._disabled,
+        (brand || focused) && styles._brand
       )}
       onClick={toggle}
     >
@@ -177,6 +189,7 @@ export const Select: FC<Props> = memo(({
         iconClass={styles.icon}
         forwardedRef={inputRef}
         fakeFocus={expanded}
+        brand={brand}
         onInput={handleSearch}
         onFocus={handleFocus}
         onBlur={handleBlur}
@@ -203,7 +216,10 @@ export const Select: FC<Props> = memo(({
           ) ? null : (
               <div
                 key={option.value}
-                class={styles.option}
+                class={cn(
+                  styles.option,
+                  option.button && styles._button
+                )}
                 onClick={() => select(option)}
               >
                 {option.text}

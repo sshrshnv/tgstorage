@@ -1,16 +1,17 @@
 import type { FolderMessages, Message } from '~/core/store'
 
 export const SEPARATOR = '::'
+export const TITLE_SEPARATOR = ':'
 export const POSTFIX = 'tgstorage'
 
 
 export const FOLDER_POSTFIX = `${SEPARATOR}${POSTFIX}`
 
-export const normalizeCategoryName = (categoryValue: string, texts) =>
-  categoryValue.toLowerCase() === texts.generalCategoryTitle.toLowerCase() ? '' : categoryValue
+export const normalizeCategoryName = (category: string, texts) =>
+  category.toLowerCase() === texts.generalCategoryTitle.toLowerCase() ? '' : category
 
-export const generateFolderName = (folderValue: string, categoryName: string) =>
-  `${folderValue}${categoryName ? `${SEPARATOR}${categoryName}` : ''}`
+export const generateFolderName = (title: string, group: string, category: string) =>
+  `${title}${group ? `${TITLE_SEPARATOR}${group}` : ''}${category ? `${SEPARATOR}${category}` : ''}`
 
 
 export const CHECKLIST_MESSAGE_MARK = `checklist${SEPARATOR}${POSTFIX}`

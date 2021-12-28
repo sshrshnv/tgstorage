@@ -13,16 +13,18 @@ import { StorageSidebar } from './storage.sidebar'
 import { StorageContent } from './storage.content'
 import { StorageListeners } from './storage.listeners'
 
-export type FolderPopupParams = {
+export type FoldersFormPopupParams = {
   folder?: Folder
+  group?: string
   category?: string
   isInitialFolder?: boolean
   isEditFolder?: boolean
+  isEditGroup?: boolean
   isEditCategory?: boolean
 } | null
 
 const Storage: FC = memo(() => {
-  const [folderPopupParams, setFolderPopupParams] = useState<FolderPopupParams>(null)
+  const [foldersFormPopupParams, setFoldersFormPopupParams] = useState<FoldersFormPopupParams>(null)
   const [foldersPopupVisible, setFoldersPopupVisible] = useState(false)
   const [profilePopupVisible, setProfilePopupVisible] = useState(false)
   const [settingsPopupVisible, setSettingsPopupVisible] = useState(false)
@@ -47,9 +49,9 @@ const Storage: FC = memo(() => {
     setFoldersPopupVisible
   })
 
-  const closeFolderPopup = useCallback(() => {
-    setFolderPopupParams(null)
-  }, [setFolderPopupParams])
+  const closeFoldersFormPopup = useCallback(() => {
+    setFoldersFormPopupParams(null)
+  }, [setFoldersFormPopupParams])
 
   const closeProfilePopup = useCallback(() => {
     setProfilePopupVisible(false)
@@ -75,16 +77,16 @@ const Storage: FC = memo(() => {
   return (
     <Layout outer>
       <StorageSidebar
-        folderPopupParams={folderPopupParams}
+        foldersFormPopupParams={foldersFormPopupParams}
         profilePopupVisible={profilePopupVisible}
         settingsPopupVisible={settingsPopupVisible}
         installPopupVisible={installPopupVisible}
         foldersPopupVisible={foldersPopupVisible}
-        setFolderPopupParams={setFolderPopupParams}
+        setFoldersFormPopupParams={setFoldersFormPopupParams}
         setProfilePopupVisible={setProfilePopupVisible}
         setSettingsPopupVisible={setSettingsPopupVisible}
         setInstallPopupVisible={setInstallPopupVisible}
-        closeFolderPopup={closeFolderPopup}
+        closeFoldersFormPopup={closeFoldersFormPopup}
         closeProfilePopup={closeProfilePopup}
         closeSettingsPopup={closeSettingsPopup}
         closeInstallPopup={closeInstallPopup}

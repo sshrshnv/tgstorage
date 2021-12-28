@@ -22,7 +22,7 @@ export const useSharedData = ({
     activeFolderId: state.activeFolderId
   }))
   const active = !!sharedData
-  const [selectedFolderId, setSelectedFolderId] = useState(0)
+  const [selectedFolderId, setSelectedFolderId] = useState('')
 
   const selectSharedDataFolder = useCallback(async (folder: Folder) => {
     self.history.back()
@@ -36,7 +36,7 @@ export const useSharedData = ({
   }, [setFoldersPopupVisible, setSelectedFolderId])
 
   useEffect(() => {
-    setSelectedFolderId(0)
+    setSelectedFolderId('')
   }, [sharedData])
 
   return useMemo(() => ({

@@ -5,16 +5,16 @@ import { memo } from 'preact/compat'
 import type { Folder } from '~/core/store'
 import { SidebarWrapper } from '~/ui/elements/sidebar-wrapper'
 
-import type { FolderPopupParams } from './storage'
+import type { FoldersFormPopupParams } from './storage'
 import { StorageSidebarFoldersBlock } from './storage.sidebar-folders-block'
-import { StorageSidebarFolderPopup } from './storage.sidebar-folder-popup'
+import { StorageSidebarFoldersFormPopup } from './storage.sidebar-folders-form-popup'
 import { StorageSidebarFoldersPopup } from './storage.sidebar-folders-popup'
 import { StorageSidebarSettingsPopup } from './storage.sidebar-settings-popup'
 import { StorageSidebarInstallPopup } from './storage.sidebar-install-popup'
 import { StorageSidebarProfilePopup } from './storage.sidebar-profile-popup'
 
 type Props = {
-  folderPopupParams: FolderPopupParams
+  foldersFormPopupParams: FoldersFormPopupParams
   profilePopupVisible: boolean
   settingsPopupVisible: boolean
   installPopupVisible: boolean
@@ -22,11 +22,11 @@ type Props = {
   movingMessageActive: boolean
   movingMessageLoading: boolean
   sharedDataActive: boolean
-  setFolderPopupParams: (params: FolderPopupParams) => void
+  setFoldersFormPopupParams: (params: FoldersFormPopupParams) => void
   setProfilePopupVisible: (value: boolean) => void
   setSettingsPopupVisible: (value: boolean) => void
   setInstallPopupVisible: (value: boolean) => void
-  closeFolderPopup: () => void
+  closeFoldersFormPopup: () => void
   closeProfilePopup: () => void
   closeSettingsPopup: () => void
   closeInstallPopup: () => void
@@ -37,18 +37,18 @@ type Props = {
 }
 
 export const StorageSidebar: FC<Props> = memo(({
-  folderPopupParams,
+  foldersFormPopupParams,
   profilePopupVisible,
   settingsPopupVisible,
   installPopupVisible,
   movingMessageActive,
   movingMessageLoading,
   sharedDataActive,
-  setFolderPopupParams,
+  setFoldersFormPopupParams,
   setProfilePopupVisible,
   setSettingsPopupVisible,
   setInstallPopupVisible,
-  closeFolderPopup,
+  closeFoldersFormPopup,
   closeProfilePopup,
   closeSettingsPopup,
   closeInstallPopup,
@@ -64,16 +64,16 @@ export const StorageSidebar: FC<Props> = memo(({
       <StorageSidebarFoldersBlock
         transparent={sharedDataActive}
         mobileTransparent={movingMessageActive}
-        setFolderPopupParams={setFolderPopupParams}
+        setFoldersFormPopupParams={setFoldersFormPopupParams}
         setProfilePopupVisible={setProfilePopupVisible}
         setSettingsPopupVisible={setSettingsPopupVisible}
         setInstallPopupVisible={setInstallPopupVisible}
       />
 
-      {!!folderPopupParams && (
-        <StorageSidebarFolderPopup
-          params={folderPopupParams}
-          onClose={closeFolderPopup}
+      {!!foldersFormPopupParams && (
+        <StorageSidebarFoldersFormPopup
+          params={foldersFormPopupParams}
+          onClose={closeFoldersFormPopup}
         />
       )}
 

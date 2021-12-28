@@ -45,6 +45,7 @@ export type Folder = {
   id: string
   access_hash: string
   title: string
+  group: string
   category: string
   annc?: boolean
   general?: boolean

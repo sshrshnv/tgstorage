@@ -10,13 +10,13 @@ import { SidebarHeader } from '~/ui/elements/sidebar-header'
 import { SidebarActionButton } from '~/ui/elements/sidebar-action-button'
 import { Button } from '~/ui/elements/button'
 
-import type { FolderPopupParams } from './storage'
+import type { FoldersFormPopupParams } from './storage'
 import { StorageSidebarFoldersList } from './storage.sidebar-folders-list'
 
 type Props = {
   transparent?: boolean
   mobileTransparent?: boolean
-  setFolderPopupParams?: (params: FolderPopupParams) => void
+  setFoldersFormPopupParams?: (params: FoldersFormPopupParams) => void
   setProfilePopupVisible?: (value: boolean) => void
   setSettingsPopupVisible?: (value: boolean) => void
   setInstallPopupVisible?: (value: boolean) => void
@@ -25,7 +25,7 @@ type Props = {
 export const StorageSidebarFoldersBlock: FC<Props> = memo(({
   transparent,
   mobileTransparent,
-  setFolderPopupParams,
+  setFoldersFormPopupParams,
   setProfilePopupVisible,
   setSettingsPopupVisible,
   setInstallPopupVisible
@@ -34,10 +34,10 @@ export const StorageSidebarFoldersBlock: FC<Props> = memo(({
   const { foldersLoading } = useFolders()
 
   const openFolderPopup = useCallback(() => {
-    setFolderPopupParams?.({
+    setFoldersFormPopupParams?.({
       isInitialFolder: true
     })
-  }, [setFolderPopupParams])
+  }, [setFoldersFormPopupParams])
 
   const openProfilePopup = useCallback(() => {
     setProfilePopupVisible?.(true)
@@ -88,7 +88,7 @@ export const StorageSidebarFoldersBlock: FC<Props> = memo(({
       />
 
       <StorageSidebarFoldersList
-        setFolderPopupParams={setFolderPopupParams}
+        setFoldersFormPopupParams={setFoldersFormPopupParams}
       />
     </Sidebar>
   )

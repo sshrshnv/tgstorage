@@ -10,27 +10,33 @@ import { useUpdatableRef } from '~/tools/hooks'
 import { normalizeMessagePreview } from '~/tools/handle-content'
 import { SidebarItem } from '~/ui/elements/sidebar-item'
 
-import type { FolderPopupParams } from './storage'
+import type { FoldersFormPopupParams } from './storage'
 
 type Props = {
-  id: number
+  id: string
   index?: number
   disabled?: boolean
   loadingDisabled?: boolean
   withoutMenu?: boolean
   withoutMessage?: boolean
-  setFolderPopupParams?: (params: FolderPopupParams) => void
+  grouped?: boolean
+  expanded?: boolean
+  toggling?: boolean
+  setFoldersFormPopupParams?: (params: FoldersFormPopupParams) => void
   onFolderSelect?: (folder: Folder) => void
 }
 
-export const StorageSidebarFoldersItem: FC<Props> = memo(({
+export const StorageSidebarFoldersListFolder: FC<Props> = memo(({
   id,
   index,
   disabled,
   loadingDisabled,
   withoutMenu,
   withoutMessage,
-  setFolderPopupParams,
+  grouped,
+  expanded,
+  toggling,
+  setFoldersFormPopupParams,
   onFolderSelect
 }) => {
   const { texts } = useTexts('storage')
@@ -52,11 +58,11 @@ export const StorageSidebarFoldersItem: FC<Props> = memo(({
   }, [id, folder, onFolderSelect])
 
   const handleEdit = useCallback(() => {
-    setFolderPopupParams?.({
+    setFoldersFormPopupParams?.({
       folder: folder,
       isEditFolder: true
     })
-  }, [folder, setFolderPopupParams])
+  }, [folder, setFoldersFormPopupParams])
 
   const handleDelete = useCallback((ev) => {
     if (confirmation) {
@@ -96,8 +102,15 @@ export const StorageSidebarFoldersItem: FC<Props> = memo(({
   ])
 
   useEffect(() => {
+    self.document.dispatchEvent(new CustomEvent('sendingMessage', { detail: {
+      group: folderRef.current?.group,
+      exist: isSendingMessageExist
+    } }))
+  }, [isSendingMessageExist])
+
+  useEffect(() => {
     if (loadingDisabledRef.current) return
-    loadFolderMessages(folderRef.current)
+    loadFolderMessages(folderRef.current as Folder)
   }, [])
 
   return (
@@ -109,6 +122,9 @@ export const StorageSidebarFoldersItem: FC<Props> = memo(({
       disabled={disabled}
       menu={withoutMenu ? null : menu}
       loading={isSendingMessageExist}
+      grouped={grouped}
+      expanded={expanded}
+      toggling={toggling}
       onClick={handleClick}
     />
   )

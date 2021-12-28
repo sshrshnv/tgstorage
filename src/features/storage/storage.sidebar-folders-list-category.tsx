@@ -7,36 +7,36 @@ import type { Folder } from '~/core/store'
 import { useTexts } from '~/core/hooks'
 import { SidebarTitle } from '~/ui/elements/sidebar-title'
 
-import type { FolderPopupParams } from './storage'
+import type { FoldersFormPopupParams } from './storage'
 
 type Props = {
   folder: Folder
   index: number
   disabled?: boolean
   withoutMenu?: boolean
-  setFolderPopupParams?: (params: FolderPopupParams) => void
+  setFoldersFormPopupParams?: (params: FoldersFormPopupParams) => void
 }
 
-export const StorageSidebarFoldersCategoryItem: FC<Props> = memo(({
+export const StorageSidebarFoldersListCategory: FC<Props> = memo(({
   folder,
   disabled,
   withoutMenu,
-  setFolderPopupParams
+  setFoldersFormPopupParams
 }) => {
   const { texts } = useTexts('storage')
 
   const editCategory = useCallback(() => {
-    setFolderPopupParams?.({
+    setFoldersFormPopupParams?.({
       category: folder.category,
       isEditCategory: true
     })
-  }, [folder, setFolderPopupParams])
+  }, [folder, setFoldersFormPopupParams])
 
   const addFolder = useCallback(() => {
-    setFolderPopupParams?.({
+    setFoldersFormPopupParams?.({
       category: folder.category,
     })
-  }, [folder, setFolderPopupParams])
+  }, [folder, setFoldersFormPopupParams])
 
   const menu = useMemo(() => ({
     items: [folder.category ? {

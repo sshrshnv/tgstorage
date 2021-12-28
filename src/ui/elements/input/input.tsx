@@ -28,6 +28,7 @@ type Props = {
   maxLength?: number
   autoFocus?: boolean
   fakeFocus?: boolean
+  brand?: boolean
   border?: boolean
   clear?: boolean
   onFocus?: () => void
@@ -43,6 +44,7 @@ export const Input: FC<Props> = memo(({
   placeholder,
   error,
   disabled,
+  brand,
   border = true,
   icon,
   iconClass: iconClassName,
@@ -103,7 +105,7 @@ export const Input: FC<Props> = memo(({
     <div class={cn(
       styles.root,
       outerStyles,
-      (focused || fakeFocus) && styles._focused,
+      (brand || focused || fakeFocus) && styles._brand,
       disabled && styles._disabled,
       error && styles._error
     )}>

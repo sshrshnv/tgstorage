@@ -1,6 +1,5 @@
 .root
   position: relative
-  display: flex
   flex-shrink: 0
   width: 100%
   padding: 0 20px 0 calc(20px +  env(safe-area-inset-left, 0))
@@ -13,6 +12,12 @@
     .content
       height: 65px
       border-top: 1px solid var(--item-border-color)
+
+.inner
+  display: flex
+  flex-shrink: 0
+  width: 100%
+  background-color: inherit
 
 .icon
   display: flex
@@ -75,3 +80,70 @@
   pointer-events: none
   cursor: default
   opacity: .5
+
+._group
+  .icon
+    position: relative
+    z-index: 4
+    border-radius: 8px
+
+  &._expanded
+    .icon
+      position: relative
+      z-index: 4
+
+._grouped
+  > .inner
+    transform: translateY(-64px)
+    max-height: 0
+    opacity: 0
+    transition: none
+
+    &._performance
+      -webkit-backface-visibility: hidden
+      -webkit-transform-style: preserve-3d
+      -webkit-perspective: 1200px
+
+  &._expanded
+  &._toggling
+    .icon
+      &::before
+        position: absolute
+        z-index: -1
+        top: -12px
+        display: block
+        width: 1px
+        height: 24px
+        content: ''
+        background-color: currentColor
+
+  &._expanded
+    > .inner._animationFallback
+      animation-name: expand
+      animation-duration: .25s
+      animation-timing-function: ease
+      animation-fill-mode: forwards
+      will-change: transform, max-height, opacity
+
+  &:not(._expanded):not(._toggling)
+    z-index: -1
+
+@keyframes expand
+  0%
+    max-height: 0
+    transform: translateY(-64px)
+    opacity: 0
+    z-index: -1
+  70%
+    opacity: 0
+    z-index: -1
+  90%
+    opacity: 0.5
+    z-index: 3
+  99%
+    z-index: 3
+  100%
+    max-height: 65px
+    transform: translateY(0)
+    opacity: 1
+    z-index: 4

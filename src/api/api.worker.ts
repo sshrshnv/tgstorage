@@ -368,7 +368,7 @@ class Api {
     })
     const handledUpdates = await handleUpdates(updates)
     const createdFolder = [...handledUpdates.folders!.values()].find(folder =>
-      generateFolderName(folder.title, folder.category) === name
+      generateFolderName(folder.title, folder.group, folder.category) === name
     )
     this.archiveFolder(createdFolder)
 
@@ -415,6 +415,34 @@ class Api {
     return handleUpdates(updates)
   }
 
+  public async editGroup(
+    newGroup: string,
+    group: string,
+    category: string
+  ) {
+    const folders = await dataCache.getFolders()
+    const editableFolders = [...folders.values()].filter(folder => folder.group === group && folder.category === category)
+
+    const updates = await Promise.all(editableFolders.map((folder, index) => this.call('channels.editTitle', {
+      channel: {
+        _: 'inputChannel',
+        channel_id: folder.id,
+        access_hash: folder.access_hash
+      },
+      title: `${generateFolderName(folder.title, newGroup, category)}${FOLDER_POSTFIX}`
+    }, {
+      timeout: (index % 2 ? index - 1 : index) * 1500
+    })))
+
+    for (let i = 0; i < updates.length; i++) {
+      const handledUpdates = await handleUpdates(updates[i])
+
+      if (i === updates.length - 1) {
+        return handledUpdates
+      }
+    }
+  }
+
   public async editCategory(
     newCategory: string,
     category: string
@@ -428,7 +456,7 @@ class Api {
         channel_id: folder.id,
         access_hash: folder.access_hash
       },
-      title: `${generateFolderName(folder.title, newCategory)}${FOLDER_POSTFIX}`
+      title: `${generateFolderName(folder.title, folder.group, newCategory)}${FOLDER_POSTFIX}`
     }, {
       timeout: (index % 2 ? index - 1 : index) * 1500
     })))

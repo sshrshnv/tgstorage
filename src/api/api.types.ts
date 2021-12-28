@@ -124,6 +124,12 @@ export type Api = {
     folder: Folder
   ) => Promise<Updates>
 
+  editGroup: (
+    newGroup: string,
+    group: string,
+    category: string,
+  ) => Promise<Updates>
+
   editCategory: (
     newCategory: string,
     category: string,

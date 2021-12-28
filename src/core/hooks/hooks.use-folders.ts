@@ -1,7 +1,7 @@
 import { useMemo } from 'preact/hooks'
 import { useStoreState } from 'unistore-hooks'
 
-import type { State } from '~/core/store'
+import type { State, Folder } from '~/core/store'
 import { useTexts } from '~/core/hooks'
 
 export const useFolders = () => {
@@ -24,14 +24,30 @@ export const useFolders = () => {
     }): folder),
   [foldersMap, texts.generalFolderTitle])
 
+  return useMemo(() => ({
+    folders,
+    foldersLoading
+  }), [folders, foldersLoading])
+}
+
+export const useFoldersParams = (
+  folders: Folder[]
+) => {
   const categories = useMemo(() => [
     ...new Set(folders.map(folder => folder.category))
   ],
   [folders])
 
+  const groups = useMemo(() => categories.reduce((obj, category) => ({
+    ...obj,
+    [category]: [
+      ...new Set(folders.filter(folder => folder.category === category && !!folder.group).map(folder => folder.group))
+    ]
+  }), {}),
+  [folders, categories])
+
   return useMemo(() => ({
-    folders,
-    categories,
-    foldersLoading
-  }), [folders, categories, foldersLoading])
+    groups,
+    categories
+  }), [groups, categories])
 }

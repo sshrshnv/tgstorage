@@ -90,6 +90,18 @@ export const editFolder = async (
   return true
 }
 
+export const editGroup = async (
+  newGroup: string,
+  group: string,
+  category: string
+) => {
+  waitFolders(true)
+  const updates = await api.editGroup(newGroup, group, category)
+
+  setUpdates(updates)
+  return true
+}
+
 export const editCategory = async (
   newCategory: string,
   category: string
