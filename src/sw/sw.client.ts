@@ -6,7 +6,7 @@ import {
   downloadStreamFilePart,
   setSharedData
 } from '~/core/actions'
-import { setFile } from '~/core/cache'
+import { setFile, resetQueryCache } from '~/core/cache'
 import { checkIsSafari } from '~/tools/detect-device'
 
 let registration
@@ -17,7 +17,10 @@ export const registerSW = async () => {
   const wb = new Workbox('/sw.js')
 
   const update = () => {
-    wb.addEventListener('controlling', () => {
+    wb.addEventListener('controlling', async () => {
+      try {
+        await resetQueryCache()
+      } catch (err) {}
       self.location.reload()
     })
     wb.messageSkipWaiting()

@@ -114,6 +114,10 @@ export const dataCache = {
   getFolderOffsetId: (folderId: string) => offsetsCache.get(folderId)
 }
 
+export const resetQueryCache = async () => {
+  await dataCache.resetQueryTime()
+}
+
 export const resetDataCache = async () => {
   const settings = await dataCache.getSettings()
 
