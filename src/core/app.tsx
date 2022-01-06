@@ -25,7 +25,7 @@ import {
   PreventContextMenu, PreventScale, PreventDragAndDrop, PreventIOSScroll,
   ApplyTheme, ApplyLocale
 } from '~/ui/handlers'
-import { Analytics } from '~/scripts'
+import { Analytics } from '~/scripts/analytics'
 
 const App: FC = memo(() => {
   const { isIntroAppRoute } = useAppRoute()

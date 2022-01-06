@@ -28,6 +28,7 @@ const isSentryAvailable = () =>
 const defineEnvConfig = {
   'process.env.BUILD_ENV': JSON.stringify(process.env.BUILD_ENV),
   'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+  'process.env.DOMAIN': JSON.stringify(appEnv.DOMAIN),
   'process.env.API_ID': JSON.stringify(appEnv.API_ID),
   'process.env.API_HASH': JSON.stringify(appEnv.API_HASH),
   'process.env.API_TEST': JSON.stringify(appEnv.API_TEST),
@@ -36,6 +37,7 @@ const defineEnvConfig = {
   'process.env.SENTRY_DSN': JSON.stringify(appEnv.SENTRY_DSN),
   'process.env.SENTRY_AUTH_TOKEN': JSON.stringify(appEnv.SENTRY_AUTH_TOKEN),
   'process.env.GOOGLE_ANALYTICS_ID': JSON.stringify(appEnv.GOOGLE_ANALYTICS_ID),
+  'process.env.DONATE_LINK': JSON.stringify(appEnv.DONATE_LINK),
 }
 
 const resolveOptions = {

@@ -21,9 +21,9 @@
 
     <meta property="og:locale" content="en_EN">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://tgstorage.com">
-    <meta property="og:image" content="https://tgstorage.com<%= require('~/ui/images/share.png') %>">
-    <meta name="twitter:image" content="https://tgstorage.com<%= require('~/ui/images/share.png') %>">
+    <meta property="og:url" content="https://<%= process.env.DOMAIN %>">
+    <meta property="og:image" content="https://<%= process.env.DOMAIN %><%= require('~/ui/images/share.png') %>">
+    <meta name="twitter:image" content="https://<%= process.env.DOMAIN %><%= require('~/ui/images/share.png') %>">
     <meta name="twitter:card" content="summary_large_image">
 
     <link rel="manifest" href="<%= require('~/core/app.webmanifest') %>">

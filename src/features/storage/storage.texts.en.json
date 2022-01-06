@@ -76,7 +76,10 @@
   "sendingMessagesWarning": "You have unsent messages, do you confirm the exit?",
   "installTitle": "Installation",
   "installDescription": "The app can be installed on the device without downloading it from AppStore, PlayStore or MicrosoftStore.",
-  "installBrowsers": "Installation is available only in browsers:",
+  "installBrowsers": "Installation is available in browsers:",
   "installHelp": "If the browser did not prompt you to install the application automatically, you can install it manually through the browser menu.",
-  "installButton": "Install"
+  "installButton": "Install",
+  "donateTitle": "Help",
+  "donateDescription": "You can help in the development of the project by donating any amount to the developer or sharing a link to the application.",
+  "donateButton": "Donate"
 }

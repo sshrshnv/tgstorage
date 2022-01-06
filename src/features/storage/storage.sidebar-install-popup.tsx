@@ -28,12 +28,12 @@ export const StorageSidebarInstallPopup: FC<Props> = memo(({
       <Form center>
         <Break size={24} px/>
 
-        <Text medium>
+        <Text medium center>
           {texts.installDescription}
         </Text>
         <Break size={16} px/>
 
-        <Text medium withLink>
+        <Text medium withLink center>
           {texts.installBrowsers}
           <Break size={16} px/>
 
@@ -43,7 +43,7 @@ export const StorageSidebarInstallPopup: FC<Props> = memo(({
             href="market://details?id=com.android.chrome"
             target="_top"
             rel="noopener noreferrer"
-          >- Google Chrome</a>
+          >Google Chrome</a>
           <Break size={16} px/>
 
           iPhone
@@ -52,7 +52,7 @@ export const StorageSidebarInstallPopup: FC<Props> = memo(({
             href="https://www.apple.com/safari"
             target="_blank"
             rel="noopener noreferrer"
-          >- Safari</a>
+          >Safari</a>
           <Break size={16} px/>
 
           Mac
@@ -61,7 +61,7 @@ export const StorageSidebarInstallPopup: FC<Props> = memo(({
             href="https://www.google.com/chrome"
             target="_blank"
             rel="noopener noreferrer"
-          >- Google Chrome</a>
+          >Google Chrome</a>
           <Break size={16} px/>
 
           Windows
@@ -70,13 +70,13 @@ export const StorageSidebarInstallPopup: FC<Props> = memo(({
             href="https://www.microsoft.com/edge"
             target="_blank"
             rel="noopener noreferrer"
-          >- Microsoft Edge</a>
+          >Microsoft Edge</a>
           <Break size={4} px/>
           <a
             href="https://www.google.com/chrome"
             target="_blank"
             rel="noopener noreferrer"
-          >- Google Chrome</a>
+          >Google Chrome</a>
           <Break size={16} px/>
 
           {appInstallAvailable ? (
@@ -92,7 +92,7 @@ export const StorageSidebarInstallPopup: FC<Props> = memo(({
               </Button>
             </Fragment>
           ) : (
-            <Text grey>
+            <Text grey center>
               {texts.installHelp}
             </Text>
           )}

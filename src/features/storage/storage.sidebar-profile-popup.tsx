@@ -67,6 +67,7 @@ export const StorageSidebarProfilePopup: FC<Props> = memo(({
         )}
 
         <Button
+          uppercase
           brand
           outline
           onClick={logOut}
