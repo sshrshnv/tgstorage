@@ -93,11 +93,14 @@
       z-index: 4
 
 ._grouped
+  opacity: 0.1
+  transition: opacity .3s ease-out
+  transition-delay: .2s
+
   > .inner
     transform: translateY(-64px)
     max-height: 0
-    opacity: 0
-    transition: none
+    visibility: hidden
 
     &._performance
       -webkit-backface-visibility: hidden
@@ -118,12 +121,15 @@
         background-color: currentColor
 
   &._expanded
-    > .inner._animationFallback
-      animation-name: expand
-      animation-duration: .25s
-      animation-timing-function: ease
-      animation-fill-mode: forwards
-      will-change: transform, max-height, opacity
+    opacity: 1
+
+    > .inner
+      &._animationFallback
+        animation-name: expand
+        animation-duration: .2s
+        animation-timing-function: ease
+        animation-fill-mode: forwards
+        will-change: transform, max-height, opacity
 
   &:not(._expanded):not(._toggling)
     z-index: -1

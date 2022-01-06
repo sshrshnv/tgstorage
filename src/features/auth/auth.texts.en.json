@@ -1,6 +1,7 @@
 {
   "title": "Sign in",
   "phoneDescription": "Please confirm your country and\n enter your Telegram phone number.",
+  "phoneBanDescription": "Telegram's automatic protection has been triggered and your account has been banned. This is a one-time error, it will not happen again after recovering.",
   "phoneLabel": "Phone Number",
   "countryLabel": "Country",
   "codeDescription:auth.sentCodeTypeApp": "We have sent you a message with the code at the Telegram app.",
@@ -16,6 +17,7 @@
   "button:auth.codeTypeCall": "Receive a call",
   "button:auth.codeTypeFlashCall": "Receive a flash call",
   "buttonWait": "Wait",
+  "buttonRecover": "Recover",
   "error": "Something went wrong",
   "PHONE_NUMBER_BANNED": "Banned phone number",
   "PHONE_NUMBER_INVALID": "Invalid phone number",

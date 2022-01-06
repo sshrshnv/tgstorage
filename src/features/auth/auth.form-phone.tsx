@@ -1,6 +1,6 @@
 import type { FunctionComponent as FC } from 'preact'
 import type { StateUpdater } from 'preact/hooks'
-import { h } from 'preact'
+import { h, Fragment } from 'preact'
 import { memo } from 'preact/compat'
 import { useCallback, useEffect, useState } from 'preact/hooks'
 
@@ -17,6 +17,7 @@ import { Break } from '~/ui/elements/break'
 import { Select } from '~/ui/elements/select'
 import { Input } from '~/ui/elements/input'
 import { Button } from '~/ui/elements/button'
+import { Link } from '~/ui/elements/link'
 
 import {
   findCountryByPhone,
@@ -172,15 +173,40 @@ export const AuthFormPhone: FC<Props> = memo(({
       />
       <Break size={28} px/>
 
-      <Button
-        type="submit"
-        loading={loading}
-        disabled={!!timeout || !ready}
-        uppercase
-        brand
-      >
-        {timeout || texts.button}
-      </Button>
+      {error === 'PHONE_NUMBER_BANNED' ? (
+        <Fragment>
+          <Link
+            href={generateRecoverLink(phone)}
+            outline
+            uppercase
+            alarm
+          >
+            {texts.buttonRecover}
+          </Link>
+          <Break size={28} px/>
+
+          <Text small grey center>
+            {texts.phoneBanDescription}
+          </Text>
+        </Fragment>
+      ) : (
+        <Button
+          type="submit"
+          loading={loading}
+          disabled={!!timeout || !ready}
+          uppercase
+          brand
+        >
+          {timeout || texts.button}
+        </Button>
+      )}
     </Form>
   )
 })
+
+const generateRecoverLink = (phone: string) => {
+  const email = 'recover@telegram.org'
+  const subject = encodeURIComponent(`Banned phone number: ${phone}`)
+  const body = encodeURIComponent(`I'm trying to use my mobile phone number:\n${phone}\nBut Telegram says it's banned. Please help.`)
+  return `mailto:${email}?subject=${subject}&body=${body}`
+}

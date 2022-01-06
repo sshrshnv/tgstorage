@@ -1,6 +1,7 @@
 {
   "title": "Вход",
   "phoneDescription": "Выберите страну и введите\n ваш номер в Telegram.",
+  "phoneBanDescription": "Сработала автоматическая защита Telegram и ваш аккаунт был заблокирован. Это разовое ложное срабатывание, после разблокировки оно не повторится.",
   "phoneLabel": "Номер телефона",
   "countryLabel": "Страна",
   "codeDescription:auth.sentCodeTypeApp": "Мы отправили вам сообщение с кодом в Telegram.",
@@ -16,8 +17,9 @@
   "button:auth.codeTypeCall": "Запросить звонок",
   "button:auth.codeTypeFlashCall": "Запросить срочный звонок",
   "buttonWait": "Подождите",
+  "buttonRecover": "Разблокировать",
   "error": "Что-то пошло не так",
-  "PHONE_NUMBER_BANNED": "Забаненный номер",
+  "PHONE_NUMBER_BANNED": "Заблокированный номер",
   "PHONE_NUMBER_INVALID": "Невалидный номер",
   "PHONE_NUMBER_FLOOD": "Превышен лимит",
   "PHONE_CODE_EMPTY": "Пустой код",

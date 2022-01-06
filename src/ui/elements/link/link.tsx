@@ -13,6 +13,7 @@ export type Props = {
   disabled?: boolean
   loading?: boolean
   brand?: boolean
+  alarm?: boolean
   light?: boolean
   error?: boolean
   uppercase?: boolean
@@ -30,6 +31,7 @@ export const Link: FC<Props> = memo(({
   disabled,
   loading,
   brand,
+  alarm,
   light,
   error,
   uppercase,
@@ -49,6 +51,7 @@ export const Link: FC<Props> = memo(({
         disabled && styles._disabled,
         loading && styles._loading,
         brand && styles._brand,
+        alarm && styles._alarm,
         light && styles._light,
         error && styles._error,
         uppercase && styles._uppercase,

@@ -51,11 +51,11 @@ export const SidebarItem: FC<Props> = memo(({
     if (!grouped || !expanded) return
 
     const animation = innerElRef.current?.animate?.([
-      { opacity: 0, zIndex: -1, maxHeight: '0', transform: 'translateY(-64px)' },
-      { opacity: 0, zIndex: -1, offset: 0.7 },
-      { opacity: 0.5, zIndex: 3, offset: 0.9 },
-      { zIndex: 3, offset: 0.99 },
-      { opacity: 1, zIndex: 4, maxHeight: '65px', transform: 'translateY(0)' }
+      { visibility: 'hidden', zIndex: -1, maxHeight: '0', transform: 'translateY(-64px)' },
+      { visibility: 'hidden', zIndex: -1, offset: 0.7 },
+      { visibility: 'visible', zIndex: 3, offset: 0.9 },
+      { visibility: 'visible', zIndex: 3, offset: 0.99 },
+      { visibility: 'visible', zIndex: 4, maxHeight: '65px', transform: 'translateY(0)' }
     ], {
       duration: 200,
       fill: 'forwards',
