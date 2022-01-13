@@ -234,7 +234,7 @@ export const resetDownloadingFile = (file: {
   })
 }
 
-const DOWNLOADING_PART_SIZE = 512 * 1024
+const DOWNLOADING_PART_SIZE = 1024 * 1024
 const DOWNLOADING_TIMEOUT = 400
 const DOWNLOADING_THREAD_COUNT = 16
 const MAX_DOWNLOADING_COUNT = 4
@@ -304,6 +304,10 @@ export const downloadFile = async (
   })
 }
 
+const DONWLOADED_PARTS_COUNT: {
+  [fileKey: string]: number
+} = {}
+
 export const downloadFilePart = async (
   messageId: number,
   folder: Folder,
@@ -349,12 +353,12 @@ export const downloadFilePart = async (
   if (!downloadingFile) return
 
   let fileKey: string|undefined = generateFileKey(downloadingFile)
-  const {
-    type,
-    partsCount = 0,
-    downloadedPartsCount = 0
-  } = downloadingFile
-  const isLastPart = downloadedPartsCount === partsCount - 1
+
+  DONWLOADED_PARTS_COUNT[fileKey] = (DONWLOADED_PARTS_COUNT[fileKey] || 0) + 1
+  const downloadedPartsCount = DONWLOADED_PARTS_COUNT[fileKey]
+
+  const { type, partsCount = 0 } = downloadingFile
+  const isLastPart = downloadedPartsCount === partsCount
 
   await setBytes(fileKey, part, bytes)
   bytes = undefined
@@ -369,9 +373,9 @@ export const downloadFilePart = async (
       fileKey,
       downloading: false
     } : {}),
-    downloadedPartsCount: downloadedPartsCount + 1,
+    downloadedPartsCount,
     [`lastDownloadedPart${thread}`]: part,
-    progress: Math.round((downloadedPartsCount + 1) / partsCount * 100)
+    progress: Math.round(downloadedPartsCount / partsCount * 100)
   })
 }
 
