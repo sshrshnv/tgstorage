@@ -234,7 +234,7 @@ export const resetDownloadingFile = (file: {
   })
 }
 
-const DOWNLOADING_PART_SIZE = 1024 * 1024
+const DOWNLOADING_PART_SIZE = 512 * 1024
 const DOWNLOADING_TIMEOUT = 400
 const DOWNLOADING_THREAD_COUNT = 16
 const MAX_DOWNLOADING_COUNT = 4
@@ -275,17 +275,11 @@ export const downloadFile = async (
     dc_id: file.dc_id,
     access_hash: file.access_hash,
     sizeType: file.sizeType,
-    downloading: true
-  }
-
-  if (!downloadingFile.lastDownloadedPart0 && !downloadingFile.lastDownloadedPart1) {
-    const partSize = DOWNLOADING_PART_SIZE
-    const partsCount = Math.ceil(file.size / partSize)
-    downloadingFile = {
-      ...downloadingFile,
-      partSize,
-      partsCount
-    }
+    downloading: true,
+    ...(!downloadingFile.partsCount ? {
+      partSize: DOWNLOADING_PART_SIZE,
+      partsCount: Math.ceil(file.size / DOWNLOADING_PART_SIZE)
+    } : {})
   }
 
   setDownloadingFile(downloadingFile)
@@ -376,7 +370,7 @@ export const downloadFilePart = async (
       downloading: false
     } : {}),
     downloadedPartsCount: downloadedPartsCount + 1,
-    [`lastDownloaded${thread}`]: part,
+    [`lastDownloadedPart${thread}`]: part,
     progress: Math.round((downloadedPartsCount + 1) / partsCount * 100)
   })
 }
