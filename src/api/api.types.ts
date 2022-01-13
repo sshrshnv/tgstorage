@@ -205,6 +205,7 @@ export type Api = {
       isLarge: boolean
       part: number
       partsCount: number
+      thread: number
     }
   ) => Promise<boolean>
 
@@ -218,6 +219,7 @@ export type Api = {
     sizeType?: string
     originalSizeType?: string
     precise?: boolean
+    thread?: number
   }) => Promise<Uint8Array>
 
   searchMessages: (

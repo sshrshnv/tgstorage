@@ -151,8 +151,9 @@ export type SearchMessages =
 
 export type InputFile = {
   id: string
-  progress: number
   name: string
+  progress: number
+  progressSize: number
   size: number
   w?: number
   h?: number

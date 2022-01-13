@@ -6,7 +6,7 @@ import { timer } from '~/tools/timer'
 
 import { addMessageHandler } from './handlers'
 
-const SAVE_PART_SIZE = 512 * 1024
+const SAVE_PART_SIZE = 1024 * 1024
 const SAVING_TIMEOUT = 400
 const MAX_SAVING_COUNT = 2
 

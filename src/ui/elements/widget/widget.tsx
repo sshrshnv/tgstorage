@@ -17,6 +17,8 @@ import styles from './widget.styl'
 type Props = {
   title?: string
   description?: string
+  descriptionAddition?: string
+  descriptionLink?: string
   button?: string
   link?: string
   loading?: boolean
@@ -29,6 +31,8 @@ type Props = {
 export const Widget: FC<Props> = memo(({
   title,
   description,
+  descriptionAddition,
+  descriptionLink,
   button,
   link,
   loading,
@@ -80,8 +84,14 @@ export const Widget: FC<Props> = memo(({
 
       {description && (
         <Fragment>
-          <Text class={styles.description}>
-            {description}
+          <Text class={styles.description} withLink>
+            {description} {descriptionLink && (
+              <a
+                href={descriptionLink}
+                target="_blank"
+                rel="noopener noreferrer"
+              >{descriptionAddition}</a>
+            )}
           </Text>
           <Break size={20} px/>
         </Fragment>

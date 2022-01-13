@@ -21,6 +21,8 @@ import {
   generateRandomId
 } from './api.helpers'
 
+const THREAD_RESERVED_COUNT = 16
+
 const initialMeta = {
   pfs: false,
   baseDC: 2,
@@ -922,9 +924,10 @@ class Api {
       isLarge: boolean
       part: number
       partsCount: number
+      thread: number
     }
   ) {
-    const { fileId, isLarge, part, partsCount } = params
+    const { fileId, isLarge, part, partsCount, thread } = params
 
     return this.call(
       isLarge ?
@@ -936,7 +939,7 @@ class Api {
         file_total_parts: partsCount,
         bytes: filePartBytes
       }, {
-        thread: 3
+        thread: 2 + thread + THREAD_RESERVED_COUNT * 1
       }
     )
   }
@@ -950,7 +953,8 @@ class Api {
     access_hash,
     file_reference,
     sizeType,
-    originalSizeType
+    originalSizeType,
+    thread = 0
   }: {
     id: string
     partSize: number
@@ -961,6 +965,7 @@ class Api {
     file_reference: ArrayBuffer
     sizeType?: string
     originalSizeType?: string
+    thread?: number
   }) {
     let file = await this.call('upload.getFile', {
       location: {
@@ -976,7 +981,7 @@ class Api {
       precise
     }, {
       dc: dc_id,
-      thread: 2
+      thread: 2 + thread + THREAD_RESERVED_COUNT * 0
     })
 
     const bytes = new Uint8Array(file.bytes)

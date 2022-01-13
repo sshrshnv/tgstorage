@@ -1,6 +1,7 @@
 {
   "updateTitle": "Update",
   "updateDescription": "A new improved version of the app is available.",
+  "updateDescriptionLink": "What's new?",
   "updateButton": "Update",
   "errorTitle": "Error",
   "errorDescription": "Something went wrong. The error was sent to the developer.",

@@ -22,9 +22,10 @@ export const FILE_SIZE = {
 export const MAX_FILE_SIZE = FILE_SIZE.MB2000
 
 export const getFilePartSize = (fileSize: number) => (
-  (fileSize <= FILE_SIZE.MB100) ? 256 :
-    (fileSize <= FILE_SIZE.MB2000) ? 512 :
-      0
+  (fileSize <= FILE_SIZE.MB100) ? 128 :
+    (fileSize <= FILE_SIZE.MB750) ? 256 :
+      (fileSize <= FILE_SIZE.MB2000) ? 512 :
+        0
 ) * 1024
 
 export const generateLocalFileKey = ({ name, size, type, lastModified }) =>

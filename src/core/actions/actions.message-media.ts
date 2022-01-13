@@ -8,12 +8,14 @@ import { api } from '~/api'
 import { timer } from '~/tools/timer'
 import { generateFileMessageMark } from '~/tools/handle-content'
 import {
-  FILE_SIZE, transformToBytes, generateFileKey,
+  transformToBytes, generateFileKey,
   generateFileStreamUrl, generateSaveFileStreamUrl
 } from '~/tools/handle-file'
 
 import { getActiveFolder } from './actions.folders'
 import { getSendingMessage, setSendingMessage, createMessage, refreshMessage } from './actions.messages'
+
+const UPLOAD_THREAD_COUNT = 16
 
 export const uploadFiles = async (
   message: InputMessage,
@@ -67,20 +69,18 @@ const uploadFile = async (folder: Folder, inputFile: InputFile) => {
 
     const fileParams = await api.prepareUploadingFile(fileMeta)
     const { partsCount } = fileParams
-    let progress = 0
+    const threadCount = Math.min(UPLOAD_THREAD_COUNT, partsCount)
 
-    const uploadPart = async (part: number) => {
+    const uploadPart = async (part: number, thread: number) => {
       if (part > partsCount - 1) return
 
-      progress = Math.max(progress, Math.round((part + 1) / partsCount * 10000) / 100)
-      await uploadFilePart(folder, fileKey, fileParams, isMainFile, part, progress)
-      return uploadPart(part + 2)
+      await uploadFilePart(folder, fileKey, fileParams, isMainFile, part, thread)
+      return uploadPart(part + threadCount, thread)
     }
 
-    await Promise.all([
-      uploadPart(0),
-      uploadPart(1)
-    ])
+    await Promise.all([...Array(threadCount).keys()].map(index =>
+      uploadPart(index, index)
+    ))
 
     return fileParams
   }));
@@ -125,7 +125,7 @@ const uploadFilePart = async (
   },
   isMainFile: boolean,
   part: number,
-  progress: number
+  thread: number
 ) => {
   if (!checkIsUploading(folder, fileKey)) return
   const { partSize, lastPartSize, partsCount } = fileParams
@@ -143,13 +143,14 @@ const uploadFilePart = async (
 
   await api.uploadFilePart(transfer(filePartBytes, [filePartBytes]), {
     ...fileParams,
-    part
+    part,
+    thread
   })
 
   filePartBytes = undefined
 
   if (isMainFile) {
-    onUploadPart(folder, fileKey, progress)
+    onUploadPart(folder, fileKey, isLastPart ? lastPartSize : partSize)
   }
 }
 
@@ -160,15 +161,22 @@ const checkIsUploading = (folder, fileKey) => {
   )
 }
 
-const onUploadPart = (folder, fileKey, progress) => {
+const onUploadPart = (folder, fileKey, partSize) => {
   const sendingMessage = getSendingMessage(folder.id)
   if (!sendingMessage) return
 
   setSendingMessage(folder.id, {
     ...sendingMessage,
-    inputFiles: sendingMessage.inputFiles?.map(inputFile =>
-      inputFile.fileKey === fileKey ? ({ ...inputFile, progress }) : inputFile
-    )
+    inputFiles: sendingMessage.inputFiles?.map(inputFile => {
+      if (inputFile.fileKey !== fileKey) return inputFile
+
+      const progressSize = (inputFile.progressSize || 0) + partSize
+      return {
+        ...inputFile,
+        progressSize,
+        progress: Math.round(progressSize / inputFile.size * 10000) / 100
+      }
+    })
   })
 }
 
@@ -226,8 +234,9 @@ export const resetDownloadingFile = (file: {
   })
 }
 
-const DOWNLOADING_PART_SIZE = FILE_SIZE.KB512
+const DOWNLOADING_PART_SIZE = 1024 * 1024
 const DOWNLOADING_TIMEOUT = 400
+const DOWNLOADING_THREAD_COUNT = 16
 const MAX_DOWNLOADING_COUNT = 4
 
 const downloadingQueue = {
@@ -285,25 +294,19 @@ export const downloadFile = async (
     const downloadingFile = getDownloadingFile(file)
     if (!downloadingFile) return
 
-    const {
-      lastDownloadedPart0 = -1,
-      lastDownloadedPart1 = 0,
-      partsCount = 0
-    } = downloadingFile
-    let progress = 0
+    const { partsCount = 0 } = downloadingFile
+    const threadCount = Math.min(DOWNLOADING_THREAD_COUNT, partsCount)
 
-    const downloadPart = async (part: number, partIndex: number) => {
+    const downloadPart = async (part: number, thread: number) => {
       if (part > partsCount - 1) return
 
-      progress = Math.max(progress, Math.round((part + 1) / partsCount * 100))
-      await downloadFilePart(messageId, folder, file, part, partIndex, progress)
-      return downloadPart(part + 2, partIndex)
+      await downloadFilePart(messageId, folder, file, part, thread)
+      return downloadPart(part + threadCount, thread)
     }
 
-    await Promise.all([
-      downloadPart(lastDownloadedPart0 + 1, 0),
-      partsCount > 1 && downloadPart(lastDownloadedPart1 + 1, 1)
-    ])
+    await Promise.all([...Array(threadCount).keys()].map(index =>
+      downloadPart((downloadingFile[`lastDownloadedPart${index}`] || (index - 1)) + 1, index)
+    ))
   })
 }
 
@@ -312,8 +315,7 @@ export const downloadFilePart = async (
   folder: Folder,
   file: DownloadingFile,
   part: number,
-  partIndex: number,
-  progress: number
+  thread: number
 ) => {
   let downloadingFile = getDownloadingFile(file)
   if (!downloadingFile || downloadingFile.downloading === false) return
@@ -338,7 +340,8 @@ export const downloadFilePart = async (
     access_hash,
     file_reference,
     sizeType,
-    originalSizeType
+    originalSizeType,
+    thread
   }).catch(({ message }) => {
     if (downloadingFile && message === 'FILE_REFERENCE_EXPIRED') {
       pauseDownloadingFile(downloadingFile)
@@ -373,8 +376,8 @@ export const downloadFilePart = async (
       downloading: false
     } : {}),
     downloadedPartsCount: downloadedPartsCount + 1,
-    [`lastDownloaded${partIndex}`]: part,
-    progress: Math.max(downloadingFile.progress || 0, progress)
+    [`lastDownloaded${thread}`]: part,
+    progress: Math.round((downloadedPartsCount + 1) / partsCount * 100)
   })
 }
 

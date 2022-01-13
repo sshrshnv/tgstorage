@@ -2,7 +2,7 @@ declare const self: ServiceWorkerGlobalScope
 
 import { addMessageHandler } from './handlers'
 
-const STREAMING_PART_SIZE = 512 * 1024
+const STREAMING_PART_SIZE = 1024 * 1024
 //const MIN_STREAMING_PART_SIZE = 4 * 1024
 //const MAX_STREAMING_PART_SIZE = 1024 * 1024
 
