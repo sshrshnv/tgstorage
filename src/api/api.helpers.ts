@@ -203,7 +203,7 @@ const parseFile = (photo, document) => {
 export const sortFolders = folders => {
   return folders.sort((a, b) =>
     new Intl.Collator(undefined, { sensitivity: 'base' }).compare(a.category, b.category) ||
-    (!a.group ? 1 : !b.group ? -1 : new Intl.Collator(undefined, { sensitivity: 'base' }).compare(a.group, b.group)) ||
+    ((!a.group && !b.group) ? 0 : !a.group ? 1 : !b.group ? -1 : new Intl.Collator(undefined, { sensitivity: 'base' }).compare(a.group, b.group)) ||
     new Intl.Collator(undefined, { sensitivity: 'base' }).compare(a.title, b.title)
   )
 }

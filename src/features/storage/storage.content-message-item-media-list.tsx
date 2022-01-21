@@ -20,8 +20,6 @@ export const StorageContentMessageItemMediaList: FC<Props> = memo(({
   mediaLoadAvailable,
   onPreviewClick
 }) => {
-  const compact = (mediaMessages?.length || 0) > 4
-
   return (
     <ContentItemMediaList>
       {mediaMessages?.map((mediaMessage) => !mediaMessage.media ? null : (
@@ -30,7 +28,6 @@ export const StorageContentMessageItemMediaList: FC<Props> = memo(({
           folder={folder}
           message={mediaMessage}
           mediaLoadAvailable={mediaLoadAvailable}
-          compact={compact}
           onPreviewClick={onPreviewClick}
         />
       ))}

@@ -24,7 +24,6 @@ type Props = {
   blurPreviewUrl?: string
   hasPreviewFile?: boolean
   previewFileKey?: string
-  compact?: boolean
   single?: boolean
   menu?: MenuProps | null
   loading?: boolean
@@ -39,7 +38,6 @@ export const ContentItemMediaItem: FC<Props> = memo(({
   blurPreviewUrl,
   hasPreviewFile,
   previewFileKey,
-  compact,
   single,
   menu,
   loading,
@@ -71,7 +69,6 @@ export const ContentItemMediaItem: FC<Props> = memo(({
       <div
         class={cn(
           styles.root,
-          compact && styles._compact,
           single && styles._single,
           isImage && styles._image,
           isVideo && styles._video,
@@ -101,6 +98,7 @@ export const ContentItemMediaItem: FC<Props> = memo(({
           {!hasPreviewFile && (
             <FilePreviewIcon
               name={media.name}
+              isVideo={isVideo}
               isAudio={isAudio}
             />
           )}

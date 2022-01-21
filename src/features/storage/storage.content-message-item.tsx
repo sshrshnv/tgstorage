@@ -221,7 +221,7 @@ export const StorageContentMessageItem: FC<Props> = memo(({
         />
       )}
 
-      {message.mediaMessages?.length && (
+      {!!message.mediaMessages?.length && (
         <StorageContentMessageItemMediaList
           folder={folder}
           mediaMessages={message.mediaMessages}
