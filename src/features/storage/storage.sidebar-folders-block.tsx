@@ -20,7 +20,6 @@ type Props = {
   setProfilePopupVisible?: (value: boolean) => void
   setSettingsPopupVisible?: (value: boolean) => void
   setInstallPopupVisible?: (value: boolean) => void
-  setDonatePopupVisible?: (value: boolean) => void
 }
 
 export const StorageSidebarFoldersBlock: FC<Props> = memo(({
@@ -29,8 +28,7 @@ export const StorageSidebarFoldersBlock: FC<Props> = memo(({
   setFoldersFormPopupParams,
   setProfilePopupVisible,
   setSettingsPopupVisible,
-  setInstallPopupVisible,
-  setDonatePopupVisible
+  setInstallPopupVisible
 }) => {
   const { appInstalled } = useAppInstall()
   const { foldersLoading } = useFolders()
@@ -53,10 +51,6 @@ export const StorageSidebarFoldersBlock: FC<Props> = memo(({
     setInstallPopupVisible?.(true)
   }, [setInstallPopupVisible])
 
-  const openDonatePopup = useCallback(() => {
-    setDonatePopupVisible?.(true)
-  }, [setDonatePopupVisible])
-
   useEffect(() => {
     if (foldersLoading) return
     setAppFeatureRendered()
@@ -74,13 +68,11 @@ export const StorageSidebarFoldersBlock: FC<Props> = memo(({
           square
           onClick={openProfilePopup}
         />
-        {!!process.env.DONATE_LINK && (
-          <Button
-            icon="heart"
-            square
-            onClick={openDonatePopup}
-          />
-        )}
+        <Button
+          icon="settings"
+          square
+          onClick={openSettingsPopup}
+        />
         {!appInstalled && (
           <Button
             icon="device"
@@ -88,11 +80,6 @@ export const StorageSidebarFoldersBlock: FC<Props> = memo(({
             onClick={openInstallPopup}
           />
         )}
-        <Button
-          icon="settings"
-          square
-          onClick={openSettingsPopup}
-        />
       </SidebarHeader>
 
       <SidebarActionButton
