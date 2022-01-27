@@ -5,7 +5,7 @@ import {
   generateLocalFileKey
 } from '~/tools/handle-file'
 
-type FileMeta = {
+export type FileMeta = {
   name: string
   size: number
   type: string

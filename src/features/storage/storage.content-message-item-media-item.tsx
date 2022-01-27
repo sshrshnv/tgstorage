@@ -21,7 +21,6 @@ type Props = {
   folder: Folder
   message: Message
   mediaLoadAvailable: boolean
-  compact?: boolean
   single?: boolean
   onPreviewClick?: (id: string) => void
 }
@@ -30,7 +29,6 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
   folder,
   message,
   mediaLoadAvailable,
-  compact,
   single,
   onPreviewClick
 }) => {
@@ -45,9 +43,9 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
   const blurPreviewUrl = media.thumbSUrl
 
   const [thumbFile, thumbFileRef] = useMemoRef(() => {
-    return media.thumbM ? {
+    return media.thumbM || media.thumbVideo ? {
       ...mediaRef.current,
-      ...media.thumbM,
+      ...(media.thumbM || media.thumbVideo),
       file_reference: media.file_reference
     } as DownloadingFile : undefined
   }, [media.file_reference, media.thumbM])
@@ -265,9 +263,9 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
   useEffect(() => {
     if (downloadingRef.current && originalDownloadingFile?.fileKey) {
       if (sharingRef.current) {
-        tryShareFileRef.current()
+        tryShareFileRef.current?.()
       } else {
-        trySaveFileRef.current()
+        trySaveFileRef.current?.()
       }
     }
   }, [originalDownloadingFile?.fileKey])
@@ -294,7 +292,6 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
         hasPreviewFile={!!thumbFile}
         previewFileKey={thumbDownloadingFile?.fileKey}
         menu={menu}
-        compact={compact}
         single={single}
         loading={loading}
         downloading={downloading}

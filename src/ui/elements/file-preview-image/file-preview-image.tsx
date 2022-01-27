@@ -43,14 +43,14 @@ export const FilePreviewImage: FC<Props> = memo(({
     let url = getFileUrl(fileKey)
     if (!url) return
 
-    setUrlRef.current(url)
+    setUrlRef.current?.(url)
     url = ''
 
     if (!readyRef.current) {
       if (timeoutRef.current) {
-        setTimeout(() => setReadyRef.current(true), timeoutRef.current)
+        setTimeout(() => setReadyRef.current?.(true), timeoutRef.current)
       } else {
-        setReadyRef.current(true)
+        setReadyRef.current?.(true)
       }
     }
   }, [fileKey])

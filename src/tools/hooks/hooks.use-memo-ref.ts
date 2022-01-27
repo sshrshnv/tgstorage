@@ -1,11 +1,11 @@
-import { Ref, Inputs } from 'preact/hooks'
+import type { MutableRef, Inputs } from 'preact/hooks'
 import { useMemo, useRef } from 'preact/hooks'
 
 import { usePrevious } from './hooks.use-previous'
 
 export const useMemoRef = <T>(factory: () => T, inputs: Inputs): [
   T,
-  Ref<T>
+  MutableRef<T>
 ] => {
   const value = useMemo(factory, inputs)
   const valueRef = useRef(value)

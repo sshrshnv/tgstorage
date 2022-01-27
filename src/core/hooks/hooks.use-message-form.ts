@@ -136,7 +136,7 @@ export const useMessageForm = (folder: Folder) => {
       const fileMeta = getFileMeta(fileKey)
       const params =
         fileMeta?.type.startsWith('image') ? await parseImageFile(fileKey) :
-          fileMeta?.type.startsWith('video') ? await parseVideoFile(fileKey) :
+          fileMeta?.type.startsWith('video') ? await parseVideoFile(fileKey, fileMeta) :
             undefined
 
       resolve({
@@ -187,7 +187,7 @@ export const useMessageForm = (folder: Folder) => {
 
   useEffect(() => {
     if (sendingMessage && sendingMessage.folderId === folderRef.current.id) {
-      setMessageRef.current({ ...messageRef.current, ...sendingMessage })
+      setMessageRef.current?.({ ...messageRef.current, ...sendingMessage })
     }
   }, [sendingMessage])
 
@@ -200,7 +200,7 @@ export const useMessageForm = (folder: Folder) => {
       ...sendingMessageRef.current,
       folderId: folder.id
     }, false)
-    setLoadingRef.current(!!sendingMessageRef.current)
+    setLoadingRef.current?.(!!sendingMessageRef.current)
   }, [folder.id])
 
   return useMemo(() => ({

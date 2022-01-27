@@ -1,21 +1,29 @@
+import type { FileMeta } from '~/core/cache'
 import { getFile, setFile } from '~/core/cache'
 import { timer } from '~/tools/timer'
 import { checkIsSafari } from '~/tools/detect-device'
 
 //const THUMB_MAX_SIZE = 1280
 
-export const parseVideoFile = (file: File|string|undefined): Promise<{
+export const parseVideoFile = (
+  fileKey: string | undefined,
+  fileMeta?: FileMeta
+): Promise<{
   duration: number
   w: number
   h: number
-  thumbFileKey?: File
+  thumbFileKey?: string
 } | undefined> => new Promise(resolve => {
-  if (typeof file === 'string') {
-    file = getFile(file) as File
-  }
+  let file = getFile(fileKey || '') as File | Blob | undefined
+  let isSliced = false
 
   if (!file) {
-    resolve(undefined)
+    return resolve(undefined)
+  }
+
+  if (fileMeta && fileMeta.size > 10 * 1024 * 1024) {
+    file = file.slice(0, 10 * 1024 * 1024)
+    isSliced = true
   }
 
   const isSafari = checkIsSafari()
@@ -75,12 +83,12 @@ export const parseVideoFile = (file: File|string|undefined): Promise<{
           resolve(undefined)
         }
 
-        video.currentTime = Math.min(videoParams.duration, 0.1)
+        video.currentTime = Math.min(videoParams.duration, 1)
       })
     ]).catch(() => {
       clear()
       resolve(videoParams)
-    }) as File | undefined
+    }) as string | undefined
 
     clear()
     resolve({
@@ -91,6 +99,9 @@ export const parseVideoFile = (file: File|string|undefined): Promise<{
 
   video.onerror = () => {
     clear()
+    if (isSliced) {
+      return resolve(parseVideoFile(fileKey))
+    }
     resolve(undefined)
   }
 

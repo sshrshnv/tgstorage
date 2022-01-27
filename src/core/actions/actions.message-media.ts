@@ -6,6 +6,7 @@ import { store } from '~/core/store'
 import { getFilePart, getFileMeta, deleteFile, setBytes, createFile } from '~/core/cache'
 import { api } from '~/api'
 import { timer } from '~/tools/timer'
+import { parseVideoFile } from '~/tools/parse-video-file'
 import { generateFileMessageMark } from '~/tools/handle-content'
 import {
   transformToBytes, generateFileKey,
@@ -364,8 +365,13 @@ export const downloadFilePart = async (
   bytes = undefined
 
   fileKey = isLastPart ?
-    await createFile(fileKey, partsCount, sizeType ? 'image/jpeg' : type) :
+    await createFile(fileKey, partsCount, sizeType ? 'image/jpeg' : type === 'v' ? 'video/mp4' : type) :
     undefined
+
+  if (isLastPart && type === 'v') {
+    const videoParams = await parseVideoFile(fileKey)
+    fileKey = videoParams?.thumbFileKey
+  }
 
   setDownloadingFile({
     ...downloadingFile,

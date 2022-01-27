@@ -188,7 +188,7 @@ export type InputMedia = {
 }
 
 export type InputMessage = {
-  folderId?: number
+  folderId?: string
   id?: number
   text: string
   entities?: MessageEntity[]
