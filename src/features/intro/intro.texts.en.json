@@ -1,6 +1,7 @@
 {
-  "title": "Free. Unlimited. Secure.",
-  "description": "Store your notes, checklists, links, photos and any documents in Telegram.",
+  "title": "Advanced \"Saved Messages\"",
+  "subTitle": "of the Telegram.",
+  "description": "Organize your notes, links, checklists, photos and any documents in the free unlimited Telegram Cloud.",
   "faqDescription0": "When adding folders in the application, archived private channels will be created in your Telegram account. You will have access to them in the official app as well.",
   "appDescription0": "This application only works on your device and communicates directly with Telegram servers. Your information is not stored anywhere else and is not transferred anywhere.\n You can check it in the sources:",
   "installDescription": "The app can be installed on the device without downloading it from AppStore, PlayStore or MicrosoftStore.",

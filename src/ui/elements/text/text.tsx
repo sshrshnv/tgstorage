@@ -18,6 +18,7 @@ type Props = {
   bold?: boolean
   center?: boolean
   grey?: boolean
+  brand?: boolean
   transparent?: boolean
   icon?: h.JSX.Element | null
 }
@@ -36,6 +37,7 @@ export const Text: FC<Props> = memo(({
   bold,
   center,
   grey,
+  brand,
   transparent,
   icon
 }) => {
@@ -54,6 +56,7 @@ export const Text: FC<Props> = memo(({
       bold && styles._bold,
       center && styles._center,
       grey && styles._grey,
+      brand && styles._brand,
       transparent && styles._transparent
     )}>
       {children}

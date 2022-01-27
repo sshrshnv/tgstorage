@@ -43,6 +43,9 @@ const Intro: FC = () => {
         <Text uppercase bold center>
           {texts.title}
         </Text>
+        <Text center>
+          {texts.subTitle}
+        </Text>
       </LayoutBlock>
       <Break size={20} px/>
 

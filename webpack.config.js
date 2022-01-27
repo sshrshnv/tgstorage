@@ -25,7 +25,12 @@ const appEnv = isDevEnv() ? dotenv.config({
 const isSentryAvailable = () =>
   isProd() && !(isBundleAnalyzer() || isDevEnv()) && !!appEnv.SENTRY_AUTH_TOKEN
 
+const APP_TITLE = 'TgStorage'
+const APP_DESCRIPTION = 'Advanced Saved Messages of the Telegram. Organize your notes, links, checklists, photos and any documents in the free unlimited Telegram Cloud.'
+
 const defineEnvConfig = {
+  'process.env.APP_TITLE': JSON.stringify(APP_TITLE),
+  'process.env.APP_DESCRIPTION': JSON.stringify(APP_DESCRIPTION),
   'process.env.BUILD_ENV': JSON.stringify(process.env.BUILD_ENV),
   'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
   'process.env.DOMAIN': JSON.stringify(appEnv.DOMAIN),

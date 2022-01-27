@@ -1,7 +1,7 @@
 {
   "name": "TgStorage",
   "short_name": "TgStorage",
-  "description": "Store your notes, checklists, links, photos and any documents in Telegram.",
+  "description": "Organize your notes, links, checklists, photos and any documents in the free unlimited Telegram Cloud.",
   "categories": ["storage", "notes", "files", "free", "telegram"],
   "display": "standalone",
   "start_url": "/app",
