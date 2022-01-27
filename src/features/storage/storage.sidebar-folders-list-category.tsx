@@ -14,6 +14,7 @@ type Props = {
   index: number
   disabled?: boolean
   withoutMenu?: boolean
+  offset?: boolean
   setFoldersFormPopupParams?: (params: FoldersFormPopupParams) => void
 }
 
@@ -21,6 +22,7 @@ export const StorageSidebarFoldersListCategory: FC<Props> = memo(({
   folder,
   disabled,
   withoutMenu,
+  offset,
   setFoldersFormPopupParams
 }) => {
   const { texts } = useTexts('storage')
@@ -60,6 +62,7 @@ export const StorageSidebarFoldersListCategory: FC<Props> = memo(({
     <SidebarTitle
       menu={withoutMenu ? null : menu}
       disabled={disabled}
+      offset={offset}
     >
       {folder.category || texts.generalCategoryTitle}
     </SidebarTitle>

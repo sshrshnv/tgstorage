@@ -31,7 +31,7 @@ export const StorageSidebarFoldersBlock: FC<Props> = memo(({
   setInstallPopupVisible
 }) => {
   const { appInstalled } = useAppInstall()
-  const { foldersLoading } = useFolders()
+  const { foldersLoading, foldersCount } = useFolders()
 
   const openFolderPopup = useCallback(() => {
     setFoldersFormPopupParams?.({
@@ -89,6 +89,7 @@ export const StorageSidebarFoldersBlock: FC<Props> = memo(({
 
       <StorageSidebarFoldersList
         setFoldersFormPopupParams={setFoldersFormPopupParams}
+        fakeExample={foldersCount < 2}
       />
     </Sidebar>
   )

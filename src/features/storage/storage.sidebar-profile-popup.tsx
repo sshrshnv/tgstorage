@@ -1,5 +1,5 @@
-import { FunctionComponent as FC } from 'preact'
-import { Fragment, h } from 'preact'
+import type { FunctionComponent as FC } from 'preact'
+import { h, Fragment } from 'preact'
 import { memo } from 'preact/compat'
 import { useEffect } from 'preact/hooks'
 

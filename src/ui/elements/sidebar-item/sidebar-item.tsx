@@ -88,9 +88,14 @@ export const SidebarItem: FC<Props> = memo(({
       >
         <div
           class={styles.icon}
-          style={{ borderColor: color, color }}
+          style={{ color }}
         >
-          <Icon icon="folder" style={{ fill: color }}/>
+          <div
+            class={styles.iconInner}
+            style={{ borderColor: color }}
+          >
+            <Icon icon="folder" style={{ fill: color }}/>
+          </div>
         </div>
         <div class={styles.content}>
           <div class={styles.title}>

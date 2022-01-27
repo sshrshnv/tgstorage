@@ -68,7 +68,7 @@ export const StorageContentSearchPopup: FC<Props> = ({
     if (query.length < 3) return
 
     searchTimeout.current = self.setTimeout(() => {
-      loadMessagesRef.current(query)
+      loadMessagesRef.current?.(query)
     }, 500)
   }, [query])
 
@@ -116,7 +116,7 @@ export const StorageContentSearchPopup: FC<Props> = ({
       )}
 
       {query.length < 3 && (
-        <Layout center>
+        <Layout row center fullHeight>
           <Text small grey>
             {texts.searchInitial} {folder.title}
           </Text>
@@ -124,7 +124,7 @@ export const StorageContentSearchPopup: FC<Props> = ({
       )}
 
       {(query.length >= 3 && !loading && !messages.length) && (
-        <Layout center>
+        <Layout row center fullHeight>
           <Text small grey>
             {texts.searchEmpty}
           </Text>

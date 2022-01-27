@@ -1,4 +1,4 @@
-import { FunctionComponent as FC } from 'preact'
+import type { FunctionComponent as FC } from 'preact'
 import { Fragment, h } from 'preact'
 import { useCallback, useEffect } from 'preact/hooks'
 

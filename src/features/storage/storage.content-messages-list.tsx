@@ -72,7 +72,7 @@ export const StorageContentMessagesList: FC<Props> = memo(({
     return () => self.clearTimeout(timeoutId)
   }, [])
 
-  return renderAvailable ? (
+  return renderAvailable && !!messages.length ? (
     <ContentList
       intersectionRef={intersectionRef}
       fullHeight={fullHeight}

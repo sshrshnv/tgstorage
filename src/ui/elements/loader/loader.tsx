@@ -10,6 +10,7 @@ type Props = {
   brand?: boolean
   grey?: boolean
   white?: boolean
+  blue?: boolean
   big?: boolean
   small?: boolean
   progress?: number
@@ -21,6 +22,7 @@ export const Loader: FC<Props> = memo(({
   brand,
   grey,
   white,
+  blue,
   big,
   small,
   progress,
@@ -38,7 +40,8 @@ export const Loader: FC<Props> = memo(({
         styles.icon,
         brand && styles._brand,
         grey && styles._grey,
-        white && styles._white
+        white && styles._white,
+        blue && styles._blue
       )}/>
       {typeof progress === 'number' && (
         <div class={styles.progress}>

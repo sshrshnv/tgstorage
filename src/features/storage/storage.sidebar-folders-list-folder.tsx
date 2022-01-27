@@ -14,6 +14,7 @@ import type { FoldersFormPopupParams } from './storage'
 
 type Props = {
   id: string
+  title?: string
   index?: number
   disabled?: boolean
   loadingDisabled?: boolean
@@ -28,6 +29,7 @@ type Props = {
 
 export const StorageSidebarFoldersListFolder: FC<Props> = memo(({
   id,
+  title,
   index,
   disabled,
   loadingDisabled,
@@ -115,7 +117,7 @@ export const StorageSidebarFoldersListFolder: FC<Props> = memo(({
 
   return (
     <SidebarItem
-      title={folder.title}
+      title={title || folder.title}
       description={withoutMessage ? '' : messagePreview}
       emptyDescription={withoutMessage ? '' : texts.folderEmptyDescription}
       index={index}

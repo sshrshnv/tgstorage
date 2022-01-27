@@ -9,6 +9,8 @@ import { useTexts, useActiveFolder, useMessageForm } from '~/core/hooks'
 import { Content } from '~/ui/elements/content'
 import { ContentHeader } from '~/ui/elements/content-header'
 import { ContentForm } from '~/ui/elements/content-form'
+import { Layout } from '~/ui/elements/layout'
+import { Text } from '~/ui/elements/text'
 import { Button } from '~/ui/elements/button'
 
 import { StorageContentMessagesList } from './storage.content-messages-list'
@@ -99,6 +101,14 @@ export const StorageContentFolderBlock: FC<Props> = memo(({
         onEditMessage={handleEditMessage}
         onMoveMessage={setMovingMessage}
       />
+
+      {(!messagesLoading && !messages.length) && (
+        <Layout row center fullHeight>
+          <Text small grey>
+            {texts.folderInitial}
+          </Text>
+        </Layout>
+      )}
 
       <ContentForm
         key={`${folder.id}-${message.key}`}

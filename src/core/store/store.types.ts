@@ -49,6 +49,7 @@ export type Folder = {
   category: string
   annc?: boolean
   general?: boolean
+  fake?: boolean
 }
 
 export type Folders =

@@ -12,12 +12,14 @@ import styles from './sidebar-title.styl'
 type Props = {
   menu?: MenuProps | null
   disabled?: boolean
+  offset?: boolean
 }
 
 export const SidebarTitle: FC<Props> = memo(({
   children,
   menu,
-  disabled
+  disabled,
+  offset
 }) => {
   const parentRef = useRef<HTMLDivElement>(null)
 
@@ -25,7 +27,8 @@ export const SidebarTitle: FC<Props> = memo(({
     <div
       class={cn(
         styles.root,
-        disabled && styles._disabled
+        disabled && styles._disabled,
+        offset && styles._offset
       )}
       ref={parentRef}
     >

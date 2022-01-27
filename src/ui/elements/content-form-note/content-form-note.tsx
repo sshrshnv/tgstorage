@@ -1,7 +1,7 @@
 import { h, Fragment } from 'preact'
 import type { FunctionComponent as FC } from 'preact'
 import { memo } from 'preact/compat'
-import { useCallback, useMemo } from 'preact/hooks'
+import { useCallback, useMemo, useState } from 'preact/hooks'
 import cn from 'classnames'
 
 import type { InputFile, Message } from '~/core/store'
@@ -43,6 +43,8 @@ export const ContentFormNote: FC<Props> = memo(({
   onRemoveFile,
   onReoderFiles
 }) => {
+  const [attachmentLoading, setAttachmentLoading] = useState(false)
+
   const isParentFiles = useMemo(() => {
     return checkIsParentFilesMessage(message.text)
   }, [message.text])
@@ -76,9 +78,14 @@ export const ContentFormNote: FC<Props> = memo(({
   const addFiles = useCallback(async () => {
     const fileKeys = await selectFiles()
     if (fileKeys?.length) {
-      onAddFiles?.(fileKeys)
+      setAttachmentLoading(true)
+      try {
+        await onAddFiles?.(fileKeys)
+      } finally {
+        setAttachmentLoading(false)
+      }
     }
-  }, [onAddFiles])
+  }, [onAddFiles, setAttachmentLoading])
 
   return (
     <Fragment>
@@ -109,11 +116,15 @@ export const ContentFormNote: FC<Props> = memo(({
         <Loader class={styles.loader} brand/>
       ) : (
         <div class={styles.buttons}>
-          <Button
-            class={styles.button}
-            icon="attach"
-            onClick={addFiles}
-          />
+          {attachmentLoading ? (
+            <Loader class={styles.loader} blue/>
+          ) : (
+            <Button
+              class={styles.button}
+              icon="attach"
+              onClick={addFiles}
+            />
+          )}
           {isSubmitAvailable ? (
             <Button
               type="submit"
@@ -133,16 +144,12 @@ export const ContentFormNote: FC<Props> = memo(({
         </div>
       )}
 
-      {(loading && attachmentsCount > 0) ? (
-        <div class={styles.mediaCount}>
-          <Icon icon="file"/> {attachmentsCount} <Loader grey small/>
-        </div>
-      ) : attachmentsCount > 0 ? (
+      {attachmentsCount > 0 ? (
         <div class={cn(
           styles.mediaCount,
           attachmentsCount > 1 && styles._withButton
         )}>
-          {attachmentsCount > 1 ? <Button icon="reoder" onClick={onReoderFiles}/> : null}
+          {attachmentsCount > 1 ? <Button icon="reoder" disabled={loading} onClick={onReoderFiles}/> : null}
           <Icon icon="file"/> {mediaCount ? `${mediaCount} + ` : ''}{attachmentsCount}
         </div>
       ) : mediaCount > 0 ? (

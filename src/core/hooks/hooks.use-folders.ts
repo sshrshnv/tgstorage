@@ -26,7 +26,8 @@ export const useFolders = () => {
 
   return useMemo(() => ({
     folders,
-    foldersLoading
+    foldersLoading,
+    foldersCount: folders.length
   }), [folders, foldersLoading])
 }
 

@@ -35,13 +35,13 @@ export const StorageContent: FC<Props> = memo(({
 
   useEffect(() => {
     if (searchRef.current) {
-      toggleSearchRef.current()
+      toggleSearchRef.current?.()
     }
   }, [folder.id])
 
   useEffect(() => {
     if (sharedDataActive && searchRef.current) {
-      toggleSearchRef.current()
+      toggleSearchRef.current?.()
     }
   }, [sharedDataActive])
 
