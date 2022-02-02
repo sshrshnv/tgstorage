@@ -33,6 +33,8 @@ const initialMeta = {
 class Api {
   private client: Client
 
+  private migratedDC: number
+
   private call: <K extends keyof MethodDeclMap>(
     method: K,
     data?: MethodDeclMap[K]['req'],
@@ -65,6 +67,8 @@ class Api {
     this.client.on('metaChanged', meta => dataCache.setMeta(META_KEY, meta))
 
     this.call = async (method, data = {}, { dc, thread, timeout, attempt = 0 } = {}) => {
+      dc = dc || this.migratedDC
+
       if (timeout) {
         await timer(timeout)
       }
@@ -75,7 +79,7 @@ class Api {
           return
         }
 
-        this.handleError({ ...err, method })
+        this.handleError?.({ ...err, method })
         const { code, message = '' } = err
 
         if (code === 420) {
@@ -85,14 +89,21 @@ class Api {
         }
 
         if (code === 303) {
-          const [type, dcId] = message.split('_MIGRATE_')
-          dc = +dcId
+          const [_type, dcId] = message.split('_MIGRATE_')
 
-          if (type === 'PHONE') {
-            this.client.dc.setBaseDC(dc)
-          }
+          dc = +dcId
+          this.client.cfg.dc = dc
+          this.client.dc.setBaseDC(dc)
+          this.migratedDC = dc
 
           resolve(this.call(method, data, { dc, thread }))
+
+          const meta = await dataCache.getMeta(META_KEY, initialMeta)
+          dataCache.setMeta(META_KEY, {
+            ...meta,
+            baseDC: dc
+          })
+
           return
         }
 

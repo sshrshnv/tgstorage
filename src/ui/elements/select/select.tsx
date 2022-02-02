@@ -145,8 +145,8 @@ export const Select: FC<Props> = memo(({
 
     const collapse = () => collapseRef.current?.()
     const expand = () => expandRef.current?.()
-    const handleKey = ({ code }) => {
-      switch (code.toLowerCase()) {
+    const handleKey = (ev) => {
+      switch (ev?.code?.toLowerCase()) {
         case 'enter':
           expanded ? collapse() : expand()
           break

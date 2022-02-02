@@ -11,7 +11,7 @@ listenAppErrors()
 listenAppInstall()
 
 import { store } from '~/core/store'
-import { updateUser } from '~/core/actions'
+import { updateUser, listenApiErrors } from '~/core/actions'
 import { useAppRoute, useAppRender, useUser } from '~/core/hooks'
 import { checkIsIOS, checkIsIOSSafari } from '~/tools/detect-device'
 import { registerSW } from '~/sw'
@@ -34,6 +34,7 @@ const App: FC = memo(() => {
 
   useEffect(() => {
     if (!isLegacyUser) return
+    listenApiErrors()
     updateUser()
   }, [isLegacyUser])
 
