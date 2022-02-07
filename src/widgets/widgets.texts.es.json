@@ -1,0 +1,15 @@
+{
+  "updateTitle": "Actualizar",
+  "updateDescription": "Una nueva versión mejorada de la aplicación está disponible.",
+  "updateDescriptionLink": "¿Qué hay de nuevo?",
+  "updateButton": "Actualizar",
+  "errorTitle": "Error",
+  "errorDescription": "Algo salió mal. El error ha sido enviado al desarrollador.",
+  "errorButton": "Ok",
+  "installTitle": "Instalación",
+  "installDescription": "Instale la aplicación para un uso más conveniente.",
+  "installButton": "Instalar en pc",
+  "anncChannelTitle": "Canal",
+  "anncChannelDescription": "Únete al canal TgStorage para estar al día de todas las novedades.",
+  "anncChannelButton": "Entrar"
+}

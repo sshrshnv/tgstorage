@@ -10,6 +10,7 @@ import { Input } from '~/ui/elements/input'
 import { animationClassName } from '~/ui/styles'
 
 import en from './select.texts.en.json'
+import es from './select.texts.es.json'
 import ru from './select.texts.ru.json'
 import styles from './select.styl'
 
@@ -54,7 +55,7 @@ export const Select: FC<Props> = memo(({
   const [searchValue, setSearchValue] = useState('')
 
   const texts = useMemo(() => {
-    const texts = { en, ru }
+    const texts = { en, es, ru }
     return texts[locale]
   }, [locale])
 

@@ -1,0 +1,13 @@
+{
+  "title": "Avanzado \"Mensajes guardados\"",
+  "subTitle": "del Telegram.",
+  "description": "Organice sus notas, enlaces, listas de verificación, fotos y cualquier documento en Telegram Cloud, gratuito e ilimitado.",
+  "faqDescription0": "Al agregar carpetas en la aplicación, se crearán canales privados archivados en su cuenta de Telegram. También tendrá acceso a ellos en la aplicación oficial.",
+  "appDescription0": "Esta aplicación solo funciona en su dispositivo y se comunica directamente con los servidores de Telegram. Tu información no se almacena en ningún otro lugar y no se transfiere a ningún lado.\n Puedes consultarlo en las fuentes:",
+  "installDescription": "La aplicación se puede instalar en el dispositivo sin descargarla desde AppStore, PlayStore o MicrosoftStore.",
+  "support": "Para errores, preguntas y sugerencias, póngase en contacto con",
+  "installButton": "Instalar en pc",
+  "browserButton": "Abierta en el navegador",
+  "continueButton": "Continuar",
+  "installBrowsers": "La instalación solo está disponible en los navegadores:"
+}
