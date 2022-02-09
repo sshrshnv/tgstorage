@@ -34,7 +34,7 @@ export const formatPhone = (
     phone = phone.slice(code.length)
   }
 
-  phone = phone.slice(0, mask.replaceAll(' ', '').length)
+  //phone = phone.slice(0, mask.replaceAll(' ', '').length)
 
   let maskSpacesCount = 0
   phone = phone.split('').map((item, index) => {
