@@ -26,14 +26,20 @@ export const parseVideoFile = (
     isSliced = true
   }
 
-  const isSafari = checkIsSafari()
+  const iframe = self.document.createElement('iframe')
+  iframe.style.display = 'none'
+  self.document.body.appendChild(iframe)
+  const document = iframe.contentDocument || self.document
   const video = document.createElement('video')
+
+  const isSafari = checkIsSafari()
   const fileUrl = URL.createObjectURL(file)
   file = undefined
 
   const clear = () => {
     URL.revokeObjectURL(fileUrl)
     video.remove()
+    iframe.remove()
   }
 
   video.onloadedmetadata = async () => {
@@ -49,8 +55,13 @@ export const parseVideoFile = (
     const thumbFileKey = await Promise.race([
       timer(2500),
       new Promise(resolve => {
-        video[isSafari ? 'oncanplaythrough' : 'onseeked'] = async () => {
-          await timer(100)
+        video.onseeked = async () => {
+          await timer(50)
+
+          if (!video.videoWidth || !video.videoHeight) {
+            return resolve(undefined)
+          }
+
           const canvas = document.createElement('canvas')
           const canvasContext = canvas.getContext('2d', { alpha: false })
           //const imageParams: [number, number, number, number] = [0, 0, videoParams.w, videoParams.h]
@@ -83,7 +94,7 @@ export const parseVideoFile = (
           resolve(undefined)
         }
 
-        video.currentTime = Math.min(videoParams.duration, 1)
+        video.currentTime = videoParams.duration > 1 ? 1 : Math.min(videoParams.duration, 0.1)
       })
     ]).catch(() => {
       clear()

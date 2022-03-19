@@ -12,16 +12,25 @@ export const parseImageFile = (file: File|string|undefined): Promise<{
   }
 
   if (!file) {
-    resolve(undefined)
+    return resolve(undefined)
   }
+
+  const iframe = self.document.createElement('iframe')
+  iframe.style.display = 'none'
+  self.document.body.appendChild(iframe)
+  const document = iframe.contentDocument || self.document
 
   const fileUrl = URL.createObjectURL(file)
   file = undefined
   const image = new Image()
 
-  image.onload = () => {
+  const clear = () => {
     URL.revokeObjectURL(fileUrl)
+    image.remove()
+    iframe.remove()
+  }
 
+  image.onload = () => {
     const imageSize = {
       w: image.naturalWidth,
       h: image.naturalHeight
@@ -37,6 +46,7 @@ export const parseImageFile = (file: File|string|undefined): Promise<{
 
     if (!canvasContext) {
       canvas.remove()
+      clear()
       return resolve(imageSize)
     }
 
@@ -47,6 +57,7 @@ export const parseImageFile = (file: File|string|undefined): Promise<{
     canvas.toBlob((blob) => {
       if (!blob) {
         canvas.remove()
+        clear()
         return resolve(imageSize)
       }
 
@@ -55,6 +66,7 @@ export const parseImageFile = (file: File|string|undefined): Promise<{
       const thumbFileKey = setFile(thumbFile)
       thumbFile = undefined
 
+      clear()
       resolve({
         ...imageSize,
         thumbFileKey
@@ -63,7 +75,7 @@ export const parseImageFile = (file: File|string|undefined): Promise<{
   }
 
   image.onerror = () => {
-    URL.revokeObjectURL(fileUrl)
+    clear()
     resolve(undefined)
   }
 

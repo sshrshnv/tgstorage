@@ -20,6 +20,7 @@ export type Props = {
   class?: string
   items: ({
     title: string
+    hiddenTitle?: string
     icon?: string
     url?: string
     warning?: boolean

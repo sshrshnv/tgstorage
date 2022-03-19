@@ -142,6 +142,7 @@ export const StorageContentMessageItem: FC<Props> = memo(({
       onClick: handleShare
     }: null, {
       title: confirmation ? texts.confirmDeleteButton : texts.messageDeleteTitle,
+      hiddenTitle: confirmation ? texts.messageDeleteTitle : texts.confirmDeleteButton,
       icon: 'delete',
       warning: !confirmation,
       danger: confirmation,

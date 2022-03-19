@@ -132,28 +132,43 @@ export const useMessageForm = (folder: Folder) => {
     const uniqFileKeys = fileKeys
       .filter(fileKey => (message.inputFiles || []).every(inputFile => inputFile.fileKey !== fileKey))
 
-    const uniqInputFiles = await Promise.all(uniqFileKeys.map(fileKey => new Promise(async (resolve) => {
+    setMessage({
+      ...message,
+      inputFiles: [
+        ...uniqFileKeys.map(fileKey => {
+          const fileMeta = getFileMeta(fileKey)
+          return {
+            id: '',
+            progress: 0,
+            progressSize: 0,
+            fileKey,
+            name: fileMeta?.name || '',
+            size: fileMeta?.size || 0,
+            parsing: true
+          }
+        }),
+        ...(message.inputFiles || [])
+      ]
+    })
+
+    for (let i = 0; i < uniqFileKeys.length; i++) {
+      const fileKey = uniqFileKeys[i]
       const fileMeta = getFileMeta(fileKey)
       const params =
         fileMeta?.type.startsWith('image') ? await parseImageFile(fileKey) :
           fileMeta?.type.startsWith('video') ? await parseVideoFile(fileKey, fileMeta) :
             undefined
+      const message = messageRef.current
 
-      resolve({
-        fileKey,
-        name: fileMeta?.name,
-        size: fileMeta?.size,
-        ...params
+      setMessage({
+        ...message,
+        inputFiles: (message.inputFiles || []).map(inputFile => inputFile.fileKey === fileKey ? ({
+          ...inputFile,
+          ...params,
+          parsing: false
+        }) : inputFile)
       })
-    }))) as InputFile[]
-
-    setMessage({
-      ...message,
-      inputFiles: [
-        ...uniqInputFiles.map((uniqFile) => ({ ...uniqFile, id: '', progress: 0 })),
-        ...(message.inputFiles || [])
-      ]
-    })
+    }
   }, [messageRef, setMessage])
 
   const handleRemoveFile = useCallback((inputFile: InputFile) => {

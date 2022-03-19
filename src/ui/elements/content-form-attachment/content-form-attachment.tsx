@@ -9,6 +9,7 @@ import { getFileUrl, getFileMeta } from '~/core/cache'
 import { Text } from '~/ui/elements/text'
 import { Button } from '~/ui/elements/button'
 import { FilePreviewIcon } from '~/ui/elements/file-preview-icon'
+import { Loader } from '~/ui/elements/loader'
 
 import styles from './content-form-attachment.styl'
 
@@ -55,6 +56,10 @@ export const ContentFormAttachment: FC<Props> = memo(({
             src={previewUrl}
             onLoad={handleLoad}
           />
+        ) : inputFile?.parsing ? (
+          <div class={styles.previewLoader}>
+            <Loader small/>
+          </div>
         ) : (
           <FilePreviewIcon
             name={inputFile?.name}

@@ -161,6 +161,7 @@ export type InputFile = {
   duration?: number
   thumbFileKey?: string
   fileKey?: string
+  parsing?: boolean
 }
 
 export type InputMedia = {
