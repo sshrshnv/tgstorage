@@ -5,7 +5,7 @@ import { useMemo, useCallback } from 'preact/hooks'
 import cn from 'classnames'
 
 import type { InputFile } from '~/core/store'
-import { getFileUrl, getFileMeta } from '~/core/cache'
+import { getFileUrl } from '~/core/cache'
 import { Text } from '~/ui/elements/text'
 import { Button } from '~/ui/elements/button'
 import { FilePreviewIcon } from '~/ui/elements/file-preview-icon'
@@ -28,15 +28,11 @@ export const ContentFormAttachment: FC<Props> = memo(({
   onRemoveFile
 }) => {
   const previewUrl = useMemo(() => {
-    if (inputFile?.thumbFileKey) {
-      return getFileUrl(inputFile.thumbFileKey) || ''
-    } else if (inputFile?.fileKey) {
-      const fileMeta = getFileMeta(inputFile.fileKey)
-      if (!fileMeta?.type.startsWith('image')) return ''
-      return getFileUrl(inputFile.fileKey) || ''
+    if (!inputFile?.thumbFileKey) {
+      return ''
     }
-    return ''
-  }, [inputFile?.fileKey, inputFile?.thumbFileKey])
+    return getFileUrl(inputFile.thumbFileKey) || ''
+  }, [inputFile?.thumbFileKey])
 
   const removeFile = useCallback(() => {
     if (inputFile) {
