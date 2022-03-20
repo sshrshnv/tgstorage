@@ -1,4 +1,4 @@
-export const AVALIABLE_LOCALES = ['en', 'es', 'ru', 'zhTW'] as const
+export const AVALIABLE_LOCALES = ['en', 'es', 'ru', 'zhTW', 'zhCN'] as const
 export const EXACT_LOCALES = ['zh']
 export const CIS = ['ru', 'ua', 'by', 'ge', 'az', 'kz', 'uz', 'tj', 'kg']
 export const FALLBACK_LOCALE= 'en' as const
