@@ -13,6 +13,7 @@ import en from './select.texts.en.json'
 import es from './select.texts.es.json'
 import ru from './select.texts.ru.json'
 import zhTW from './select.texts.zhTW.json'
+import zhCN from './select.texts.zhCN.json'
 import styles from './select.styl'
 
 type Option = {
@@ -56,7 +57,7 @@ export const Select: FC<Props> = memo(({
   const [searchValue, setSearchValue] = useState('')
 
   const texts = useMemo(() => {
-    const texts = { en, es, ru, zhTW }
+    const texts = { en, es, ru, zhTW, zhCN }
     return texts[locale]
   }, [locale])
 

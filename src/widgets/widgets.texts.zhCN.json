@@ -1,0 +1,15 @@
+{
+  "updateTitle": "更新",
+  "updateDescription": "TgStorage新版已发布。",
+  "updateDescriptionLink": "更新了什么？",
+  "updateButton": "更新",
+  "errorTitle": "错误",
+  "errorDescription": "出现了错误，错误已经发送给开发者。",
+  "errorButton": "确定",
+  "installTitle": "安装",
+  "installDescription": "安装TgStorage，以更方便使用。",
+  "installButton": "安装",
+  "anncChannelTitle": "频道",
+  "anncChannelDescription": "加入 TgStorage 频道，随时了解最新动态。",
+  "anncChannelButton": "加入"
+}
