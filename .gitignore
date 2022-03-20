@@ -3,3 +3,4 @@
 **/build
 *.log
 *.env*
+!.env.example
