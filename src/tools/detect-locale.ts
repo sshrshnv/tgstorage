@@ -1,6 +1,6 @@
 export const CIS = ['ru', 'ua', 'by', 'ge', 'az', 'kz', 'uz', 'tj', 'kg']
 
-export const AVALIABLE_LOCALES = ['en', 'es', 'ru'] as const
+export const AVALIABLE_LOCALES = ['en', 'es', 'ru','zhTW'] as const
 export const FALLBACK_LOCALE= 'en' as const
 
 export type AvailableLocales = typeof AVALIABLE_LOCALES[number]
