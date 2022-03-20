@@ -14,6 +14,7 @@ import {
 } from './icons'
 import en from './ios-install-prompt.texts.en.json'
 import ru from './ios-install-prompt.texts.ru.json'
+import zhTW from './ios-install-prompt.texts.zhTW.json'
 import styles from './ios-install-prompt.styl'
 
 const IOSInstallPrompt: FC = memo(() => {
@@ -22,7 +23,7 @@ const IOSInstallPrompt: FC = memo(() => {
   const [visible, setVisible] = useState(false)
 
   const texts = useMemo(() => {
-    const texts = { en, ru }
+    const texts = { en, ru, zhTW }
     return texts[locale]
   }, [locale])
 
