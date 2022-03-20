@@ -19,6 +19,7 @@
   "settingsLocale_en": "English",
   "settingsLocale_es": "Español",
   "settingsLocale_ru": "Русский",
+  "settingsLocale_zhTW": "繁體中文",
   "settingsFolderText": "Show general folder",
   "settingsErrorWidgetText": "Show error notifications",
   "settingsErrorSendingText": "Send errors to developer",
