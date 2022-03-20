@@ -132,23 +132,25 @@ export const useMessageForm = (folder: Folder) => {
     const uniqFileKeys = fileKeys
       .filter(fileKey => (message.inputFiles || []).every(inputFile => inputFile.fileKey !== fileKey))
 
+    let inputFiles = [
+      ...uniqFileKeys.map(fileKey => {
+        const fileMeta = getFileMeta(fileKey)
+        return {
+          id: '',
+          progress: 0,
+          progressSize: 0,
+          fileKey,
+          name: fileMeta?.name || '',
+          size: fileMeta?.size || 0,
+          parsing: true
+        }
+      }),
+      ...(message.inputFiles || [])
+    ]
+
     setMessage({
       ...message,
-      inputFiles: [
-        ...uniqFileKeys.map(fileKey => {
-          const fileMeta = getFileMeta(fileKey)
-          return {
-            id: '',
-            progress: 0,
-            progressSize: 0,
-            fileKey,
-            name: fileMeta?.name || '',
-            size: fileMeta?.size || 0,
-            parsing: true
-          }
-        }),
-        ...(message.inputFiles || [])
-      ]
+      inputFiles
     })
 
     for (let i = 0; i < uniqFileKeys.length; i++) {
@@ -158,15 +160,16 @@ export const useMessageForm = (folder: Folder) => {
         fileMeta?.type.startsWith('image') ? await parseImageFile(fileKey) :
           fileMeta?.type.startsWith('video') ? await parseVideoFile(fileKey, fileMeta) :
             undefined
-      const message = messageRef.current
+
+      inputFiles = inputFiles.map(inputFile => inputFile.fileKey === fileKey ? ({
+        ...inputFile,
+        ...params,
+        parsing: false
+      }) : inputFile)
 
       setMessage({
         ...message,
-        inputFiles: (message.inputFiles || []).map(inputFile => inputFile.fileKey === fileKey ? ({
-          ...inputFile,
-          ...params,
-          parsing: false
-        }) : inputFile)
+        inputFiles
       })
     }
   }, [messageRef, setMessage])
