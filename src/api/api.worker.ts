@@ -333,8 +333,7 @@ class Api {
     const isQueryAvailable = await checkIsQueryAvailableByTime('checkAnncChannelJoining', 7 * 24 * 60 * 60)
     if (!isQueryAvailable) return { joiningAvailable: false }
 
-    const user = await dataCache.getUser()
-    const anncChannelInvite = getAnncChannelInvite(user?.country)
+    const anncChannelInvite = getAnncChannelInvite()
     if (!anncChannelInvite) return { joiningAvailable: false }
 
     const { _ } = await this.call('messages.checkChatInvite', {
@@ -351,8 +350,7 @@ class Api {
     const isQueryAvailable = await checkIsQueryAvailableByTime('joinAnncChannel', 24 * 60 * 60)
     if (!isQueryAvailable) return
 
-    const user = await dataCache.getUser()
-    const anncChannelInvite = getAnncChannelInvite(user?.country)
+    const anncChannelInvite = getAnncChannelInvite()
     if (!anncChannelInvite) return
 
     const { _, chat } = await this.call('messages.checkChatInvite', {

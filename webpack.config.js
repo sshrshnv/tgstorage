@@ -37,8 +37,7 @@ const defineEnvConfig = {
   'process.env.API_ID': JSON.stringify(appEnv.API_ID),
   'process.env.API_HASH': JSON.stringify(appEnv.API_HASH),
   'process.env.API_TEST': JSON.stringify(appEnv.API_TEST),
-  'process.env.INVITE_RU': JSON.stringify(appEnv.INVITE_RU),
-  'process.env.INVITE_EN': JSON.stringify(appEnv.INVITE_EN),
+  'process.env.CHANNEL_INVITE': JSON.stringify(appEnv.CHANNEL_INVITE),
   'process.env.SENTRY_DSN': JSON.stringify(appEnv.SENTRY_DSN),
   'process.env.SENTRY_AUTH_TOKEN': JSON.stringify(appEnv.SENTRY_AUTH_TOKEN),
   'process.env.GOOGLE_ANALYTICS_ID': JSON.stringify(appEnv.GOOGLE_ANALYTICS_ID)
