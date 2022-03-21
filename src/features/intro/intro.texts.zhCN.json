@@ -1,13 +1,13 @@
 {
-    "title": "Telegram 进阶",
-    "subTitle": "云端消息管理工具",
-    "description": "在免费且无限制的 Telegram 中整理你的笔记、链接、照片和任何文件。",
-    "faqDescription0": "在应用程序中添加文件夹时，将在你的 Telegram 帐号创建私人频道。你在官方应用程序中也可以使用这个私人频道。",
-    "appDescription0": "这个应用程序只在您的设备上运作，并直接与 Telegram 服务器进行通信，您的信息不会被保存在 Telegram 以外的地方。 \n你可以在数据中查看：",
-    "installDescription": "TgStorage 无需下载即可安装在任何设备上。",
-    "support": "关于错误、问题和建议，请联系",
-    "installButton": "安装",
-    "browserButton": "在浏览器中打开",
-    "continueButton": "继续",
-    "installBrowsers": "只能安装在以下浏览器："
+  "title": "Telegram 进阶",
+  "subTitle": "云端消息管理工具",
+  "description": "在免费且无限制的 Telegram 中整理你的笔记、链接、照片和任何文件。",
+  "faqDescription0": "在应用程序中添加文件夹时，将在你的 Telegram 帐号创建私人频道。你在官方应用程序中也可以使用这个私人频道。",
+  "appDescription0": "这个应用程序只在您的设备上运作，并直接与 Telegram 服务器进行通信，您的信息不会被保存在 Telegram 以外的地方。 \n你可以在数据中查看：",
+  "installDescription": "TgStorage 无需下载即可安装在任何设备上。",
+  "support": "关于错误、问题和建议，请联系",
+  "installButton": "安装",
+  "browserButton": "在浏览器中打开",
+  "continueButton": "继续",
+  "installBrowsers": "只能安装在以下浏览器："
 }
