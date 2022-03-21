@@ -1,6 +1,6 @@
 {
   "title": "登录",
-  "phoneDescription": "请确认您所在的国家，并在下方输入您的 Telegram 电话号码：",
+  "phoneDescription": "请确认您所在的国家，并在下方输入您在 Telegram 所使用的电话号码：",
   "phoneBanDescription": "Telegram 的自动保护功能已经被触发，你的帐号已经被禁止。这是一个一次性的错误，恢复后不会再发生。",
   "phoneLabel": "电话号码",
   "countryLabel": "国家",
@@ -21,7 +21,7 @@
   "error": "出了点问题",
   "PHONE_NUMBER_BANNED": "被禁止的电话号码",
   "PHONE_NUMBER_INVALID": "无效的电话号码",
-  "PHONE_NUMBER_FLOOD": "太多的请求",
+  "PHONE_NUMBER_FLOOD": "请求次数过多",
   "PHONE_CODE_EMPTY": "未输入验证码",
   "PHONE_CODE_EXPIRED": "验证码已失效",
   "PHONE_CODE_INVALID": "验证码无效",
