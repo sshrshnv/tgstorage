@@ -27,5 +27,4 @@
     "PHONE_CODE_INVALID": "验证码无效",
     "PHONE_NUMBER_UNOCCUPIED": "用户在 Telegram 上并不存在",
     "PASSWORD_HASH_INVALID": "无效的密码"
-  }
-  
+}
