@@ -8,8 +8,8 @@ import {
   setErrorWidget, setErrorSending, loadTexts
 } from '~/core/actions'
 import { useTexts, useSettings } from '~/core/hooks'
-import { AVALIABLE_LOCALES } from '~/tools/detect-locale'
-import { AVALIABLE_THEMES } from '~/ui/styles'
+import { AVAILABLE_LOCALES } from '~/tools/detect-locale'
+import { AVAILABLE_THEMES } from '~/ui/styles'
 import { SidebarPopup } from '~/ui/elements/sidebar-popup'
 import { Form } from '~/ui/elements/form'
 import { Select } from '~/ui/elements/select'
@@ -30,12 +30,12 @@ export const StorageSidebarSettingsPopup: FC<Props> = memo(({
   } = useSettings()
   const [localeLoading, setLocaleLoading] = useState(false)
 
-  const themeOptions = useMemo(() => AVALIABLE_THEMES.map(value => ({
+  const themeOptions = useMemo(() => AVAILABLE_THEMES.map(value => ({
     text: texts[`settingsTheme_${value}`],
     value
   })), [texts.settingsThemeLabel])
 
-  const localeOptions = useMemo(() => AVALIABLE_LOCALES.map(value => ({
+  const localeOptions = useMemo(() => AVAILABLE_LOCALES.map(value => ({
     text: texts[`settingsLocale_${value}`],
     value
   })), [texts.settingsLocaleLabel])

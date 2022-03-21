@@ -1,7 +1,7 @@
 import vars from './styles.vars.json'
 
-export const AVALIABLE_THEMES = ['system', 'dark', 'light'] as const
-export type AvailableThemes = typeof AVALIABLE_THEMES[number]
+export const AVAILABLE_THEMES = ['system', 'dark', 'light'] as const
+export type AvailableThemes = typeof AVAILABLE_THEMES[number]
 
 export const COLORS = [
   vars['color-brand'],

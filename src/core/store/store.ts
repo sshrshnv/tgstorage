@@ -3,7 +3,7 @@ import devtools from 'unistore/devtools'
 
 import { dataCache } from '~/core/cache'
 import { checkIsStandalone } from '~/tools/detect-standalone'
-import { AVALIABLE_LOCALES, detectLocale } from '~/tools/detect-locale'
+import { AVAILABLE_LOCALES, detectLocale } from '~/tools/detect-locale'
 
 import type { State, Texts, Settings, User, Folders, FoldersMessages } from './store.types'
 
@@ -57,7 +57,7 @@ const state: State = {
     ...initialSettings,
     ...settings
   },
-  texts: AVALIABLE_LOCALES.reduce((obj, locale) => ({ ...obj, [locale]: {} }), {} as Texts),
+  texts: AVAILABLE_LOCALES.reduce((obj, locale) => ({ ...obj, [locale]: {} }), {} as Texts),
   appRoute: self.location.pathname,
   appFeatureRendered: false,
   appUpdateExists: false,
