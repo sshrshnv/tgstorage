@@ -5,6 +5,7 @@ import { memo } from 'preact/compat'
 import type { Folder } from '~/core/store'
 import { useTexts } from '~/core/hooks'
 import { SidebarPopup } from '~/ui/elements/sidebar-popup'
+import { Break } from '~/ui/elements/break'
 
 import { StorageSidebarFoldersList } from './storage.sidebar-folders-list'
 
@@ -30,6 +31,7 @@ export const StorageSidebarFoldersPopup: FC<Props> = memo(({
       withoutPaddings
       onClose={onClose}
     >
+      <Break size={24} px/>
       <StorageSidebarFoldersList
         onFolderSelect={onFolderSelect}
         filterActiveFolder={filterActiveFolder}
