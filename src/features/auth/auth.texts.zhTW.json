@@ -1,6 +1,6 @@
 {
   "title": "登入",
-  "phoneDescription": "請確認您所在的國家，並輸入您的 Telegram 電話號碼。",
+  "phoneDescription": "請確認您所在的國家，並在下方輸入您在 Telegram 所使用的電話號碼：",
   "phoneBanDescription": "Telegram 的自動保護功能已經被觸發，你的帳號已經被禁止。這是一個一次性的錯誤，恢復後不會再發生。",
   "phoneLabel": "電話號碼",
   "countryLabel": "國家",
@@ -21,7 +21,7 @@
   "error": "出了點問題",
   "PHONE_NUMBER_BANNED": "被禁止的電話號碼",
   "PHONE_NUMBER_INVALID": "無效的電話號碼",
-  "PHONE_NUMBER_FLOOD": "太多的請求",
+  "PHONE_NUMBER_FLOOD": "請求次數過多",
   "PHONE_CODE_EMPTY": "未輸入驗證碼",
   "PHONE_CODE_EXPIRED": "驗證碼已失效",
   "PHONE_CODE_INVALID": "無效驗證碼",
