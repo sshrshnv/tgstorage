@@ -9,7 +9,7 @@
   "installTitle": "Instalación",
   "installDescription": "Instale la aplicación para un uso más conveniente.",
   "installButton": "Instalar en pc",
-  "anncChannelTitle": "Canal",
-  "anncChannelDescription": "Únete al canal TgStorage para estar al día de todas las novedades.",
-  "anncChannelButton": "Entrar"
+  "newsChannelTitle": "Canal",
+  "newsChannelDescription": "Únete al canal TgStorage para estar al día de todas las novedades.",
+  "newsChannelButton": "Entrar"
 }

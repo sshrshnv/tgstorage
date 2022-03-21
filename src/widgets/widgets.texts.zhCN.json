@@ -9,7 +9,7 @@
   "installTitle": "安装",
   "installDescription": "安装此应用程序，以便更方便的使用。",
   "installButton": "安装",
-  "anncChannelTitle": "频道",
-  "anncChannelDescription": "加入 TgStorage 频道，随时了解最新动态。",
-  "anncChannelButton": "加入"
+  "newsChannelTitle": "频道",
+  "newsChannelDescription": "加入 TgStorage 频道，随时了解最新动态。",
+  "newsChannelButton": "加入"
 }

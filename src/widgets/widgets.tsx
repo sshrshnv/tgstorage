@@ -6,13 +6,13 @@ import { useState } from 'preact/hooks'
 import {
   useUser, useSettings, useAppRoute,
   useAppError, useAppUpdate, useAppInstall,
-  useAnncChannel
+  useNewsChannel
 } from '~/core/hooks'
 
 import { WidgetsAppUpdate } from './widgets.app-update'
 import { WidgetsAppInstall } from './widgets.app-install'
 import { WidgetsAppError } from './widgets.app-error'
-import { WidgetsAnncChannel } from './widgets.annc-channel'
+import { WidgetsNewsChannel } from './widgets.news-channel'
 
 const Widgets: FC = memo(() => {
   const { user } = useUser()
@@ -21,11 +21,11 @@ const Widgets: FC = memo(() => {
   const { appErrorExists } = useAppError()
   const { appUpdateExists } = useAppUpdate()
   const { appInstallAvailable, appInstalled } = useAppInstall()
-  const { anncChannelAvailable } = useAnncChannel()
+  const { newsChannelAvailable } = useNewsChannel()
   const [errorVisible, setErrorVisible] = useState(errorWidgetEnabled && appErrorExists)
   const [updateVisible, setUpdateVisible] = useState(appUpdateExists)
   const [installVisible, setInstallVisible] = useState(installWidgetEnabled && appInstallAvailable && !appInstalled)
-  const [anncChannelVisible, setAnncChannelVisible] = useState(anncChannelAvailable)
+  const [newsChannelVisible, setNewsChannelVisible] = useState(newsChannelAvailable)
 
   return (
     <Fragment>
@@ -47,9 +47,9 @@ const Widgets: FC = memo(() => {
           visible={installVisible && !errorVisible && !updateVisible && !isIntroAppRoute && !!user}
         />
       )}
-      <WidgetsAnncChannel
-        setVisible={setAnncChannelVisible}
-        visible={anncChannelVisible && !errorVisible && !updateVisible && !installVisible && !isIntroAppRoute && !!user}
+      <WidgetsNewsChannel
+        setVisible={setNewsChannelVisible}
+        visible={newsChannelVisible && !errorVisible && !updateVisible && !installVisible && !isIntroAppRoute && !!user}
       />
     </Fragment>
   )

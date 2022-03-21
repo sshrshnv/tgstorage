@@ -3,14 +3,14 @@ import { useStoreState } from 'unistore-hooks'
 
 import type { State } from '~/core/store'
 
-export const useAnncChannel = () => {
-  const { anncChannelAvailable }: {
-    anncChannelAvailable: State['anncChannelAvailable']
+export const useNewsChannel = () => {
+  const { newsChannelAvailable }: {
+    newsChannelAvailable: State['newsChannelAvailable']
   } = useStoreState(state => ({
-    anncChannelAvailable: state.anncChannelAvailable
+    newsChannelAvailable: state.newsChannelAvailable
   }))
 
   return useMemo(() => ({
-    anncChannelAvailable
-  }), [anncChannelAvailable])
+    newsChannelAvailable
+  }), [newsChannelAvailable])
 }

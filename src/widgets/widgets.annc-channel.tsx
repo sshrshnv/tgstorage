@@ -4,9 +4,9 @@ import { h } from 'preact'
 import { memo } from 'preact/compat'
 import { useCallback, useEffect, useMemo } from 'preact/hooks'
 
-import { cancelAnncChannelJoining } from '~/core/actions'
-import { useTexts, useUser, useAnncChannel } from '~/core/hooks'
-import { getAnncChannelInviteLink } from '~/tools/handle-channels'
+import { cancelNewsChannelJoining } from '~/core/actions'
+import { useTexts, useUser, useNewsChannel } from '~/core/hooks'
+import { getNewsChannelInviteLink } from '~/tools/handle-channels'
 import { Widget } from '~/ui/elements/widget'
 
 type Props = {
@@ -14,33 +14,33 @@ type Props = {
   setVisible: StateUpdater<boolean>
 }
 
-export const WidgetsAnncChannel: FC<Props> = memo(({
+export const WidgetsNewsChannel: FC<Props> = memo(({
   visible,
   setVisible
 }) => {
   const { texts } = useTexts('widgets')
   const { user } = useUser()
-  const { anncChannelAvailable } = useAnncChannel()
+  const { newsChannelAvailable } = useNewsChannel()
 
   const link = useMemo(() => {
-    return user?.country ? getAnncChannelInviteLink(user.country) : ''
+    return user?.country ? getNewsChannelInviteLink(user.country) : ''
   }, [user?.country])
 
   const handleClose = useCallback(() => {
     setVisible(false)
-    cancelAnncChannelJoining()
+    cancelNewsChannelJoining()
   }, [setVisible])
 
   useEffect(() => {
-    if (!anncChannelAvailable) return
+    if (!newsChannelAvailable) return
     setVisible(true)
-  }, [anncChannelAvailable, setVisible])
+  }, [newsChannelAvailable, setVisible])
 
   return (visible && link) ? (
     <Widget
-      title={texts.anncChannelTitle}
-      description={texts.anncChannelDescription}
-      button={texts.anncChannelButton}
+      title={texts.newsChannelTitle}
+      description={texts.newsChannelDescription}
+      button={texts.newsChannelButton}
       link={link}
       onClick={handleClose}
       onClose={handleClose}

@@ -5,8 +5,8 @@ import { memo } from 'preact/compat'
 import { useCallback, useEffect, useState, useMemo } from 'preact/hooks'
 
 import { setAppUpdateAccepted } from '~/core/actions'
-import { useTexts, useUser, useAppUpdate } from '~/core/hooks'
-import { getAnncChannelInviteLink } from '~/tools/handle-channels'
+import { useTexts, useAppUpdate } from '~/core/hooks'
+import { getNewsChannelInviteLink } from '~/tools/handle-channels'
 import { Widget } from '~/ui/elements/widget'
 
 type Props = {
@@ -21,13 +21,12 @@ export const WidgetsAppUpdate: FC<Props> = memo(({
   setVisible
 }) => {
   const { texts } = useTexts('widgets')
-  const { user } = useUser()
   const { appUpdateExists } = useAppUpdate()
   const [loading, setLoading] = useState(false)
 
   const link = useMemo(() => {
-    return user?.country ? getAnncChannelInviteLink(user.country) : ''
-  }, [user?.country])
+    return getNewsChannelInviteLink()
+  }, [])
 
   const handleClick = useCallback(() => {
     setLoading(true)

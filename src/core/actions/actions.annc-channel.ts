@@ -2,28 +2,28 @@ import { store } from '~/core/store'
 import { api } from '~/api'
 import { timer } from '~/tools/timer'
 
-export const checkAnncChannelJoining = async ({ timeout } = { timeout: false }) => {
+export const checkNewsChannelJoining = async ({ timeout } = { timeout: false }) => {
   if (timeout) {
     await timer(30 * 1000)
   }
-  const { joiningAvailable, joined } = await api.checkAnncChannelJoining()
+  const { joiningAvailable, joined } = await api.checkNewsChannelJoining()
 
   if (joiningAvailable && !joined) {
     store.setState({
-      anncChannelAvailable: true
+      newsChannelAvailable: true
     })
   }
 }
 
-export const cancelAnncChannelJoining = () => {
+export const cancelNewsChannelJoining = () => {
   store.setState({
-    anncChannelAvailable: false
+    newsChannelAvailable: false
   })
 }
 
-export const joinAnncChannel = async ({ timeout } = { timeout: false }) => {
+export const joinNewsChannel = async ({ timeout } = { timeout: false }) => {
   if (timeout) {
     await timer(30 * 1000)
   }
-  api.joinAnncChannel()
+  api.joinNewsChannel()
 }

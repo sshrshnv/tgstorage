@@ -2,7 +2,7 @@ import { expose, transfer } from 'comlink'
 
 import { dataCache, resetDataCache } from '~/core/cache'
 import { timer } from '~/tools/timer'
-import { getAnncChannelInvite } from '~/tools/handle-channels'
+import { getNewsChannelInvite } from '~/tools/handle-channels'
 import { FOLDER_POSTFIX, generateFolderName, stringifyFileMessage } from '~/tools/handle-content'
 import { FILE_SIZE, getFilePartSize } from '~/tools/handle-file'
 
@@ -329,15 +329,15 @@ class Api {
     })
   }
 
-  public async checkAnncChannelJoining() {
-    const isQueryAvailable = await checkIsQueryAvailableByTime('checkAnncChannelJoining', 7 * 24 * 60 * 60)
+  public async checkNewsChannelJoining() {
+    const isQueryAvailable = await checkIsQueryAvailableByTime('checkNewsChannelJoining', 7 * 24 * 60 * 60)
     if (!isQueryAvailable) return { joiningAvailable: false }
 
-    const anncChannelInvite = getAnncChannelInvite()
-    if (!anncChannelInvite) return { joiningAvailable: false }
+    const newsChannelInvite = getNewsChannelInvite()
+    if (!newsChannelInvite) return { joiningAvailable: false }
 
     const { _ } = await this.call('messages.checkChatInvite', {
-      hash: anncChannelInvite
+      hash: newsChannelInvite
     })
 
     return {
@@ -346,15 +346,15 @@ class Api {
     }
   }
 
-  public async joinAnncChannel() {
-    const isQueryAvailable = await checkIsQueryAvailableByTime('joinAnncChannel', 24 * 60 * 60)
+  public async joinNewsChannel() {
+    const isQueryAvailable = await checkIsQueryAvailableByTime('joinNewsChannel', 24 * 60 * 60)
     if (!isQueryAvailable) return
 
-    const anncChannelInvite = getAnncChannelInvite()
-    if (!anncChannelInvite) return
+    const newsChannelInvite = getNewsChannelInvite()
+    if (!newsChannelInvite) return
 
     const { _, chat } = await this.call('messages.checkChatInvite', {
-      hash: anncChannelInvite
+      hash: newsChannelInvite
     })
 
     if (_ === 'chatInviteAlready') {
@@ -362,7 +362,7 @@ class Api {
     }
 
     const { chats } = await this.call('messages.importChatInvite', {
-      hash: anncChannelInvite
+      hash: newsChannelInvite
     }).catch(() => ({ chats: [] }))
 
     return chats?.[0]

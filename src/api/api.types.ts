@@ -229,10 +229,10 @@ export type Api = {
 
   resetSearch: () => void
 
-  checkAnncChannelJoining: () => Promise<{
+  checkNewsChannelJoining: () => Promise<{
     joiningAvailable?: boolean
     joined?: boolean
   }>
 
-  joinAnncChannel: () => Promise<void>
+  joinNewsChannel: () => Promise<void>
 }

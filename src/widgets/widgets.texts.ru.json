@@ -9,7 +9,7 @@
   "installTitle": "Установка",
   "installDescription": "Установите приложение для более удобного использования.",
   "installButton": "Установить",
-  "anncChannelTitle": "Канал",
-  "anncChannelDescription": "Подпишитесь на канал TgStorage, чтобы быть в курсе всех новостей.",
-  "anncChannelButton": "Подписаться"
+  "newsChannelTitle": "Канал",
+  "newsChannelDescription": "Подпишитесь на канал TgStorage, чтобы быть в курсе всех новостей.",
+  "newsChannelButton": "Подписаться"
 }

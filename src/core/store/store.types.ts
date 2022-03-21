@@ -47,7 +47,7 @@ export type Folder = {
   title: string
   group: string
   category: string
-  annc?: boolean
+  news?: boolean
   general?: boolean
   fake?: boolean
 }
@@ -275,5 +275,5 @@ export type State = {
   appInstallAvailable: boolean
   appInstalled: boolean
   appErrorExists: boolean
-  anncChannelAvailable: boolean
+  newsChannelAvailable: boolean
 }
