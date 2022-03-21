@@ -1,6 +1,6 @@
 import type { FunctionComponent as FC } from 'preact'
 import { Fragment, h } from 'preact'
-import { useCallback, useEffect } from 'preact/hooks'
+import { useCallback, useEffect, useMemo } from 'preact/hooks'
 
 import { installApp, setAppRoute, setAppFeatureRendered } from '~/core/actions'
 import { useTexts, useSettings, useAppInstall } from '~/core/hooks'
@@ -18,11 +18,17 @@ import { Icon } from '~/ui/elements/icon'
 import { screens } from './screens'
 
 const SCREEN_TYPES = ['avif', 'webp', 'png']
+const SCREEN_LOCALES = ['en', 'ru']
+const SCREEN_FALLBACK_LOCALE = 'en'
 
 const Intro: FC = () => {
   const { texts } = useTexts('intro')
   const { locale } = useSettings()
   const { appInstallAvailable, appInstalled } = useAppInstall()
+
+  const screenLocale = useMemo(() => {
+    return SCREEN_LOCALES.includes(locale) ? locale : SCREEN_FALLBACK_LOCALE
+  }, [locale])
 
   const handleContinue = useCallback(() => {
     setAppRoute('/app')
@@ -62,7 +68,7 @@ const Intro: FC = () => {
             key={name}
             sources={SCREEN_TYPES.map(type => ({
               type,
-              src: screens[`${name}-${locale}.${type}`]
+              src: screens[`${name}-${screenLocale}.${type}`]
             }))}
           />
         ))}
