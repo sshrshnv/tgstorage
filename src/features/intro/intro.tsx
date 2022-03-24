@@ -18,7 +18,7 @@ import { Icon } from '~/ui/elements/icon'
 import { screens } from './screens'
 
 const SCREEN_TYPES = ['avif', 'webp', 'png']
-const SCREEN_LOCALES = ['en', 'ru']
+const SCREEN_LOCALES = ['en']
 const SCREEN_FALLBACK_LOCALE = 'en'
 
 const Intro: FC = () => {
