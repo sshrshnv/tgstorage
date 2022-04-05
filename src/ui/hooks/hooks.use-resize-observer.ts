@@ -15,7 +15,7 @@ export const useResizeObserver = (
   }, [handleElRef])
 
   const [resizeObserver, resizeObserverRef] = useMemoRef(() => {
-    return new ResizeObserver(handleElementsRef.current)
+    return new ResizeObserver(handleElementsRef.current!)
   }, [handleElementsRef])
 
   useEffect(() => () => {

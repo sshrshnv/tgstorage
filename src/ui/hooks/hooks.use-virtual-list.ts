@@ -38,7 +38,7 @@ export const useVirtualList = () => {
       [...newOffsets].some(([id, value]) => value !== offsets.get(id))
     ) {
       offsetsRef.current = newOffsets
-      setOffsetsRef.current(newOffsets)
+      setOffsetsRef.current?.(newOffsets)
     }
   }, [offsetsRef, calcOffsetsRef, setOffsetsRef])
 
@@ -71,7 +71,7 @@ export const useVirtualList = () => {
       visibility.lastIndex !== newVisibility.lastIndex
     ) {
       visibilityRef.current = newVisibility
-      setVisibilityRef.current(newVisibility)
+      setVisibilityRef.current?.(newVisibility)
     }
   }, [visibilityRef, setVisibilityRef, calcVisibilityRef])
 
@@ -116,7 +116,7 @@ export const useVirtualList = () => {
     if (id) {
       setIntersectingRef.current(el.isIntersecting, id)
     } else {
-      setFinishedRef.current(el.isIntersecting)
+      setFinishedRef.current?.(el.isIntersecting)
     }
   }, [setIntersectingRef, setFinishedRef])
 

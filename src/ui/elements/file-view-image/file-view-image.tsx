@@ -1,31 +1,28 @@
-import type { FunctionComponent as FC } from 'preact'
-import { h, Fragment } from 'preact'
+import type { FunctionComponent as FC, RefObject } from 'preact'
+import { h } from 'preact'
 import { memo } from 'preact/compat'
 import { useEffect, useState, useCallback } from 'preact/hooks'
 import cn from 'classnames'
 
 import { getFileUrl } from '~/core/cache'
 import { useStateRef, useUpdatableRef } from '~/tools/hooks'
-import { Icon } from '~/ui/elements/icon'
 
-import styles from './file-preview-image.styl'
+import styles from './file-view-image.styl'
 
 type Props = {
   class?: string
   fileKey?: string
   timeout?: number
+  mediaElRef?: RefObject<HTMLImageElement>
   isFullscreen?: boolean
-  isPlay?: boolean
-  isLink?: boolean
 }
 
-export const FilePreviewImage: FC<Props> = memo(({
+export const FileViewImage: FC<Props> = memo(({
   class: outerStyles,
   fileKey,
   timeout,
-  isFullscreen,
-  isPlay,
-  isLink
+  mediaElRef,
+  isFullscreen
 }) => {
   const [url, _setUrl, urlRef, setUrlRef] = useStateRef('')
   const [ready, _setReady, readyRef, setReadyRef] = useStateRef(false)
@@ -61,30 +58,16 @@ export const FilePreviewImage: FC<Props> = memo(({
   }, [isFullscreen])
 
   return !url ? null : (
-    <Fragment>
-      <img
-        class={cn(
-          outerStyles,
-          styles.root,
-          ready && styles._visible,
-          hidden && styles._hidden
-        )}
-        src={url}
-        onLoad={handleLoad}
-      />
-      {(isPlay || isLink) && (
-        <div class={cn(
-          styles.icon,
-          isLink && styles._transform
-        )}>
-          {isPlay && (
-            <Icon icon="play"/>
-          )}
-          {isLink && (
-            <Icon icon="link"/>
-          )}
-        </div>
+    <img
+      class={cn(
+        outerStyles,
+        styles.root,
+        ready && styles._visible,
+        hidden && styles._hidden
       )}
-    </Fragment>
+      src={url}
+      ref={mediaElRef}
+      onLoad={handleLoad}
+    />
   )
 })

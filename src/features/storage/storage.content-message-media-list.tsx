@@ -5,30 +5,30 @@ import { memo } from 'preact/compat'
 import type {  Folder, Message } from '~/core/store'
 import { ContentItemMediaList } from '~/ui/elements/content-item-media-list'
 
-import { StorageContentMessageItemMediaItem } from './storage.content-message-item-media-item'
+import { StorageContentMessageMediaItem } from './storage.content-message-media-item'
 
 type Props = {
   folder: Folder
   mediaMessages?: Message[]
   mediaLoadAvailable: boolean
-  onPreviewClick?: (id: string) => void
+  onViewMedia?: (id: string) => void
 }
 
-export const StorageContentMessageItemMediaList: FC<Props> = memo(({
+export const StorageContentMessageMediaList: FC<Props> = memo(({
   folder,
   mediaMessages,
   mediaLoadAvailable,
-  onPreviewClick
+  onViewMedia
 }) => {
   return (
     <ContentItemMediaList>
       {mediaMessages?.map((mediaMessage) => !mediaMessage.media ? null : (
-        <StorageContentMessageItemMediaItem
+        <StorageContentMessageMediaItem
           key={mediaMessage.id}
           folder={folder}
           message={mediaMessage}
           mediaLoadAvailable={mediaLoadAvailable}
-          onPreviewClick={onPreviewClick}
+          onViewMedia={onViewMedia}
         />
       ))}
     </ContentItemMediaList>

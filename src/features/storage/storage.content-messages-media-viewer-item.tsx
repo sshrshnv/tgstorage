@@ -1,33 +1,52 @@
-import type { FunctionComponent as FC } from 'preact'
+import type { FunctionComponent as FC, RefObject } from 'preact'
 import { h } from 'preact'
 import { memo } from 'preact/compat'
 import { useEffect, useState } from 'preact/hooks'
 
 import type { MessageMedia, DownloadingFile } from '~/core/store'
+import type { DisplaySize } from '~/ui/hooks'
 import { downloadFile, pauseDownloadingFile, streamFile } from '~/core/actions'
 import { useDownloadingFile } from '~/core/hooks'
 import { checkIsSWRegistered } from '~/sw'
 import { useMemoRef, useUpdatableRef } from '~/tools/hooks'
-import { GalleryItem } from '~/ui/elements/gallery-item'
+import { MediaViewerItem } from '~/ui/elements/media-viewer-item'
 
 type Props = {
   messageId: number
   media: MessageMedia
-  active?: boolean
+  k: number
+  x: number
+  y: number
+  scale: number
+  mediaElRef?: RefObject<HTMLImageElement>
+  transition: boolean
+  displaySize: DisplaySize
+  isActive?: boolean
   isFullscreen?: boolean
   isFakeFullscreen?: boolean
 }
 
-export const StorageContentMessageItemGalleryItem: FC<Props> = memo(({
+export const StorageContentMessagesMediaViewerItem: FC<Props> = memo(({
   messageId,
   media,
-  active,
+  k,
+  x,
+  y,
+  scale,
+  mediaElRef,
+  transition,
+  displaySize,
+  isActive,
   isFullscreen,
   isFakeFullscreen
 }) => {
   const messageIdRef = useUpdatableRef(messageId)
   const mediaRef = useUpdatableRef(media)
   const [fileStreamUrl, setFileStreamUrl] = useState('')
+
+  const [isImage, _isImageRef] = useMemoRef(() => {
+    return media.type.startsWith('image')
+  }, [media.type])
 
   const [isVideo, isVideoRef] = useMemoRef(() => {
     return media.type.startsWith('video')
@@ -63,19 +82,33 @@ export const StorageContentMessageItemGalleryItem: FC<Props> = memo(({
   } = useDownloadingFile(originalFile)
 
   useEffect(() => {
+    if (isImage || !mediaElRef?.current) return
+    mediaElRef.current = null
+  }, [k, isImage])
+
+  useEffect(() => {
     if (
-      !active ||
+      !isActive ||
       !(isVideoRef.current || isAudioRef.current) ||
       !checkIsSWRegistered()
     ) return
 
     const fileStreamUrl = streamFile(messageIdRef.current, originalFileRef.current)
     setFileStreamUrl(fileStreamUrl)
-  }, [active])
+  }, [isActive])
 
   useEffect(() => {
     if (
-      !active ||
+      !isActive &&
+      !originalDownloadingFileRef.current?.fileKey &&
+      originalDownloadingFileRef.current?.downloading
+    ) {
+      pauseDownloadingFile(originalDownloadingFileRef.current)
+      return
+    }
+
+    if (
+      !isActive ||
       !originalFileRef.current ||
       ((isVideoRef.current || isAudioRef.current) && checkIsSWRegistered()) ||
       originalDownloadingFileRef.current?.fileKey ||
@@ -83,12 +116,7 @@ export const StorageContentMessageItemGalleryItem: FC<Props> = memo(({
     ) return
 
     downloadFile(messageIdRef.current, originalFileRef.current)
-
-    return () => {
-      if (!originalDownloadingFileRef.current?.downloading) return
-      pauseDownloadingFile(originalDownloadingFileRef.current)
-    }
-  }, [active, originalFile?.file_reference])
+  }, [isActive, originalFile?.file_reference])
 
   useEffect(() => () => {
     if (originalDownloadingFileRef.current) {
@@ -101,7 +129,7 @@ export const StorageContentMessageItemGalleryItem: FC<Props> = memo(({
   }, [])
 
   return (
-    <GalleryItem
+    <MediaViewerItem
       thumbFileKey={isVideo ? thumbDownloadingFile?.fileKey : undefined}
       fileKey={originalDownloadingFile?.fileKey}
       fileStreamUrl={fileStreamUrl}
@@ -110,9 +138,16 @@ export const StorageContentMessageItemGalleryItem: FC<Props> = memo(({
       description={media.description}
       duration={media.duration}
       progress={originalDownloadingFile?.progress}
+      k={k}
+      x={x}
+      y={y}
+      scale={scale}
+      mediaElRef={isImage ? mediaElRef : undefined}
+      transition={transition}
+      displaySize={displaySize}
+      isActive={isActive}
       isFullscreen={isFullscreen}
       isFakeFullscreen={isFakeFullscreen}
-      active={active}
       isVideo={isVideo}
       isAudio={isAudio}
     />

@@ -1,4 +1,4 @@
-import type { FunctionComponent as FC } from 'preact'
+import type { FunctionComponent as FC, RefObject } from 'preact'
 import { h } from 'preact'
 import { memo } from 'preact/compat'
 import { useEffect, useRef, useMemo } from 'preact/hooks'
@@ -14,6 +14,7 @@ type Props = {
   id?: string
   name: string
   class?: string
+  forwardedRef?: RefObject<HTMLDivElement>
   onClose?: () => void
 }
 
@@ -24,9 +25,10 @@ export const Slide: FC<Props> = memo(({
   id,
   name,
   class: outerStyles,
+  forwardedRef,
   onClose
 }) => {
-  const slideRef = useRef<HTMLDivElement>(null)
+  const slideRef = forwardedRef || useRef<HTMLDivElement>(null)
   const animationRef = useRef<Animation|undefined>()
   const nameRef = useUpdatableRef(name)
   const isPerformance = useMemo(() => checkIsIOS(), [])

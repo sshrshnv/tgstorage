@@ -1,15 +1,16 @@
-import type { FunctionComponent as FC } from 'preact'
+import type { FunctionComponent as FC, RefObject } from 'preact'
 import { h } from 'preact'
 import { memo } from 'preact/compat'
 import { useMemo, useRef } from 'preact/hooks'
 import cn from 'classnames'
 
+import type { DisplaySize } from '~/ui/hooks'
 import { checkIsIOS } from '~/tools/detect-device'
-import { FilePreviewImage } from '~/ui/elements/file-preview-image'
-import { Player } from '~/ui/elements/player'
+import { FileViewImage } from '~/ui/elements/file-view-image'
+import { FilePlayer } from '~/ui/elements/file-player'
 import { Loader } from '~/ui/elements/loader'
 
-import styles from './gallery-item.styl'
+import styles from './media-viewer-item.styl'
 
 type Props = {
   thumbFileKey?: string
@@ -23,14 +24,21 @@ type Props = {
   }
   duration?: number
   progress?: number
-  active?: boolean
+  k: number
+  x: number
+  y: number
+  scale: number
+  mediaElRef?: RefObject<HTMLImageElement>
+  transition: boolean
+  displaySize: DisplaySize
+  isActive?: boolean
   isFullscreen?: boolean
   isFakeFullscreen?: boolean
   isVideo?: boolean
   isAudio?: boolean
 }
 
-export const GalleryItem: FC<Props> = memo(({
+export const MediaViewerItem: FC<Props> = memo(({
   thumbFileKey,
   fileKey,
   fileStreamUrl,
@@ -38,7 +46,14 @@ export const GalleryItem: FC<Props> = memo(({
   description,
   duration,
   progress,
-  active,
+  k,
+  x,
+  y,
+  scale,
+  mediaElRef,
+  transition,
+  displaySize,
+  isActive,
   isFullscreen,
   isFakeFullscreen,
   isVideo,
@@ -51,13 +66,16 @@ export const GalleryItem: FC<Props> = memo(({
     <div
       class={cn(
         styles.root,
-        'keen-slider__slide',
         isPerformance && styles._performance
       )}
+      style={{
+        transform: `translate3d(${x + k * displaySize.width}px, ${y}px, 0) scale(${scale})`,
+        transition: `transform ${transition ? 300 : 50}ms ease-out`
+      }}
       ref={elRef}
     >
       {(isVideo || isAudio) ? (
-        <Player
+        <FilePlayer
           class={styles.player}
           fileStreamUrl={fileStreamUrl}
           fileKey={fileKey}
@@ -65,22 +83,23 @@ export const GalleryItem: FC<Props> = memo(({
           duration={duration}
           description={description}
           type={type}
-          active={active}
           parentRef={elRef}
+          isActive={isActive}
           isFullscreen={isFullscreen}
           isFakeFullscreen={isFakeFullscreen}
           isVideo={isVideo}
           isAudio={isAudio}
         />
       ) : (
-        <FilePreviewImage
+        <FileViewImage
           class={styles.image}
           fileKey={fileKey}
           timeout={50}
+          mediaElRef={mediaElRef}
           isFullscreen={isFullscreen}
         />
       )}
-      {(active && !fileKey && !fileStreamUrl) && (
+      {(isActive && !fileKey && !fileStreamUrl) && (
         <Loader
           class={styles.loader}
           progress={progress}

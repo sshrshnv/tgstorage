@@ -1,7 +1,7 @@
 import type { FunctionComponent as FC } from 'preact'
-import { h } from 'preact'
+import { h, Fragment } from 'preact'
 import { memo } from 'preact/compat'
-import { useEffect, useState } from 'preact/hooks'
+import { useEffect, useState, useCallback } from 'preact/hooks'
 
 import type { Folder, Message } from '~/core/store'
 import { useUpdatableRef } from '~/tools/hooks'
@@ -9,6 +9,7 @@ import { ContentList } from '~/ui/elements/content-list'
 import { useVirtualList } from '~/ui/hooks'
 
 import { StorageContentMessageItem } from './storage.content-message-item'
+import { StorageContentMessagesMediaViewer } from './storage.content-messages-media-viewer'
 
 type Props = {
   folder: Folder
@@ -47,6 +48,15 @@ export const StorageContentMessagesList: FC<Props> = memo(({
   const messagesLoadingRef = useUpdatableRef(messagesLoading)
   const loadMessagesRef = useUpdatableRef(loadMessages)
   const [renderAvailable, setRenderAvailable] = useState(false)
+  const [mediaViewerInitialId, setMediaViewerInitialId] = useState('')
+
+  const openMediaViewer = useCallback((id: string) => {
+    setMediaViewerInitialId(id)
+  }, [setMediaViewerInitialId])
+
+  const closeMediaViewer = useCallback(() => {
+    setMediaViewerInitialId('')
+  }, [setMediaViewerInitialId])
 
   useEffect(() => {
     countRef.current = messages.length
@@ -73,34 +83,45 @@ export const StorageContentMessagesList: FC<Props> = memo(({
   }, [])
 
   return renderAvailable && !!messages.length ? (
-    <ContentList
-      intersectionRef={intersectionRef}
-      fullHeight={fullHeight}
-    >
-      {messages.map((message, index) => {
-        const last = index === messages.length - 1
-        const offset = offsets.get(message.id)
-        const visible = (
-          (index >= visibility.firstIndex && index <= visibility.lastIndex) ||
-          index === offsets.size - 1
-        )
+    <Fragment>
+      <ContentList
+        intersectionRef={intersectionRef}
+        fullHeight={fullHeight}
+      >
+        {messages.map((message, index) => {
+          const last = index === messages.length - 1
+          const offset = offsets.get(message.id)
+          const visible = (
+            (index >= visibility.firstIndex && index <= visibility.lastIndex) ||
+            index === offsets.size - 1
+          )
 
-        return (
-          <StorageContentMessageItem
-            key={`${message.id}-${message.parentId}`}
-            folder={folder}
-            message={message}
-            offset={offset}
-            visible={visible}
-            last={last}
-            resizeObserver={resizeObserver}
-            intersectionObserver={intersectionObserver}
-            onEdit={onEditMessage}
-            onDelete={onDeleteMessage}
-            onMove={onMoveMessage}
-          />
-        )
-      })}
-    </ContentList>
+          return (
+            <StorageContentMessageItem
+              key={`${message.id}-${message.parentId}`}
+              folder={folder}
+              message={message}
+              offset={offset}
+              visible={visible}
+              last={last}
+              resizeObserver={resizeObserver}
+              intersectionObserver={intersectionObserver}
+              onViewMedia={openMediaViewer}
+              onEdit={onEditMessage}
+              onDelete={onDeleteMessage}
+              onMove={onMoveMessage}
+            />
+          )
+        })}
+      </ContentList>
+
+      {mediaViewerInitialId && (
+        <StorageContentMessagesMediaViewer
+          initialId={mediaViewerInitialId}
+          messages={messages}
+          onClose={closeMediaViewer}
+        />
+      )}
+    </Fragment>
   ) : null
 })
