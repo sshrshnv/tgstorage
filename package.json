@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "tgstorage",
   "author": "Alexander Shershnev",
-  "license": "UNLICENSED",
+  "license": "GPL-3.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/sh-a-v/tgstorage.git"
