@@ -287,13 +287,14 @@ export const downloadFile = async (
 
   downloadingQueue.add(async () => {
     const downloadingFile = getDownloadingFile(file)
-    if (!downloadingFile) return
+    if (!downloadingFile?.downloading) return
 
     const { partsCount = 0 } = downloadingFile
     const threadCount = Math.min(DOWNLOADING_THREAD_COUNT, partsCount)
 
     const downloadPart = async (part: number, thread: number) => {
-      if (part > partsCount - 1) return
+      const downloadingFile = getDownloadingFile(file)
+      if (!downloadingFile?.downloading || part > partsCount - 1) return
 
       await downloadFilePart(messageId, folder, file, part, thread)
       return downloadPart(part + threadCount, thread)
@@ -317,7 +318,7 @@ export const downloadFilePart = async (
   thread: number
 ) => {
   let downloadingFile = getDownloadingFile(file)
-  if (!downloadingFile || downloadingFile.downloading === false) return
+  if (!downloadingFile?.downloading) return
 
   const {
     id,
@@ -372,6 +373,9 @@ export const downloadFilePart = async (
     const videoParams = await parseVideoFile(fileKey)
     fileKey = videoParams?.thumbFileKey
   }
+
+  downloadingFile = getDownloadingFile(file)
+  if (!downloadingFile) return
 
   setDownloadingFile({
     ...downloadingFile,

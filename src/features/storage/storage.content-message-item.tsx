@@ -15,10 +15,9 @@ import { ContentItemHeader } from '~/ui/elements/content-item-header'
 import { ContentItemText } from '~/ui/elements/content-item-text'
 import { ContentItemChecklist } from '~/ui/elements/content-item-checklist'
 
-import { StorageContentMessageItemMediaList } from './storage.content-message-item-media-list'
-import { StorageContentMessageItemMediaItem } from './storage.content-message-item-media-item'
-import { StorageContentMessageItemGallery } from './storage.content-message-item-gallery'
-import { StorageContentMessageItemWebpage } from './storage.content-message-item-webpage'
+import { StorageContentMessageMediaList } from './storage.content-message-media-list'
+import { StorageContentMessageMediaItem } from './storage.content-message-media-item'
+import { StorageContentMessageWebpage } from './storage.content-message-webpage'
 
 type Props = {
   folder: Folder
@@ -28,6 +27,7 @@ type Props = {
   last: boolean
   resizeObserver: ResizeObserver
   intersectionObserver: IntersectionObserver | undefined
+  onViewMedia?: (id: string) => void
   onEdit?: (message: Message) => void
   onDelete?: (id: number) => void
   onMove?: (message: Message) => void
@@ -41,6 +41,7 @@ export const StorageContentMessageItem: FC<Props> = memo(({
   last,
   resizeObserver,
   intersectionObserver,
+  onViewMedia,
   onEdit,
   onDelete,
   onMove
@@ -50,7 +51,6 @@ export const StorageContentMessageItem: FC<Props> = memo(({
   const [confirmation, setConfirmation] = useState(false)
   const [coping, setCoping] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [galleryInitialId, setGalleryInitialId] = useState('')
 
   const isChecklist = useMemo(() => {
     return checkIsChecklistMessage(message.text)
@@ -106,14 +106,6 @@ export const StorageContentMessageItem: FC<Props> = memo(({
     ev.stopPropagation()
     setConfirmation(true)
   }, [confirmation, message, folder])
-
-  const openGallery = useCallback((id: string) => {
-    setGalleryInitialId(id)
-  }, [setGalleryInitialId])
-
-  const closeGallery = useCallback(() => {
-    setGalleryInitialId('')
-  }, [setGalleryInitialId])
 
   const resetCoping = useCallback(() => {
     setCoping(false)
@@ -205,7 +197,7 @@ export const StorageContentMessageItem: FC<Props> = memo(({
       )}
 
       {hasWebpage && (
-        <StorageContentMessageItemWebpage
+        <StorageContentMessageWebpage
           folder={folder}
           message={message}
           mediaLoadAvailable={visible}
@@ -213,30 +205,21 @@ export const StorageContentMessageItem: FC<Props> = memo(({
       )}
 
       {!!message.media && (
-        <StorageContentMessageItemMediaItem
+        <StorageContentMessageMediaItem
           folder={folder}
           message={message}
           mediaLoadAvailable={visible}
-          onPreviewClick={openGallery}
+          onViewMedia={onViewMedia}
           single
         />
       )}
 
       {!!message.mediaMessages?.length && (
-        <StorageContentMessageItemMediaList
+        <StorageContentMessageMediaList
           folder={folder}
           mediaMessages={message.mediaMessages}
           mediaLoadAvailable={visible}
-          onPreviewClick={openGallery}
-        />
-      )}
-
-      {galleryInitialId && (
-        <StorageContentMessageItemGallery
-          initialId={galleryInitialId}
-          mediaMessage={message.media ? message : undefined}
-          mediaMessages={message.mediaMessages}
-          onClose={closeGallery}
+          onViewMedia={onViewMedia}
         />
       )}
     </ContentItem>

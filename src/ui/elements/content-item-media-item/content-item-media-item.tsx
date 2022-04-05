@@ -30,7 +30,7 @@ type Props = {
   downloading?: boolean
   downloadingProgress?: number | undefined
   onCancelDownload: () => void
-  onPreviewClick?: (id: string) => void
+  onViewMedia?: (id: string) => void
 }
 
 export const ContentItemMediaItem: FC<Props> = memo(({
@@ -44,7 +44,7 @@ export const ContentItemMediaItem: FC<Props> = memo(({
   downloading,
   downloadingProgress,
   onCancelDownload,
-  onPreviewClick
+  onViewMedia
 }) => {
   const elRef = useRef<HTMLDivElement>(null)
 
@@ -61,8 +61,8 @@ export const ContentItemMediaItem: FC<Props> = memo(({
   }, [media.type])
 
   const handlePreviewClick = useCallback(() => {
-    onPreviewClick?.(media.id)
-  }, [media.id, onPreviewClick])
+    onViewMedia?.(media.id)
+  }, [media.id, onViewMedia])
 
   return (
     <Fragment>

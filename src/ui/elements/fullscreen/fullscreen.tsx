@@ -64,7 +64,7 @@ export const Fullscreen: FC<Props> = ({
     }
 
     return { requestFullscreen, exitFullscreen }
-  }, [forwardedRef, isFullscreenRef, onChange])
+  }, [onChange])
 
   const onChangeRef = useUpdatableRef(onChange)
   const requestFullscreenRef = useUpdatableRef(requestFullscreen)
@@ -96,7 +96,7 @@ export const Fullscreen: FC<Props> = ({
       el.removeEventListener('fullscreenchange', handleFullscreenChange)
       el.removeEventListener('webkitfullscreenchange', handleFullscreenChange)
     }
-  }, [])
+  }, [forwardedRef?.current])
 
   useEffect(() => {
     const handleOrientationChange = () => {

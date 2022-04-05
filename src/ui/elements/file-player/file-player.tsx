@@ -13,7 +13,7 @@ import { Button } from '~/ui/elements/button'
 import { Range } from '~/ui/elements/range'
 import { Loader } from '~/ui/elements/loader'
 
-import styles from './player.styl'
+import styles from './file-player.styl'
 
 type Props = {
   class?: string
@@ -26,23 +26,23 @@ type Props = {
     title?: string
   }
   type: string
-  active?: boolean
   parentRef: RefObject<HTMLDivElement>
+  isActive?: boolean
   isFullscreen?: boolean
   isFakeFullscreen?: boolean
   isVideo?: boolean
   isAudio?: boolean
 }
 
-export const Player: FC<Props> = memo(({
+export const FilePlayer: FC<Props> = memo(({
   class: outerStyles,
   fileStreamUrl,
   thumbFileKey,
   fileKey,
   duration,
   description,
-  active,
   parentRef,
+  isActive,
   isFullscreen,
   isFakeFullscreen,
   isVideo,
@@ -75,7 +75,7 @@ export const Player: FC<Props> = memo(({
 
   const [_play, playRef] = useCallbackRef(() => {
     try {
-      playerRef.current.play()
+      playerRef.current.play().catch(ignore)
     } catch (error: any) {
       sendAppError(error)
     }
@@ -181,11 +181,11 @@ export const Player: FC<Props> = memo(({
   }, [fileKey])
 
   useEffect(() => {
-    if (!url) return
+    if (!url || !isActive) return
     if (fileKey) {
-      playerRef.current.play()
+      playerRef.current.play().catch(ignore)
     }
-  }, [fileKey, url])
+  }, [isActive, fileKey, url])
 
   useEffect(() => {
     if (playing) return
@@ -220,10 +220,10 @@ export const Player: FC<Props> = memo(({
   }, [isFullscreen, isFakeFullscreen])
 
   useEffect(() => {
-    if (!active && playing) {
+    if (!isActive && playing) {
       togglePlayRef.current()
     }
-  }, [active, playing])
+  }, [isActive, playing])
 
   useEffect(() => {
     const parentEl = parentRef.current
@@ -259,7 +259,7 @@ export const Player: FC<Props> = memo(({
             styles.video,
             hidden && styles._hidden
           )}
-          src={url || undefined}
+          src={isActive ? (url || undefined) : undefined}
           preload="auto"
           poster={thumbUrl}
           controls={false}
@@ -279,7 +279,7 @@ export const Player: FC<Props> = memo(({
             styles.audio,
             hidden && styles._hidden
           )}
-          src={url || undefined}
+          src={isActive ? (url || undefined) : undefined}
           preload="auto"
           controls={false}
           autoPlay={isSafari}
@@ -368,3 +368,7 @@ export const Player: FC<Props> = memo(({
     </Fragment>
   )
 })
+
+const ignore = (_error) => {
+  // nothing
+}

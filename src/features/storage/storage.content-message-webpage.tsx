@@ -16,7 +16,7 @@ type Props = {
   mediaLoadAvailable: boolean
 }
 
-export const StorageContentMessageItemWebpage: FC<Props> = ({
+export const StorageContentMessageWebpage: FC<Props> = ({
   folder,
   message,
   mediaLoadAvailable,

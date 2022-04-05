@@ -22,15 +22,15 @@ type Props = {
   message: Message
   mediaLoadAvailable: boolean
   single?: boolean
-  onPreviewClick?: (id: string) => void
+  onViewMedia?: (id: string) => void
 }
 
-export const StorageContentMessageItemMediaItem: FC<Props> = ({
+export const StorageContentMessageMediaItem: FC<Props> = ({
   folder,
   message,
   mediaLoadAvailable,
   single,
-  onPreviewClick
+  onViewMedia
 }) => {
   const { texts } = useTexts('storage')
   const [confirmation, setConfirmation] = useState(false)
@@ -297,7 +297,7 @@ export const StorageContentMessageItemMediaItem: FC<Props> = ({
         downloading={downloading}
         downloadingProgress={downloading ? originalDownloadingFile?.progress : undefined}
         onCancelDownload={handleCancelDownload}
-        onPreviewClick={onPreviewClick}
+        onViewMedia={onViewMedia}
       />
 
       {(filePopup && !!originalDownloadingFile?.fileKey) && (

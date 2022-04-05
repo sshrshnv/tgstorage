@@ -23,7 +23,7 @@ export type Props = {
   inline?: boolean
   icon?: string
   fixScroll?: boolean
-  onClick?: (ev?) => void
+  onClick?: ((ev?) => void) | null
   onTouchStart?: (ev?) => void
   onTouchEnd?: (ev?) => void
 }
@@ -69,7 +69,7 @@ export const Button: FC<Props> = memo(({
       )}
       type={type}
       disabled={disabled}
-      onClick={onClick}
+      onClick={onClick || undefined}
       onTouchStart={onTouchStart}
       onTouchEnd={onTouchEnd}
     >
