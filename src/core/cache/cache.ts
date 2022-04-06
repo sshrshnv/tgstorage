@@ -41,7 +41,7 @@ const getData = async (key: string, fallback: any = null) => {
   if (typeof cache[key] === 'undefined') {
     cache[key] = await get(key, database).catch(() => fallback) || fallback
   }
-  return cache[key]
+  return cache[key] || fallback
 }
 
 export const dataCache = {

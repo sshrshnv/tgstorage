@@ -413,4 +413,4 @@ const parseParams = (params) => {
 }
 
 const checkIncludes = (values: string[], value: string) =>
-  values.map(value => value.toLowerCase()).includes(value.toLowerCase())
+  values?.map(value => value?.toLowerCase()).includes(value?.toLowerCase())

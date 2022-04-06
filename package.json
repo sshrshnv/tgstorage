@@ -48,14 +48,14 @@
     "sync-task-queue": "1.0.4",
     "unistore": "3.5.2",
     "unistore-hooks": "0.1.1",
-    "webpack-dev-server": "4.8.0",
+    "webpack-dev-server": "4.8.1",
     "workbox-core": "6.5.2",
     "workbox-precaching": "6.5.2",
     "workbox-routing": "6.5.2",
     "workbox-window": "6.5.2"
   },
   "devDependencies": {
-    "@babel/core": "7.17.8",
+    "@babel/core": "7.17.9",
     "@babel/plugin-proposal-export-namespace-from": "7.16.7",
     "@babel/plugin-transform-react-jsx": "7.17.3",
     "@babel/preset-env": "7.16.11",

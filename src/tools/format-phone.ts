@@ -38,7 +38,7 @@ export const formatPhone = (
 
   let maskSpacesCount = 0
   phone = phone.split('').map((item, index) => {
-    const maskChar = mask[index + maskSpacesCount].replace('X', '')
+    const maskChar = mask?.[index + maskSpacesCount]?.replace('X', '')
     maskSpacesCount += +(maskChar === ' ')
     return `${maskChar}${item}`
   }).join('')
