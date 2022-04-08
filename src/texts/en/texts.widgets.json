@@ -6,9 +6,9 @@
     "button": "Update"
   },
   "error": {
-    "errorTitle": "Error",
-    "errorDescription": "Something went wrong. The error was sent to the developer.",
-    "errorButton": "Ok"
+    "title": "Error",
+    "description": "Something went wrong. The error was sent to the developer.",
+    "button": "Ok"
   },
   "install": {
     "title": "Installation",

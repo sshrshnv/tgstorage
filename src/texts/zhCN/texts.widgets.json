@@ -6,9 +6,9 @@
     "button": "更新"
   },
   "error": {
-    "errorTitle": "错误",
-    "errorDescription": "出错了...已将错误发送给开发者。",
-    "errorButton": "确认"
+    "title": "错误",
+    "description": "出错了...已将错误发送给开发者。",
+    "button": "确认"
   },
   "install": {
     "title": "安装",

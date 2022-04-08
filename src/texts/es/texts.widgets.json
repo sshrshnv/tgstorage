@@ -6,9 +6,9 @@
     "button": "Actualizar"
   },
   "error": {
-    "errorTitle": "Error",
-    "errorDescription": "Algo salió mal. El error ha sido enviado al desarrollador.",
-    "errorButton": "Ok"
+    "title": "Error",
+    "description": "Algo salió mal. El error ha sido enviado al desarrollador.",
+    "button": "Ok"
   },
   "install": {
     "title": "Instalación",
