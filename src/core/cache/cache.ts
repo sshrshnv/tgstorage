@@ -69,7 +69,13 @@ export const dataCache = {
   setSettings: (settings: Settings) => setData('settings', {
     data: settings
   }),
-  getSettings: (): Promise<Settings> => getData('settings', null),
+  getSettings: async (): Promise<Settings> => {
+    const settings = await getData('settings', null)
+    if (settings?.locale && !settings.lang) {
+      settings.lang = settings.locale
+    }
+    return settings
+  },
 
   setFolders: (folders: Folders) => setData('folders', {
     data: folders

@@ -1,0 +1,29 @@
+.root
+  position: absolute
+
+  > button
+    width: 48px
+    height: 48px
+
+    @media $desktop
+      width: 56px
+
+    > svg
+      fill: var(--content-link-color)
+
+      @media $desktop
+        width: 24px
+        height: 24px
+
+.loader
+  position: absolute
+  top: 16px
+  right: 16px
+
+  @media $mobile
+    width: 16px
+    height: 16px
+
+  @media $desktop
+    top: 14px
+    right: 17px

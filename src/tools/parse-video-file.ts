@@ -1,7 +1,7 @@
 import type { FileMeta } from '~/core/cache'
 import { getFile, setFile } from '~/core/cache'
 import { timer } from '~/tools/timer'
-import { checkIsSafari } from '~/tools/detect-device'
+import { checkIsSafari } from '~/tools/detect-platform'
 
 //const THUMB_MAX_SIZE = 1280
 

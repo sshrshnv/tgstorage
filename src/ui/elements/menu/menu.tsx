@@ -6,7 +6,7 @@ import cn from 'classnames'
 
 import { useCallbackRef, useUpdatableRef } from '~/tools/hooks'
 import { timer } from '~/tools/timer'
-import { checkIsDesktop } from '~/tools/detect-device'
+import { checkIsDesktop } from '~/tools/detect-platform'
 import { Button } from '~/ui/elements/button'
 import { Icon } from '~/ui/elements/icon'
 import { animationClassName } from '~/ui/styles'
@@ -27,6 +27,7 @@ export type Props = {
     danger?: boolean
     onClick?: (ev?: MouseEvent) => void
   } | null)[]
+  icon?: string
   horizontal?: boolean
   parentRef?: RefObject<HTMLDivElement>
   forceOpened?: boolean
@@ -38,6 +39,7 @@ export type Props = {
 export const Menu: FC<Props> = memo(({
   class: outerStyles,
   items,
+  icon,
   horizontal,
   parentRef,
   forceOpened,
@@ -150,7 +152,7 @@ export const Menu: FC<Props> = memo(({
     >
       <Button
         class={styles.button}
-        icon="menu"
+        icon={icon || 'menu'}
         inline
       />
       {expanded && (

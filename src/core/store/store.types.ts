@@ -1,11 +1,11 @@
-import type { AvailableLocales } from '~/tools/detect-locale'
+import type { Langs } from '~/tools/detect-lang'
 import type { AvailableThemes } from '~/ui/styles'
 
-export type Locale = AvailableLocales
+export type Lang = Langs[number]
 export type Theme = AvailableThemes
 
 export type Texts = {
-  [key in Locale]: {
+  [key in Lang]: {
     [k: string]: string
   }
 }
@@ -15,7 +15,7 @@ export type Viewport = {
 }
 
 export type Settings = {
-  locale: Locale
+  lang: Lang
   theme: Theme
   generalFolderEnabled: boolean
   errorWidgetEnabled: boolean

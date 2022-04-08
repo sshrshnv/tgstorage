@@ -5,7 +5,7 @@ import { checkIsStandalone } from '~/tools/detect-standalone'
 import {
   checkIsDesktop, checkIsChrome, checkIsMicrosoftEdge,
   checkIsIOSSafari, checkIsAndroidChrome
-} from '~/tools/detect-device'
+} from '~/tools/detect-platform'
 
 let appInstallEvent
 export const setAppInstallEvent = (ev) => {

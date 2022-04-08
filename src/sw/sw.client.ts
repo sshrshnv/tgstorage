@@ -7,7 +7,7 @@ import {
   setSharedData
 } from '~/core/actions'
 import { setFile, resetQueryCache } from '~/core/cache'
-import { checkIsSafari } from '~/tools/detect-device'
+import { checkIsSafari } from '~/tools/detect-platform'
 
 let registration
 

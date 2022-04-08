@@ -2,6 +2,21 @@
   margin: 0 auto
   width: 100%
 
+._header
+  display: flex
+  justify-content: flex-end
+  height: 48px
+
+._wide
+  position: relative
+  z-index: 1
+  display: flex
+  flex-shrink: 0
+  width: 100vw
+  left: 50%
+  transform: translateX(-50%)
+  background-color: inherit
+
 ._narrow
   max-width: 350px
 
@@ -34,7 +49,6 @@
   > span
     > a:last-of-type:not(:first-of-type)
       margin-left: 20px
-
 
   @media $mobile
     align-items: center

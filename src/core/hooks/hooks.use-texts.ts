@@ -2,10 +2,11 @@ import { useMemo } from 'preact/hooks'
 import { useStoreState } from 'unistore-hooks'
 
 import type { State } from '~/core/store'
+import type { TextModules } from '~/texts'
 import { useSettings } from '~/core/hooks'
 
-export const useTexts = (feature?: 'intro'|'auth'|'storage'|'widgets') => {
-  const { locale } = useSettings()
+export const useTexts = (module?: TextModules) => {
+  const { lang } = useSettings()
 
   const {
     texts
@@ -16,6 +17,6 @@ export const useTexts = (feature?: 'intro'|'auth'|'storage'|'widgets') => {
   }))
 
   return useMemo(() => ({
-    texts: (feature ? texts[locale][feature] : texts[locale]) as Record<string, string>
-  }), [locale, feature])
+    texts: (module ? texts[lang][module] : texts[lang]) as Record<string, any>
+  }), [lang, module])
 }

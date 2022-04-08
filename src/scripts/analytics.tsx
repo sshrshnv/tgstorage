@@ -4,7 +4,7 @@ import { memo, createPortal } from 'preact/compat'
 
 import type { User } from '~/core/store'
 import { checkIsStandalone } from '~/tools/detect-standalone'
-import { getOS, getBrowser } from '~/tools/detect-device'
+import { getOS, getBrowser } from '~/tools/detect-platform'
 
 type Props = {
   userRef: RefObject<User>

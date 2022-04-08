@@ -1,44 +1,49 @@
-import type { Locale, Texts } from '~/core/store'
+import type { Lang, Texts } from '~/core/store'
 import { store } from '~/core/store'
+import { checkIsIOS } from '~/tools/detect-platform'
+import { TEXT_MODULE_NAMES } from '~/texts'
 
 const loadedTexts = {}
 
 export const loadTexts = async (
-  locale: Locale
+  lang: Lang
 ) => {
-  let texts = loadedTexts[locale]
+  let texts = loadedTexts[lang]
 
   if (!texts) {
-    const [intro, auth, storage, widgets] = await Promise.all([
-      import(`~/features/intro/intro.texts.${locale}.json`),
-      import(`~/features/auth/auth.texts.${locale}.json`),
-      import(`~/features/storage/storage.texts.${locale}.json`),
-      import(`~/widgets/widgets.texts.${locale}.json`)
-    ])
+    const textModules = await Promise.all(TEXT_MODULE_NAMES.map(name => {
+      let subName = ''
+      if (name === 'platform') {
+        if (checkIsIOS()) {
+          subName = '.ios'
+        } else {
+          return { default: {} }
+        }
+      }
+      return import(`~/texts/${lang}/texts.${name}${subName}.json`)
+    }))
 
-    texts = {
-      intro: intro.default,
-      auth: auth.default,
-      storage: storage.default,
-      widgets: widgets.default
-    }
+    texts = {}
+    TEXT_MODULE_NAMES.forEach((name, index) => {
+      texts[name] = textModules[index]
+    })
 
-    loadedTexts[locale] = texts
+    loadedTexts[lang] = texts
   }
 
-  setTexts(locale, texts)
+  setTexts(lang, texts)
 }
 
 export const setTexts = (
-  locale: Locale,
-  texts: Texts[Locale]
+  lang: Lang,
+  texts: Texts[Lang]
 ) => {
   const storeTexts = store.getState().texts
   store.setState({
     texts: {
       ...storeTexts,
-      [locale]: {
-        ...storeTexts[locale],
+      [lang]: {
+        ...storeTexts[lang],
         ...texts
       }
     }

@@ -61,7 +61,7 @@ export type Api = {
   getCountry: () => Promise<Country>
 
   getCountries: (
-    locale: string
+    lang: string
   ) => Promise<Countries>
 
   sendCode: (

@@ -4,7 +4,7 @@ import { memo } from 'preact/compat'
 import { useRef, useEffect, useMemo } from 'preact/hooks'
 import cn from 'classnames'
 
-import { checkIsIOS } from '~/tools/detect-device'
+import { checkIsIOS } from '~/tools/detect-platform'
 import type { Props as MenuProps } from '~/ui/elements/menu'
 import { Menu } from '~/ui/elements/menu'
 import { Loader } from '~/ui/elements/loader'

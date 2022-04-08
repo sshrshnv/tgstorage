@@ -34,9 +34,9 @@ export const WidgetsAppError: FC<Props> = memo(({
 
   return visible ? (
     <Widget
-      title={texts.errorTitle}
-      description={texts.errorDescription}
-      button={texts.errorButton}
+      title={texts.error.title}
+      description={texts.error.description}
+      button={texts.error.button}
       popup={popup}
       error
       onClose={handleClose}

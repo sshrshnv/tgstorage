@@ -5,7 +5,7 @@ import { useMemo, useRef } from 'preact/hooks'
 import cn from 'classnames'
 
 import type { DisplaySize } from '~/ui/hooks'
-import { checkIsIOS } from '~/tools/detect-device'
+import { checkIsIOS } from '~/tools/detect-platform'
 import { FileViewImage } from '~/ui/elements/file-view-image'
 import { FilePlayer } from '~/ui/elements/file-player'
 import { Loader } from '~/ui/elements/loader'
