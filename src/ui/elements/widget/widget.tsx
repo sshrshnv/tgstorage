@@ -4,7 +4,7 @@ import { memo } from 'preact/compat'
 import { useCallback, useMemo, useEffect, useRef } from 'preact/hooks'
 import cn from 'classnames'
 
-import { checkIsIOS } from '~/tools/detect-device'
+import { checkIsIOS } from '~/tools/detect-platform'
 import { Text } from '~/ui/elements/text'
 import { Button } from '~/ui/elements/button'
 import { Link } from '~/ui/elements/link'

@@ -1,0 +1,23 @@
+{
+  "update": {
+    "title": "Update",
+    "description": "A new improved version of the app is available.",
+    "descriptionLink": "What's new?",
+    "button": "Update"
+  },
+  "error": {
+    "errorTitle": "Error",
+    "errorDescription": "Something went wrong. The error was sent to the developer.",
+    "errorButton": "Ok"
+  },
+  "install": {
+    "title": "Installation",
+    "description": "Install this application for more convenient use.",
+    "button": "Install"
+  },
+  "newsChannel": {
+    "title": "Channel",
+    "description": "Join the TgStorage channel to stay up to date with all the news.",
+    "button": "Join"
+  }
+}

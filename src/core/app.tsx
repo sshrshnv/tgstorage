@@ -13,18 +13,12 @@ listenAppInstall()
 import { store } from '~/core/store'
 import { updateUser, listenApiErrors } from '~/core/actions'
 import { useAppRoute, useAppRender, useUser } from '~/core/hooks'
-import { checkIsIOS, checkIsIOSSafari } from '~/tools/detect-device'
 import { registerSW } from '~/sw'
 import { IntroLazy } from '~/features/intro'
 import { AuthLazy } from '~/features/auth'
 import { StorageLazy } from '~/features/storage'
 import { WidgetsLazy } from '~/widgets'
-import { IOSInstallPromptLazy } from '~/ui/elements/ios-install-prompt'
-import { FallbackSidebar } from '~/ui/elements/fallback-sidebar'
-import {
-  PreventContextMenu, PreventScale, PreventDragAndDrop, PreventIOSScroll,
-  ApplyTheme, ApplyLocale
-} from '~/ui/handlers'
+import { UIPreset, UIFallback } from '~/ui'
 import { Analytics } from '~/scripts/analytics'
 
 const App: FC = memo(() => {
@@ -43,27 +37,14 @@ const App: FC = memo(() => {
       {isIntroAppRoute ? (
         <IntroLazy/>
       ) : isLegacyUser ? (
-        <FallbackSidebar/>
+        <UIFallback/>
       ) : user ? (
         <StorageLazy/>
       ) : (
         <AuthLazy/>
       )}
       <WidgetsLazy/>
-
-      <ApplyTheme/>
-      <ApplyLocale/>
-
-      <PreventContextMenu/>
-      <PreventScale/>
-      <PreventDragAndDrop/>
-      {checkIsIOS() && (
-        <PreventIOSScroll/>
-      )}
-
-      {checkIsIOSSafari() && (
-        <IOSInstallPromptLazy/>
-      )}
+      <UIPreset/>
 
       {appFeatureRendered && (
         <Analytics userRef={userRef}/>

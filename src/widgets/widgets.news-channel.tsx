@@ -5,7 +5,7 @@ import { memo } from 'preact/compat'
 import { useCallback, useEffect, useMemo } from 'preact/hooks'
 
 import { cancelNewsChannelJoining } from '~/core/actions'
-import { useTexts, useUser, useNewsChannel } from '~/core/hooks'
+import { useTexts, useNewsChannel } from '~/core/hooks'
 import { getNewsChannelInviteLink } from '~/tools/handle-channels'
 import { Widget } from '~/ui/elements/widget'
 
@@ -19,12 +19,11 @@ export const WidgetsNewsChannel: FC<Props> = memo(({
   setVisible
 }) => {
   const { texts } = useTexts('widgets')
-  const { user } = useUser()
   const { newsChannelAvailable } = useNewsChannel()
 
   const link = useMemo(() => {
-    return user?.country ? getNewsChannelInviteLink(user.country) : ''
-  }, [user?.country])
+    return getNewsChannelInviteLink()
+  }, [])
 
   const handleClose = useCallback(() => {
     setVisible(false)
@@ -38,9 +37,9 @@ export const WidgetsNewsChannel: FC<Props> = memo(({
 
   return (visible && link) ? (
     <Widget
-      title={texts.newsChannelTitle}
-      description={texts.newsChannelDescription}
-      button={texts.newsChannelButton}
+      title={texts.newsChannel.title}
+      description={texts.newsChannel.description}
+      button={texts.newsChannel.button}
       link={link}
       onClick={handleClose}
       onClose={handleClose}

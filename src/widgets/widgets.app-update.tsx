@@ -40,11 +40,11 @@ export const WidgetsAppUpdate: FC<Props> = memo(({
 
   return visible ? (
     <Widget
-      title={texts.updateTitle}
-      description={texts.updateDescription}
-      descriptionAddition={texts.updateDescriptionLink}
+      title={texts.update.title}
+      description={texts.update.description}
+      descriptionAddition={texts.update.descriptionLink}
       descriptionLink={link}
-      button={texts.updateButton}
+      button={texts.update.button}
       loading={loading}
       popup={popup}
       onClick={handleClick}

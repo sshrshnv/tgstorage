@@ -54,7 +54,7 @@ export const AuthFormPhone: FC<Props> = memo(({
   const initialCountryRef = useUpdatableRef(initialCountry)
   const phoneRef = useUpdatableRef(phone)
   const setCountryRef = useUpdatableRef(setCountry)
-  const { localeRef } = useSettings()
+  const { langRef } = useSettings()
   const { texts } = useTexts('auth')
   const [ready, setReady] = useState(false)
   const [countries, setCountries] = useState<Countries['countries']>([])
@@ -125,7 +125,7 @@ export const AuthFormPhone: FC<Props> = memo(({
   useEffect(() => {
     Promise.all([
       api.getCountry().then(({ country: value }) => setCountryRef.current({ ...countryRef.current, value })),
-      api.getCountries(localeRef.current).then(({ countries }) => setCountries(countries))
+      api.getCountries(langRef.current).then(({ countries }) => setCountries(countries))
     ]).then(async () => {
       setReady(true)
       setAppFeatureRendered()

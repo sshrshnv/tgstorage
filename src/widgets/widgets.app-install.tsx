@@ -41,9 +41,9 @@ export const WidgetsAppInstall: FC<Props> = memo(({
 
   return visible ? (
     <Widget
-      title={texts.installTitle}
-      description={texts.installDescription}
-      button={texts.installButton}
+      title={texts.install.title}
+      description={texts.install.description}
+      button={texts.install.button}
       onClick={handleClick}
       onClose={handleClose}
     />

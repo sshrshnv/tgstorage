@@ -6,6 +6,8 @@ import cn from 'classnames'
 import styles from './layout-block.styl'
 
 type Props = {
+  header?: boolean
+  wide?: boolean
   narrow?: boolean
   middle?: boolean
   group?: boolean
@@ -15,6 +17,8 @@ type Props = {
 
 export const LayoutBlock: FC<Props> = memo(({
   children,
+  header,
+  wide,
   narrow,
   middle,
   group,
@@ -24,6 +28,8 @@ export const LayoutBlock: FC<Props> = memo(({
   return (
     <div class={cn(
       styles.root,
+      header && styles._header,
+      wide && styles._wide,
       narrow && styles._narrow,
       middle && styles._middle,
       group && styles._group,

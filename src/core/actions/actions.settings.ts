@@ -1,4 +1,4 @@
-import type { Settings, Theme, Locale } from '~/core/store'
+import type { Settings, Theme, Lang } from '~/core/store'
 import { store } from '~/core/store'
 import { dataCache } from '~/core/cache'
 
@@ -20,14 +20,14 @@ export const getTheme = () =>
 export const setTheme = (theme: Theme) =>
   setSettings({ theme })
 
-export const getLocale = () =>
-  store.getState().settings.locale
+export const getLang = () =>
+  store.getState().settings.lang
 
 export const getErrorSending = () =>
   store.getState().settings.errorSendingEnabled
 
-export const setLocale = (locale: Locale) =>
-  setSettings({ locale })
+export const setLang = (lang: Lang) =>
+  setSettings({ lang })
 
 export const setGeneralFolder = (value: boolean) =>
   setSettings({ generalFolderEnabled: value })

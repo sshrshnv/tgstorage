@@ -4,11 +4,11 @@ import { memo } from 'preact/compat'
 import { useCallback, useMemo, useState } from 'preact/hooks'
 
 import {
-  setTheme, setLocale, setGeneralFolder,
+  setTheme, setLang, setGeneralFolder,
   setErrorWidget, setErrorSending, loadTexts
 } from '~/core/actions'
 import { useTexts, useSettings } from '~/core/hooks'
-import { AVAILABLE_LOCALES } from '~/tools/detect-locale'
+import { LANGS, LANG_NAMES } from '~/tools/detect-lang'
 import { AVAILABLE_THEMES } from '~/ui/styles'
 import { SidebarPopup } from '~/ui/elements/sidebar-popup'
 import { Form } from '~/ui/elements/form'
@@ -25,30 +25,30 @@ export const StorageSidebarSettingsPopup: FC<Props> = memo(({
 }) => {
   const { texts } = useTexts('storage')
   const {
-    theme, locale, generalFolderEnabled,
+    theme, lang, generalFolderEnabled,
     errorWidgetEnabled, errorSendingEnabled
   } = useSettings()
-  const [localeLoading, setLocaleLoading] = useState(false)
+  const [langLoading, setLangLoading] = useState(false)
 
   const themeOptions = useMemo(() => AVAILABLE_THEMES.map(value => ({
     text: texts[`settingsTheme_${value}`],
     value
   })), [texts.settingsThemeLabel])
 
-  const localeOptions = useMemo(() => AVAILABLE_LOCALES.map(value => ({
-    text: texts[`settingsLocale_${value}`],
+  const langOptions = useMemo(() => LANGS.map(value => ({
+    text: LANG_NAMES[value].name,
     value
-  })), [texts.settingsLocaleLabel])
+  })), [])
 
   const handleChangeThemeValue = useCallback((theme) => {
     setTheme(theme)
   }, [])
 
-  const handleChangeLocaleValue = useCallback(async (locale) => {
-    setLocaleLoading(true)
-    await loadTexts(locale)
-    setLocale(locale)
-    setLocaleLoading(false)
+  const handleChangeLangValue = useCallback(async (lang) => {
+    setLangLoading(true)
+    await loadTexts(lang)
+    setLang(lang)
+    setLangLoading(false)
   }, [])
 
   const handleChangeGeneralFolderValue = useCallback((value) => {
@@ -81,12 +81,12 @@ export const StorageSidebarSettingsPopup: FC<Props> = memo(({
         <Break size={28} px/>
 
         <Select
-          name={texts.settingsLocaleLabel}
-          label={texts.settingsLocaleLabel}
-          value={locale}
-          options={localeOptions}
-          loading={localeLoading}
-          onSelect={handleChangeLocaleValue}
+          name={texts.settingsLangLabel}
+          label={texts.settingsLangLabel}
+          value={lang}
+          options={langOptions}
+          loading={langLoading}
+          onSelect={handleChangeLangValue}
         />
         <Break size={28} px/>
 

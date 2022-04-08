@@ -4,7 +4,9 @@ import { memo } from 'preact/compat'
 import { useState, useEffect } from 'preact/hooks'
 
 import { listenApiErrors } from '~/core/actions'
+import { LangMenu } from '~/features/shared'
 import { Layout } from '~/ui/elements/layout'
+import { LayoutBlock } from '~/ui/elements/layout-block'
 import { Logo } from '~/ui/elements/logo'
 import { Break } from '~/ui/elements/break'
 
@@ -67,7 +69,10 @@ const Auth: FC = memo(() => {
 
   return (
     <Layout scroll center outer>
-      <Break mSize={48} dSize={72} px/>
+      <LayoutBlock header wide>
+        <LangMenu/>
+      </LayoutBlock>
+      <Break mSize={0} dSize={24} px/>
       <Logo/>
       <Break mSize={40} dSize={64} px/>
 

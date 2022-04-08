@@ -4,7 +4,8 @@ import { useCallback, useEffect, useMemo } from 'preact/hooks'
 
 import { installApp, setAppRoute, setAppFeatureRendered } from '~/core/actions'
 import { useTexts, useSettings, useAppInstall } from '~/core/hooks'
-import { checkIsDesktop, checkIsWindows, checkIsIOS, checkIsAndroid } from '~/tools/detect-device'
+import { checkIsDesktop, checkIsWindows, checkIsIOS, checkIsAndroid } from '~/tools/detect-platform'
+import { LangMenu } from '~/features/shared'
 import { Layout } from '~/ui/elements/layout'
 import { LayoutBlock } from '~/ui/elements/layout-block'
 import { Logo } from '~/ui/elements/logo'
@@ -18,17 +19,17 @@ import { Icon } from '~/ui/elements/icon'
 import { screens } from './screens'
 
 const SCREEN_TYPES = ['avif', 'webp', 'png']
-const SCREEN_LOCALES = ['en']
-const SCREEN_FALLBACK_LOCALE = 'en'
+const SCREEN_LANGS = ['en']
+const SCREEN_FALLBACK_LANG = 'en'
 
 const Intro: FC = () => {
   const { texts } = useTexts('intro')
-  const { locale } = useSettings()
+  const { lang } = useSettings()
   const { appInstallAvailable, appInstalled } = useAppInstall()
 
-  const screenLocale = useMemo(() => {
-    return SCREEN_LOCALES.includes(locale) ? locale : SCREEN_FALLBACK_LOCALE
-  }, [locale])
+  const screenLang = useMemo(() => {
+    return SCREEN_LANGS.includes(lang) ? lang : SCREEN_FALLBACK_LANG
+  }, [lang])
 
   const handleContinue = useCallback(() => {
     setAppRoute('/app')
@@ -40,7 +41,10 @@ const Intro: FC = () => {
 
   return (
     <Layout scroll center wide>
-      <Break mSize={48} dSize={72} px/>
+      <LayoutBlock header wide>
+        <LangMenu/>
+      </LayoutBlock>
+      <Break mSize={0} dSize={24} px/>
 
       <Logo/>
       <Break mSize={40} dSize={64} px/>
@@ -68,7 +72,7 @@ const Intro: FC = () => {
             key={name}
             sources={SCREEN_TYPES.map(type => ({
               type,
-              src: screens[`${name}-${screenLocale}.${type}`]
+              src: screens[`${name}-${screenLang}.${type}`]
             }))}
           />
         ))}

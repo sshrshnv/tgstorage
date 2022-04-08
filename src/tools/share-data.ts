@@ -1,5 +1,5 @@
 import { FILE_SIZE } from '~/tools/handle-file'
-import { getChromiumVersion } from '~/tools/detect-device'
+import { getChromiumVersion } from '~/tools/detect-platform'
 
 type ShareData = {
   title?: string

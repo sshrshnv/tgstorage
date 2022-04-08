@@ -1,0 +1,9 @@
+{
+  "install": {
+    "title": "Instalación",
+    "cancel": "Cancelar",
+    "safariStep": "Abra el enlace en su navegador Safari principal si lo abrió desde otra aplicación.",
+    "shareStep": "Presione el botón 'Compartir' en la barra de menú.",
+    "homeScreenStep": "Presione 'Agregar a la pantalla de inicio'."
+  }
+}

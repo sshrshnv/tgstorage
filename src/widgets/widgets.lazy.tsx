@@ -2,15 +2,15 @@ import type { FunctionComponent as FC } from 'preact'
 import { h } from 'preact'
 import { Suspense, lazy } from 'preact/compat'
 
-import { getLocale, setTexts } from '~/core/actions'
+import { getLang, setTexts } from '~/core/actions'
 
 const Widgets = lazy(async () => {
-  const locale = getLocale()
+  const lang = getLang()
   const [module, texts] = await Promise.all([
     import('./widgets'),
-    import(`./widgets.texts.${locale}.json`)
+    import(`~/texts/${lang}/texts.widgets.json`)
   ])
-  setTexts(locale, { widgets: texts.default })
+  setTexts(lang, { widgets: texts.default })
   return module
 })
 

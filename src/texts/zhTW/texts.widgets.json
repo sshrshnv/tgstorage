@@ -1,0 +1,23 @@
+{
+  "update": {
+    "title": "更新",
+    "description": "新版本已推出！",
+    "descriptionLink": "更新了些什麼呢？",
+    "button": "更新"
+  },
+  "error": {
+    "title": "錯誤",
+    "description": "出錯了...已將錯誤傳送給開發者。",
+    "button": "確認"
+  },
+  "install": {
+    "title": "安裝",
+    "description": "安裝此應用程式，以便更方便的使用。",
+    "button": "安裝"
+  },
+  "newsChannel": {
+    "title": "頻道",
+    "description": "加入 TgStorage 頻道，隨時瞭解最新資訊。",
+    "button": "加入"
+  }
+}

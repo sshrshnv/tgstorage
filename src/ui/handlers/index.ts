@@ -1,6 +1,5 @@
 export * from './handlers.apply-theme'
-export * from './handlers.apply-locale'
+export * from './handlers.apply-lang'
 export * from './handlers.prevent-context-menu'
 export * from './handlers.prevent-scale'
 export * from './handlers.prevent-drag-and-drop'
-export * from './handlers.prevent-ios-scroll'

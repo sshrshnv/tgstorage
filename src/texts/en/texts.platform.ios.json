@@ -1,0 +1,9 @@
+{
+  "install": {
+    "title": "Installation",
+    "cancel": "Cancel",
+    "safariStep": "Open the link in your main Safari browser if you opened it from another application.",
+    "shareStep": "Press the 'Share' button on the menu bar.",
+    "homeScreenStep": "Press 'Add to Home Screen'."
+  }
+}

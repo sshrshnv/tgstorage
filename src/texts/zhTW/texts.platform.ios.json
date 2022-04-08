@@ -1,0 +1,9 @@
+{
+  "install": {
+    "title": "安裝",
+    "cancel": "取消",
+    "safariStep": "如果你從其他應用程式中開啟此連結，請複製連結後在你的 Safari 瀏覽器中開啟。",
+    "shareStep": "按選單欄上的「分享」按鈕。",
+    "homeScreenStep": "按 「新增到主螢幕」。"
+  }
+}
