@@ -45,6 +45,7 @@ export const Analytics: FC<Props> = memo(({
   return process.env.GOOGLE_ANALYTICS_ID ? createPortal((
     <Fragment>
       <script
+        key={proxied ? 'proxied' : 'loaded'}
         src={proxied ?
           `/proxy/tag/${process.env.GOOGLE_ANALYTICS_ID}` :
           `https://www.googletagmanager.com/gtag/js?id=${process.env.GOOGLE_ANALYTICS_ID}`
