@@ -1,9 +1,10 @@
 import type { FunctionComponent as FC, RefObject } from 'preact'
 import { h, Fragment } from 'preact'
 import { memo, createPortal } from 'preact/compat'
-import { useState, useCallback } from 'preact/hooks'
+import { useCallback } from 'preact/hooks'
 
 import type { User } from '~/core/store'
+import { useStateRef } from '~/tools/hooks'
 import { checkIsStandalone } from '~/tools/detect-standalone'
 import { getOS, getBrowser } from '~/tools/detect-platform'
 
@@ -16,16 +17,30 @@ const bodyEl = self.document.body
 export const Analytics: FC<Props> = memo(({
   userRef
 }) => {
-  const [proxied, setProxied] = useState(false)
-  const [loaded, setLoaded] = useState(false)
+  const [proxied, _setProxied, proxiedRef, setProxiedRef] = useStateRef(false)
+  const [loaded, _setLoaded, _loadedRef, setLoadedRef] = useStateRef(false)
 
-  const handleLoad = useCallback(() => {
-    setLoaded(true)
-  }, [setLoaded])
+  const handleLoad = useCallback(async () => {
+    if (proxiedRef.current) return
+    await self.fetch?.('https://www.google-analytics.com/g/collect', {
+      'credentials': 'omit',
+      'headers': {
+        'Accept': '*/*',
+        'Accept-Language': 'en-US,en;q=0.5'
+      },
+      'method': 'POST',
+      'mode': 'cors'
+    }).then(() => {
+      setLoadedRef.current?.(true)
+    }).catch(() => {
+      setProxiedRef.current?.(true)
+    })
+  }, [])
 
   const handleError = useCallback(() => {
-    setProxied(true)
-  }, [setProxied])
+    if (proxiedRef.current) return
+    setProxiedRef.current?.(true)
+  }, [])
 
   return process.env.GOOGLE_ANALYTICS_ID ? createPortal((
     <Fragment>
