@@ -1,6 +1,6 @@
 import type { FunctionComponent as FC } from 'preact'
 import { Fragment, h } from 'preact'
-import { useCallback, useEffect, useMemo } from 'preact/hooks'
+import { useCallback, useEffect, useMemo, useRef } from 'preact/hooks'
 
 import { installApp, setAppRoute, setAppFeatureRendered } from '~/core/actions'
 import { useTexts, useSettings, useAppInstall } from '~/core/hooks'
@@ -23,6 +23,7 @@ const SCREEN_LANGS = ['en']
 const SCREEN_FALLBACK_LANG = 'en'
 
 const Intro: FC = () => {
+  const layoutRef = useRef<HTMLDivElement>(null)
   const { texts } = useTexts('intro')
   const { lang } = useSettings()
   const { appInstallAvailable, appInstalled } = useAppInstall()
@@ -40,11 +41,18 @@ const Intro: FC = () => {
   }, [])
 
   return (
-    <Layout scroll center wide>
+    <Layout
+      forwardedRef={layoutRef}
+      scroll
+      center
+      wide
+    >
       <LayoutBlock header wide>
-        <LangMenu/>
+        <LangMenu
+          layoutRef={layoutRef}
+        />
       </LayoutBlock>
-      <Break mSize={0} dSize={24} px/>
+      <Break mSize={48} dSize={72} px/>
 
       <Logo/>
       <Break mSize={40} dSize={64} px/>

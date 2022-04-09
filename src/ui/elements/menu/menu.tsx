@@ -6,7 +6,7 @@ import cn from 'classnames'
 
 import { useCallbackRef, useUpdatableRef } from '~/tools/hooks'
 import { timer } from '~/tools/timer'
-import { checkIsDesktop } from '~/tools/detect-platform'
+import { checkIsDesktop, checkIsIOS } from '~/tools/detect-platform'
 import { Button } from '~/ui/elements/button'
 import { Icon } from '~/ui/elements/icon'
 import { animationClassName } from '~/ui/styles'
@@ -30,6 +30,7 @@ export type Props = {
   icon?: string
   horizontal?: boolean
   parentRef?: RefObject<HTMLDivElement>
+  layoutRef?: RefObject<HTMLDivElement>
   forceOpened?: boolean
   closeTimeout?: number
   withEvent?: boolean
@@ -42,6 +43,7 @@ export const Menu: FC<Props> = memo(({
   icon,
   horizontal,
   parentRef,
+  layoutRef,
   forceOpened,
   closeTimeout,
   withEvent,
@@ -92,6 +94,12 @@ export const Menu: FC<Props> = memo(({
       fill: 'forwards',
       easing: 'ease-in-out'
     })
+
+    if (checkIsIOS() && layoutRef?.current) {
+      const layoutEl = layoutRef.current
+      layoutEl.addEventListener('click', toggle)
+      return () => layoutEl.removeEventListener('click', toggle)
+    }
 
     self.document.addEventListener('click', toggle)
     return () => self.document.removeEventListener('click', toggle)

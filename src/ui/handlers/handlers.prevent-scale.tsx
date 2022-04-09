@@ -1,7 +1,13 @@
 import type { FunctionComponent as FC } from 'preact'
-import { useEffect } from 'preact/hooks'
+import { useEffect, useMemo } from 'preact/hooks'
+
+import { checkIsIOS } from '~/tools/detect-platform'
 
 export const PreventScale: FC = () => {
+  const passive = useMemo(() => {
+    return !checkIsIOS()
+  }, [])
+
   useEffect(() => {
     const handleGestureStart = ev => {
       ev.preventDefault()
@@ -12,8 +18,8 @@ export const PreventScale: FC = () => {
       }
     }
 
-    self.document.addEventListener('gesturestart', handleGestureStart, { passive: true })
-    self.document.addEventListener('touchmove', handleTouchMove, { passive: true })
+    self.document.addEventListener('gesturestart', handleGestureStart, { passive })
+    self.document.addEventListener('touchmove', handleTouchMove, { passive })
     return () => {
       self.document.removeEventListener('gesturestart', handleGestureStart)
       self.document.removeEventListener('touchmove', handleTouchMove)

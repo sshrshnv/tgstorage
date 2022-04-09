@@ -1,7 +1,7 @@
 import type { FunctionComponent as FC } from 'preact'
 import { h } from 'preact'
 import { memo } from 'preact/compat'
-import { useState, useEffect } from 'preact/hooks'
+import { useState, useEffect, useRef } from 'preact/hooks'
 
 import { listenApiErrors } from '~/core/actions'
 import { LangMenu } from '~/features/shared'
@@ -34,6 +34,7 @@ const initialCountry: Country = ({
 let timeoutId = 0
 
 const Auth: FC = memo(() => {
+  const layoutRef = useRef<HTMLDivElement>(null)
   const [step, setStep] = useState<Step>('phone')
   const [country, setCountry] = useState<Country>(initialCountry)
   const [phone, setPhone] = useState('+')
@@ -68,11 +69,19 @@ const Auth: FC = memo(() => {
   }, [])
 
   return (
-    <Layout scroll center outer>
+    <Layout
+      forwardedRef={layoutRef}
+      scroll
+      center
+      outer
+    >
       <LayoutBlock header wide>
-        <LangMenu/>
+        <LangMenu
+          layoutRef={layoutRef}
+        />
       </LayoutBlock>
-      <Break mSize={0} dSize={24} px/>
+      <Break mSize={48} dSize={72} px/>
+
       <Logo/>
       <Break mSize={40} dSize={64} px/>
 

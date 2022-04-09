@@ -1,4 +1,4 @@
-import { FunctionComponent as FC } from 'preact'
+import { FunctionComponent as FC, RefObject } from 'preact'
 import { h } from 'preact'
 import { memo } from 'preact/compat'
 import { useMemo, useCallback, useState } from 'preact/hooks'
@@ -11,7 +11,13 @@ import { Loader } from '~/ui/elements/loader'
 
 import styles from './lang-menu.styl'
 
-export const LangMenu: FC = memo(() => {
+type Props = {
+  layoutRef?: RefObject<HTMLDivElement>
+}
+
+export const LangMenu: FC<Props> = memo(({
+  layoutRef
+}) => {
   const { lang } = useSettings()
   const [langLoading, setLangLoading] = useState(false)
 
@@ -40,6 +46,7 @@ export const LangMenu: FC = memo(() => {
       {...menu}
       class={styles.root}
       icon="lang"
+      layoutRef={layoutRef}
     />
   )
 })

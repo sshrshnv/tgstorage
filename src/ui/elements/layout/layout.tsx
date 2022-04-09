@@ -1,4 +1,4 @@
-import type { FunctionComponent as FC } from 'preact'
+import type { FunctionComponent as FC, RefObject } from 'preact'
 import { h } from 'preact'
 import cn from 'classnames'
 
@@ -12,6 +12,7 @@ type Props = {
   wide?: boolean
   fullHeight?: boolean
   paddingTop?: boolean
+  forwardedRef?: RefObject<HTMLDivElement>
 }
 
 export const Layout: FC<Props> = ({
@@ -22,9 +23,9 @@ export const Layout: FC<Props> = ({
   row,
   wide,
   fullHeight,
-  paddingTop
+  paddingTop,
+  forwardedRef
 }) => {
-
   return (
     <div
       class={cn(
@@ -33,6 +34,7 @@ export const Layout: FC<Props> = ({
         scroll && styles._scroll,
         fullHeight && styles._fullHeight
       )}
+      ref={forwardedRef}
     >
       <div class={cn(
         styles.inner,
