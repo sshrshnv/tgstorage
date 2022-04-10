@@ -1,7 +1,7 @@
 import type { FunctionComponent as FC, RefObject } from 'preact'
 import { h, Fragment } from 'preact'
 import { memo, createPortal } from 'preact/compat'
-import { useCallback } from 'preact/hooks'
+import { useCallback, useEffect } from 'preact/hooks'
 
 import type { User } from '~/core/store'
 import { useStateRef } from '~/tools/hooks'
@@ -17,51 +17,51 @@ const bodyEl = self.document.body
 export const Analytics: FC<Props> = memo(({
   userRef
 }) => {
-  const [proxied, _setProxied, proxiedRef, setProxiedRef] = useStateRef(false)
-  const [loaded, _setLoaded, _loadedRef, setLoadedRef] = useStateRef(false)
+  const [tagProxied, _setTagProxied, tagProxiedRef, setTagProxiedRef] = useStateRef(false)
+  const [eventProxied, _setEventProxied, _eventProxiedRef, setEventProxiedRef] = useStateRef(false)
+  const [eventAllowed, _setEventAllowed, _eventAllowedRef, setEventAllowedRef] = useStateRef(false)
 
-  const handleLoad = useCallback(async () => {
-    if (proxiedRef.current) return
-    await self.fetch?.('https://www.google-analytics.com/g/collect', {
+  useEffect(() => {
+    if (!process.env.GOOGLE_ANALYTICS_ID) return
+
+    self.fetch?.('https://www.google-analytics.com/g/collect', {
       'credentials': 'omit',
       'headers': {
-        'Accept': '*/*',
-        'Accept-Language': 'en-US,en;q=0.5'
+        'Accept': '*/*'
       },
       'method': 'POST',
       'mode': 'cors'
     }).then(() => {
-      setLoadedRef.current?.(true)
+      setEventAllowedRef.current?.(true)
     }).catch(() => {
-      setProxiedRef.current?.(true)
+      setEventProxiedRef.current?.(true)
     })
   }, [])
 
-  const handleError = useCallback(() => {
-    if (proxiedRef.current) return
-    setProxiedRef.current?.(true)
+  const handleTagError = useCallback(() => {
+    if (tagProxiedRef.current) return
+    setTagProxiedRef.current?.(true)
   }, [])
 
   return process.env.GOOGLE_ANALYTICS_ID ? createPortal((
     <Fragment>
       <script
-        key={proxied ? 'proxied' : 'loaded'}
-        src={proxied ?
+        key={tagProxied ? 'proxied' : 'allowed'}
+        src={tagProxied ?
           `/proxy/tag/${process.env.GOOGLE_ANALYTICS_ID}` :
           `https://www.googletagmanager.com/gtag/js?id=${process.env.GOOGLE_ANALYTICS_ID}`
         }
         async
-        onLoad={handleLoad}
-        onError={handleError}
+        onError={handleTagError}
       ></script>
-      {(loaded || proxied) && (
+      {(eventAllowed || eventProxied) && (
         <script
           dangerouslySetInnerHTML={{ __html: `
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
             gtag('config', '${process.env.GOOGLE_ANALYTICS_ID}', {
-              ${proxied ? `transport_url: 'https://${self.location.hostname}/proxy/event',` : ''}
+              ${eventProxied ? `transport_url: 'https://${self.location.hostname}/proxy/event',` : ''}
               anonymize_ip: true,
               country: '${userRef.current?.country || 'unknown'}',
               lang: '${self.navigator.language}',
@@ -70,7 +70,7 @@ export const Analytics: FC<Props> = memo(({
               browser: '${getBrowser()}',
               authenticated: ${!!userRef.current},
               installed: ${checkIsStandalone()},
-              proxied: ${proxied}
+              proxied: ${eventProxied}
             });
           `}}
         ></script>
