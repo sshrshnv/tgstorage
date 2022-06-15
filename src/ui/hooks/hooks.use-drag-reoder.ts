@@ -1,8 +1,6 @@
-import { useCallback, useMemo, useState } from 'preact/hooks'
+import { useCallback, useMemo, useState, useEffect } from 'preact/hooks'
 
-if (navigator.maxTouchPoints) {
-  await import('drag-drop-touch')
-}
+let isDragDropTouchImported = false
 
 export const useDragReorder = (items, onReorder) => {
   const [currentIndex, setCurrentIndex] = useState<number|null>(null)
@@ -35,6 +33,13 @@ export const useDragReorder = (items, onReorder) => {
     setNextIndex(null)
     onReorder(reorderedItems)
   }, [items, onReorder, currentIndex, nextIndex])
+
+  useEffect(() => {
+    if (navigator.maxTouchPoints && !isDragDropTouchImported) {
+      isDragDropTouchImported = true
+      import('drag-drop-touch')
+    }
+  }, [])
 
   return useMemo(() => ({
     draggingIndex: currentIndex,

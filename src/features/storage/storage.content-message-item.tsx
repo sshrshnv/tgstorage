@@ -25,7 +25,7 @@ type Props = {
   offset: number | undefined
   visible: boolean
   last: boolean
-  resizeObserver: ResizeObserver
+  resizeObserver?: ResizeObserver
   intersectionObserver: IntersectionObserver | undefined
   onViewMedia?: (id: string) => void
   onEdit?: (message: Message) => void

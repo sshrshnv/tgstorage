@@ -1,13 +1,15 @@
 import type { RefObject } from 'preact'
 import { useMemo, useEffect } from 'preact/hooks'
 
-import { useRAFCallback, useMemoRef } from '~/tools/hooks'
+import { useRAFCallback, useMemoRef, useStateRef } from '~/tools/hooks'
 
-const ResizeObserver = self.ResizeObserver || (await import('resize-observer-polyfill')).default
+let ResizeObserver = self.ResizeObserver
 
 export const useResizeObserver = (
   handleElRef: RefObject<(el: ResizeObserverEntry) => void>
 ) => {
+  const [RO, _setRO, _RORef, setRORef] = useStateRef({ ResizeObserver })
+
   const [_handleElements, handleElementsRef] = useRAFCallback(elements => {
     for (const el of elements) {
       handleElRef.current?.(el)
@@ -15,11 +17,19 @@ export const useResizeObserver = (
   }, [handleElRef])
 
   const [resizeObserver, resizeObserverRef] = useMemoRef(() => {
-    return new ResizeObserver(handleElementsRef.current!)
-  }, [handleElementsRef])
+    if (!RO.ResizeObserver) return
+    return new RO.ResizeObserver(handleElementsRef.current!)
+  }, [RO, handleElementsRef])
 
-  useEffect(() => () => {
-    resizeObserverRef.current?.disconnect()
+  useEffect(() => {
+    if (!_RORef.current?.ResizeObserver) {
+      import('resize-observer-polyfill').then((module) => {
+        ResizeObserver = module.default
+        setRORef.current?.({ ResizeObserver : module.default })
+      })
+    }
+
+    return () => resizeObserverRef.current?.disconnect()
   }, [])
 
   return useMemo(() => ({
