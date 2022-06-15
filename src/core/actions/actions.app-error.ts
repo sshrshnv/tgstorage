@@ -1,9 +1,11 @@
 import { proxy } from 'comlink'
 
 import { store } from '~/core/store'
+import { resetDataCache, resetFiles } from '~/core/cache'
 import { logOut, getErrorSending } from '~/core/actions'
 import type { ApiError } from '~/api'
 import { api } from '~/api'
+import { unregisterSW } from '~/sw'
 
 const HANDLED_ERRORS = [
   'PHONE_NUMBER_BANNED',
@@ -19,14 +21,28 @@ const HANDLED_ERRORS = [
   'FILE_REFERENCE_EXPIRED'
 ]
 
+const CONNECTION_ERRORS = [
+  'CONNECTION_NOT_INITED'
+]
+
 export const setAppErrorExists = (value: boolean) => {
   store.setState({
     appErrorExists: value
   })
 }
 
-export const handleApiError = (error: ApiError) => {
+export const handleApiError = async (error: ApiError) => {
   const { code, message = '' } = error
+
+  if (CONNECTION_ERRORS.includes(message)) {
+    await Promise.all([
+      resetDataCache(),
+      resetFiles(),
+      unregisterSW()
+    ])
+    self.location.reload()
+    return
+  }
 
   if (code === 303) return
 

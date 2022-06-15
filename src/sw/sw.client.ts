@@ -9,7 +9,7 @@ import {
 import { setFile, resetQueryCache } from '~/core/cache'
 import { checkIsSafari } from '~/tools/detect-platform'
 
-let registration
+let registration: ServiceWorkerRegistration | undefined
 
 export const registerSW = async () => {
   if (!('serviceWorker' in navigator)) return
@@ -73,6 +73,9 @@ export const registerSW = async () => {
     wb.messageSW({ messageKey: 'share-ready' })
   }
 }
+
+export const unregisterSW = () =>
+  registration?.unregister()
 
 export const checkIsSWRegistered = () =>
   !!registration
