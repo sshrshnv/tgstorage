@@ -49,7 +49,7 @@ export const Input: FC<Props> = memo(({
   icon,
   iconClass: iconClassName,
   forwardedRef,
-  maxLength = 50,
+  maxLength = 256,
   autoFocus,
   fakeFocus,
   clear,
