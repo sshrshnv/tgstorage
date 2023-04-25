@@ -304,13 +304,10 @@ class Api {
       return null
     }
 
-    const { _, chats } = await this.call('messages.getAllChats', {
-      except_ids: loadedChats.map(chat => chat.id)
+    const { chats } = await this.call('contacts.search', {
+      q: FOLDER_POSTFIX,
+      limit: 0
     })
-
-    if (_ === 'chatsSlice') {
-      return this.getFolders([...loadedChats, ...chats])
-    }
 
     const user = await dataCache.getUser()
 
