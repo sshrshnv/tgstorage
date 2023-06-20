@@ -21,7 +21,7 @@ import {
   generateRandomId
 } from './api.helpers'
 
-const THREAD_RESERVED_COUNT = 16
+const THREAD_RESERVED_COUNT = 4
 
 const initialMeta = {
   pfs: false,
@@ -297,17 +297,41 @@ class Api {
     return transfer({ bytes, type }, [bytes.buffer])
   }
 
-  public async getFolders(loadedChats: any[] = []) {
+  public async getFolders() {
     const isQueryAvailable = await checkIsQueryAvailableByTime('getFolders')
 
     if (!isQueryAvailable) {
       return null
     }
 
-    const { chats } = await this.call('contacts.search', {
+    const searchChats = () => this.call('contacts.search', {
       q: FOLDER_POSTFIX,
       limit: 0
     })
+
+    const loadChats = (offset_date = 0) => this.call('messages.getDialogs', {
+      offset_peer: {
+        _: 'inputPeerEmpty'
+      },
+      offset_id: 0,
+      offset_date,
+      limit: 100,
+      hash: ''
+    })
+
+    // eslint-disable-next-line prefer-const
+    let [search, loaded] = await Promise.all([
+      searchChats(),
+      loadChats()
+    ])
+    const chatIds = search.chats.map(({ id }) => id)
+    const loadedChats = loaded.chats
+
+    while (!(loadedChats.map(({ id }) => id)).some(id => chatIds.includes(id))) {
+      loaded = await loadChats(loaded.messages[loaded.messages.length - 1].date)
+      if (loaded.chats) loadedChats.push(loaded.chats)
+      if (!loaded.messages.length) break
+    }
 
     const user = await dataCache.getUser()
 
@@ -320,7 +344,7 @@ class Api {
         general: true
       }] : []),
       ...loadedChats,
-      ...chats
+      ...search.chats
     ]}, {
       offsetId: 0
     })

@@ -16,7 +16,7 @@ import {
 import { getActiveFolder } from './actions.folders'
 import { getSendingMessage, setSendingMessage, createMessage, refreshMessage } from './actions.messages'
 
-const UPLOAD_THREAD_COUNT = 16
+const UPLOAD_THREAD_COUNT = 4
 
 export const uploadFiles = async (
   message: InputMessage,
@@ -237,8 +237,8 @@ export const resetDownloadingFile = (file: {
 
 const DOWNLOADING_PART_SIZE = 1024 * 1024
 const DOWNLOADING_TIMEOUT = 400
-const DOWNLOADING_THREAD_COUNT = 16
-const MAX_DOWNLOADING_COUNT = 4
+const DOWNLOADING_THREAD_COUNT = 2
+const MAX_DOWNLOADING_COUNT = 8
 
 const downloadingQueue = {
   nextIndex: 0,

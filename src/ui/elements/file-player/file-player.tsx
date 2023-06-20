@@ -75,7 +75,7 @@ export const FilePlayer: FC<Props> = memo(({
 
   const [_play, playRef] = useCallbackRef(() => {
     try {
-      playerRef.current.play().catch(ignore)
+      playerRef.current?.play?.().catch(ignore)
     } catch (error: any) {
       sendAppError(error)
     }
@@ -83,10 +83,10 @@ export const FilePlayer: FC<Props> = memo(({
 
   const [togglePlay, togglePlayRef] = useCallbackRef((ev: Event|undefined = undefined) => {
     ev?.stopPropagation()
-    if (playerRef.current.paused || playerRef.current.ended) {
+    if (playerRef.current?.paused || playerRef.current?.ended) {
       playRef.current()
     } else {
-      playerRef.current.pause()
+      playerRef.current?.pause?.()
     }
   }, [playRef])
 
@@ -95,6 +95,7 @@ export const FilePlayer: FC<Props> = memo(({
     setProgress(value)
     self.clearTimeout(progressChangeTimeoutRef.current)
     progressChangeTimeoutRef.current = self.setTimeout(() => {
+      if (!playerRef.current) return
       playerRef.current.currentTime = value
     }, 100)
   }, [cancelSyncProgressRef, setProgress])
@@ -102,7 +103,7 @@ export const FilePlayer: FC<Props> = memo(({
   const [hideControlsAfterTimeout, hideControlsAfterTimeoutRef] = useCallbackRef(() => {
     self.clearTimeout(controlsHideTimeoutRef.current)
     controlsHideTimeoutRef.current = self.setTimeout(() => {
-      if (playerRef.current.paused || playerRef.current.ended) return
+      if (playerRef.current?.paused || playerRef.current?.ended) return
       setControlsHidden(true)
     }, 2500)
   }, [controlsHideTimeoutRef, setControlsHidden])
@@ -183,7 +184,7 @@ export const FilePlayer: FC<Props> = memo(({
   useEffect(() => {
     if (!url || !isActive) return
     if (fileKey) {
-      playerRef.current.play().catch(ignore)
+      playerRef.current?.play?.().catch(ignore)
     }
   }, [isActive, fileKey, url])
 
@@ -244,9 +245,10 @@ export const FilePlayer: FC<Props> = memo(({
   }, [])
 
   useEffect(() => () => {
-    playerRef.current.pause()
+    if (!playerRef.current) return
+    playerRef.current.pause?.()
     playerRef.current.src = ''
-    playerRef.current.load()
+    playerRef.current.load?.()
   }, [])
 
   return (
@@ -268,8 +270,8 @@ export const FilePlayer: FC<Props> = memo(({
           onPlay={handlePlayStart}
           onPlaying={handlePlayStart}
           onWaiting={handleWaiting}
-          onCanPlay={isSafari ? undefined : handleCanPlay}
-          onCanPlayThrough={isSafari ? handleCanPlay : undefined}
+          //onCanPlay={isSafari ? undefined : handleCanPlay}
+          onCanPlayThrough={handleCanPlay}
         />
       ) : isAudio ? (
         <audio
