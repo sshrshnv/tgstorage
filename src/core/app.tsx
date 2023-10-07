@@ -10,6 +10,9 @@ import { listenAppErrors, listenAppInstall } from '~/core/actions'
 listenAppErrors()
 listenAppInstall()
 
+import { resetFiles } from '~/core/cache'
+resetFiles()
+
 import { store } from '~/core/store'
 import { updateUser, listenApiErrors } from '~/core/actions'
 import { useAppRoute, useAppRender, useUser } from '~/core/hooks'

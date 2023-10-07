@@ -175,18 +175,6 @@ const Intro: FC = () => {
         </Button>
       </LayoutBlock>
       <Break mSize={48} dSize={72} px/>
-
-      <LayoutBlock narrow>
-        <Text center withLink>
-          {texts.support} <a
-            href="https://t.me/tgstorage_support"
-            target="_blank"
-            rel="noopener noreferrer"
-          >TgStorage Support</a>.
-        </Text>
-      </LayoutBlock>
-
-      <Break mSize={48} dSize={72} px/>
     </Layout>
   )
 }

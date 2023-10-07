@@ -2,9 +2,6 @@
 
 Advanced "Saved Messages" of the Telegram.
 
-## Bugs and Suggestions
-Please contact <a href="https://t.me/tgstorage_support">TgStorage Support</a>
-
 ## Languages
 You should add files in the `./src/texts/${lang}/` directory.
 
