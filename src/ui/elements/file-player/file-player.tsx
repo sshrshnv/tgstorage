@@ -90,12 +90,12 @@ export const FilePlayer: FC<Props> = memo(({
     }
   }, [playRef])
 
-  const changeProgress = useCallback(value => {
+  const changeProgress = useCallback((value, type) => {
     cancelSyncProgressRef.current?.()
     setProgress(value)
     self.clearTimeout(progressChangeTimeoutRef.current)
     progressChangeTimeoutRef.current = self.setTimeout(() => {
-      if (!playerRef.current) return
+      if (!playerRef.current || type !== 'pointerup') return
       playerRef.current.currentTime = value
     }, 100)
   }, [cancelSyncProgressRef, setProgress])

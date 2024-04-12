@@ -14,7 +14,7 @@ type Props = {
   min: number
   max: number
   step: number
-  onChange?: (value: number) => void
+  onChange?: (value: number, type: string) => void
 }
 
 export const Range: FC<Props> = memo(({
@@ -25,18 +25,20 @@ export const Range: FC<Props> = memo(({
   step,
   onChange
 }) => {
-
-  const handleChange = useCallback(ev => {
-    const value = +ev.target.value
-    onChange?.(value)
-  }, [onChange])
+  const stopPropagation = useCallback(ev => {
+    ev.stopImmediatePropagation()
+  }, [])
 
   const [handleTouch, _handleTouchRef, cancelHandleTouchRef] = useRAFCallback((ev) => {
-    const { width, left } = ev.target.getBoundingClientRect()
-    const { clientX } = ev.touches[0]
+    ev.stopImmediatePropagation()
+    const { type, pointerType, pressure, target, clientX } = ev
+    if (type === 'pointermove' && pointerType === 'mouse' && !pressure) return
+
+    const { width, left } = target.getBoundingClientRect()
     const valuePercent = Math.min(1, Math.max(0, (clientX - left) / width))
     const value = min + (max - min) * valuePercent
-    onChange?.(value)
+    onChange?.(value, type)
+
     return () => cancelHandleTouchRef.current?.()
   }, [onChange])
 
@@ -59,9 +61,9 @@ export const Range: FC<Props> = memo(({
         min={min}
         max={max}
         step={step}
-        onChange={handleChange}
-        onTouchStart={handleTouch}
-        onTouchMove={handleTouch}
+        onPointerDown={stopPropagation}
+        onPointerUp={handleTouch}
+        onPointerMove={handleTouch}
       />
     </div>
   )
