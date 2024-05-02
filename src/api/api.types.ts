@@ -235,4 +235,9 @@ export type Api = {
   }>
 
   joinNewsChannel: () => Promise<void>
+
+  checkSponsorshipJoining: () => Promise<{
+    joiningAvailable?: boolean
+    joined?: boolean
+  }>
 }

@@ -3,6 +3,7 @@ import { expose, transfer } from 'comlink'
 import { dataCache, resetDataCache } from '~/core/cache'
 import { timer } from '~/tools/timer'
 import { getNewsChannelInvite } from '~/tools/handle-channels'
+import { getSponsorshipInvite } from '~/tools/handle-sponsorship'
 import { FOLDER_POSTFIX, generateFolderName, stringifyFileMessage } from '~/tools/handle-content'
 import { FILE_SIZE, getFilePartSize } from '~/tools/handle-file'
 
@@ -387,6 +388,23 @@ class Api {
     }).catch(() => ({ chats: [] }))
 
     return chats?.[0]
+  }
+
+  public async checkSponsorshipJoining() {
+    const isQueryAvailable = await checkIsQueryAvailableByTime('checkSponsorshipJoining', 12 * 60 * 60)
+    if (!isQueryAvailable) return { joiningAvailable: false }
+
+    const sponsorshipInvite = getSponsorshipInvite()
+    if (!sponsorshipInvite) return { joiningAvailable: false }
+
+    const { _ } = await this.call('messages.checkChatInvite', {
+      hash: sponsorshipInvite
+    })
+
+    return {
+      joined: _ === 'chatInviteAlready',
+      joiningAvailable: true
+    }
   }
 
   public async createFolder(

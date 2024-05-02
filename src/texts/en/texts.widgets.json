@@ -19,5 +19,10 @@
     "title": "Channel",
     "description": "Join the TgStorage channel to stay up to date with all the news.",
     "button": "Join"
+  },
+  "sponsorship": {
+    "title": "Sponsorship",
+    "description": "Unfortunately, further development of the app is not possible without your participation. Just €1 per month will allow me to continue with it.",
+    "button": "Sponsor"
   }
 }

@@ -19,5 +19,10 @@
     "title": "频道",
     "description": "加入 TgStorage 频道，随时了解最新动态。",
     "button": "加入"
+  },
+  "sponsorship": {
+    "title": "赞助",
+    "description": "很遗憾，如果没有您的参与，我们将无法继续开发该应用程序。每月只需 1 欧元，我就可以继续开发。",
+    "button": "赞助商"
   }
 }
