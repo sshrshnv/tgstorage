@@ -40,7 +40,11 @@ const defineEnvConfig = {
   'process.env.NEWS_CHANNEL_INVITE': JSON.stringify(appEnv.NEWS_CHANNEL_INVITE),
   'process.env.SENTRY_DSN': JSON.stringify(appEnv.SENTRY_DSN),
   'process.env.SENTRY_AUTH_TOKEN': JSON.stringify(appEnv.SENTRY_AUTH_TOKEN),
-  'process.env.GOOGLE_ANALYTICS_ID': JSON.stringify(appEnv.GOOGLE_ANALYTICS_ID)
+  'process.env.GOOGLE_ANALYTICS_ID': JSON.stringify(appEnv.GOOGLE_ANALYTICS_ID),
+  'process.env.SPONSORSHIP_CHANNEL_ID': JSON.stringify(appEnv.SPONSORSHIP_CHANNEL_ID),
+  'process.env.SPONSORSHIP_CHANNEL_INVITE': JSON.stringify(appEnv.SPONSORSHIP_CHANNEL_INVITE),
+  'process.env.SPONSORSHIP_BOT_LINK_0': JSON.stringify(appEnv.SPONSORSHIP_BOT_LINK_0),
+  'process.env.SPONSORSHIP_BOT_LINK_1': JSON.stringify(appEnv.SPONSORSHIP_BOT_LINK_1),
 }
 
 const resolveOptions = {

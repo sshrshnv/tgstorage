@@ -19,5 +19,10 @@
     "title": "頻道",
     "description": "加入 TgStorage 頻道，隨時瞭解最新資訊。",
     "button": "加入"
+  },
+  "sponsorship": {
+    "title": "贊助",
+    "description": "不幸的是，如果沒有您的參與，該應用程式的進一步開發是不可能的。 每月只需​​ 1 歐元就可以讓我繼續下去。",
+    "button": "贊助"
   }
 }

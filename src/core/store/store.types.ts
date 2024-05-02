@@ -276,4 +276,5 @@ export type State = {
   appInstalled: boolean
   appErrorExists: boolean
   newsChannelAvailable: boolean
+  sponsorshipAvailable: boolean
 }
