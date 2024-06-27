@@ -1,5 +1,5 @@
 const premadeTable = (() => {
-  const table = []
+  const table: number[] = []
 
   let c
   for (let n = 0; n < 256; n += 1) {

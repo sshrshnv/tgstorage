@@ -1,5 +1,4 @@
-import BigInt from 'big-integer'
-
+import { bi, biFromTA, biToTA, biModPow } from '../../utils/bigint'
 /**
  * Encrypts hex string with RSA
  * @param {string} data Data to encrypt, hex-string
@@ -8,9 +7,9 @@ import BigInt from 'big-integer'
  * @returns {string} Encrypted data, hex-string
  */
 export default function encrypt(data: Uint8Array, modulus: Uint32Array, exponent: number): Uint32Array {
-  const x = BigInt.fromArray(Array.from(data), 0x100)
-  const n = BigInt.fromArray(Array.from(modulus), 0x100000000)
-  const e = BigInt(exponent)
+  const x = biFromTA(data)
+  const n = biFromTA(modulus)
+  const e = bi(exponent)
 
-  return new Uint32Array(x.modPow(e, n).toArray(0x100000000).value)
+  return biToTA(biModPow(x, e, n), Uint32Array)
 }

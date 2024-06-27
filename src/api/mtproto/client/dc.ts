@@ -60,7 +60,7 @@ export default class DCService {
     this.triggerUpdateEvent()
   }
 
-  setAuthorization(dcID: number, userID: number) {
+  setAuthorization(dcID: number, userID: string) {
     this.meta.userID = userID
     this.meta.authorized = true
     this.getDC(dcID).authorized = true
@@ -133,7 +133,7 @@ export default class DCService {
     return this.getDC(dcID).permanentKey || null
   }
 
-  getUserID(): number | null {
+  getUserID(): string | null {
     return this.meta.userID || null
   }
 

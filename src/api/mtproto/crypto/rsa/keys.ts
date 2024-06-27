@@ -21,18 +21,18 @@ export function parseKey(key: string): RSAKey {
   let n: Uint8Array; let e: Uint8Array
 
   switch (keyType) {
-    case 'RSA PUBLIC KEY':
-      n = buf.subarray(9, 265)
-      e = buf.subarray(buf.byteLength - 3)
-      break
+  case 'RSA PUBLIC KEY':
+    n = buf.subarray(9, 265)
+    e = buf.subarray(buf.byteLength - 3)
+    break
 
-    case 'PUBLIC KEY':
-      n = buf.subarray(33, 289)
-      e = buf.subarray(buf.byteLength - 3)
-      break
+  case 'PUBLIC KEY':
+    n = buf.subarray(33, 289)
+    e = buf.subarray(buf.byteLength - 3)
+    break
 
-    default:
-      throw new Error(`RSA Key: Unknown key format ${keyType}`)
+  default:
+    throw new Error(`RSA Key: Unknown key format ${keyType}`)
   }
 
 

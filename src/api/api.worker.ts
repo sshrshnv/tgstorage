@@ -55,7 +55,7 @@ class Api {
     this.client = new Client({
       APIID: API_ID,
       APIHash: API_HASH,
-      APILayer: 133,
+      APILayer: 166,
       test: IS_TEST,
       debug: IS_TEST,
       dc: meta.baseDC,
@@ -233,11 +233,9 @@ class Api {
     country: string
   ) {
     const passwordAlgo = await this.call('account.getPassword')
-    const hash = await new Promise<object>(resolve =>
-      this.client.getPasswordKdfAsync(passwordAlgo, password, resolve)
-    )
+    const passwordHash = await this.client.getPasswordKdf({ passwordAlgo, password })
     const { user } = await this.call('auth.checkPassword', {
-      password: hash as InputCheckPasswordSRP
+      password: passwordHash as InputCheckPasswordSRP
     })
     const normalizedUser = await transformUser(user, country)
     dataCache.setUser(normalizedUser)
@@ -285,7 +283,7 @@ class Api {
       },
       cdn_supported: false,
       limit: FILE_SIZE.MB1,
-      offset: 0,
+      offset: '',
     }, {
       dc: dc_id,
       thread: 2
@@ -1025,7 +1023,7 @@ class Api {
       },
       cdn_supported: false,
       limit: partSize,
-      offset: offsetSize,
+      offset: offsetSize.toString(16).padStart(16, '0'),
       precise
     }, {
       dc: dc_id,

@@ -167,7 +167,8 @@ const parseFile = (photo, document) => {
   const filteredPhotos = (sizes || thumbs)?.filter(({ _ }) => _ === 'photoSize')
   const filteredPhotoSizes = filteredPhotos?.map(({ size }) => size)
   const originalPhoto = isPhoto ? filteredPhotos?.find(({ size }) => size === Math.max(...filteredPhotoSizes)) : undefined
-  const originalSize = originalPhoto?.size || size
+  let originalSize = originalPhoto?.size || size
+  originalSize = typeof originalSize === 'string' ? parseInt(originalSize, 16) : originalSize
   const originalSizeType = originalPhoto?.type || ''
 
   const thumbS = (sizes || thumbs)?.find(({ _ }) => _ === 'photoStrippedSize')

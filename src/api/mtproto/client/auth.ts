@@ -1,8 +1,8 @@
 /* eslint-disable prefer-destructuring */
-import BigInt from 'big-integer'
 import sha1 from '@cryptography/sha1'
 import { IGE } from '@cryptography/aes'
 
+import { bi, biFromTA, biToTA, biModPow } from '../utils/bigint'
 import { getKeyByFingerprints } from '../crypto/rsa/keys'
 import { logs } from '../utils/log'
 import { randomize, i2h, i2ab, Reader32 } from '../serialization'
@@ -57,11 +57,11 @@ export function createCipher(ctx: KeyExchangeContext) {
  *
  */
 export function createDHRequestParams(ctx: KeyExchangeContext, random?: Uint32Array): Req_DH_params {
-  const [p, q] = BrentPrime(BigInt.fromArray(Array.from(ctx.pq!), 0x100))
+  const [p, q] = BrentPrime(biFromTA(ctx.pq!))
   const publicKey = getKeyByFingerprints(ctx.fingerprints!)
 
-  ctx.p = new Uint8Array(p.toArray(0x100).value)
-  ctx.q = new Uint8Array(q.toArray(0x100).value)
+  ctx.p = biToTA(p, Uint8Array)
+  ctx.q = biToTA(q, Uint8Array)
 
   // wrap p_q_inner_data
   const pqInner: Record<string, any> = {
@@ -118,13 +118,13 @@ export function createClientDHParams(ctx: KeyExchangeContext, rand?: Uint8Array,
   }
 
   // generate key;
-  const g = BigInt(ctx.g!)
-  const ga = BigInt.fromArray(Array.from(ctx.ga!), 0x100)
-  const dhPrime = BigInt.fromArray(Array.from(ctx.dh!), 0x100)
-  const b = BigInt.fromArray(Array.from(rand), 0x100)
-  const gb = new Uint8Array(g.modPow(b, dhPrime).toArray(0x100).value)
+  const g = bi(ctx.g!)
+  const ga = biFromTA(ctx.ga!)
+  const dhPrime = biFromTA(ctx.dh!)
+  const b = biFromTA(rand)
+  const gb = biToTA(biModPow(g, b, dhPrime), Uint8Array)
 
-  ctx.key = new Uint32Array(ga.modPow(b, dhPrime).toArray(0x100000000).value)
+  ctx.key = biToTA(biModPow(ga, b, dhPrime), Uint32Array)
 
   // inner content for client_DH_inner_data
   const clientDH = build({
@@ -166,8 +166,6 @@ export function createClientDHParams(ctx: KeyExchangeContext, rand?: Uint8Array,
  * Ref: https://core.telegram.org/mtproto/auth_key
  */
 export function createAuthKey(client: ClientInterface, dc: number, thread: number, expiresAfter: number, cb: KeyExchangeCallback) {
-  log(dc, `creating ${expiresAfter > 0 ? 'temporary' : 'permanent'} key`)
-
   const ctx: KeyExchangeContext = {
     nonce: new Uint32Array(4),
     newNonce: new Uint32Array(8),
@@ -258,8 +256,6 @@ export function createAuthKey(client: ClientInterface, dc: number, thread: numbe
         if (expiresAfter > 0) client.dc.setTemporaryKey(dc, authKey)
         else client.dc.setPermanentKey(dc, authKey)
 
-        log(dc, `${expiresAfter > 0 ? 'temporary' : 'permanent'} key created (thread: ${thread})`)
-
         if (cb) cb(null, authKey)
       })
     })
@@ -311,8 +307,6 @@ export function bindTempAuthKey(client: ClientInterface, dc: number, permKey: Au
     return
   }
 
-  log(dc, 'binding temporary key')
-
   const msgID = PlainMessage.GenerateID()
   const rand = new Uint32Array(10)
   randomize(rand)
@@ -321,7 +315,6 @@ export function bindTempAuthKey(client: ClientInterface, dc: number, permKey: Au
 
   client.call('auth.bindTempAuthKey', createBindingEncryptedPayload(permKey, tempKey, msgID, rand), { msgID, dc, force: true }, (err, res) => {
     if (!err && res === true) {
-      log(dc, 'temporary key successfuly binded')
       client.dc.setKeyBinding(dc)
       if (cb) cb(true)
     } else {
@@ -356,7 +349,6 @@ export function initConnection(client: ClientInterface, dc: number, cb?: (result
       if (cb) cb(false)
     } else {
       client.dc.setLayer(dc, client.cfg.APILayer)
-      log('session successfuly inited')
       if (cb) cb(true)
     }
   })
@@ -365,7 +357,7 @@ export function initConnection(client: ClientInterface, dc: number, cb?: (result
 /**
  * Calls auth.exportAuthorization and auth.importAuthorization from one dc to another
  */
-export function transferAuthorization(client: ClientInterface, userID: number, dcFrom: number, dcTo: number, cb?: (res: boolean) => void) {
+export function transferAuthorization(client: ClientInterface, userID: string, dcFrom: number, dcTo: number, cb?: (res: boolean) => void) {
   client.call('auth.exportAuthorization', { dc_id: dcTo }, { dc: dcFrom, force: true }, (err, res) => {
     if (err || !res || res._ !== 'auth.exportedAuthorization') {
       if (cb) cb(false)

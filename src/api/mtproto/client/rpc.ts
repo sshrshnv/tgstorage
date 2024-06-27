@@ -1,5 +1,4 @@
-import { inflate } from 'pako/lib/inflate'
-
+import { ungzip } from '../utils/ungzip'
 import { logs } from '../utils/log'
 import { Message, PlainMessage } from '../message'
 import { ab2i, Reader32 } from '../serialization'
@@ -96,7 +95,6 @@ export default class RPCService {
    */
   middleware = (request: RequestRPC, result: any) => {
     if (result._ === 'auth.authorization') {
-      debug(this.client.cfg, 'middleware', result._)
       this.client.dc.setAuthorization(request.headers.dc!, result.user.id)
       this.client.authorize(2)
     }
@@ -117,8 +115,6 @@ export default class RPCService {
     if (forceChangeSeq) request.message.seqNo = this.client.dc.nextSeqNo(request.headers.dc, true)
 
     this.client.send(request.message, request.headers)
-
-    debug(this.client.cfg, request.headers.dc, '<- re-sent', id)
   }
 
   /**
@@ -157,29 +153,27 @@ export default class RPCService {
     debug(this.client.cfg, headers.dc, '->', result._)
 
     switch (result._) {
-      case 'msg_container': this.processMessageContainer(result, headers); break
-      case 'new_session_created': this.processSessionCreated(result, headers); break
-      case 'bad_server_salt': this.processBadServerSalt(result, headers); break
-      case 'bad_msg_notification': this.processBadMsgNotification(result, headers); break
-      case 'msgs_ack': break
-      case 'gzip_packed': this.processGzipped(result, headers); break
-      case 'rpc_result': this.processRPCResult(result, headers); break
-      case 'msg_detailed_info': break
+    case 'msg_container': this.processMessageContainer(result, headers); break
+    case 'new_session_created': this.processSessionCreated(result, headers); break
+    case 'bad_server_salt': this.processBadServerSalt(result, headers); break
+    case 'bad_msg_notification': this.processBadMsgNotification(result, headers); break
+    case 'msgs_ack': break
+    case 'gzip_packed': this.processGzipped(result, headers); break
+    case 'rpc_result': this.processRPCResult(result, headers); break
+    case 'msg_detailed_info': break
 
-      default:
-        // send acknowlegment
-        if (headers.id) this.ackMsg(headers.transport, headers.dc, headers.thread, headers.id)
+    default:
+      // send acknowlegment
+      if (headers.id) this.ackMsg(headers.transport, headers.dc, headers.thread, headers.id)
 
-        // updates
-        if (result._update) {
-          this.client.updates.process(result)
-          return
-        }
+      // updates
+      if (result._update) {
+        this.client.updates.process(result)
+        return
+      }
 
-        console.warn('unknown', result._, result) // eslint-disable-line no-console
-        debug(this.client.cfg, headers.dc, '-> unknown %s', result._, result)
-
-        break
+      console.warn('unknown', result._, result) // eslint-disable-line no-console
+      break
     }
 
     if (ack) this.sendAcks(headers.transport, headers.dc, headers.thread)
@@ -190,9 +184,10 @@ export default class RPCService {
    */
   processGzipped(result: Object.gzip_packed, headers: RPCHeaders) {
     try {
-      const gz = new Uint8Array(result.packed_data)
-      const reader = new Reader32(ab2i(inflate(gz).buffer))
-      this.processMessage(parse(reader), headers, false)
+      ungzip(result.packed_data, (buffer) => {
+        const reader = new Reader32(ab2i(buffer))
+        this.processMessage(parse(reader), headers, false)
+      })
     } catch (e) {
       console.warn('Unable to decode gzip data', e) // eslint-disable-line no-console
     }
@@ -218,8 +213,6 @@ export default class RPCService {
    * Process: bad_server_salt
    */
   processBadServerSalt(result: BadMsgNotification.bad_server_salt, headers: RPCHeaders) {
-    debug(this.client.cfg, headers.dc, '-> bad_server_salt', `(${headers.transport}, thread: ${headers.thread})`)
-
     if (headers.id) this.ackMsg(headers.transport, headers.dc, headers.thread, headers.id)
 
     this.client.dc.setSalt(headers.dc, result.new_server_salt)
@@ -230,8 +223,6 @@ export default class RPCService {
    * Processes: new_session_created
    */
   processSessionCreated(result: NewSession.new_session_created, headers: RPCHeaders) {
-    debug(this.client.cfg, headers.dc, '-> new_session_created', `(${headers.transport}, thread: ${headers.thread})`)
-
     if (headers.id) this.ackMsg(headers.transport, headers.dc, headers.thread, headers.id)
 
     this.client.dc.setSalt(headers.dc, result.server_salt)
@@ -241,8 +232,6 @@ export default class RPCService {
    * Processes: bad_msg_notification
    */
   processBadMsgNotification(result: BadMsgNotification.bad_msg_notification, headers: RPCHeaders) {
-    debug(this.client.cfg, headers.dc, '-> bad_msg_notification', result.bad_msg_id, result.error_code, 'sec:', result.bad_msg_seqno)
-
     if ([16, 17].includes(result.error_code)) {
       PlainMessage.SyncServerTime(headers.id)
       this.resend(result.bad_msg_id, false)
@@ -264,26 +253,31 @@ export default class RPCService {
 
     if (headers.id) this.ackMsg(headers.transport, headers.dc, headers.thread, headers.id)
 
-    // Ungzip if gzipped
-    if (result && result._ === 'gzip_packed') {
-      const gz = new Uint8Array(result.packed_data)
-      const reader = new Reader32(ab2i(inflate(gz)))
-      result = parse(reader) as any
-    }
-
-    switch (result._) {
+    const process = result => {
+      switch (result._) {
       case 'rpc_error':
         this.emit(reqID, {
           type: 'rpc',
           code: result.error_code,
           message: result.error_message,
         }, result)
-
-        debug(this.client.cfg, headers.dc, '-> rpc_error', reqID, `(${headers.transport}, thread: ${headers.thread})`, result)
         break
 
       default:
         this.emit(reqID, null, result)
+      }
     }
+
+    // Ungzip if gzipped
+    if (result && result._ === 'gzip_packed') {
+      ungzip(result.packed_data, (buffer) => {
+        const reader = new Reader32(ab2i(buffer))
+        result = parse(reader) as any
+        process(result)
+      })
+      return
+    }
+
+    process(result)
   }
 }

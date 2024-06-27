@@ -2,9 +2,8 @@
 import sha256 from '@cryptography/sha256'
 import pbkdf2 from '@cryptography/pbkdf2'
 import sha512 from '@cryptography/sha512'
-import BigInt from 'big-integer'
-import type { BigInteger } from 'big-integer'
 
+import { bi, biFromTA, biToTA, biModPow } from '../utils/bigint'
 import { ab2i, randomize, i2ab } from '../serialization'
 import { InputCheckPasswordSRP } from '../tl'
 
@@ -23,10 +22,10 @@ function uintTo64(src: Uint8Array): Uint32Array {
   return buf
 }
 
-function bintTo64(src: BigInteger): Uint32Array {
-  const srcBuf = src.toArray(0x100000000).value
+function bintTo64(src: bigint): Uint32Array {
+  const srcBuf = biToTA<Uint32Array>(src, Uint32Array)
 
-  if (srcBuf.length === 64) return new Uint32Array(srcBuf)
+  if (srcBuf.length === 64) return srcBuf
 
   const buf = new Uint32Array(64)
 
@@ -43,15 +42,15 @@ export function genPasswordSRP(
 
   const clientSalt = ab2i(salt1)
   const serverSalt = ab2i(salt2)
-  const g = BigInt(cg)
-  const p = BigInt.fromArray(Array.from(cp), 0x100)
+  const g = bi(cg)
+  const p = biFromTA(cp)
 
   const gBuf = new Uint32Array(64)
   const pBuf = uintTo64(cp)
 
   gBuf[63] = 3
 
-  const srpB = BigInt.fromArray(Array.from(csrpB), 0x100)
+  const srpB = biFromTA(csrpB)
   const srpBBuf = uintTo64(csrpB)
 
   let pwdhash = sha256(clientSaltString + password + clientSaltString)
@@ -59,29 +58,29 @@ export function genPasswordSRP(
   pwdhash = pbkdf2(pwdhash, clientSaltString, 100000, sha512, 64)
   pwdhash = sha256.stream().update(serverSalt).update(pwdhash).update(serverSalt).digest()
 
-  const x = BigInt.fromArray(Array.from(pwdhash), 0x100000000)
-  const gx = g.modPow(x, p)
+  const x = biFromTA(pwdhash)
+  const gx = biModPow(g, x, p)
 
-  const k = BigInt.fromArray(Array.from(sha256.stream().update(pBuf).update(gBuf).digest()), 0x100000000)
-  const kgx = k.multiply(gx).mod(p)
+  const k = biFromTA(sha256.stream().update(pBuf).update(gBuf).digest())
+  const kgx = (k * gx) % p
 
   if (!rand) {
     rand = new Uint32Array(6)
     randomize(rand)
   }
 
-  const a = BigInt.fromArray(Array.from(rand), 0x100000000)
-  const Ac = g.modPow(a, p)
+  const a = biFromTA(rand)
+  const Ac = biModPow(g, a, p)
   const AcBuf = bintTo64(Ac)
 
-  let bkgx = srpB.subtract(kgx)
-  if (bkgx.lesser(BigInt.zero)) bkgx = bkgx.add(p)
+  let bkgx = srpB - kgx
+  if (bkgx < 0n) bkgx = bkgx + p
 
-  const u = BigInt.fromArray(Array.from(sha256.stream().update(AcBuf).update(srpBBuf).digest()), 0x100000000)
-  const ux = u.multiply(x)
-  const uxa = ux.add(a)
+  const u = biFromTA(sha256.stream().update(AcBuf).update(srpBBuf).digest())
+  const ux = u * x
+  const uxa = ux + a
 
-  const S = bkgx.modPow(uxa, p)
+  const S = biModPow(bkgx, uxa, p)
   const SBuf = bintTo64(S)
 
   const K = sha256(SBuf)

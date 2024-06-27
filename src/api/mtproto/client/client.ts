@@ -1,5 +1,5 @@
 import { build, parse } from '../tl'
-import type { MethodDeclMap, AccountPassword } from '../tl'
+import type { MethodDeclMap, AccountPassword, InputCheckPasswordSRP } from '../tl'
 import Transport from '../transport/abstract'
 import type { TransportConfig, TransportState } from '../transport/abstract'
 import { Http, Socket } from '../transport'
@@ -84,7 +84,13 @@ export default class Client {
     if (this.cfg.autoConnect) this.authorize(cfg.dc)
   }
 
-  getPasswordKdfAsync(conf: AccountPassword.accountPassword, password: string, cb: (result: object) => void): void {
+  getPasswordKdf({
+    passwordAlgo: conf,
+    password
+  }: {
+    passwordAlgo: AccountPassword.accountPassword
+    password: string
+  }): InputCheckPasswordSRP.inputCheckPasswordSRP | undefined {
     if (!conf.srp_id || !conf.srp_B || !conf.current_algo || conf.current_algo._ === 'passwordKdfAlgoUnknown') return
 
     const srp = genPasswordSRP(
@@ -97,7 +103,7 @@ export default class Client {
       password,
     )
 
-    cb(srp)
+    return srp
   }
 
   /** Performs DH-exchange for temp and perm auth keys, binds them and invoking layer */
@@ -309,6 +315,7 @@ export default class Client {
     }
 
     if (!error && result) {
+      //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       this.rpc.processMessage(result, {
         id,
         dc: cfg.dc,
@@ -321,8 +328,8 @@ export default class Client {
   }
 
   /** Create plain message and send it to the server */
-  public plainCall<K extends keyof MethodDeclMap>(method: K, data: MethodDeclMap[K]['req'], cb?: PlainCallback<K>): void;
-  public plainCall<K extends keyof MethodDeclMap>(method: K, data: MethodDeclMap[K]['req'], headers: CallHeaders, cb?: PlainCallback<K>): void;
+  public plainCall<K extends keyof MethodDeclMap>(method: K, data: MethodDeclMap[K]['req'], cb?: PlainCallback<K>): void
+  public plainCall<K extends keyof MethodDeclMap>(method: K, data: MethodDeclMap[K]['req'], headers: CallHeaders, cb?: PlainCallback<K>): void
   public plainCall<K extends keyof MethodDeclMap>(method: K, data: MethodDeclMap[K]['req'], ...args: unknown[]): void {
     let cb: PlainCallback<K> | undefined
     let headers: CallHeaders = {}
@@ -353,7 +360,6 @@ export default class Client {
       }
     }
 
-    debug(this.cfg.debug, transport, dc, thread, '<-', msg)
     this.getInstance(transport, dc, thread).send(msg)
   }
 
@@ -370,8 +376,8 @@ export default class Client {
   }
 
   /** Create message, encrypt it and send it to the server */
-  public call<K extends keyof MethodDeclMap>(method: K, data: MethodDeclMap[K]['req'], cb?: PlainCallback<K>): void;
-  public call<K extends keyof MethodDeclMap>(method: K, data: MethodDeclMap[K]['req'], headers: CallHeaders, cb?: PlainCallback<K>): void;
+  public call<K extends keyof MethodDeclMap>(method: K, data: MethodDeclMap[K]['req'], cb?: PlainCallback<K>): void
+  public call<K extends keyof MethodDeclMap>(method: K, data: MethodDeclMap[K]['req'], headers: CallHeaders, cb?: PlainCallback<K>): void
   public call<K extends keyof MethodDeclMap>(method: K, data: MethodDeclMap[K]['req'], ...args: unknown[]): void {
     let cb: PlainCallback<K> | undefined
     let headers: CallHeaders = {}
@@ -420,7 +426,6 @@ export default class Client {
 
       instance.send(this.encrypt(msg, headers.dc))
 
-      debug(this.cfg.debug && headers.method !== 'msgs_ack', Date.now(), msg.id, 'seq:', msg.seqNo, 'call', headers.method)
       debug(this.cfg.debug, headers.transport, headers.dc, headers.thread, '<-', msg)
     } else {
       this.addPendingMsg(headers.transport, headers.dc, headers.thread, msg)
@@ -452,16 +457,16 @@ export default class Client {
   }
 
   /** Subscription for client event */
-  on(eventName: 'networkChanged', cb: (state: TransportState) => void): void;
-  on(eventName: 'metaChanged', cb: (meta: ClientMetaData) => void): void;
+  on(eventName: 'networkChanged', cb: (state: TransportState) => void): void
+  on(eventName: 'metaChanged', cb: (meta: ClientMetaData) => void): void
   on(eventName: string, cb: ClientEventListener): void {
     if (!this.listeners[eventName]) this.listeners[eventName] = []
     this.listeners[eventName].push(cb)
   }
 
   /** emit client event */
-  emit(eventName: 'networkChanged', state: TransportState): void;
-  emit(eventName: 'metaChanged', meta: Record<number, any>): void;
+  emit(eventName: 'networkChanged', state: TransportState): void
+  emit(eventName: 'metaChanged', meta: Record<number, any>): void
   emit(eventName: string, ...args: unknown[]) {
     if (!this.listeners[eventName]) this.listeners[eventName] = []
     for (let i = 0; i < this.listeners[eventName].length; i += 1) {
