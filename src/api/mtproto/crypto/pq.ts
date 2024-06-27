@@ -1,87 +1,86 @@
-import BigInt from 'big-integer'
-import type { BigInteger } from 'big-integer'
+import { bi, biRandom, biGCD, biAbs, biMin } from '../utils/bigint'
 
 /**
  * Prime factorization p-Pollard Algorithm.
  * o(n^1/4)
  */
-export function pqPrimePollard(pq: BigInteger): BigInteger[] {
+export function pqPrimePollard(pq: bigint): bigint[] {
   const n = pq
 
-  const F = (x: BigInteger): BigInteger => x.multiply(x).subtract(BigInt.one)
+  const F = (x: bigint): bigint => x * x - 1n
 
-  let x = BigInt.randBetween(1, n)
-  let y = BigInt.one
+  let x = biRandom(1n, n)
+  let y = 1n
   let stage = 2
   let i = 0
 
-  let gcd = BigInt.gcd(n, (x.subtract(y)).abs())
+  let gcd = biGCD(n, biAbs(x - y))
 
-  while (gcd.equals(BigInt.one)) {
+  while (gcd === 1n) {
     if (i === stage) {
       y = x
       stage *= 2
     }
 
-    x = F(x).mod(n)
+    x = F(x) % n
 
-    gcd = BigInt.gcd(n, (x.subtract(y)).abs())
+    gcd = biGCD(n, biAbs(x - y))
 
     i += 1
   }
 
-  const q = n.divide(gcd)
+  const q = n / gcd
 
-  return gcd.greater(q) ? [q, gcd] : [gcd, q]
+  return gcd > q ? [q, gcd] : [gcd, q]
 }
 
 /**
  * Prime factorization Richard Brent's Algorithm
  */
-export function BrentPrime(pq: BigInteger): BigInteger[] {
+export function BrentPrime(pq: bigint): bigint[] {
   const n = pq
 
-  let y = BigInt.randBetween(BigInt.one, n)
-  const c = BigInt.randBetween(BigInt.one, n)
-  const m = BigInt.randBetween(BigInt.one, n)
+  let y = biRandom(1n, n)
+  const c = biRandom(1n, n)
+  const m = biRandom(1n, n)
 
-  let g = BigInt(1); let r = BigInt(1); let q = BigInt(1); let x = BigInt(0); let ys = BigInt(0)
+  let g = 1n; let r = 1n; let q = 1n; let x = 0n; let ys = 0n
 
-  while (g.equals(BigInt.one)) {
+  while (g === 1n) {
     x = y
 
-    for (let i = 1; r.greaterOrEquals(BigInt(i)); i += 1) {
-      y = y.multiply(y).mod(n).add(c).mod(n)
+    for (let i = 1; r >= bi(i); i += 1) {
+      y = (((y * y) % n) + c) % n
     }
 
-    let k = BigInt(0)
+    let k = 0n
 
-    while (k.lesser(r) && g.equals(BigInt(1))) {
+    while (k < r && g === 1n) {
       ys = y
 
-      for (let i = 1; BigInt.min(m, r.subtract(k)).greaterOrEquals(BigInt(i)); i += 1) {
-        y = y.multiply(y).mod(n).add(c).mod(n)
-        q = q.multiply(x.subtract(y).abs()).mod(n)
+      for (let i = 1; biMin(m, r - k) >= bi(i); i += 1) {
+        y = (((y * y) % n) + c) % n
+        q = (q * biAbs(x - y)) % n
       }
 
-      g = BigInt.gcd(q, n)
-      k = k.add(m)
+      g = biGCD(q, n)
+      k = k + m
     }
 
-    r = r.multiply(BigInt(2))
+    r = r * 2n
   }
 
-  if (g.equals(n)) {
+  if (g === n) {
     // eslint-disable-next-line
     while (true) {
-      ys = ys.multiply(ys).mod(n).add(c).mod(n)
-      g = BigInt.gcd(x.subtract(ys).abs(), n)
+      ys = (((ys * ys) % n) + c) % n
+      g = biGCD(biAbs(x - ys), n)
 
-      if (g.greater(BigInt.one)) break
+      if (g > 1n) break
     }
   }
 
-  const pout = n.divide(g)
+  const pout = n / g
 
-  return g.greater(pout) ? [pout, g] : [g, pout]
+  return g > pout ? [pout, g] : [g, pout]
 }

@@ -1,17 +1,11 @@
 /* eslint-disable no-restricted-globals */
 import Transport, { TransportConfig, TransportCallback, TransportState } from './abstract'
-import { logs } from '../utils/log'
 import { i2ab, ab2i } from '../serialization'
 import { PlainMessage, bytesToMessage, EncryptedMessage } from '../message'
 import { wrap, unWrap, HEADER, Obfuscation } from './protocol'
 
 /** Configuration object for WebSocket transport */
 type SocketConfig = TransportConfig
-
-/** Format debug messages if debug flag is enabled */
-const debug = (cfg: SocketConfig, ...rest: any[]) => {
-  if (cfg.debug) logs('socket')('[dc:', cfg.dc, 'thread:', cfg.thread, ']', ...rest)
-}
 
 export default class Socket extends Transport {
   /** Connection handler */
@@ -79,7 +73,7 @@ export default class Socket extends Transport {
 
     // auto connect should be throttled
     } else if (timestamp - this.lastConnectRetry < 1000) {
-      this.reconnectTimer = setTimeout(this.connect as TimerHandler, 3000)
+      this.reconnectTimer = self.setTimeout(this.connect as TimerHandler, 3000)
       return
     }
 
@@ -113,16 +107,12 @@ export default class Socket extends Transport {
 
     // release pending messages
     this.releasePending()
-
-    debug(this.cfg, 'opened')
   }
 
   /**
    * Handles onclose event at websocket object
    */
   handleClose = (_event: CloseEvent) => {
-    debug(this.cfg, 'closed')
-
     // notify client
     this.notify('disconnected')
 
@@ -154,16 +144,6 @@ export default class Socket extends Transport {
   }
 
   /**
-   * Handles request timeout
-   */
-  handleRequestTimout = () => {
-    debug(this.cfg, 'waiting')
-
-    // notify client
-    // this.notify('waiting');
-  }
-
-  /**
    * Method sends bytes to server via web socket.
    */
   send(msg: PlainMessage | EncryptedMessage) {
@@ -171,11 +151,6 @@ export default class Socket extends Transport {
     if (this.obfuscation && this.ws && this.ws.readyState === 1) {
       const frame = this.obfuscation.encode(wrap(msg.buf))
       this.ws.send(i2ab(frame))
-
-      // delay request timeout handler
-      if (msg instanceof EncryptedMessage && msg.isContentRelated && !this.requestTimer) {
-        // this.requestTimer = setTimeout(this.handleRequestTimout as TimerHandler, 5000);
-      }
 
     // else: add message to pending quene and reconnect
     } else {

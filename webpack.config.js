@@ -98,7 +98,7 @@ module.exports = [{
   module: {
     rules: [{
         test: /\.worker\.ts?$/,
-        exclude: /node_modules\/(?!(idb-keyval|pako)\/).*/,
+        exclude: /node_modules\/(?!(idb-keyval)\/).*/,
         use: [{
           loader: 'worker-loader'
         }, {

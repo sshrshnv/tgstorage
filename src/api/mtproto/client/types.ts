@@ -15,7 +15,7 @@ export type ClientConfig = {
   meta: Record<number, any>
 
   APILayer: number
-  APIID?: string
+  APIID?: number
   APIHash?: string
 
   deviceModel: string
@@ -36,7 +36,7 @@ export const defaultClientConfig: ClientConfig = {
   transport: 'websocket' as Transports,
   meta: {},
 
-  APILayer: 133,
+  APILayer: 166,
   deviceModel: 'Unknown',
   systemVersion: 'Unknown',
   appVersion: '1.0.0',
@@ -68,7 +68,7 @@ export type PlainCallback<K extends keyof MethodDeclMap> = (error: ClientError |
 export interface DCServiceInterface {
   getHost(dc: number): string
   setSalt(dcID: number, salt: string): void
-  setAuthorization(dcID: number, userID: number): void
+  setAuthorization(dcID: number, userID: string): void
   setConnection(dcID: number): void
   setPermanentKey(dcID: number, key: AuthKeyNotNull): void
   setTemporaryKey(dcID: number, key: AuthKey): void
@@ -79,7 +79,7 @@ export interface DCServiceInterface {
   getSessionID(dcID: number): string
   getSalt(dcID: number): string
   getAuthKey(dcID: number): AuthKey
-  getUserID(): number | null
+  getUserID(): string | null
   getAuthorization(dcID: number): boolean
   getConnection(dcID: number): boolean
   pfs(): boolean
@@ -126,7 +126,7 @@ export type DataCenterMetaData = {
 export type ClientMetaData = {
   pfs: boolean
   baseDC: number
-  userID?: number
+  userID?: string
   authorized?: boolean
   dcs: Record<number, DataCenterMetaData>
 }
@@ -140,7 +140,7 @@ export type DatacenterMeta = {
   sessionExpire?: number
   connectionInited?: boolean
   seqNo?: number
-  userID?: number
+  userID?: string
   [key: string]: any
 }
 

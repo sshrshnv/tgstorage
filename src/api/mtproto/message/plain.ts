@@ -1,6 +1,5 @@
 /* eslint-disable no-mixed-operators */
-import BigInt from 'big-integer'
-
+import { bi } from '../utils/bigint'
 import { Writer32, Reader32, i2h, i2ab } from '../serialization'
 import { parse } from '../tl'
 
@@ -105,8 +104,8 @@ export default class PlainMessage {
   static SyncServerTime(correctId: string) {
     const oldServerTimeOffset = serverTimeOffset
     const nowTime = Math.floor(Date.now() / 1000)
-    const correctTime = BigInt(parseInt(correctId, 16)).shiftRight(BigInt(32)) as unknown
-    serverTimeOffset = (correctTime as number) - nowTime
+    const correctTime = bi(parseInt(correctId, 16)) >> bi(32)
+    serverTimeOffset = Number(correctTime) - nowTime
 
     if (serverTimeOffset !== oldServerTimeOffset) {
       lastGeneratedHi = 0

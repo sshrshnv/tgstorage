@@ -61,8 +61,8 @@ export default class UpdateService {
   /**
    * Subscribes specific callback on update
    */
-  on<K extends keyof UpdateDeclMap>(predicate: K, reciever: UpdateListener<K>): void;
-  on(reciever: UpdateListener<any>): void;
+  on<K extends keyof UpdateDeclMap>(predicate: K, reciever: UpdateListener<K>): void
+  on(reciever: UpdateListener<any>): void
   on(arg0: string | UpdateListener<any>, arg1?: UpdateListener<any>): void {
     if (typeof arg0 === 'string') {
       if (!this.subscribers[arg0]) this.subscribers[arg0] = []
@@ -80,48 +80,48 @@ export default class UpdateService {
     if (this.subscriberAny) this.subscriberAny(updateMsg)
 
     switch (updateMsg._) {
-      // Ref: https://core.telegram.org/constructor/updateShort
-      case 'updateShort':
-        this.emit(updateMsg.update)
-        break
+    // Ref: https://core.telegram.org/constructor/updateShort
+    case 'updateShort':
+      this.emit(updateMsg.update)
+      break
 
-      // Ref: https://core.telegram.org/type/Updates
-      case 'updateShortMessage':
-      case 'updateShortSentMessage':
-      case 'updateShortChatMessage':
-        this.emit(updateMsg)
-        break
+    // Ref: https://core.telegram.org/type/Updates
+    case 'updateShortMessage':
+    case 'updateShortSentMessage':
+    case 'updateShortChatMessage':
+      this.emit(updateMsg)
+      break
 
-      // Ref: https://core.telegram.org/constructor/updates
-      case 'updatesCombined':
-      case 'updates':
-        // process users
-        if (updateMsg.users) {
-          for (let i = 0; i < updateMsg.users.length; i += 1) {
-            this.emitSpecial('user', updateMsg.users)
-          }
+    // Ref: https://core.telegram.org/constructor/updates
+    case 'updatesCombined':
+    case 'updates':
+      // process users
+      if (updateMsg.users) {
+        for (let i = 0; i < updateMsg.users.length; i += 1) {
+          this.emitSpecial('user', updateMsg.users)
         }
+      }
 
-        // process chats
-        if (updateMsg.chats) {
-          for (let i = 0; i < updateMsg.chats.length; i += 1) {
-            this.emitSpecial('chat', updateMsg.chats[i])
-          }
+      // process chats
+      if (updateMsg.chats) {
+        for (let i = 0; i < updateMsg.chats.length; i += 1) {
+          this.emitSpecial('chat', updateMsg.chats[i])
         }
+      }
 
-        // process updates
-        if (updateMsg.updates) {
-          for (let i = 0; i < updateMsg.updates.length; i += 1) {
-            this.emit(updateMsg.updates[i])
-          }
+      // process updates
+      if (updateMsg.updates) {
+        for (let i = 0; i < updateMsg.updates.length; i += 1) {
+          this.emit(updateMsg.updates[i])
         }
-        break
+      }
+      break
 
-        // todo: handle updatesTooLong
-        // Ref: https://core.telegram.org/api/updates#recovering-gaps
+      // todo: handle updatesTooLong
+      // Ref: https://core.telegram.org/api/updates#recovering-gaps
 
-      default:
-        debug(this.client, 'unknown', updateMsg._, updateMsg)
+    default:
+      debug(this.client, 'unknown', updateMsg._, updateMsg)
     }
   }
 }

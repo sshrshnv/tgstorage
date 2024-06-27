@@ -10,6 +10,8 @@ You should create files `.env.dev` or `.env.prod` locally.
 
 ## MTProto
 Based on https://github.com/spalt08/mtproto-js
-- Updated layer (133)
+- Updated layer (166)
 - Fixed server time offset
 - Fixed writer buffer size
+- BigInteger replaced with native BigInt
+- Pako replaced with native DecompressionStream
