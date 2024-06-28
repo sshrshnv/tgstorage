@@ -605,7 +605,7 @@ class Api {
         access_hash: folder.access_hash
       }
     })
-    const message = messages[0]
+    const message = messages?.[0]
     if (!message) {
       return null
     }
