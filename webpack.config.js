@@ -23,7 +23,7 @@ const appEnv = isDevEnv() ? dotenv.config({
 })?.parsed : process.env
 
 const isSentryAvailable = () =>
-  false // isProd() && !(isBundleAnalyzer() || isDevEnv()) && !!appEnv.SENTRY_AUTH_TOKEN
+  isProd() && !(isBundleAnalyzer() || isDevEnv()) && !!appEnv.SENTRY_AUTH_TOKEN
 
 const APP_TITLE = 'TgStorage'
 const APP_DESCRIPTION = 'Advanced Saved Messages of the Telegram. Organize your notes, links, checklists, photos and any documents in the free unlimited Telegram Cloud.'

@@ -70,23 +70,23 @@ export const sendAppError = async (
 
   console.error(error)
 
-  // if (
-  //   process.env.NODE_ENV !== 'production' ||
-  //   !process.env.SENTRY_DSN ||
-  //   !getErrorSending()
-  // ) return
+  if (
+    process.env.NODE_ENV !== 'production' ||
+    !process.env.SENTRY_DSN ||
+    !getErrorSending()
+  ) return
 
-  // try {
-  //   const Sentry = await loadSentry()
-  //   if ((error as ApiError).method && !!Sentry.withScope) {
-  //     Sentry.withScope(scope => {
-  //       scope.setFingerprint([JSON.stringify(error)])
-  //       Sentry.captureException(error)
-  //     })
-  //   } else {
-  //     Sentry.captureException(error)
-  //   }
-  // } catch (err) {}
+  try {
+    const Sentry = await loadSentry()
+    if ((error as ApiError).method && !!Sentry.withScope) {
+      Sentry.withScope(scope => {
+        scope.setFingerprint([JSON.stringify(error)])
+        Sentry.captureException(error)
+      })
+    } else {
+      Sentry.captureException(error)
+    }
+  } catch (err) {}
 }
 
 export const listenAppErrors = () => {
