@@ -10,7 +10,7 @@ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin')
 const HtmlSkipAssetsPlugin = require('html-webpack-skip-assets-plugin').HtmlWebpackSkipAssetsPlugin
 const HTMLInlineCSSPlugin = require("html-inline-css-webpack-plugin").default
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
-const SentryPlugin = require('@sentry/webpack-plugin')
+const SentryPlugin = require('@sentry/webpack-plugin').sentryWebpackPlugin
 const autoprefixer = require('autoprefixer')
 
 const isProd = () => process.env.NODE_ENV === 'production'
@@ -222,11 +222,12 @@ module.exports = [{
       }]
     }) : () => {},
 
-    isSentryAvailable() ? new SentryPlugin({
+    isSentryAvailable() ? SentryPlugin({
       authToken: appEnv.SENTRY_AUTH_TOKEN,
-      org: 'alexander-shershnev',
+      org: 'sshrshnv',
       project: 'tgstorage',
       include: './build',
+      telemetry: false,
       deploy: {
         env: process.env.BUILD_ENV
       }
