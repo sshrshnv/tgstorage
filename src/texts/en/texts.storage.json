@@ -81,5 +81,19 @@
   "fakeExample": "Folder structure example:",
   "fakeCategory": "Category",
   "fakeGroup": "Group",
-  "fakeTitle": "Folder"
+  "fakeTitle": "Folder",
+  "sponsorshipTitle": "Crowdfunding",
+  "sponsorshipDescription": "The TgStorage v2.0 crowdfunding campaign includes the development of:",
+  "sponsorshipPlatforms": " - Native apps for: Android, iPhone, Mac, Windows, Linux;",
+  "sponsorshipSpaces": " - Spaces to create multiple tabs with categories and folders;",
+  "sponsorshipViews": " - Gallery view of folder contents;",
+  "sponsorshipPlayers": " - New media players for video and audio background playback;",
+  "sponsorshipFiles": " - Uploading the entire folder in the background;",
+  "sponsorshipContacs": " - Sharing folders with the contact list.",
+  "sponsorshipPayment": "Just €1 per month",
+  "sponsorshipProgressRequired": "Required sponsors:",
+  "sponsorshipProgressCurrent": "Current sponsors:",
+  "sponsorshipProgressPercent": "Progress:",
+  "sponsorshipSuccess": "Thank you for your participation \nin the campaign!",
+  "sponsorshipButton": "Sponsor"
 }

@@ -16,7 +16,9 @@ type Props = {
   ellipsis?: boolean
   capitalize?: boolean
   bold?: boolean
+  italic?: boolean
   center?: boolean
+  justify?: boolean
   grey?: boolean
   brand?: boolean
   transparent?: boolean
@@ -35,7 +37,9 @@ export const Text: FC<Props> = memo(({
   ellipsis,
   capitalize,
   bold,
+  italic,
   center,
+  justify,
   grey,
   brand,
   transparent,
@@ -54,7 +58,9 @@ export const Text: FC<Props> = memo(({
       ellipsis && styles._ellipsis,
       capitalize && styles._capitalize,
       bold && styles._bold,
+      italic && styles._italic,
       center && styles._center,
+      justify && styles._justify,
       grey && styles._grey,
       brand && styles._brand,
       transparent && styles._transparent

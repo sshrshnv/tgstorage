@@ -8,7 +8,7 @@ import { resetFiles } from '~/core/cache'
 import {
   loadFolders, listenUpdates, listenApiErrors,
   checkSponsorshipJoining,
-  //checkNewsChannelJoining
+  checkNewsChannelJoining
 } from '~/core/actions'
 import { useMoveMessage, useSharedData } from '~/core/hooks'
 import { Layout } from '~/ui/elements/layout'
@@ -33,6 +33,7 @@ const Storage: FC = memo(() => {
   const [profilePopupVisible, setProfilePopupVisible] = useState(false)
   const [settingsPopupVisible, setSettingsPopupVisible] = useState(false)
   const [installPopupVisible, setInstallPopupVisible] = useState(false)
+  const [sponsorshipPopupVisible, setSponsorshipPopupVisible] = useState(false)
 
   const {
     active: movingMessageActive,
@@ -69,12 +70,16 @@ const Storage: FC = memo(() => {
     setInstallPopupVisible(false)
   }, [setInstallPopupVisible])
 
+  const closeSponsorshipPopup = useCallback(() => {
+    setSponsorshipPopupVisible(false)
+  }, [setSponsorshipPopupVisible])
+
   useEffect(() => {
     listenApiErrors()
     loadFolders()
     listenUpdates()
-    checkSponsorshipJoining({ timeout: true })
-    //checkNewsChannelJoining({ timeout: true })
+    checkSponsorshipJoining()
+    checkNewsChannelJoining({ timeout: true })
     self.addEventListener('unload', resetFiles, { passive: true })
     return () => self.removeEventListener('unload', resetFiles)
   }, [])
@@ -86,15 +91,18 @@ const Storage: FC = memo(() => {
         profilePopupVisible={profilePopupVisible}
         settingsPopupVisible={settingsPopupVisible}
         installPopupVisible={installPopupVisible}
+        sponsorshipPopupVisible={sponsorshipPopupVisible}
         foldersPopupVisible={foldersPopupVisible}
         setFoldersFormPopupParams={setFoldersFormPopupParams}
         setProfilePopupVisible={setProfilePopupVisible}
         setSettingsPopupVisible={setSettingsPopupVisible}
         setInstallPopupVisible={setInstallPopupVisible}
+        setSponsorshipPopupVisible={setSponsorshipPopupVisible}
         closeFoldersFormPopup={closeFoldersFormPopup}
         closeProfilePopup={closeProfilePopup}
         closeSettingsPopup={closeSettingsPopup}
         closeInstallPopup={closeInstallPopup}
+        closeSponsorshipPopup={closeSponsorshipPopup}
         movingMessageActive={movingMessageActive}
         movingMessageLoading={movingMessageLoading}
         selectMovingMessageFolder={selectMovingMessageFolder}

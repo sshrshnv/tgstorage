@@ -389,8 +389,8 @@ class Api {
   }
 
   public async checkSponsorshipJoining() {
-    const isQueryAvailable = await checkIsQueryAvailableByTime('checkSponsorshipJoining', 12 * 60 * 60)
-    if (!isQueryAvailable) return { joiningAvailable: false }
+    //const isQueryAvailable = await checkIsQueryAvailableByTime('checkSponsorshipJoining', 12 * 60 * 60)
+    //if (!isQueryAvailable) return { joiningAvailable: false }
 
     const sponsorshipInvite = getSponsorshipInvite()
     if (!sponsorshipInvite) return { joiningAvailable: false }

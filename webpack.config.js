@@ -45,6 +45,8 @@ const defineEnvConfig = {
   'process.env.SPONSORSHIP_CHANNEL_INVITE': JSON.stringify(appEnv.SPONSORSHIP_CHANNEL_INVITE),
   'process.env.SPONSORSHIP_BOT_LINK_0': JSON.stringify(appEnv.SPONSORSHIP_BOT_LINK_0),
   'process.env.SPONSORSHIP_BOT_LINK_1': JSON.stringify(appEnv.SPONSORSHIP_BOT_LINK_1),
+  'process.env.SPONSORSHIP_REQUIRED': JSON.stringify(appEnv.SPONSORSHIP_REQUIRED),
+  'process.env.SPONSORSHIP_CURRENT': JSON.stringify(appEnv.SPONSORSHIP_CURRENT),
 }
 
 const resolveOptions = {

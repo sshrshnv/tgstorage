@@ -81,5 +81,19 @@
   "fakeExample": "資料夾結構示例：",
   "fakeCategory": "類別",
   "fakeGroup": "群組",
-  "fakeTitle": "資料夾"
+  "fakeTitle": "資料夾",
+  "sponsorshipTitle": "眾籌",
+  "sponsorshipDescription": "TgStorage v2.0 眾籌活動包括開發:",
+  "sponsorshipPlatforms": " - 本機應用程式用於: Android, iPhone, Mac, Windows, Linux;",
+  "sponsorshipSpaces": " - 用於建立帶有類別和資料夾的多個選項卡的空間;",
+  "sponsorshipViews": " - 資料夾內容的圖庫視圖;",
+  "sponsorshipPlayers": " - 用於視訊和音訊後台播放的新媒體播放器;",
+  "sponsorshipFiles": " - 在後台上傳整個資料夾;",
+  "sponsorshipContacs": " - 與聯絡人清單共享資料夾.",
+  "sponsorshipPayment": "每月僅需 1 歐元",
+  "sponsorshipProgressRequired": "所需贊助商:",
+  "sponsorshipProgressCurrent": "目前的贊助商:",
+  "sponsorshipProgressPercent": "進步:",
+  "sponsorshipSuccess": "感謝您參與本次活動!",
+  "sponsorshipButton": "贊助"
 }

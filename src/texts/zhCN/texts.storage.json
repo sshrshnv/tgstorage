@@ -81,5 +81,19 @@
   "fakeExample": "文件夹结构示例：",
   "fakeCategory": "类别",
   "fakeGroup": "群组",
-  "fakeTitle": "文件夹"
+  "fakeTitle": "文件夹",
+  "sponsorshipTitle": "众筹",
+  "sponsorshipDescription": "TgStorage v2.0 众筹活动包括开发:",
+  "sponsorshipPlatforms": " - 本机应用程序: Android, iPhone, Mac, Windows, Linux;",
+  "sponsorshipSpaces": " - 用于创建带有类别和文件夹的多个选项卡的空间",
+  "sponsorshipViews": " - 文件夹内容的图库视图;",
+  "sponsorshipPlayers": " - N用于视频和音频背景播放的新媒体播放器;",
+  "sponsorshipFiles": " - 在后台上传整个文件夹;",
+  "sponsorshipContacs": " - 与联系人列表共享文件夹.",
+  "sponsorshipPayment": "每月仅需 1 欧元",
+  "sponsorshipProgressRequired": "所需赞助商:",
+  "sponsorshipProgressCurrent": "当前赞助商:",
+  "sponsorshipProgressPercent": "进步:",
+  "sponsorshipSuccess": "感谢您参与活动!",
+  "sponsorshipButton": "赞助商"
 }

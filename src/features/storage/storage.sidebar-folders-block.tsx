@@ -4,11 +4,12 @@ import { memo } from 'preact/compat'
 import { useCallback, useEffect } from 'preact/hooks'
 
 import { setAppFeatureRendered } from '~/core/actions'
-import { useFolders, useAppInstall } from '~/core/hooks'
+import { useFolders, useAppInstall, useSponsorship } from '~/core/hooks'
 import { Sidebar } from '~/ui/elements/sidebar'
 import { SidebarHeader } from '~/ui/elements/sidebar-header'
 import { SidebarActionButton } from '~/ui/elements/sidebar-action-button'
 import { Button } from '~/ui/elements/button'
+import { NewIcon } from '~/ui/elements/new-icon'
 
 import type { FoldersFormPopupParams } from './storage'
 import { StorageSidebarFoldersList } from './storage.sidebar-folders-list'
@@ -20,6 +21,7 @@ type Props = {
   setProfilePopupVisible?: (value: boolean) => void
   setSettingsPopupVisible?: (value: boolean) => void
   setInstallPopupVisible?: (value: boolean) => void
+  setSponsorshipPopupVisible?: (value: boolean) => void
 }
 
 export const StorageSidebarFoldersBlock: FC<Props> = memo(({
@@ -28,9 +30,11 @@ export const StorageSidebarFoldersBlock: FC<Props> = memo(({
   setFoldersFormPopupParams,
   setProfilePopupVisible,
   setSettingsPopupVisible,
-  setInstallPopupVisible
+  setInstallPopupVisible,
+  setSponsorshipPopupVisible,
 }) => {
   const { appInstalled } = useAppInstall()
+  const { sponsorshipAvailable } = useSponsorship()
   const { foldersLoading, foldersCount } = useFolders()
 
   const openFolderPopup = useCallback(() => {
@@ -50,6 +54,10 @@ export const StorageSidebarFoldersBlock: FC<Props> = memo(({
   const openInstallPopup = useCallback(() => {
     setInstallPopupVisible?.(true)
   }, [setInstallPopupVisible])
+
+  const openSponsorshipPopup = useCallback(() => {
+    setSponsorshipPopupVisible?.(true)
+  }, [setSponsorshipPopupVisible])
 
   useEffect(() => {
     if (foldersLoading) return
@@ -79,6 +87,16 @@ export const StorageSidebarFoldersBlock: FC<Props> = memo(({
             square
             onClick={openInstallPopup}
           />
+        )}
+        {!!process.env.SPONSORSHIP_REQUIRED && (
+          <Button
+            square
+            onClick={openSponsorshipPopup}
+          >
+            <NewIcon
+              badge={sponsorshipAvailable}
+            />
+          </Button>
         )}
       </SidebarHeader>
 

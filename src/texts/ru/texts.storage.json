@@ -81,5 +81,19 @@
   "fakeExample": "Пример структуры папок:",
   "fakeCategory": "Категория",
   "fakeGroup": "Группа",
-  "fakeTitle": "Папка"
+  "fakeTitle": "Папка",
+  "sponsorshipTitle": "Краудфандинг",
+  "sponsorshipDescription": "Краудфандинговая кампания TgStorage v2.0 включает в себя разработку:",
+  "sponsorshipPlatforms": " - Нативные приложения для: Android, iPhone, Mac, Windows, Linux;",
+  "sponsorshipSpaces": " - Пространства для создания нескольких вкладок с категориями и папками;",
+  "sponsorshipViews": " - Просмотр содержимого папки в виде галереи;",
+  "sponsorshipPlayers": " - Новые медиаплееры для фонового воспроизведения видео и аудио;",
+  "sponsorshipFiles": " - Загрузка всей папки в фоновом режиме;",
+  "sponsorshipContacs": " - Совместное использование папок со списком контактов.",
+  "sponsorshipPayment": "Всего €1 в месяц",
+  "sponsorshipProgressRequired": "Необходимо спонсоров:",
+  "sponsorshipProgressCurrent": "Текущие спонсоры:",
+  "sponsorshipProgressPercent": "Прогресс:",
+  "sponsorshipSuccess": "Спасибо вам за участие \nв кампании!",
+  "sponsorshipButton": "Спонсировать"
 }

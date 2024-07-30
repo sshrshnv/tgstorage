@@ -81,5 +81,19 @@
   "fakeExample": "Ejemplo de estructura de carpetas:",
   "fakeCategory": "Categoría",
   "fakeGroup": "Grupo",
-  "fakeTitle": "Carpeta"
+  "fakeTitle": "Carpeta",
+  "sponsorshipTitle": "Recaudación de fondos",
+  "sponsorshipDescription": "La campaña de financiación colectiva TgStorage v2.0 incluye el desarrollo de:",
+  "sponsorshipPlatforms": " - Aplicaciones nativas para: Android, iPhone, Mac, Windows, Linux;",
+  "sponsorshipSpaces": " - Espacios para crear múltiples pestañas con categorías y carpetas;",
+  "sponsorshipViews": " - Vista de galería del contenido de la carpeta;",
+  "sponsorshipPlayers": " - Nuevos reproductores multimedia para reproducción de vídeo y audio en segundo plano;",
+  "sponsorshipFiles": " - Subir la carpeta completa en segundo plano;",
+  "sponsorshipContacs": " - Compartir carpetas con la lista de contactos.",
+  "sponsorshipPayment": "Sólo 1€ al mes",
+  "sponsorshipProgressRequired": "Patrocinadores necesarios:",
+  "sponsorshipProgressCurrent": "Patrocinadores actuales:",
+  "sponsorshipProgressPercent": "Progreso:",
+  "sponsorshipSuccess": "¡Gracias por participar en la campaña!",
+  "sponsorshipButton": "Patrocinador"
 }
